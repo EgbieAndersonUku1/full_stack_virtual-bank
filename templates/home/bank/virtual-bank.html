@@ -1,0 +1,35 @@
+
+{% extends "home/base.html" %}
+{% load static %}
+{% static '' as STATIC_PATH %}
+
+
+{% block title %}Home page{% endblock title %}
+{% block body %}
+
+
+        <!-- call to action section -->
+        {% include "partials/home/call-to-action.html" %}
+
+        <!-- who is for section -->
+        {% include "partials/home/who-is-section.html" %}
+
+        <!-- The features sections -->
+        {% include "partials/home/features.html" %}
+
+        <!-- security and funds section -->
+        {% include "partials/home/security-and-funds.html" %}
+
+        <!-- virtual bank control info section -->
+        {% include "partials/home/virtual-control.html" %}
+
+        <!-- account control section -->
+        {% include "partials/home/account-control-section.html" %}
+
+        <!-- Testimony section -->
+        {% include "partials/home/testimony.html" %}
+        
+        <!-- How it works section -->
+       {% include "partials/home/how-it-works.html" %}     
+  
+{% endblock %}

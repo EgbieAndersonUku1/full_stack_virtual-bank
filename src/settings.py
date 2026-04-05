@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from os.path import join
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,7 +39,7 @@ INSTALLED_APPS = [
     'bank.apps.BankConfig',
     'wallet.apps.WalletConfig',
     'setup.apps.SetupConfig',
-    'admin.apps.AdminConfig',
+    'core_admin.apps.CoreAdminConfig',
     'home.apps.HomeConfig',
     'authentication.apps.AuthenticationConfig',
 
@@ -129,4 +130,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    join(BASE_DIR, 'static'),
+]
+
+STATIC_ROOT = join(BASE_DIR, 'staticfiles')

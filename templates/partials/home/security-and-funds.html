@@ -1,0 +1,47 @@
+{% load static %}
+
+<!-- security and funds section -->
+<section id="security-and-funds">
+
+    <div class="security-and-funds__container container">
+
+        <!-- Security & Funds Section -->
+        <header class="mt-48 fade-up">
+            <h2 class="center capitalise">Security & Funds</h2>
+            <p class="center security__subtext pt-8">
+                Your money and data are protected with industry-standard security at every step.
+            </p>
+        </header>
+
+        <div class="feature__cards flex-grid two-column-grid mt-24 p-24 fade-up" role="list"
+            id="feature-cards-2">
+
+            <div class="card fade-up flex-grid two-column-30_70_grid border-right">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/security-badge.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Bank-Grade Security</h3>
+                    <p class="pt-16">Your data is protected by advanced encryption.</p>
+                </div>
+            </div>
+
+            <div class="card fade-up flex-grid two-column-30_70_grid">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/simulated-funds.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Simulated Funds</h3>
+                    <p class="pt-16">No real money is used, making it safe for learning or exploring.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

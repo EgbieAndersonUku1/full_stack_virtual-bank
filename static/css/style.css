@@ -1,0 +1,4308 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+}
+
+
+
+:root {
+    --main-page-width: 75%;
+    --green-600: #16A34A;
+    --blue-600: #2563EB;
+    --red: #b00020;
+    --space-0: 0;
+    --space-4: 4px;
+    --space-8: 8px;
+    --space-12: 12px;
+    --space-16: 16px;
+    --space-20: 20px;
+    --space-24: 24px;
+    --space-32: 32px;
+    --space-40: 40px;
+    --space-48: 48px;
+    --box-shadow-primary: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    --box-shadow-secondary: box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    --box-shadow-tietary: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    --gradient-blue: linear-gradient(135deg, #0F4C81 0%, #1CB5E0 100%);
+  
+    --amber-500: #f59e0b;
+
+
+    --warning-color: #FFF8E1;
+    --accent: #38bdf8;;
+
+}
+
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+a,
+p {
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+li {
+    list-style: none;
+}
+
+html,
+body {
+    height: 100%;
+    overflow-x: hidden;
+
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    background: #f6f9fc;
+   
+
+
+
+}
+
+html {
+    overflow: hidden;
+}
+/* All sides */
+.m-0 {
+    margin: var(--space-0);
+}
+
+.m-4 {
+    margin: var(--space-4);
+}
+
+.m-8 {
+    margin: var(--space-8);
+}
+
+.m-12 {
+    margin: var(--space-12);
+}
+
+.m-16 {
+    margin: var(--space-16);
+}
+
+.m-20 {
+    margin: var(--space-20);
+}
+
+.m-24 {
+    margin: var(--space-24);
+}
+
+.m-32 {
+    margin: var(--space-32);
+}
+
+.m-40 {
+    margin: var(--space-40);
+}
+
+.m-48 {
+    margin: var(--space-48);
+}
+
+/* Top */
+.mt-4 {
+    margin-top: var(--space-4);
+}
+
+.mt-8 {
+    margin-top: var(--space-8);
+}
+
+.mt-16 {
+    margin-top: var(--space-16);
+}
+
+.mt-24 {
+    margin-top: var(--space-24);
+}
+
+.mt-48 {
+    margin-top: var(--space-48);
+}
+
+/* Right */
+.mr-4 {
+    margin-right: var(--space-4);
+}
+
+.mr-8 {
+    margin-right: var(--space-8);
+}
+
+.mr-16 {
+    margin-right: var(--space-16);
+}
+
+.mr-24 {
+    margin-right: var(--space-24); 
+}
+/* Bottom */
+.mb-4 {
+    margin-bottom: var(--space-4);
+}
+
+.mb-8 {
+    margin-bottom: var(--space-8);
+}
+
+.mb-16 {
+    margin-bottom: var(--space-16);
+}
+
+.mb-24 {
+    margin-bottom: var(--space-24);
+}
+
+.mb-48 {
+    margin-bottom: var(--space-48);
+}
+
+/* Left */
+.ml-4 {
+    margin-left: var(--space-4);
+}
+
+.ml-8 {
+    margin-left: var(--space-8);
+}
+
+.ml-16 {
+    margin-left: var(--space-16);
+}
+
+.ml-24 {
+    margin-left: var(--space-24);
+}
+
+/* Horizontal & Vertical */
+.mx-8 {
+    margin-left: var(--space-8);
+    margin-right: var(--space-8);
+}
+
+.my-8 {
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-8);
+}
+
+
+/* All sides */
+.p-4 {
+    padding: var(--space-4);
+}
+
+.p-8 {
+    padding: var(--space-8);
+}
+
+.p-16 {
+    padding: var(--space-16);
+}
+
+.p-24 {
+    padding: var(--space-24);
+}
+
+.p-48 {
+    padding: var(--space-48);
+}
+
+/* Top */
+.pt-4 {
+    padding-top: var(--space-4);
+}
+
+.pt-8 {
+    padding-top: var(--space-8);
+}
+
+.pt-16 {
+    padding-top: var(--space-16);
+}
+
+
+.pt-24 {
+    padding-top: var(--space-24);
+}
+
+/* Right */
+.pr-8 {
+    padding-right: var(--space-8);
+}
+
+.pr-24 {
+    padding-right: var(--space-24);
+}
+
+.pr-48 {
+    padding-right: var(--space-48);
+}
+
+.pl-4 {
+    padding-left: var(--space-4);
+}
+
+.pl-8 {
+    padding-left: var(--space-8);
+}
+
+.pl-16 {
+    padding-left: var(--space-16);
+}
+
+.pl-24 {
+    padding-left: var(--space-24);
+}
+
+
+.pl-48 {
+    padding-left: var(--space-48);
+}
+
+/* Bottom */
+.pb-8 {
+    padding-bottom: var(--space-8);
+}
+
+.pb-16 {
+    padding-bottom: var(--space-16);
+}
+
+.pb-24 {
+    padding-bottom: var(--space-24);
+}
+
+
+.pb-48 {
+    padding-bottom: var(--space-48);
+}
+/* Left */
+
+
+/* Horizontal & Vertical */
+.px-16 {
+    padding-left: var(--space-16);
+    padding-right: var(--space-16);
+}
+
+.py-16 {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+}
+
+
+/* image section */
+img {
+    cursor: pointer;
+}
+
+img:hover {
+    opacity: 0.8;
+}
+
+
+/* fonts control section */
+.bold {
+    font-weight: bold;
+}
+
+.light-bold {
+    font-weight: 500;
+}
+
+
+/* fonts sizes */
+.font-lg {
+    font-size: 2rem;
+
+}
+
+.font-xlg {
+    font-size: 2.5rem;
+}
+
+.small-text {
+    font-size: 0.95rem;
+}
+
+
+/* font manipulations */
+.capitalise {
+    text-transform: capitalize;
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+
+
+.text-muted {
+    color: #6B7280;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-top: 0.25rem;
+}
+
+
+/* background colours */
+.white-bg {
+    background: #ffff;
+}
+
+.blue-bg {
+    background: var(--blue-600);
+}
+
+.green-bg {
+    background: var(--green-600);
+}
+
+.red-bg {
+    background: var(--red);
+}
+
+/* font colours */
+.white-text {
+    color: white;
+}
+
+.black-text {
+    color: beige;
+}
+
+.active-text {
+    color: var(--green-600);
+}
+
+.deactivate-text {
+    color: var(--red);
+}
+
+/* utilities */
+
+
+.hide {
+    display: none;
+}
+
+.center {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.lower-case {
+    text-transform: lowercase;
+}
+
+.text-align-left {
+    text-align: left;
+}
+
+.text-align-right {
+    text-align: right;
+}
+/* 
+ * Fixed positioning centring (not layout centring).
+ * Used when the element must be removed from normal flow and
+ * positioned relative to its parent rather than centred by layout (e.g. flexbox).
+ */
+.centered {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1011;
+}
+
+
+.border-right {
+    border-right: 2px solid lavender;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.dividor {
+    border-top: 2px solid lavender;
+    margin-top: var(--space-12);
+    margin-bottom: var(--space-12)
+}
+
+.translate-x-70 {
+    transform: translateX(70%);
+}
+
+
+
+/* headers section */
+.header-1 {
+    font-size: 2.2rem;
+    font-weight: 300;
+}
+
+.header-2 {
+    font-size: 2rem;
+    font-weight: 300;
+}
+
+
+.header-3 {
+    font-size: 1.7rem;
+
+}
+
+.header-5 {
+    font-size: 1.5rem;
+}
+
+.header-6 {
+    font-size: 1.4rem;
+}
+
+
+.header-7 {
+    font-size: 1.2rem;
+}
+
+
+.header-8 {
+    font-size: 1.1rem;
+}
+
+.header-9 {
+    font-size: 1rem;
+}
+
+
+/* Flex and grid variables */
+
+.flex {
+    display: flex;
+}
+
+.flex-space-between {
+    justify-content: space-between;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+.flex-grid {
+    display: grid;
+}
+
+.two-column-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+}
+
+.three-column-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+}
+
+.four-column-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
+}
+
+.five-column-grid {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: auto;
+}
+
+.six-column-grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: auto;
+}
+
+
+.two-column-40_60_grid {
+    grid-template-columns: 40% 60%;
+    grid-template-rows: auto;
+}
+
+.two-column-45_65_grid {
+    grid-template-columns: 45% 65%;
+    grid-template-rows: auto;
+}
+
+.two-column-30_70_grid {
+    grid-template-columns: 30% 70%;
+    grid-template-rows: auto;
+}
+
+.two-column-25_75_grid {
+    grid-template-columns: 25% 75%;
+    grid-template-rows: auto;
+}
+
+.two-column-20_80_grid {
+    grid-template-columns: 20% 80%;
+    grid-template-rows: auto;
+
+}
+
+/* Site logo */
+
+#authentication-form-logo {
+    height: 150px;
+    width: 150px;
+}
+
+
+/* nav control */
+
+
+.navbar {
+    width: 90%;
+    border-bottom: 2px solid lavender;
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-8);
+}
+
+.nav-link {
+    color: black;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    transform: scale(1.1);
+    color: #2563EB;
+}
+
+
+/* header */
+header {
+    position: relative;
+    top: var(--space-12);
+    left: 4%;
+    right: 0;
+    margin-bottom: var(--space-24);
+    z-index: 10000;
+}
+
+
+/* call to action */
+.call-to-action {
+    margin-top: 150px;
+    min-height: 100vh;
+}
+
+
+.call-to-action-img {
+    width: 100%;
+    height: 1000px;
+    position: relative;
+    bottom: 313px;
+
+}
+
+.call-to-action__button:focus-visible {
+    outline: 3px solid #005fcc;
+    outline-offset: 4px;
+    border-radius: 6px;
+}
+
+.call-to-action__button {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+
+.call-to-action__container {
+    width: var(--main-page-width);
+    margin: auto;
+}
+
+
+.call-to-action__button {
+    border-radius: 4%;
+}
+
+.call-to-action__container__info p {
+    font-size: 1.1rem;
+    line-height: 2;
+}
+
+.call-to-action__container__h1 {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 2.75rem;
+    text-transform: capitalize;
+    font-weight: 800;
+}
+
+.call-to-action__button {
+    padding: 10px;
+    width: 45%;
+    text-align: center;
+}
+
+.admin-cards .admin-card:hover,
+.view-card-panel-button:hover,
+.bank-card:hover,
+.call-to-action__button:hover {
+    transform: translateY(-4px);
+}
+
+.call-to-action__button {
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+
+
+/* what is for section */
+.who-is-it-for__container {
+    width: var(--main-page-width);
+}
+
+
+/* who is for section  */
+#who-is-it-for {
+    position: relative;
+    bottom: 480px;
+    background: white;
+}
+
+
+.testimony-quote__container,
+.who-is-it-for__container {
+    max-width: var(--main-page-width);
+    margin: auto;
+}
+
+
+.testimony-quote {
+    position: relative;
+    bottom: 240px;
+
+}
+
+.quote,
+blockquote {
+    color: #555;
+    font-size: 1.3rem;
+    font-style: italic;
+}
+
+/* how it works section  */
+#virtual-wallet-how-it-works,
+#how-it-works {
+    background: white;
+}
+
+.how-it-works-img {
+    width: 180px;
+    height: 180px;
+}
+
+
+/* account control and get started section */
+
+#account-control,
+#get-started {
+    position: relative;
+    width: var(--main-page-width);
+    margin: auto;
+}
+
+
+#account-control {
+    bottom: 350px;
+}
+
+#get-started {
+    bottom: 300px;
+}
+
+/* virtual, security control section */
+#features,
+#virtual-control,
+#security-and-funds {
+    position: relative;
+    bottom: 400px;
+}
+
+
+.virtual-control__container,
+.security-and-funds__container {
+    width: var(--main-page-width);
+    margin: auto;
+}
+
+
+/* account control section */
+#virtual-control .virtual-control__container .feature__cards .card {
+    padding-top: var(--space-24);
+    padding-bottom: var(--space-24);
+}
+
+/* buttons */
+.authenticate-btns {
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-transform: capitalize;
+    border-radius: 44px;
+}
+
+/* authentication button div */
+#authentication-btns {
+    column-gap: var(--space-4);
+
+    /* sits on top of the call to image */
+    position: relative;
+    z-index: 10000;
+}
+
+.authenticate-btn {
+    text-transform: capitalize;
+}
+
+
+
+#login-btn {
+    background: var(--blue-600);
+}
+
+
+#sign-btn {
+    background: var(--green-600);
+}
+
+
+
+
+#learn-more-btn,
+#login-btn {
+
+    background: var(--blue-600);
+    color: white;
+}
+
+
+#signup-btn {
+    background: var(--green-600);
+    color: white;
+    border-radius: 4%;
+}
+
+
+#signup-btn,
+#login-btn {
+    padding: var(--space-4);
+}
+
+
+#get-started-btn {
+    background: var(--green-600);
+    color: white;
+}
+
+.large-btn {
+    width: 100%;
+}
+
+.auth-btn {
+    padding: var(--space-12)
+}
+
+.auth-btns {
+    column-gap: var(--space-16);
+}
+
+button {
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: scale(0.9);
+}
+
+.cancel-btn {
+    background-color: #e0e0e0;
+    /* light grey */
+    color: #333;
+}
+
+
+.btn-medium {
+    width: 10%;
+    padding: var(--space-8);
+}
+
+.btn-semi-medium {
+    width: 25%;
+    padding: var(--space-8);
+}
+
+
+.btn-large {
+    width: 100%;
+    padding: var(--space-8);
+}
+
+
+/* The main images */
+#main-image {
+    position: absolute;
+    top: 0;
+    width: 100%;
+
+}
+
+#main-image:hover {
+    transform: scale(1.01);
+    opacity: 0.9;
+}
+
+
+
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    /* Prevent line breaks */
+    border: 0;
+}
+
+
+.footer-logo {
+    width: 300px;
+    position: relative;
+    right: 73px;
+    top: 50px;
+}
+
+
+.logo {
+    width: 300px;
+    position: absolute;
+    top: 0;
+    transform: translate(-64px, -82px);
+    left: 0;
+    height: 212px;
+}
+
+
+/* cards */
+
+.card {
+    cursor: pointer;
+    position: relative;
+}
+
+.card-title h3,
+.card-footer h3,
+.card-body h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+
+
+
+
+
+.features__container {
+    width: var(--main-page-width);
+    margin: auto;
+}
+
+.features__container h1 {
+    font-family: "Montserrat", sans-serif;
+}
+
+
+.feature-card-img {
+    height: 120px;
+    width: 120px;
+}
+
+.bank-wallet-connection-img {
+    height: 180px;
+    width: 180px;
+}
+
+#bank-and-wallet-img {
+    height: 170px;
+    width: 170px;
+}
+
+#feature-cards-2 {
+    background-image: url("../images/background-2.png");
+}
+
+.features__cards {
+    column-gap: var(--space-8);
+    row-gap: var(--space-12);
+}
+
+.features__cards .card {
+
+    border: 1px solid lavender;
+    background: white;
+    padding: var(--space-48);
+    column-gap: var(--space-48);
+    row-gap: var(--space-40);
+    font-family: "Montserrat", sans-serif;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    border-radius: 14px;
+
+
+}
+
+.features__cards .card .card-title h1 {
+    transform: translate(10px, 50%);
+    font-size: 1.1rem;
+
+}
+
+.features__cards .card .body p {
+    line-height: 1.7;
+    font-size: 0.95rem;
+    transform: translateY(-3px);
+    padding-top: var(--space-48);
+
+}
+
+#feature-cards-2,
+#feature-cards-3 {
+    background: white;
+    column-gap: var(--space-32);
+    box-shadow: var(--box-shadow-tietary);
+    border-radius: 1%;
+}
+
+#feature-cards-2 .card .card-footer,
+#feature-cards-3 .card .card-footer {
+    transform: translate(-5px, 20%);
+}
+
+
+.card-footer h1 {
+    font-size: 1.3rem;
+    font-weight: 500;
+
+}
+
+.security__subtext,
+.features__subtext {
+    font-size: 1.2rem;
+}
+
+
+
+.virtual-bank-banner__container {
+
+    padding-top: var(--space-24);
+    padding-bottom: var(--space-24);
+    background: white;
+    width: var(--main-page-width);
+    margin: auto;
+}
+
+
+/* The footer section */
+footer {
+    background: linear-gradient(180deg,
+            rgba(79, 163, 255, 0.25) 0%,
+            rgba(15, 31, 58, 0.9) 0%,
+            #0B1220 60%,
+            #080E1A 100%);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+}
+
+.footer__container {
+    width: var(--main-page-width);
+    margin: auto;
+    color: white;
+    position: relative;
+    top: -63px;
+}
+
+.footer-head {
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: 400;
+
+}
+
+#footer-sections {
+
+    border-top: 1px solid #6c757d;
+    border-bottom: 1px solid #6c757d;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+
+#footer-sections div {
+    border-right: 0.7px solid #6c757d;
+    ;
+    padding-left: 20px;
+}
+
+#footer-sections div:nth-child(1) {
+    border-right: 1px solid #b3b4b4;
+    padding-left: 0;
+
+}
+
+#footer-sections div:last-child {
+    border-right: none;
+}
+
+
+.footer-link {
+    color: white;
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+    font-size: 0.85rem;
+    text-transform: capitalize;
+}
+
+.footer-link:hover {
+    color: var(--blue-600);
+}
+
+.footer-link:nth-child(1) {
+    padding-top: var(--space-32);
+}
+
+/* The apps belong the footer e.g Apple store Google play */
+#apps {
+    column-gap: var(--space-8);
+    transform: translate(-28px, 12px);
+}
+
+
+.social-icon {
+    height: 24px;
+    width: 24px;
+    opacity: 0.8;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+    opacity: 0.7;
+}
+
+.socials {
+    column-gap: 16px;
+}
+
+.copyright,
+.socials {
+    margin-top: var(--space-8);
+}
+
+
+.copyright-link {
+    border-right: 2px solid white;
+    padding-right: var(--space-16);
+    padding-left: var(--space-16);
+    color: white;
+    font-size: 0.75rem;
+    text-transform: capitalize;
+}
+
+.copyright-link:last-child {
+    border-right: none;
+}
+
+
+
+
+/* card img and img */
+.card-img {
+    width: 100px;
+    height: 100px;
+}
+
+.learning-img {
+    transform: translateX(-28px)
+}
+
+
+
+#learning .card-body p {
+    font-size: 0.95rem;
+}
+
+
+
+
+
+
+
+/* buttons */
+.buttom-md {
+    width: 40%;
+    border: 1px solid black;
+}
+
+
+/* Tags */
+.tag {
+    background: #eef2ff;
+    width: 40%;
+    text-align: center;
+    border-radius: 999px;
+    border: 1px solid lavender;
+    color: black;
+    margin-top: var(--space-8);
+    position: absolute;
+    bottom: 5px;
+
+
+}
+
+.tag span {
+    font-size: 0.85rem;
+    padding: 4px;
+    text-transform: capitalize;
+    color: rgb(4, 4, 79);
+
+}
+
+
+.testimony-quote__container {
+    position: relative;
+}
+
+.left-quote {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.right-quote {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+
+
+/* wallet images */
+.wallet-img-icon {
+    height: 45px;
+    width: 45px;
+
+}
+
+
+#register-btn {
+    background: var(--green-600);
+
+}
+
+#wallet-login-btn:hover,
+#register-btn:hover {
+    background: #0B1220;
+    color: white;
+}
+
+#register-btn,
+#wallet-login-btn {
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+#wallet-login-btn {
+    background: var(--blue-600);
+}
+
+
+.register__container h1 {
+    font-size: 1.2rem;
+}
+
+.authentication-form {
+    box-shadow: var(--box-shadow-tietary);
+    width: 35%;
+    margin: auto;
+    margin-top: var(--space-24);
+    margin-bottom: var(--space-24);
+    border-radius: 2%;
+    cursor: pointer;
+
+}
+
+
+
+
+
+/* The password strength board. Starts of as not visible */
+#password-strength {
+    display: none;
+}
+
+
+
+#password-strength h2 {
+    font-size: 1.1rem;
+}
+
+
+#password-strength {
+    border: 1px solid lavender;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 12px;
+}
+
+.rule-icon {
+    color: var(--green-600);
+}
+
+
+/* Accessible yellow highlight for important text or warnings */
+.highlight-row {
+    background-color: #FFF9C4; /* light accessible yellow */
+    color: #000000;         
+    padding: 0.1em 0.3em;     
+    border-radius: 0.15em;     
+}
+
+
+/* rules to determine strength board fields are highlighted or not */
+.rule.valid {
+    opacity: 1;
+}
+
+.invalid {
+    opacity: 0.3;
+}
+
+
+
+
+/* html selctors  */
+.account-card__add-amount button,
+input,
+select,
+textarea {
+    /* border-color: 0.5px solid #1F4FD8; */
+    border: 1px solid #d1d5db;
+    box-shadow: 0 0 0 3px rgba(31, 79, 216, 0.15);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 1rem;
+
+}
+
+
+
+#wallet-register-form .form-group input[type="text"],
+#wallet-register-form .form-group input[type="password"],
+#walet-register-form .form-group .flex-row input[type="email"] {
+    height: 40px;
+    width: 100%;
+
+}
+
+input[type="datetime-local"],
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+}
+
+input[type="checkbox"] {
+    accent-color: #2f80ed;
+    vertical-align: middle;
+}
+
+#terms-privacy-consent {
+    font-size: 0.90rem;
+}
+
+
+#wallet-register-form__passords {
+    column-gap: 10px;
+}
+
+label {
+    margin-top: 8px;
+}
+
+/* Fade-up animation (mobile-first, desktop-only) */
+
+/* Base: Mobile & Tablet */
+.fade-up {
+    opacity: 1;
+    transform: none;
+    transition: none;
+}
+
+/* Desktop-only animation */
+@media (min-width: 769px) {
+
+    .fade-up {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+        transition: opacity 0.6s ease-out var(--delay, 0s), transform 0.6s ease-out var(--delay, 0s);
+        will-change: opacity, transform;
+    }
+
+    .fade-up.is-visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .fade-up {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+
+#login {
+    margin-top: 108px;
+    margin-bottom: 108px;
+}
+
+
+/* info p-tag */
+#wallet-bank-connection-info {
+    width: 70%;
+    line-height: 1.7;
+    margin: auto;
+}
+
+.moodle {
+
+    background: white;
+    width: 70%;
+    margin: auto;
+    padding: 32px;
+    box-shadow: var(--box-shadow-primary);
+    border-radius: 1px;
+
+}
+
+.registration-help h2 {
+    margin-bottom: var(--space-16);
+    margin-top: var(--space-16);
+    font-size: 1.02rem;
+    text-transform: capitalize;
+}
+
+
+.registration-help p {
+    line-height: 1.5;
+}
+
+#add-pin,
+#add-recipient-section,
+#bank-transfer-quick-confirmation,
+#bank-funds-transfer__select-cards-panel,
+#bank-funds-transfer,
+#bank-account-view-transactions,
+#wallet-registration-code-explained {
+    z-index: 100000;
+    display: grid;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition:
+        opacity 200ms ease,
+        transform 200ms ease,
+        visibility 200ms ease;
+}
+
+
+
+#add-pin.show,
+#add-recipient-section.show,
+#bank-transfer-quick-confirmation.show,
+#bank-funds-transfer__select-cards-panel.show,
+#bank-funds-transfer.show,
+#bank-account-view-transactions.show,
+#wallet-registration-code-explained.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transform: translate(-50%, -50%);
+}
+
+
+/* resets the transfor:translate(-50%, 50%), Without this anything that shows up will 
+take up 50 to left and 50 up 
+*/
+#add-pin.show,
+#add-recipient-section.show,
+#bank-transfer-quick-confirmation.show,
+#bank-funds-transfer__select-cards-panel.show,
+#bank-funds-transfer.show.show,
+#bank-account-view-transactions.show {
+    transform: initial;
+}
+
+
+
+
+/* help icon */
+.fa-circle-question {
+    cursor: pointer;
+    color: var(--blue-600);
+}
+
+#wallet-register-code-container {
+    position: relative;
+}
+
+#wallet-helper-icon {
+    position: absolute;
+    right: 0;
+    top: 6px;
+
+}
+
+#wallet-code {
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.7);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.08em;
+}
+
+.field-check {
+    color: var(--red);
+    display: none;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+
+
+#dim {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100000;
+    display: none;
+    pointer-events: none;
+}
+
+
+
+/* bank setup page attributes */
+
+.bank-welcome__container {
+    width: 40%;
+    margin: auto;
+}
+
+
+.account-setup {
+    background-image: url("/static/images/background-3.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+
+
+}
+
+
+
+#bank-choices-header__container__head {
+    position: relative;
+    height: 400px;
+    width: 400px;
+    bottom: 147px;
+}
+
+#bank-choices-header__container__head_img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+/* bank and pin elemnts */
+#bank-pin-navbar,
+.bank-pin-setup__container,
+#choose-bank-navbar,
+.choose-bank__container {
+    width: 91%;
+    margin: auto;
+}
+
+
+.choose-bank__container {
+    border: 2px solid lavender;
+    padding: var(--space-48);
+
+}
+
+.choose-bank__cards {
+    column-gap: var(--space-4);
+    row-gap: var(--space-4);
+}
+
+.choose-bank__card {
+    padding: 9px;
+    border-radius: 6px;
+    background-color: #ffffff;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.06);
+
+    transition:
+        border-color 120ms ease-out,
+        background-color 120ms ease-out,
+        box-shadow 140ms ease-out,
+        transform 120ms ease-out;
+}
+
+
+.choose-bank__btns button {
+    border-radius: initial;
+}
+
+.choose-bank__card input[type="radio"] {
+    cursor: pointer;
+    color: 2px solid var(--blue-600);
+    position: relative;
+    z-index: 1000;
+}
+
+.choose-bank__card:hover {
+    transform: translateY(-2px);
+    scale: (1.1);
+
+}
+
+#choose-bank-helper {
+    border: 2px solid lavender;
+    padding: var(--space-8);
+    font-size: 0.875rem;
+    background: #ffff;
+
+}
+
+.bank-title {
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: capitalize;
+}
+
+.bank-details p {
+    font-size: 0.875rem;
+    /* 14px */
+    font-weight: 300;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.bank-details span {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.choose-bank__card.is-selected {
+     /* Emerald 500 */
+    border: 2px solid #10B981;
+   
+    background-color: #ECFDF5;
+  
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.15);
+   
+    
+
+}
+
+.choose-bank__card:hover:not(.is-selected) {
+    border-color: #CBD5E1;
+    box-shadow: 0 5px 14px rgba(30, 64, 175, 0.08);
+}
+
+
+.choose-bank__card:focus-visible {
+    outline: 2px solid #2563EB;
+    /* accessible blue colour */
+    outline-offset: 2px;
+}
+
+
+
+#transfer-submit,
+.bank-btn-continue {
+    background: var(--blue-600);
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: var(--box-shadow-secondary);
+    text-align: center;
+    /* font-size: 0.95rem; */
+}
+
+.bank-btn-continue:hover {
+    background: white;
+    color: black;
+    border: 4px solid lavender;
+
+}
+
+.card-head--logo {
+    position: relative;
+    height: 130px;
+    width: 200px;
+}
+
+.choose-bank-img-logo {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    transform: translate(-50%, 0)
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .choose-bank__card {
+        transition: none;
+    }
+}
+
+
+/* The pin section elements */
+
+.pin-number {
+    text-align: center;
+    align-items: center;
+    height: 50px;
+    font-weight: bold;
+    background: #FFFFFF;
+    border: 1px solid #C9D3E1;
+    border-radius: 8px;
+    font-size: 2rem;
+
+}
+
+
+
+.pin-number.cloak {
+    -webkit-text-security: disc;
+    text-security: disc;
+}
+
+
+
+.pin-number.filled {
+    background: #E9EEF6;
+    border: 1px solid #C9D3E1;
+    color: #1F2937;
+}
+
+.pin-wrapper {
+    column-gap: var(--space-16);
+}
+
+.pin-pad-btn {
+    text-align: center;
+    border: 1px solid lavender;
+    background: #f8fafc;
+    /* very light grey / off-white */
+    color: #0f172a;
+
+    padding: var(--space-8);
+    cursor: pointer;
+    font-weight: 500;
+
+}
+
+.pin-pad-btn.clicked {
+    transform: scale(0.8);
+    border: 1px solid #C9D3E1;
+}
+
+
+.pin-pad-btn:hover {
+    background: ghostwhite;
+}
+
+.pin-selector__container {
+    column-gap: var(--space-8);
+    row-gap: var(--space-8);
+}
+
+#bank-pin-form {
+    width: 55%;
+    margin: auto;
+    background: white;
+    padding: 50px;
+    box-shadow: var(--box-shadow-primary);
+}
+
+.bank-pin-setup__container {
+    padding: var(--space-48);
+}
+
+.pin-keypad__actions {
+    column-gap: var(--space-8);
+    font-weight: 500;
+}
+
+.bank-btn-back {
+    background: #e5e7eb;
+    color: #374151;
+    font-weight: 600;
+}
+
+.bank-btn-back:hover {
+    background: #d1d5db;
+}
+
+
+
+.pin-number:focus {
+    border-color: #1E4FD7;
+    box-shadow: 0 0 0 3px rgba(30, 79, 215, 0.15);
+}
+
+
+.bank-welcome__onboarding {
+    grid-auto-rows: 160px;
+    gap: 16px;
+
+}
+
+.bank-welcome__message p {
+    line-height: 2;
+}
+
+/* Bank welcome onboarding */
+
+.bank-welcome__container {
+    box-shadow: var(--box-shadow-primary);
+}
+
+.bank-welcome__image {
+    position: relative;
+    height: 600px;
+    width: 800px;
+    transform: translateY(-300px)
+}
+
+#bank-welcome__image {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+#onbard_begin-btn {
+    width: 100%;
+    position: relative;
+    z-index: 10000;
+}
+
+/* bank completion section */
+
+.bank-completion__container {
+    width: 91%;
+    margin: auto;
+    padding: 48px;
+}
+
+.bank-completion__info {
+    border: 4px solid lavender;
+    padding: var(--space-32);
+    width: 45%;
+    line-height: 2;
+    margin: auto;
+    background: white;
+}
+
+
+#bank-completion-img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+
+
+.dashboard-btn {
+    background: var(--blue-600);
+    color: white;
+}
+
+.add-funds-btn {
+    background: var(--green-600);
+    color: white;
+}
+
+
+
+.bank-completion__security-message {
+    font-size: 0.85rem;
+}
+
+
+.bank-completion__note {
+    font-size: 0.9rem;
+}
+
+
+.bank-completion__security,
+.bank-completion__note,
+.bank-completion__actions {
+    width: 45%;
+    margin: auto;
+}
+
+.bank-completion__note {
+    margin-top: var(--space-8);
+    border-top: 2px solid lavender;
+    border-bottom: 2px solid lavender;
+}
+
+.bank-completion__security,
+.bank-completion__note p {
+    padding-left: var(--space-32);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+}
+
+.bank-completion__security {
+    border-bottom: 2px solid lavender;
+    margin-bottom: var(--space-4);
+}
+
+
+.bank-completion__actions {
+    column-gap: var(--space-8);
+}
+
+.bank-completion__details dt {
+    text-transform: capitalize;
+    font-size: 0.875rem;
+    /* 14px*/
+    font-weight: 400;
+    color: #6b7280;
+    /* muted grey */
+}
+
+.bank-completion__details dd {
+    font-size: 0.9375rem;
+    /* 15px*/
+    font-weight: 500;
+    color: #111827;
+    /* near-black */
+}
+
+
+.check {
+    border: 1px solid;
+    border-radius: 50%;
+    padding: 8px;
+    color: white;
+    background: var(--green-600);
+    font-size: 0.7rem;
+    position: relative;
+    bottom: 6px;
+    border: 3px solid white;
+
+}
+
+.verified {
+    border: 1px solid;
+    border-radius: 50%;
+    background: green;
+    color: white;
+    padding: 2px;
+}
+
+
+.bank-completion__row dd.active {
+    font-weight: bold;
+    color: var(--green-600);
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.bank-completion__row dd.not-active {
+    font-weight: bold;
+    color: var(--red);
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+
+
+/* Dashboard */
+
+/* 
+   DASHBOARD LAYOUT
+   Core structural layout for sidebar + main content
+*/
+
+.dashboard__container__sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20vw;
+    height: 100vh;
+    overflow-y: auto;
+
+    background: linear-gradient(180deg, #1F4E79 0%, #2F6FAE 100%);
+    border-right: 3px solid black;
+}
+
+.dashboard__container__main {
+    margin-left: 20vw;
+    /* this is the  offset main content to account for fixed sidebar */
+}
+
+.dashboard__container__main__wrapper {
+    padding-left: var(--space-8);
+}
+
+
+/*
+   SIDEBAR BRAND / LOGO AREA
+   Top section containing logo + brand name
+*/
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: var(--space-24);
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: #1f6feb;
+}
+
+.sidebar-brand__name {
+    letter-spacing: 0.3px;
+}
+
+
+/* 
+   SIDEBAR NAVIGATION ITEMS
+   List items, links, icons, and hover states
+*/
+
+.sidebar-nav__label {
+    text-transform: capitalize;
+}
+
+.sidebar-nav__item {
+    cursor: pointer;
+}
+
+.sidebar-nav__item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.dashboard__container__sidebar li {
+    padding-block: var(--space-16);
+    padding-inline: var(--space-48);
+
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dashboard__container__sidebar li a {
+    color: white;
+    font-weight: 400;
+}
+
+.dashboard__container__sidebar li span {
+    padding-right: var(--space-12);
+    flex-shrink: 0;
+}
+
+
+/* 
+   SIDEBAR SPECIAL ACTIONS
+   Logout & security-related UI
+*/
+
+.logout {
+    position: relative;
+    z-index: 10000;
+
+    background: rgba(0, 0, 0, 0.42);
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+}
+
+.manage-security-btn,
+#latest-login__note {
+    font-size: 0.8rem;
+}
+
+.manage-security-btn {
+    background: ghostwhite;
+    font-weight: 500;
+    text-transform: capitalize;
+    color: #0B1220;
+    border: 2px solid lavender;
+}
+
+.manage-security-btn {
+    border: 2px solid lavender;
+}
+
+
+/* 
+   LATEST LOGIN / SECURITY INFO CARD
+  */
+
+#latest-login {
+    margin: 4px;
+    padding: var(--space-24);
+
+    background: white;
+    box-shadow: var(--box-shadow-primary);
+
+}
+
+#latest-login p {
+    color: var(--red);
+}
+
+/* 
+   FOOTER
+   Dashboard footer layout
+ */
+
+.dashboard__container footer {
+    width: 100%;
+    margin-left: 20vh;
+
+    background-color: #f9f9f9;
+    padding: 24px;
+}
+
+.dashboard__container footer .footer__container {
+    width: 75%;
+    top: 0;
+}
+
+
+/* 
+   SCROLLBAR STYLING (SIDEBAR ONLY)
+   Optional cosmetic enhancement for modern browsers
+ */
+
+.dashboard__container__sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dashboard__container__sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.dashboard__container__sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+
+time {
+    font-size: 0.9rem;
+}
+
+
+.dashbaord__container__nav-head {
+    padding: 0;
+}
+
+
+/* dashboard navigation bar */
+
+.dashboard__container__navbar {
+    padding: var(--space-12);
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    cursor: pointer;
+    background: white;
+
+}
+
+
+.notification-dashboard-img,
+.dashboard-profile-img {
+    height: 30px;
+}
+
+.dashboard-notification-bell-img {
+    height: 25px;
+}
+
+.dashboard__container__nav-body {
+    column-gap: 5px;
+}
+
+.dashboard-nav-site-name {
+    font-size: 1.1rem;
+}
+
+.dashboard__profile {
+    position: relative;
+}
+
+.dashboard__container__dropdown-menu {
+    position: absolute;
+    right: 10px;
+    background: white;
+    z-index: 10000;
+    padding: var(--space-8);
+    box-shadow: var(--box-shadow-secondary);
+    border: 4px solid lavender;
+
+    /* hidden state */
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+    visibility: hidden;
+    pointer-events: none;
+
+    /* animation setup */
+    transform-origin: top right;
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+.dashboard__container__dropdown-menu.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+    pointer-events: auto;
+}
+
+
+
+.dropdown-menu {
+    font-size: 0.9rem;
+
+}
+
+.dropdown-menu li {
+    line-height: 1.4;
+    padding: var(--space-16);
+    text-transform: capitalize;
+    cursor: pointer;
+}
+
+
+.dropdown-menu li:hover:not(:first-child) {
+    background-color: rgba(245, 240, 240, 0.93);
+    font-weight: 500;
+
+}
+
+
+.dropdown-menu li:not(:last-child) {
+    border-bottom: 2px solid lavender;
+}
+
+.dropdown-menu li span {
+    margin-right: var(--space-8);
+}
+
+.dashboard-logout {
+    color: var(--red);
+    font-weight: 500;
+}
+
+.bank-option-img {
+    height: 70px;
+    width: 70px;
+}
+
+
+
+.bank-options__cards {
+    column-gap: 5px;
+}
+
+.bank-options__container {
+    width: 95%;
+
+}
+
+.bank-options__card {
+    color: black;
+    padding: var(--space-8);
+    border: 3px solid lavender;
+    box-shadow: var(--box-shadow-primary);
+    border-radius: 8px;
+    background: white;
+
+}
+
+.bank-options__card .card-body h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.bank-options__card:hover {
+    transform: scale(0.95);
+    border: 1px solid var(--green-600);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+}
+
+.bank-options__card .card-footer small {
+    color: #6B7280;
+}
+
+.bank-option-card-link:focus {
+    outline: 3px solid #4A90E2;
+    outline-offset: 4px;
+}
+
+
+
+/* my wallet */
+#my-wallet {
+    box-shadow: var(--box-shadow-primary);
+    margin-bottom: var(--space-16);
+}
+
+.my-wallet__container__header {
+    background: lavender;
+}
+
+.my-wallet-img img {
+    height: 200px;
+    width: 130px;
+}
+
+.my-wallet__container__header h3 {
+    font-size: 1.3rem;
+    font-size: 500;
+}
+
+#my-wallet__link h3 {
+    font-size: 1rem;
+}
+
+#connect-wallet-btn {
+    background: var(--blue-600);
+}
+
+#disconnect-wallet-status {
+    background: var(--red);
+}
+
+#connect-wallet-btn,
+#disconnect-wallet-status {
+    color: white;
+}
+
+#my-wallet__link p {
+    font-size: 0.9rem;
+}
+
+
+.my-wallet__buttons {
+    width: 50%;
+    column-gap: var(--space-4);
+}
+
+.my-wallet__buttons a {
+    font-size: 0.8rem;
+}
+
+
+
+
+.bank-dashboard-btn:hover {
+    background: white;
+    border: 1px solid black;
+    color: black;
+    scale: var(0.9);
+}
+
+#view-card-panel,
+#bank-account-view-transactions,
+#bank-account-add-funds,
+#link-wallet-verifcation,
+#connect-with-wallet-id,
+#connect-wallet-modal {
+    position: fixed;
+    top: 8%;
+    left: 25%;
+    background: white;
+    width: 55%;
+    margin: auto;
+    z-index: 1000;
+    box-shadow: var(--box-shadow-primary);
+    cursor: pointer;
+}
+
+/* The authentication for the wallet id when step 2 connect with wallet id is clicked */
+/* The modal panel and all its attribrutes */
+
+
+#connect-with-wallet-id {
+    padding: 84px;
+    display: none;
+    top: 0%;
+
+}
+
+
+
+
+#connect-wallet-modal h2 {
+    font-weight: 500;
+    font-size: 1.2rem;
+}
+
+#connect-wallet-modal h3 {
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+#connect-wallet-modal h4 {
+    font-weight: 500;
+}
+
+.modal-top {
+    background: #f0f0f0;
+
+}
+
+#completion-percentage {
+    border: 3px solid lavender;
+    border-radius: 999px;
+    width: 100%;
+    height: 20px;
+}
+
+.percentage-container {
+    height: 100%;
+    border-radius: 999px;
+}
+
+.step1-percentage {
+
+    width: 25%;
+    background: var(--red);
+}
+
+.step2-percentage {
+
+    width: 50%;
+    background: orangered;
+}
+
+.step3-percentage {
+    width: 100%;
+    background: var(--green-600);
+}
+
+
+.wallet-active {
+    border: 4px solid lavender;
+    padding-right: 10px;
+    background: ghostwhite;
+}
+
+.subtitle-list li,
+.subtitle {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    font-weight: 400;
+    color: #333333;
+
+}
+
+.connect-wallet__continue-btn {
+    background: var(--blue-600);
+    color: white;
+    font-size: 1rem;
+}
+
+
+
+#wallet-to-connect-checkmark {
+    background: var(--green-600);
+    font-size: 0.5rem;
+    border: 1px solid white;
+    transform: translateX(-1px);
+    color: white;
+    font-weight: 400;
+    font-weight: bolder;
+}
+
+.check-mark {
+    border-radius: 40%;
+    padding: var(--space-4);
+
+}
+
+.step {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #555555;
+    margin-top: 1.5rem;
+}
+
+
+#connect-wallet-modal,
+#bank-account-add-funds,
+#connect-wallet-modal__step-one,
+#connect-wallet-modal__step-two,
+#connect-wallet-modal__step-three {
+    display: none;
+
+}
+
+#view-card-panel.show,
+.view-card-panel-buttons.show,
+#dashboard__status.show,
+#wallet-disconnection-confirmation.show,
+#connect-with-wallet-id.show,
+#connect-wallet-modal.show,
+#connect-wallet-modal__step-one.show,
+#connect-wallet-modal__step-two.show,
+#connect-wallet-modal__step-three.show,
+#link-wallet-verifcation.show,
+#password-strength.show,
+#bank-account-add-funds.show {
+    display: grid;
+
+}
+
+#wallet-option__one,
+#wallet-option__two {
+    display: grid;
+    grid-template-columns: 15% 60% 25%;
+    grid-template-rows: auto;
+    column-gap: var(--space-4);
+    padding: var(--space-12);
+
+
+}
+
+#wallet-option__two {
+    border: 2px solid lavender;
+}
+
+.recommendation {
+    color: var(--blue-600);
+    text-transform: capitalize;
+}
+
+.our-recommendation {
+    border: 2px solid var(--green-600);
+}
+
+
+.wallet-option-img {
+    height: 80px;
+}
+
+#wallet-option-icon {
+    font-size: 30px;
+    margin-top: 16px;
+}
+
+.wallet-option-btn {
+    font-size: 0.85rem;
+}
+
+.wallet-option-btn:hover {
+    transform: scale(0.95);
+    cursor: pointer;
+}
+
+.wallet-option-info {
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.step2-percentage {
+    background: orange;
+    width: 50%;
+}
+
+#wallet-option__one:hover,
+#wallet-option__two:hover {
+    transform: scale(0.99);
+}
+
+#confirmation-buttons button {
+    border-radius: initial;
+
+}
+
+#confirmation-buttons {
+    width: 40%;
+    margin: auto;
+    column-gap: var(--space-4);
+}
+
+#verify-wallet-checkbox {
+
+
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 0.5px solid #1F4FD8;
+    border-radius: 0;
+    box-shadow: none;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+#verify-wallet-checkbox:focus {
+    outline: 2px solid #1F4FD8;
+    outline-offset: 2px;
+}
+
+#verify-wallet-checkbox:hover {
+    border-color: #163ea6;
+}
+
+.modal-close-btn:hover {
+    border-color: #163ea6;
+    color: var(--red);
+    font-weight: bolder;
+}
+
+
+/* connect wallet id */
+#connect-wallet-auth-id-wrapper {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    padding: var(--space-16);
+    column-gap: var(--space-8);
+
+}
+
+#connect-wallet-auth-id-wrapper input {
+    text-align: center;
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+}
+
+.connect-wallet-auth-id-separator {
+    font-weight: bold;
+}
+
+
+
+/* Progress ring */
+.wallet-progress {
+    --progress: 0;
+    --size: 160px;
+    --thickness: 14px;
+
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+
+    background: conic-gradient(#1F4FD8 calc(var(--progress) * 1%),
+            #e3e7ef 0);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: background 0.3s ease;
+    margin: auto;
+}
+
+
+/* Inner circle */
+.wallet-progress__inner {
+    width: calc(var(--size) - var(--thickness) * 2);
+    height: calc(var(--size) - var(--thickness) * 2);
+
+    background: white;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/* Link verification form manually */
+#link-wallet-verification-form__header .logo-img-container {
+    position: relative;
+    height: 100px;
+    width: 100px;
+}
+
+#link-wallet-verification-form__header .logo-img-container img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+#link-wallet-verification-form__header {
+  
+     background: #f6f9fc;
+}
+
+#manually-verification-wallet-form{
+    padding: 108px;
+    padding-top: var(--space-24);
+}
+
+#manually-wallet-error-msg {
+    background: var(--red);
+    color: white;
+    padding: var(--space-12);
+}
+
+#link-wallet-verifcation {
+    display: none;
+}
+
+#manually-wallet-error-msg {
+    display: none;
+}
+
+#manually-wallet-link-btn {
+    font-size: 1rem;
+}
+
+
+/* status button modal section*/
+/* This is the part of the modal in the dashboard that will open up the modal when the user hits
+ status button
+*/
+
+#dashboard-status-modal-close-btn {
+    position: relative;
+    z-index: 10000;
+}
+
+.img-container {
+    position: relative;
+    height: 133px;
+    width: 150px;
+    transform: translateX(-45px);
+   
+}
+
+.img-container img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.status__head_body {
+    transform: translateY(-45px);
+    grid-template-rows: 20px;
+    padding-left: 24px;
+}
+
+
+.status__bank_details div {
+    border: 2px solid lavender;
+    padding: var(--space-8);
+}
+
+.status__bank_details div dt {
+  font-weight: 500;
+  text-transform: capitalize;
+  
+}
+
+
+.wallet-disconnection-confirmation__container p,
+.dsiconnection-description h2,
+.status__info-link,
+.status__head p,
+.status__body p,
+.bank-connection span,
+.status__bank_details div dt,
+.status__bank_details div dd {
+  font-size: 0.9rem;
+}
+
+.bank-connection {
+    background: ghostwhite;
+    padding: var(--space-8);
+}
+
+.status__body__container {
+ 
+  border: 2px solid lavender;
+  margin-right: var(--space-48);
+  padding: var(--space-16);
+  margin-bottom: var(--space-12);
+  margin-right: var(--space-24);
+  
+}
+
+#bank-connection-status {
+    border: 1px solid black;
+    margin-right: var(--space-4);
+    padding: var(--space-4);
+    font-size: 0.8rem;
+}
+
+
+#dashboard__status {
+    position: fixed;
+    top: 0;
+    left: 28%;
+    width: 47%;
+    margin: auto;
+    z-index: 1000;
+    box-shadow: var(--box-shadow-primary);
+    cursor: pointer;
+    border: 2px solid black;
+    background: white;
+    border-radius: 8px;
+    display: none;
+}
+
+
+
+#bank-connection {
+    box-shadow: var(--box-shadow-primary);
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-4);
+    padding: var(--space-12);
+    border-radius: 8px;
+}
+
+.connection__actions {
+    column-gap: var(--space-4);
+}
+
+.connection__button {
+    text-align: center;
+    font-size: 0.9rem;
+    padding: var(--space-4);
+    margin-top: var(--space-8);
+    border-radius: 8px; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-weight: 600;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    gap: 0.5rem; /*Space between icon and text*/
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-4);
+}
+
+
+.connection__button:hover {
+    transform: translateY(-1px); 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15); 
+}
+
+.wallet-disconnection-confirmation__container ul li,
+.disconnection-description ul li {
+    list-style: disc;
+    margin-left: var(--space-8);
+    font-size: 0.85rem;
+    color: #333;
+    line-height: 1.5;
+}
+
+
+.disconnection-info {
+    background: var(--warning-color);
+    border: 1px solid #FFE082;
+    padding: var(--space-8);
+    border-radius: 8px;
+    color: #333333;
+}
+
+
+.disconnection-info-icon i {
+    font-size: 1.5rem;
+    color: #E6A700;
+}
+
+
+.status__bank-disconnection {
+    column-gap: var(--space-4);
+}
+
+.disconnection-info__container {
+    display: grid;
+    grid-template-columns: 10% 90%;
+    grid-template-rows: auto;
+    column-gap: 1px;
+}
+
+
+.disconnect-btn {
+    background: var(--red);
+    padding-left: var(--space-8);
+    padding-right: var(--space-8);
+ 
+}
+
+.disconnect-btn:hover {
+   
+    background: black;
+    color: white;
+   
+}
+
+.connection-check-status {
+    display: grid;
+    grid-template-columns: 5% 95%;
+    grid-template-rows: auto;
+    column-gap: var(--space-4);
+}
+
+
+/* Disconnection wallet confirmation modal attribrutes */
+#wallet-disconnection-confirmation {
+    position: fixed;
+    left: 32%;
+    top: 20%;
+    z-index: 1000;
+     width: 40%;
+    margin: auto;
+    background: #ffff;
+    border: 1px solid lavender;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    border: 1px solid black;
+    display: none;
+   
+}
+
+
+#wallet-disconnect-title span {
+    font-size: 0.94rem;
+}
+#wallet-disconnect-title span:last-child {
+    font-weight: 400;
+}
+
+.wallet-disconnection-confirmation__container ul {
+    background: var(--warning-color);
+    border: 4px solid var(--warning-color);
+    
+}
+
+.wallet-disconnection-confirmation__container ul li {
+    margin-left: var(--space-16);
+
+}
+
+#confirmation-disconnection-input-field .lock {
+    background: lavender;
+}
+
+#confirmation-disconnection-input-field .form-row input {
+    text-transform: uppercase;
+    border: 2px solid lavender;
+    outline: none;
+    box-shadow: none;
+}
+
+#wallet-disconnection-confirmation__footer button {
+    border-radius: 0px;
+    padding: var(--space-12);
+    font-weight: bold;
+}
+
+#confirm-disconnect-btn {
+    background: var(--red);
+    color: white;
+}
+
+
+
+.dashboard__container__main__wrapper {
+    display: grid;
+    grid-template-columns: 75% 25%;
+    grid-template-rows: auto;
+    column-gap: var(--space-8);
+}
+
+
+.dash-bank-account-main-img {
+    position: relative;
+    height: 200px;
+    width: 250px;
+}
+
+.dash-bank-account-main-img img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+
+.dash-bank-account {
+    box-shadow: var(--box-shadow-primary);
+    background: url("/static/images/background.png");
+    padding: var(--space-24);
+    
+}
+
+.dash-bank-account__body {
+    background: #ffff;
+}
+
+.dash-bank-account-info .flex-row {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.dash-bank-account-info li a:hover {
+    color: var(--green-600);
+}
+
+
+.dash-bank-account__buttons {
+    column-gap: var(--space-4);
+}
+
+
+.dash-bank-account__buttons button {
+    border-radius: 0;
+    padding-left: var(--space-16);
+    padding-right: var(--space-16);
+    font-weight: bold;
+}
+
+
+.credit-card .bank-amount span {
+    font-size: 1.3rem;
+    display: block;
+}
+
+
+.dashboard-card {
+    border-radius: 12px;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+}
+
+
+
+.dash-bank-account__footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+
+
+
+/* the bank panel */
+.account-status {
+    color: var(--green-600);
+}
+
+
+.dashboard-card {
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    cursor: pointer;
+}
+
+/* Balance highlight */
+.balance-highlight {
+    margin: 20px 0;
+}
+
+.balance-label {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.balance-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Action Bank buttons */
+.action-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+.action-btn.primary {
+    background: #111;
+    color: white;
+}
+
+.action-btn.secondary {
+    background: #f2f2f2;
+}
+
+.bank-last-updated {
+    font-size: 0.75rem;
+    color: #777;
+}
+
+
+/* The bank add funds panel. This is shown when the user 
+clicks the button 
+*/
+
+
+.balance-highlight {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.balance-label {
+    font-size: 0.9rem;
+    color: #666; /* subtle label */
+    margin-bottom: 4px;
+}
+
+.balance-value {
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+}
+
+.balance-value .currency {
+    font-size: 1rem; 
+    margin-right: 2px;
+    color: inherit;
+}
+
+.balance-value span:last-child {
+    font-size: 1.5rem; 
+    color: #111; /* default dark for total */
+}
+
+.balance-highlight.total .balance-value span:last-child {
+    font-size: 2rem;
+    color: var(--blue-600); /* primary colour for total */
+}
+
+.balance-highlight.pending .balance-value span:last-child {
+    font-size: 1.25rem;
+    color: #FF9800; /* orange for pending */
+}
+
+.balance-highlight.available .balance-value span:last-child {
+    font-size: 1.25rem;
+    color: #4CAF50; /* green for available balances */
+}
+
+.bank-account-summary {
+    color: var(--green-600);
+}
+
+
+.bank-account-transactions__head nav,
+.bank-account-add-funds__head nav .sidebar-brand__name,
+.bank-account-add-funds__head nav{
+    background: lavender;
+    font-size: 1.2rem;
+}
+
+.account-card__image {
+    position: relative;
+    height: 90px;
+    width: 90px;
+}
+
+
+.account-card__image img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    padding: var(--space-4);
+}
+
+.account-card-details {
+    column-gap: var(--space-24);
+}
+
+.account-card  {
+    background: linear-gradient(
+        145deg,
+        #f4f7fc 0%,
+        #dde6f5 100%
+    );
+    border-radius: 18px;
+    padding: var(--space-8);
+    margin-bottom: var(--space-8);
+    transition: background 0.3s ease,
+        color 0.3s ease,
+        transform 0.2s ease,
+        box-shadow 0.3s ease;
+
+}
+
+
+.account-card:hover {
+    transform: translateY(-4px);
+}
+
+
+.account-card__add-amount input {
+    outline: none;
+    width: 250px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+#account_card__add_funds-btn {
+    font-size: 1.05rem;
+    font-weight: bold;
+}
+
+.account-card__description h3,
+.account-card-input label {
+    font-size: 1.125rem; /* 18px */
+
+}
+
+.account-card__description h3 {
+    text-transform: capitalize;
+
+}
+
+
+.account-card__description p {
+   
+  font-size: 0.875rem;   /* 14px */
+  color: #6C7A90;
+
+
+}
+
+.account-card__button a {
+    font-size: 0.8rem;
+}
+
+.account-card.active {
+    background: var(--blue-600);
+    color: white;
+}
+
+
+.account-card h3,
+.account-card p,
+.account-card span {
+    transition: color 0.3s ease;
+}
+
+.account-card h3 {
+    font-size: 0.9rem;
+}
+
+.account-card.active h3,
+.account-card.active p,
+.account-card.active span {
+    color: #ffffff;
+}
+
+
+/* override it */
+#view-card-panel,
+#bank-account-add-funds {
+    top: 0;
+    width: 35%;
+    left: 35%;
+    bottom: 1px;
+    border-radius: 16px;
+    display: none;  
+}
+
+
+/* panel for bank transactions */
+
+#bank-account-view-transactions {
+    top: 0;
+}
+
+#bank-filter-btn {
+    all: unset;
+    cursor: pointer;
+    border: 1px solid black;
+    padding-left: var(--space-12);
+    padding-right: var(--space-12);
+    background: var(--blue-600);
+    color: white;
+    margin-top: var(--space-8);
+}
+
+#bank-filter-btn:hover {
+    background: black;
+ 
+}
+
+.align-right {
+    text-align: right;
+}
+
+.negative {
+    color: #c0392b;
+}
+
+.positive {
+    color: #1f8a70;
+}
+
+#transaction-report table {
+    width: 100%;
+    
+    
+}
+
+
+#transaction-report table tr {
+   text-align: center;
+   border-bottom: 3px solid black;
+
+}
+
+#transaction-report table th {
+  background: lavender;
+ 
+}
+
+.bank-transaction-form-wrapper .form-row > input,
+.bank-transaction-form-wrapper .form-row > select {
+     padding: 4px 6px;
+     font-size: 0.9rem;
+}
+
+.bank-transaction-form-wrapper {
+    column-gap: var(--space-16);
+}
+
+
+#transaction-report {
+    font-size: 0.875rem; /* 14px */
+    overflow-y: auto;
+   
+}
+
+#transaction-report th,
+#transaction-report td {
+    padding: 8px 12px; 
+    border-bottom: 2px solid #eee;;
+}
+
+#transaction-report tr:hover {
+    background: ghostwhite;
+}
+
+
+.pagination a {
+    border: 1px solid black;
+    padding: var(--space-4);
+    font-weight: 400;
+}
+
+.pagination a:nth-child(even) {
+   background: #080E1A;
+   color: #fff;
+}
+
+.table-instructions {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #444;
+    margin-bottom: 0.5rem; 
+}
+
+
+/* The card section including some resuable class names for the individual card */
+#bank-my-cards {
+    background: #ffff;
+}
+
+#bank-my-cards-overview {
+    column-gap: var(--space-8);
+}
+
+.bank-card {
+   position: relative;
+   font-size: 0.75rem;
+   padding: var(--space-8);
+   cursor: pointer;
+   border-radius: 4px;
+   border-radius: 10px;
+   box-shadow:
+  0 25px 50px rgba(0,0,0,0.4),
+  inset 0 0 30px rgba(56,189,248,0.15);
+   color: #F5F5F5;
+   
+}
+
+.bank-card .card-head .card-head-info h3 {
+    font-size: 0.8rem;
+}
+
+.bank-card .card-footer {
+ font-size: 0.7rem;
+ font-weight: 600;
+}
+.bank-card .card-body .chip img {
+    height: 25px;
+}
+
+.card-chip-img {
+    height: 40px;
+}
+
+.card-type-logo img {
+    height: 30px;
+}
+
+.card-number {
+    color: #EDEDED;
+    letter-spacing: var(--space-4);
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+.credit-transaction-type {
+    text-transform: capitalize;
+}
+
+.credit-visa-card {
+  background: linear-gradient(135deg, #0A2540, #1D4ED8, #38BDF8);
+
+}
+
+.credit-mastercard-card {
+ background: linear-gradient(135deg, #2B0A0A, #7F1D1D, #EF4444);
+
+}
+
+.credit-discover-card {
+    background: linear-gradient(135deg, #3B1D0A, #C2410C, #F59E0B);
+}
+
+.bank-my-card-info--note {
+    font-size: 0.9rem;
+}
+
+
+/* override certain elements in the card panel but still maintain must of the elements */
+#view-card-panel {
+    top: 0;
+    left: 0;
+    width: 25%;
+   
+}
+
+
+#full-card-details {
+    text-align: initial;
+    margin-bottom: var(--space-8);
+   
+}
+
+#full-card-details .bank-card {
+  box-shadow: initial;
+  padding: var(--space-12);
+}
+
+
+
+
+.bank-card.is-selected {
+  transform: scale(0.8);
+  background: var(--red);
+  transition: transform 0.4s linear;
+  border: 2px solid var(--blue-600);
+
+
+}
+
+.view-card-panel-buttons {
+    column-gap: 2px;
+    display: none;
+}
+
+.view-card-panel-button {
+    border: 1px solid lavender;
+    color: white;
+    font-weight: 500;
+    border-radius: 8px;
+    text-transform: capitalize;
+}
+
+#card-transfer-btn {
+    background: var(--blue-600);
+}
+
+#card-add-btn {
+    background: var(--green-600);
+}
+
+#card-freeze-btn {
+    background: var(--red);
+}
+
+#card-close-btn {
+   border: 1px solid black;
+   color: black;
+}
+
+
+
+#view-more-bank-card {
+    font-size: 0.85rem;
+    position: fixed;
+    top: 0;
+    right: 20px;
+    border: 1px solid;
+    background: black;
+    color: white;
+    width: 18%;
+    text-align: center;
+    padding: 4px 0;
+    cursor: pointer;
+    text-transform: capitalize;
+
+    /* hidden state */
+    transform: translateY(-120%);
+    transition: transform 0.3s ease-in-out;
+}
+
+
+#view-more-bank-card.show {
+     transform: translateY(0);
+}
+
+
+
+
+
+.field-label { opacity: 0.7; }
+.field-value { 
+    font-weight: 600; 
+    
+
+}
+
+.field-label,
+.field-value {
+    font-size: 0.96rem;
+}
+
+
+#bank-funds-transfer__select-cards-panel,
+#bank-funds-transfer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 30%;
+    background: white;
+    bottom: 0;
+    z-index: 10000;
+}
+
+
+
+
+#bank-funds-transfer__select-cards-panel {
+    right: 30%;
+    width: 24%;
+    margin-right: 2px;
+   
+    display: flex;
+    flex-direction: column;
+
+    /* box-shadow: var(--box-shadow-primary); */
+}
+
+#bank-funds-transfer__select-cards-panel .bank-card  {
+    height: 180px;
+
+}
+
+
+#bank-funds-transfer select {
+    width: 100%;
+}
+
+
+.transfer-logo {
+    position: relative;
+    height: 150px;
+    width: 200px;
+}
+
+
+.transfer-logo img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+#bank-funds-transfer__select-cards-panel .bank-card {
+    box-shadow: unset;
+}
+
+
+/* card transaction limit */
+#card-transactions-limit {
+    width: 70%;
+}
+
+
+/* textarea character count enforcer */
+
+  .light-red {
+    color: red;
+  }
+  
+  .black-color {
+    color: black;
+  }
+ 
+
+ .dark-green {
+    color: var(--dark-green); 
+  }
+
+  .character-usage-message {
+    font-size: 0.9rem;
+  }
+
+  
+  
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 0, 0, 0.5);
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.card-is-blocked {
+    background: red;
+    opacity: 0.6;
+}
+
+
+.card-not-blocked {
+    border:5px solid green;
+    
+}
+
+
+
+#bank-funds-transfer__select-cards-panel {
+    /* Mainly for the sweetalert, without this the sweetalert popup appears behind select card panel */
+    z-index: 1000;
+}
+
+
+
+
+#bank-transfer-quick-confirmation {
+    position: fixed;
+    top: 0;
+    left: 25%;
+    background: white;
+    box-shadow: var(--box-shadow-primary);
+    z-index: 10000;
+    width: 45%;
+    cursor: pointer;
+    border-radius: 4%;
+   
+   
+}
+
+
+.transfer-confirmation__summary-list div {
+    border: 1px solid lavender;
+    padding-left: var(--space-8);
+    padding-right: var(--space-8);
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+    background: #fff;
+ 
+
+}
+
+.transfer-confirmation__summary-list div:hover {
+  background: ghostwhite;
+
+}
+
+.transfer-confirmation__accounts {
+    border: 2px solid lavender;
+    padding: var(--space-8);
+}
+
+
+.transfer-confirmation__summary-list dd {
+    font-weight: 700;
+}
+
+
+#bank-transfer-quick-confirmation h3 {
+    font-size: 1rem;
+    text-transform: capitalize;
+  
+}
+
+.transfer-confirmation__actions {
+    column-gap: var(--space-8);
+  
+}
+
+.transfer-confirmation__actions button {
+    text-transform: capitalize;
+}
+
+
+.transfer-confirmation__btn--confirm {
+    background: var(--blue-600);
+    color: white;
+}
+
+
+
+
+#transfer-confirmation-description {
+    font-size: 0.9rem;
+}
+
+
+/* Override the SweetAlert and make sure it always on top of all the other elements */
+.swal2-container {
+    z-index: 1000000;
+}
+
+
+.credit-card-info {
+    background: #ffff;
+}
+
+
+#my-cards {
+    margin: var(--space-16);
+    border: 3px solid lavender;
+}
+
+
+#my-cards .my_cards__container .card .bank-card {
+    box-shadow: none;
+}
+
+.credit-card-quick-view .bank-amount {
+    padding-right: var(--space-16);
+   
+}
+
+.credit-card-quick-view span {
+    padding-right: var(--space-12);
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-right: 1px solid black;
+    padding-left: var(--space-12);
+}
+
+.credit-card-quick-view span:last-child {
+    border-right: none;
+}
+
+.credit-card-quick-view span:first-child {
+   padding-left: 0;
+}
+
+
+.credit-card-info__head h2 {
+    font-weight: 400;
+}
+
+
+
+.credit-card-setting-info {
+    border: 1px solid;
+    background: lavender;
+    font-size: 0.85rem;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.manage-card button {
+    width: 25%;
+    padding: var(--space-4);
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-8);
+}
+
+/* manage card buttons */
+
+/* view transactions */
+.manage-card button:first-child {
+    background: var(--blue-600);
+    color: white;
+}
+
+/* freeze card (warning - reversible action) */
+.manage-card button:nth-child(2) {
+    background: var(--amber-500);
+    color: white;
+}
+
+/* remove card (destructive action) */
+.manage-card button:nth-child(3) {
+    background: var(--red);
+    color: white;
+}
+
+.manage-card button {
+    text-transform: capitalize;
+    color: white;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+
+/* hover effect */
+.manage-card button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    opacity: 0.95;
+}
+
+/* click effect */
+.manage-card button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.order-card-visual {
+    background: #f5f7fa;
+    border: 2px dashed #d1d5db;
+
+}
+
+.add-card-icon {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--blue-600);
+}
+
+.add-card:hover {
+    cursor: pointer;
+    transform: translateY(-2px);
+}
+
+.credit-card-inputfields select {
+    width: 100%;
+}
+
+
+
+#card-transaction-limit-form {
+    width: 90%;
+    margin-left: var(--space-24);
+    margin-bottom: var(--space-24);
+    border: 3px solid lavender;
+    background: white;
+    padding: var(--space-48);
+}
+ 
+.form-card-header {
+    padding-top: var(--space-48);
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+
+.order-card {
+    margin-top: var(--space-4);
+}
+
+
+
+/* transfer card */
+.transfer-money {
+    border-right:  2px solid lavender;
+}
+
+.tab {
+   padding-top: var(--space-16);
+   padding-bottom: var(--space-16);
+    color: black;
+    text-transform: capitalize;
+}
+
+.tab a {
+    color: black;
+}
+
+.tabs {
+    background: white;
+    border: 3px solid lavender;
+}
+
+.tabs .tab {
+    
+    padding: var(--space-8);
+    font-size: 0.85rem;
+}
+
+
+.tabs .active {
+    background: var(--blue-600);
+    color: white;
+    font-weight: 500;
+   
+}
+
+.tabs .active a {
+    color: white;
+}
+
+#transfer-money {
+    border: 1px solid lavender;
+    margin: var(--space-48);
+    padding: 32px;
+    background: white;
+    width: 60%;
+}
+
+
+
+#add-recipient-section {
+    border: 3px solid lavender;
+    padding: var(--space-32);
+    position: absolute;
+    top: 0;
+    left: 35%;
+    width: 30%;
+    background: white;
+    border-radius: 4px;
+    z-index: 10000;
+    box-shadow: var(--box-shadow-primary);
+}
+
+
+.account-fields input,
+.sortcode-fields input {
+  text-align: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+ 
+}
+
+
+.sortcode-fields .account {
+  margin-right: var(--space-12);
+  text-align: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+ 
+}
+
+.sortcode-fields,
+.account-fields {
+     column-gap: var(--space-8);
+}
+
+
+.account-fields {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: auto;
+}
+
+.add-recipient__container {
+    position: relative;
+}
+
+.add-recipient__container div {
+    margin-bottom: var(--space-24);
+}
+
+
+.add-recipient__container .form-row legend,
+.add-recipient__container .form-row label {
+    font-weight: 400;
+    padding-bottom: var(--space-8);
+    text-transform: capitalize;
+}
+
+
+.recipient-user  {
+    border: 2px solid lavender;
+    margin-top: 8px;
+    border-radius: 8px;
+}
+
+.recipient-user .profile-icon {
+    border-left: 2px solid lavender;
+}
+
+.recipient-user .profile-icon {
+    border-right: 2px solid black;
+ 
+}
+
+.recipient-user .verified-user {
+    padding-left: var(--space-8);
+    font-size: 0.95rem;
+   
+}
+
+.recipient-user .profile-icon {
+    padding-top: var(--space-12);
+    background-color: #ecfdf5;
+}
+
+.recipient-user .verified-user {
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-4);
+    background-color: #ecfdf5;
+}
+
+
+.recipient-user .verified-user .verified-icon {
+    color: var(--green-600);
+}
+
+.daily-limit-container {
+    border: 1px solid lavender;
+    background: ghostwhite;
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+}
+
+.daily-limit-container .buttons button {
+    border-radius: initial;
+    border: 1px solid black;
+    padding-left: var(--space-24);
+    padding-right: var(--space-24);
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+
+}
+
+.daily-limit-info span {
+    font-size: 0.85rem;
+   
+}
+
+#bank-transfer-to-form label {
+    display: block;
+    margin-top: var(--space-8);
+    font-weight: 500;
+    color: #4B5563;
+}
+
+
+
+#transfer-to-user {
+    display: none;
+}
+
+#transfer-to-user.show {
+    display: grid;
+}
+
+
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e5e5;
+  border-top: 4px solid #333;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#add-pin__spinner,
+#add-recipient__spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: lavender;
+    transform: translateX(50);
+    display: none;
+}
+
+#add-pin__spinner.show,
+#add-recipient__spinner.show {
+    display: block;
+}
+
+
+.schedule-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.schedule-option:has(input:checked) {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.schedule-option small {
+    font-weight: 400;
+    font-style: italic;
+    color: #6B7280;
+    line-height: 1.4;
+}
+
+.schedule-option:hover {
+    border-color: black;
+}
+
+
+#bank-transfer-to-form select,
+#bank-transfer-to-form textarea,
+#bank-transfer-to-form input[type="number"] {
+     box-shadow: none;
+    outline: none;
+    border: 2px solid #e5e7eb;
+}
+
+
+#bank-transfer-to-form input:focus,
+#bank-transfer-to-form select:focus,
+#bank-transfer-to-form textarea:focus {
+    border-color: #2563eb;
+}
+
+.flash {
+    color: var(--green-600);
+    font-weight: bold;
+}
+
+
+#transfer-account-amount.can-transfer {
+    color: var(--green-600);
+}
+
+#transfer-account-amount.cannot-transfer {
+    color: red;
+}
+
+
+
+#request-funds-btn {
+    background: var(--blue-600);
+    padding: var(--space-16);
+    border-radius: 0;
+}
+
+#request-verified-user {
+    border: 1px solid lavender;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    background: ghostwhite;
+}
+
+#request-verified-user .verified-icon {
+    color: var(--green-600);
+}
+
+#bank-request-form.show,
+#bank-transfer-to-form.show {
+    display: grid;
+}
+
+#bank-request-form,
+#bank-transfer-to-form {
+    display: none;
+}
+
+
+
+
+/* the pin elements */
+#add-pin {
+    position: absolute;
+    top: 60px;
+    left: 30%;
+    border: 1px solid lavender;
+    width: 40%;
+    box-shadow: var(--box-shadow-primary);
+    background: white;
+}
+
+.add-pin__container {
+    padding: 96px;
+}
+.add-pin__container img {
+    height: 60px;
+    width: 60px;
+}
+
+
+
+/* The admin panel */
+  /* the admin section */
+
+  .admin-cards {
+    /* column-gap: var(--space-16); */
+  
+    margin-left: var(--space-48);
+    margin-right: var(--space-48);
+    margin-bottom: var(--space-48);
+
+  }
+
+  .admin-panel__container h1 {
+    margin-left: var(--space-48);
+    margin-top: var(--space-24);
+    font-size: 1.4rem
+  }
+
+  .admin-panel__container p {
+     margin-left: var(--space-48);
+   
+  }
+
+
+  .admin-cards .admin-card {
+    border: 2px solid lavender;
+    margin-top: var(--space-12);
+    padding: var(--space-24);
+    background: white;
+  }
+
+
+  .admin-card h1 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .admin-card .body {
+    text-align: center;
+  }
+
+  .admin-card-icon {
+    height: 200px;
+    width: 200px;
+  }
+
+
+  .admin-message {
+    border: 1px solid lavender;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background: var(--blue-600);
+    color: white;
+    margin-right: 48px;
+    padding-left: var(--space-8);
+}
+
+
+.section-subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+
+.admin-card .body,
+.admin-card .body p  {
+    text-align: center;
+}
+
+.admin-card .body p  {
+    font-size: 0.95rem;
+    text-align: center;
+}

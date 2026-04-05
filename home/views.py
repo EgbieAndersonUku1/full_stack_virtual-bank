@@ -5,4 +5,4 @@ from django.shortcuts import render
 
 
 def bank_home(request):
-    return render(request, "")
+    return render(request, "home/bank/virtual-bank.html")

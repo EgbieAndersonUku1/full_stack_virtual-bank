@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/vendor/fontawesome/css/all.min.css">
+    <link rel="shortcut icon" href="static/images/virtual-bank-logo.png" type="image/x-icon">
+    <title>Virtual wallet</title>
+</head>
+
+<body>
+
+    <header class="mb-24">
+
+        <nav aria-label="Main navigation" class="navbar">
+            <div class="nav-container flex-grid two-column-grid">
+
+                <!-- Logo / Home -->
+                <div class="head">
+                    <a href="/" class="nav-link pt-8 bold" id="virtual-bank-logo">
+                        <img src="static/images/virtual-wallet-logo.png" alt="Virtual Bank home" class="logo" />
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="body">
+                    <ul class="flex-grid four-column-grid" role="list">
+
+                        <li>
+                            <a href="#" class="nav-link light-bold capitalise" id="nav-home" aria-current="page">
+                                Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#features" class="nav-link light-bold capitalise" id="nav-features">
+                                Features
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/virtual-bank-homepage.html" class="nav-link light-bold capitalise"
+                                id="nav-wallet">
+                                Bank Home
+                            </a>
+                        </li>
+
+                        <!-- Authentication -->
+                        <li>
+                            <div class="authentication-btns flex-grid two-column-grid" aria-label="Authentication"
+                                id="authentication-btns">
+                                <a href="/login" class="nav-link center authenticate-btn text-uppercase" id="login-btn">
+                                    Login
+                                </a>
+
+                                <a href="/signup" class="nav-link center authenticate-btn text-uppercase"
+                                    id="signup-btn">
+                                    Signup
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <main>
+
+        <!-- call to action section -->
+        <section id="wallet-call-to-action" aria-labelledby="cta-heading" class="mt-48 fade-up call-to-action">
+            <div class="call-to-action__container flex-grid two-column-45_65_grid">
+
+                <!-- Text Content -->
+                <div class="call-to-action__container__info">
+
+                    <h1 id="cta-heading" class="call-to-action__container__h1 capitalise fade-up">
+                        Your digital Wallet, Simplified
+                    </h1>
+
+                    <p class="mt-24">
+                        Store, send and manage your monely securely all in one smart virtual
+                        wallet
+                    </p>
+
+                    <p class="mt-24">
+                        Create wallets, send and receive funds instantly, manage virtual cards
+                        and track your balance
+                    </p>
+
+                    <hr aria-hidden="true">
+
+                    <!-- Call-to-action buttons -->
+                    <div class="call-to-action__container__buttons flex mt-24" role="group"
+                        aria-label="Primary actions">
+                        <a href="#virtual-wallet-how-it-works" class="button-md call-to-action__button mr-4"
+                            id="get-started-btn">
+                            <span aria-hidden="true">
+                                <i class="fa-solid fa-hourglass-start"></i>
+                            </span>
+                            <span class="sr-only">
+                                Get started with the virtual wallet simulator
+                            </span>
+                            Get Started
+                        </a>
+
+                        <a href="#get-started" class="button-md call-to-action__button" id="learn-more-btn">
+                            <span aria-hidden="true">
+                                <i class="fa-solid fa-clapperboard"></i>
+                            </span>
+                            <span class="sr-only">
+                                Learn more about virtual banking features
+                            </span>
+                            Learn More
+                        </a>
+
+                    </div>
+                </div>
+
+                <!-- Image / Illustration -->
+                <div class="call-to-action__container__infogram">
+                    <img src="static/images/call-to-action-wallet.png"
+                        alt="Illustration showing virtual banking features such as accounts, cards, and payments"
+                        class="call-to-action-img" loading="lazy">
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- The features sections -->
+        <section id="features" aria-labelledby="features-heading" class="mt-24">
+            <div class="features__container fade-up">
+
+                <!-- Section Heading -->
+                <header>
+                    <h2 id="features-heading" class="center capitalise">
+                        Build for everyday Digital payments
+                    </h2>
+                    <p class="center features__subtext pt-8">
+                        Everything you need to manage, move and track funds instantly.
+                    </p>
+                </header>
+
+                <!-- Feature Cards List -->
+                <div class="features__cards flex-grid three-column-grid mt-24" role="list">
+
+                    <!-- Feature Card 1 -->
+                    <div class="card fade-up">
+                        <div class="card-head flex-grid two-column-40_60_grid">
+                            <div class="card-img">
+                                <img src="static/images/card-icons/wallet.png" alt="" aria-hidden="true"
+                                    class="feature-card-img">
+                            </div>
+                            <div class="card-title">
+                                <h3 class="capitalise ">Encrypted wallets</h3>
+                            </div>
+                        </div>
+                        <div class="body">
+                            <p>End-to-end encryption protects all transactions and wallet</p>
+                        </div>
+
+                        <div class="tag">
+                            <span aria-label="Secure accounts">🔒 secure</span>
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 2 -->
+                    <div class="card fade-up" id="feature-card-transfer">
+                        <div class="card-head flex-grid two-column-40_60_grid">
+                            <div class="card-img">
+                                <img src="static/images/card-icons/real-time-balance.png" alt="" aria-hidden="true"
+                                    class="feature-card-img">
+                            </div>
+                            <div class="card-title">
+                                <h3 class="capitalise ">Real-time balance</h3>
+                            </div>
+                        </div>
+                        <div class="body">
+                            <p>See instant updates to your balance after each update</p>
+                        </div>
+
+                        <div class="tag">
+                            <span aria-label="Simulated feature, no real funds transferred">⚡ Simulated</span>
+                        </div>
+
+                    </div>
+
+                    <!-- Feature Card 3 -->
+                    <div class="card fade-up">
+                        <div class="card-head flex-grid two-column-40_60_grid">
+                            <div class="card-img">
+                                <img src="static/images/card-icons/spend-control.png" alt="" aria-hidden="true"
+                                    class="feature-card-img">
+                            </div>
+                            <div class="card-title">
+                                <h3 class="capitalise ">Spending control</h3>
+                            </div>
+                        </div>
+                        <div class="body">
+                            <p>Set daily limits, freeze spending and restrict usage per wallet or card.</p>
+                        </div>
+
+                        <div class="tag">
+                            <span aria-label="Simulated feature, no real funds transferred">⚡ Simulated</span>
+                        </div>
+
+                    </div>
+
+                    <!-- Feature Card 4 -->
+                    <div class="card fade-up">
+                        <div class="card-head flex-grid two-column-40_60_grid">
+                            <div class="card-img">
+                                <img src="static/images/card-icons/instant-notification.png" alt="" aria-hidden="true"
+                                    class="feature-card-img">
+                            </div>
+                            <div class="card-title">
+                                <h3 class="capitalise ">Instant notifications</h3>
+                            </div>
+                        </div>
+                        <div class="body">
+                            <p>Get notified for every transaction in real time, no delays no surprises</p>
+                        </div>
+
+                        <div class="tag">
+                            <span aria-label="Real-time transaction processing">⏱ Real-time</span>
+
+                        </div>
+
+
+                    </div>
+
+                    <!-- Feature Card 5 -->
+                    <div class="card fade-up">
+                        <div class="card-head flex-grid two-column-40_60_grid">
+                            <div class="card-img">
+                                <img src="static/images/card-icons/wallet-activity.png" alt="" aria-hidden="true"
+                                    class="feature-card-img">
+                            </div>
+                            <div class="card-title">
+                                <h3 class="capitalise ">Wallet activity</h3>
+                            </div>
+                        </div>
+                        <div class="body">
+                            <p>View receipts, past transactions, filters, etc per wallet.</p>
+                        </div>
+
+                        <div class="tag">
+                            <span aria-label="Secure accounts">🔒 secure</span>
+                        </div>
+                    </div>
+
+                    <!-- Feature Card 6 -->
+                    <div class="card fade-up">
+                        <div class="card-head flex-grid two-column-40_60_grid">
+                            <div class="card-img">
+                                <img src="static/images/card-icons/transaction-history.png" alt="" aria-hidden="true"
+                                    class="feature-card-img">
+                            </div>
+                            <div class="card-title">
+                                <h3 class="capitalise ">Quick transfers</h3>
+                            </div>
+                        </div>
+                        <div class="body">
+                            <p>Move money between wallet or cards in seconds with zero friction.</p>
+                        </div>
+
+                        <div class="tag">
+                            <span
+                                aria-label="Simulated transaction records generated for learning and demonstration purposes.">
+                                📄 Simulated
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- Get started section -->
+        <section id="get-started" aria-labelledby="get-started-heading">
+            <div class="get-started__container">
+
+                <!-- Section Heading -->
+                <header class="fade-up">
+                    <h2 id="account-control-heading" class="center capitalise fade-up">
+                        Getting started with your virtual bank and wallet
+                    </h2>
+                    <p class="center security__subtext pt-8 fade-up">
+                        Secure, step-by-step guidance to set up your bank account, wallet, and money transfers.
+                    </p>
+                </header>
+
+                <div class="card fade-up single-card center mt-24">
+                    <div class="card-head">
+                        <img src="static/images/icons/bank-and-wallet.png" alt="" aria-hidden="true"
+                            id="bank-and-wallet-img">
+                    </div>
+                    <div class="card-footer fade-up">
+                        <h3 class="capitalise">Create your virtual bank profile</h3>
+                        <p class="pt-4">Sign up and set up your virtual bank profile.</p>
+                    </div>
+                </div>
+
+                <!-- Cards List -->
+                <div class="feature__cards flex-grid two-column-grid mt-24 p-24" role="list">
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid border-right">
+                        <div class="card-head">
+                            <img src="static/images/icons/one.png" alt="Step one" aria-label="Step 1"
+                                class="feature-card-img wallet-img-icon translate-x-70">
+                        </div>
+                        <div class="card-footer fade-up">
+                            <h3 class="capitalise">Log in to your virtual bank</h3>
+                            <p class="pt-4">
+                                Log in using the details you just created.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid">
+                        <div class="card-head">
+                            <img src="static/images/icons/two.png" alt="Step 2" aria-label="Step 2"
+                                class="feature-card-img wallet-img-icon translate-x-70">
+                        </div>
+                        <div class="card-footer">
+                            <h3 class="capitalise">Select a bank</h3>
+                            <p class="pt-4">
+                                Choose your bank from the available list.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid border-right mt-24">
+                        <div class="card-head">
+                            <img src="static/images/icons/three.png" alt="Step 3" aria-label="Step 3"
+                                class="feature-card-img wallet-img-icon translate-x-70">
+                        </div>
+                        <div class="card-footer">
+                            <h3 class="capitalise">Set your bank PIN</h3>
+                            <p class="pt-4">
+                                Create a secure PIN to approve bank transactions.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid mt-24">
+                        <div class="card-head">
+                            <img src="static/images/icons/four.png" alt="Step 4" aria-label="Step 4"
+                                class="feature-card-img wallet-img-icon translate-x-70">
+                        </div>
+                        <div class="card-footer">
+                            <h3 class="capitalise">Create a bank account</h3>
+                            <p class="pt-4">
+                                Follow the steps to create your bank account.
+                            </p>
+                            <p>
+                                A bank account and unique bank ID will be created automatically.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card fade-up single-card center mt-24">
+                    <div class="card-head">
+                        <img src="static/images/icons/five.png" alt="Step 5" aria-label="Step 5"
+                            class="feature-card-img wallet-img-icon">
+                    </div>
+                    <div class="card-footer">
+                        <h3 class="capitalise">Connect your wallet to your bank account</h3>
+                    </div>
+                </div>
+
+                <div class="card fade-up single-card center mt-4">
+                    <div class="card-footer">
+                        <p class="pt-4">Create your wallet using the wallet signup page.</p>
+                    </div>
+                </div>
+
+                <div class="card fade-up single-card center mt-24">
+                    <div class="card-head">
+                        <img src="static/images/icons/six.png" alt="Step 6" aria-label="Step 6"
+                            class="feature-card-img wallet-img-icon">
+                    </div>
+                    <div class="card-footer">
+                        <h3 class="capitalise">Log in to your wallet</h3>
+                        <p class="pt-4">Log in using your newly created wallet credentials.</p>
+                    </div>
+                </div>
+
+                <div class="card fade-up single-card center mt-24">
+                    <div class="card-head">
+                        <img src="static/images/icons/seven.png" alt="Step 7" aria-label="Step 7"
+                            class="feature-card-img wallet-img-icon">
+                    </div>
+                    <div class="card-footer">
+                        <h3 class="capitalise">Set your wallet PIN</h3>
+                        <p class="pt-4">Create a secure PIN for approving wallet transactions.</p>
+                        <p>This PIN will be required for all wallet transfers.</p>
+                    </div>
+                </div>
+
+                <!-- Cards List -->
+                <div class="feature__cards flex-grid two-column-grid mt-24 p-24" role="list">
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid border-right">
+                        <div class="card-head">
+                            <img src="static/images/icons/eight.png" alt="Step 8" aria-label="Step 8"
+                                class="feature-card-img wallet-img-icon translate-x-70">
+                        </div>
+                        <div class="card-footer">
+                            <h3 class="capitalise">Connect a bank account via your wallet</h3>
+                            <p class="pt-4">
+                                From your wallet options, choose to connect a bank account and enter your bank ID and
+                                bank PIN.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid">
+                        <div class="card-head">
+                            <img src="static/images/icons/nine.png" alt="Step 9" aria-label="Step 9"
+                                class="feature-card-img wallet-img-icon translate-x-70">
+                        </div>
+                        <div class="card-footer">
+                            <h3 class="capitalise">Bank account connected</h3>
+                            <p class="pt-4">
+                                Your bank account and wallet are now connected.
+                                You can view bank account details and transaction history.
+                                Transfers are currently available from <br>wallet to bank only.
+                            </p>
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card fade-up single-card center mt-24">
+                    <div class="card-head">
+                        <p class="font-xlg" aria-label="Alternative setup option">or</p>
+                    </div>
+                    <div class="card-footer">
+                        <h3 class="capitalise">Create a bank account first, then connect your wallet</h3>
+                    </div>
+                </div>
+
+                <div class="feature__cards flex-grid two-column-grid mt-24 p-24" role="list">
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid border-right">
+                        <div class="card-head">
+                            <img src="static/images/icons/one.png" alt="Step one" aria-label="Step one"
+                                class="feature-card-img wallet-img-icon translate-x-70">
+                        </div>
+                        <div class="card-footer">
+                            <h3 class="capitalise">Create a wallet and bank account</h3>
+                            <p class="pt-4">
+                                You will need your wallet ID and PIN to continue.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid">
+                        <div class="card-head">
+                            <img src="static/images/icons/two.png" alt="Step 2"
+                                class="feature-card-img wallet-img-icon translate-x-70" aria-label="Step two">
+                        </div>
+                        <div class="card-footer fade-up">
+                            <h3 class="capitalise">Log in to your bank account</h3>
+                            <p class="pt-4">
+                                Log in and select the option to connect a wallet.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="feature__cards flex-grid two-column-grid mt-24 p-24" role="list">
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid border-right">
+                        <div class="card-head">
+                            <img src="static/images/icons/three.png" alt="Step 3" aria-label="Step 3"
+                                class="feature-card-img wallet-img-icon translate-x-70">
+                        </div>
+                        <div class="card-footer fade-up">
+                            <h3 class="capitalise">Connect a wallet to your bank account</h3>
+                            <p class="pt-4">
+                                Enter your wallet ID and wallet PIN.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card fade-up flex-grid two-column-20_80_grid">
+                        <div class="card-head">
+                            <img src="static/images/icons/four.png" alt="Step 4" aria-label="Step 4"
+                                class="feature-card-img wallet-img-icon translate-x-70">
+                        </div>
+                        <div class="card-footer fade-up">
+                            <h3 class="capitalise">Wallet connected</h3>
+                            <p class="pt-4">
+                                Your wallet and bank account are now connected.
+                                Transfers are currently available from bank to wallet only.
+                                You can also view wallet transactions only.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card fade-up single-card center mt-24">
+                    <div class="card-head">
+                        <img src="static/images/icons/institution-connection.png"
+                            alt="Wallet and bank account connection" class="bank-wallet-connection-img">
+                    </div>
+                    <div class="card-footer fade-up">
+                        <h3 class="capitalise">Wallet and bank connected</h3>
+                        <p class="pt-8" id="wallet-bank-connection-info">
+                            Your wallet and bank account are now connected. You can transfer money between them
+                            based on the transfer options available to you, with real-time updates on every transaction
+                            where available.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- Testimony section -->
+
+        <section id="virtual-wallet-testimony-quote" class="fade-up testimony-quote">
+            <div class="testimony-quote__container container center">
+
+                <blockquote>
+                    A digital wallet that stays out of your way until you need it
+                </blockquote>
+
+            </div>
+        </section>
+
+
+        <!-- How it works section -->
+        <section id="virtual-wallet-how-it-works" class="mt-48">
+            <div class="header fade-up">
+                <h1 class="capitalise pt-16 header-5 bold center">How it works?</h1>
+            </div>
+
+            <div class="how-it-works__container">
+
+                <div class="who-is-it-for__cards flex-grid three-column-grid mt-24 p-24">
+
+                    <div class="card fade-up flex-grid two-column-25_75_grid border-right" id="learning">
+
+                        <div class="card-head">
+                            <img src="static/images/card-icons/email.png" alt="" class="how-it-works-img card-img">
+                        </div>
+
+                        <div class="card-body">
+                            <h3 class="capitalise header-6">Create your virtual wallet</h3>
+                            <p class="pt-16">Understand how digital money works.</p>
+
+                        </div>
+                    </div>
+
+                    <div class="card fade-up flex-grid two-column-25_75_grid border-right" id="testing">
+                        <div class="card-head">
+                            <img src="static/images/card-icons/simulated-funds.png" alt=""
+                                class="how-it-works-img card-img">
+                        </div>
+
+                        <div class="card-body">
+                            <h3 class="capitalise header-6">Fund it with simulated money</h3>
+                            <p class="pt-16">Explore wallet features safely using simulated funds.</p>
+
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card fade-up flex-grid two-column-25_75_grid" id="simulated">
+                        <div class="card-head pr-16 pl-8">
+                            <img src="static/images/card-icons/simulate-transaction.png" alt=""
+                                class="how-it-works-img card-img">
+                        </div>
+
+                        <div class="card-body">
+                            <h3 class="capitalise header-6">Transfer, spend and analyse money</h3>
+                            <p class="pt-16">Simulate end-to-end banking journeys (accounts, payments, etc)</p>
+                        </div>
+                    </div>
+
+
+                </div>
+        </section>
+
+    </main>
+
+
+    <!-- The footer section -->
+    <footer>
+
+        <div class="footer__container">
+
+            <div class="footer__header">
+                <img src="static/images/virtual-wallet-logo.png" alt="The virtual logo" class="footer-logo">
+
+            </div>
+
+
+            <div class="flex-grid five-column-grid" id="footer-sections">
+
+                <!-- About us column -->
+                <div class="col flex-grid" id="about-us">
+                    <h1 class="footer-head pb-16">About us</h1>
+                    <a href="#" class="footer-link">Our company</a>
+                    <a href="#" class="footer-link">Careers</a>
+                    <a href="#" class="footer-link">Security</a>
+                    <a href="#" class="footer-link">Investor relations</a>
+
+                </div>
+
+                <!-- services column -->
+                <div class="col flex-grid" id="services">
+                    <h1 class="footer-head pb-16">services</h1>
+                    <a href="#" class="footer-link">Online banking</a>
+                    <a href="#" class="footer-link">Mobile app</a>
+                    <a href="#" class="footer-link">Credit app</a>
+                    <a href="#" class="footer-link">Loans and mortgages</a>
+                </div>
+
+                <!-- support column -->
+                <div class="col flex-grid" id="support">
+                    <h1 class="footer-head pb-16">support</h1>
+                    <a href="#" class="footer-link">FAQs</a>
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Contact us</a>
+                    <a href="#" class="footer-link">Live chat</a>
+                </div>
+
+                <div class="col flex-grid" id="resources">
+                    <h1 class="footer-head pb-16">resources</h1>
+                    <a href="#" class="footer-link">Financial Education</a>
+                    <a href="#" class="footer-link">Blog</a>
+                    <a href="#" class="footer-link">News and Insight</a>
+                    <a href="#" class="footer-link">Calculators</a>
+                </div>
+
+                <div class="col" id="download-app">
+                    <h1 class="footer-head">Download our app</h1>
+
+                    <div id="apps" class="flex-grid two-column-grid">
+                        <img src="static/images/footer-icons/appStore.svg" alt="" class="footer-icon">
+                        <img src="static/images/footer-icons/googlePlay.svg" alt="" class="footer-icon">
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="socials copyright flex-grid two-column-grid pb-24">
+
+                <div class="socials four-column-grid">
+                    <a href="#"><img src="static/images/icons/facebook.svg" alt="facebook" class="social-icon"></a>
+                    <a href="#"><img src="static/images/icons/instagram.svg" alt="facebook" class="social-icon"></a>
+
+                </div>
+
+                <div class="copyright four-column-grid">
+                    <a href="#" class="copyright-link"><span class="copyright-date">@2026 </span>Virtual bank. All
+                        rights reserved</a>
+                    <a href="#" class="copyright-link footer-link">Privacy policy</a>
+                    <a href="#" class="copyright-link footer-link">Terms of use</a>
+
+                </div>
+            </div>
+
+        </div>
+
+    </footer>
+
+    <script src="static/js/index.js" type="module"></script>
+</body>
+
+</html>

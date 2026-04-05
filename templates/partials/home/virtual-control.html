@@ -1,0 +1,97 @@
+{% load static %}
+
+<section id="virtual-control">
+
+    <div class="virtual-control__container container">
+
+        <!-- Virtual Banking Control Centre -->
+        <header class="mt-48 fade-up">
+            <h2 class="center features__h1">Virtual Banking Control Centre</h2>
+            <p class="center security__subtext pt-8">
+                A central hub for virtual cards, funding, and spend management.
+            </p>
+        </header>
+
+        <div class="feature__cards flex-grid two-column-grid mt-24 p-24" role="list" id="feature-cards-3">
+
+            <div class="card fade-up flex-grid two-column-30_70_grid border-right">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/sources-funding.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Linked Funding Sources</h3>
+                    <p class="pt-16">Link external accounts or payment methods to fund your wallet.</p>
+                </div>
+            </div>
+
+            <div class="card fade-up flex-grid two-column-30_70_grid">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/source-spending-control.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Spending Control</h3>
+                    <p class="pt-16">Set spending limits and controls to stay on top of your money.</p>
+                </div>
+            </div>
+
+            <div class="card fade-up flex-grid two-column-30_70_grid border-right pt-48">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/source-virtual-card.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Virtual Cards</h3>
+                    <p class="pt-16">Generate virtual debit cards for your bank and add them to your wallet.</p>
+                </div>
+            </div>
+
+            <div class="card fade-up flex-grid two-column-30_70_grid pt-48">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/source-admin-cards.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Admin Cards</h3>
+                    <p class="pt-16">Manage spending, track activities, and customise wallet preferences.</p>
+                </div>
+            </div>
+
+            <div class="card fade-up flex-grid two-column-30_70_grid border-right pt-48">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/auth-2fa.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">2FA Recovery Code Dashboard</h3>
+                    <p class="pt-16">Access tools to ensure you are never locked out of your account.</p>
+                </div>
+            </div>
+
+            <div class="card fade-up flex-grid two-column-30_70_grid pt-48">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/monitoring.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Activity Monitoring</h3>
+                    <p class="pt-16">Track spending, card usage, and account activity in real time.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
