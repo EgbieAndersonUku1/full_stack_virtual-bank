@@ -1,7 +1,13 @@
 from django.urls import path
 
+from . import views
+
+
+
 urlpatterns = [
 
-    path('', include("wallet.urls")),
+    path('', view=views.bank_home, name="bank_home"),
+    path('bank/', view=views.bank_home, name="bank_home"),
+
    
 ]

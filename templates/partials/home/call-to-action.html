@@ -1,0 +1,55 @@
+{% load static %}
+
+<section id="virtual-bank-call-to-action" aria-labelledby="cta-heading" class="mt-48 fade-up call-to-action">
+    <div class="call-to-action__container flex-grid two-column-45_65_grid">
+
+        <!-- Text Content -->
+        <div class="call-to-action__container__info">
+
+            <h1 id="cta-heading" class="call-to-action__container__h1 capitalise fade-up">
+                Build, Test, and Explore Real Banking Workflows
+            </h1>
+
+            <p class="mt-24">
+                A fully simulated virtual banking system designed to model real-world
+                accounts, payments, cards, and security without using real money.
+            </p>
+
+            <hr aria-hidden="true">
+
+            <!-- Call-to-action buttons -->
+            <div class="call-to-action__container__buttons flex mt-24" role="group" aria-label="Primary actions">
+                <a href="#how-it-works" class="button-md call-to-action__button mr-4" id="get-started-btn">
+                    <span aria-hidden="true">
+                        <i class="fa-solid fa-hourglass-start"></i>
+                    </span>
+                    <span class="sr-only">
+                        Get started with the virtual banking simulator
+                    </span>
+                    Get Started
+                </a>
+
+                <a href="#virtual-control" class="button-md call-to-action__button" id="learn-more-btn">
+                    <span aria-hidden="true">
+                        <i class="fa-solid fa-clapperboard"></i>
+                    </span>
+                    <span class="sr-only">
+                        Learn more about virtual banking features
+                    </span>
+                    Learn More
+                </a>
+
+            </div>
+        </div>
+
+        <!-- Image / Illustration -->
+        <div class="call-to-action__container__infogram">
+            <img src="{% static "/images/call-to-action-virtual-bank-img.png" %}"
+                alt="Illustration showing virtual banking features such as accounts, cards, and payments"
+                class="call-to-action-img" loading="lazy">
+
+        </div>
+
+    </div>
+
+</section>

@@ -1,0 +1,60 @@
+{% load static %}
+
+<section id="how-it-works" class="mt-48">
+
+    <div class="how-it-works__container">
+        <div class="header fade-up">
+            <h1 class="capitalise pt-16 header-5 bold center">How it works?</h1>
+        </div>
+
+        <div class="who-is-it-for__cards flex-grid three-column-grid mt-24 p-24">
+
+            <div class="card fade-up flex-grid two-column-25_75_grid border-right" id="learning">
+
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/email.png' %}"
+                        alt=""
+                        class="how-it-works-img card-img">
+                </div>
+
+                <div class="card-body">
+                    <h3 class="capitalise header-6">Create a virtual bank account</h3>
+                    <p class="pt-16">People learning fintech & banking system</p>
+                </div>
+
+            </div>
+
+            <div class="card fade-up flex-grid two-column-25_75_grid border-right" id="testing">
+
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/simulated-funds.png' %}"
+                        alt=""
+                        class="how-it-works-img card-img">
+                </div>
+
+                <div class="card-body">
+                    <h3 class="capitalise header-6">Fund it with simulated money</h3>
+                    <p class="pt-16">Test or use banking features without touching live systems.</p>
+                </div>
+
+            </div>
+
+            <div class="card fade-up flex-grid two-column-25_75_grid" id="simulated">
+
+                <div class="card-head pr-16 pl-8">
+                    <img src="{% static 'images/card-icons/simulate-transaction.png' %}"
+                        alt=""
+                        class="how-it-works-img card-img">
+                </div>
+
+                <div class="card-body">
+                    <h3 class="capitalise header-6">Transfer, spend and analyse money</h3>
+                    <p class="pt-16">Simulate end-to-end banking journeys (accounts, payments, etc)</p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</section>

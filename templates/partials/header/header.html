@@ -1,0 +1,56 @@
+{% load static %}
+
+<header class="mb-24">
+
+        <nav aria-label="Main navigation" class="navbar">
+            <div class="nav-container flex-grid two-column-grid">
+
+                <!-- Logo / Home -->
+                <div class="head">
+                    <a href="/" class="nav-link pt-8 bold" id="virtual-bank-logo">
+                        <img src="{% static "/images/virtual-bank-logo.png" %}" alt="Virtual Bank home" class="logo" />
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="body">
+                    <ul class="flex-grid four-column-grid" role="list">
+
+                        <li>
+                            <a href="#" class="nav-link light-bold capitalise" id="nav-home" aria-current="page">
+                                Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#features" class="nav-link light-bold capitalise" id="nav-features">
+                                Features
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="/virtual-wallet-homepage.html" class="nav-link light-bold capitalise" id="nav-wallet">
+                                Wallet Home
+                            </a>
+                        </li>
+
+                        <!-- Authentication -->
+                        <li>
+                            <div class="authentication-btns flex-grid two-column-grid" aria-label="Authentication"
+                                id="authentication-btns">
+                                <a href="{% url 'login_user' %}" class="nav-link center authenticate-btn text-uppercase" id="login-btn">
+                                    Login
+                                </a>
+
+                                <a href="{% url 'register_user' %}" class="nav-link center authenticate-btn text-uppercase"
+                                    id="signup-btn">
+                                    Signup
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>

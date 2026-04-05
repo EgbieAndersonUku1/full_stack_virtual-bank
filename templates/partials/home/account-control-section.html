@@ -1,0 +1,131 @@
+{% load static %}
+
+<section id="account-control" aria-labelledby="account-control-heading">
+    <div class="account-control__container">
+
+        <!-- Section Heading -->
+        <header class="fade-up">
+            <h2 id="account-control-heading" class="center capitalise">
+                Account and Access Control
+            </h2>
+            <p class="center security__subtext pt-8">
+                Strong access controls protect your account, money, and personal data
+            </p>
+        </header>
+
+        <div class="card fade-up single-card center mt-24">
+            <div class="card-head">
+                <img src="{% static 'images/card-icons/notification-alert.png' %}"
+                    alt=""
+                    aria-hidden="true"
+                    class="feature-card-img">
+            </div>
+            <div class="card-footer">
+                <h3 class="capitalise">Notification preferences</h3>
+                <p class="pt-16">Choose which notifications you want to receive and how we contact you.</p>
+            </div>
+        </div>
+
+        <!-- Cards List -->
+        <div class="feature__cards flex-grid two-column-grid mt-24 p-24" role="list" id="account-control-cards">
+
+            <!-- Card 1 -->
+            <div class="card fade-up flex-grid two-column-30_70_grid border-right">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/security-badge.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">2FA Recovery Code Dashboard</h3>
+                    <p class="pt-16">
+                        Access tools to ensure you are never locked out of your account.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card fade-up flex-grid two-column-30_70_grid">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/password-manager.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Password Manager</h3>
+                    <p class="pt-16">
+                        Securely stores and manages your passwords in an unencryptable format.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card fade-up flex-grid two-column-30_70_grid border-right mt-24">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/password-change-alert.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Password change alerts</h3>
+                    <p class="pt-16">
+                        We will notify you by email whenever your password is changed, helping keep your account secure.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card fade-up flex-grid two-column-30_70_grid mt-24">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/simulate-funds-2.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Simulated Funds</h3>
+                    <p class="pt-16">
+                        Move transactions around without using real money, perfect for fun, learning and testing safely.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="card fade-up flex-grid two-column-30_70_grid mt-24 border-right">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/transaction-analytics.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Transaction Analytics</h3>
+                    <p class="pt-16">
+                        Review your simulated spending patterns and account activity to learn financial management skills safely.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="card fade-up flex-grid two-column-30_70_grid mt-24">
+                <div class="card-head">
+                    <img src="{% static 'images/card-icons/limits.png' %}"
+                        alt=""
+                        aria-hidden="true"
+                        class="feature-card-img">
+                </div>
+                <div class="card-footer">
+                    <h3 class="capitalise">Experiment with Limits</h3>
+                    <p class="pt-16">
+                        Test account overflows, transaction caps, and financial scenarios without risking real money.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>

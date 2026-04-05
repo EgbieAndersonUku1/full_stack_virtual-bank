@@ -1,0 +1,72 @@
+{% extends "authentication/bank/authentication/base.html" %}
+{% load static %}
+
+{% block title %}Login page {% endblock title %}
+
+
+{% block body %}
+
+
+<section id="login" aria-labelledby="login-heading">
+
+    <div class="login__container">
+
+        <h1 id="login-heading" class="capitalise center header-7">
+            Log in to your account
+        </h1>
+
+        <p id="login-description" class="mt-4 center">
+            Access your account and manage your finances
+        </p>
+
+
+        <form action="" method="post" id="wallet-login-form" class="p-24 white-bg authentication-form"
+            aria-describedby="login-description" role="form">
+
+            <div class="form-group">
+
+                <!-- Email -->
+                <div class="flex-row flex-grid">
+                    <label for="email">
+                        Email <span aria-hidden="true">*</span>
+                    </label>
+                    <input type="email" name="email" id="email" required aria-required="true" maxlength="30">
+                </div>
+
+                <!-- Passwords -->
+                <div class="flex-row flex-grid">
+
+                    <label for="password">
+                        Password <span aria-hidden="true">*</span>
+                    </label>
+                    <input type="password" name="password" id="password" required aria-required="true"
+                        aria-describedby="password-rules" minlength="8" maxlength="25">
+
+                </div>
+
+
+            </div>
+
+            <!-- Submit btn-->
+            <div class="button mt-8 mb-8">
+                <button type="submit" id="wallet-login-btn" class="large-btn capitalise center auth-btn">
+                    Login
+                </button>
+            </div>
+
+            <hr class="dividor mt-4 mb-4" aria-hidden="true">
+
+            <div id="already-signed-up" class="center">
+
+                <span> Don't have account?</span>
+                <a href="{% url 'register_user' %}" class="auth-link">Sign up</a>
+            </div>
+
+        </form>
+
+    </div>
+
+
+</section>
+
+{% endblock %}

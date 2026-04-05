@@ -1,0 +1,83 @@
+
+{% load static %}
+
+<footer>
+
+        <div class="footer__container">
+
+            <div class="footer__header">
+                <img src="{% static "/images/virtual-bank-logo.png" %}" alt="The virtual logo" class="footer-logo">
+       
+            </div>
+
+          
+            <div class="flex-grid five-column-grid" id="footer-sections">
+
+                <!-- About us column -->
+                <div class="col flex-grid" id="about-us">
+                    <h1 class="footer-head pb-16">About us</h1>
+                    <a href="#" class="footer-link">Our company</a>
+                    <a href="#" class="footer-link">Careers</a>
+                    <a href="#" class="footer-link">Security</a>
+                    <a href="#" class="footer-link">Investor relations</a>
+
+                </div>
+
+                <!-- services column -->
+                <div class="col flex-grid" id="services">
+                    <h1 class="footer-head pb-16">services</h1>
+                    <a href="#" class="footer-link">Online banking</a>
+                    <a href="#" class="footer-link">Mobile app</a>
+                    <a href="#" class="footer-link">Credit app</a>
+                    <a href="#" class="footer-link">Loans and mortgages</a>
+                </div>
+
+                <!-- support column -->
+                <div class="col flex-grid" id="support">
+                    <h1 class="footer-head pb-16">support</h1>
+                    <a href="#" class="footer-link">FAQs</a>
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Contact us</a>
+                    <a href="#" class="footer-link">Live chat</a>
+                </div>
+
+                <div class="col flex-grid" id="resources">
+                    <h1 class="footer-head pb-16">resources</h1>
+                    <a href="#" class="footer-link">Financial Education</a>
+                    <a href="#" class="footer-link">Blog</a>
+                    <a href="#" class="footer-link">News and Insight</a>
+                    <a href="#" class="footer-link">Calculators</a>
+                </div>
+
+                <div class="col" id="download-app">
+                    <h1 class="footer-head">Download our app</h1>
+
+                    <div id="apps" class="flex-grid two-column-grid">
+                        <img src="{% static "/images/footer-icons/appStore.svg" %}" alt="" class="footer-icon">
+                        <img src="{% static "/images/footer-icons/googlePlay.svg" %}" alt="" class="footer-icon">
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="socials copyright flex-grid two-column-grid pb-24">
+
+                <div class="socials four-column-grid">
+                    <a href="#"><img src="{% static "/images/icons/facebook.svg" %}" alt="facebook" class="social-icon"></a>
+                    <a href="#"><img src="{% static "/images/icons/instagram.svg" %}" alt="facebook" class="social-icon"></a>
+
+                </div>
+
+                <div class="copyright four-column-grid">
+                    <a href="#" class="copyright-link"><span class="copyright-date">@2026 </span>Virtual bank. All
+                        rights reserved</a>
+                    <a href="#" class="copyright-link footer-link">Privacy policy</a>
+                    <a href="#" class="copyright-link footer-link">Terms of use</a>
+
+                </div>
+            </div>
+
+        </div>
+
+    </footer>

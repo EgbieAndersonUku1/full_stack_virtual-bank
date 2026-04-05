@@ -1,0 +1,57 @@
+{% load static %}
+
+<section id="who-is-it-for" aria-labelledby="who-is-it-for-heading">
+
+    <div class="who-is-it-for__container fade-up">
+
+        <header class="header mb-24">
+            <h2 id="who-is-it-for-heading" class="capitalise pt-8 bold header-8">
+                Who is virtual banking for?
+            </h2>
+        </header>
+
+        <div class="who-is-it-for__cards flex-grid three-column-grid p-24">
+
+            <div class="card flex-grid two-column-30_70_grid border-right fade-up" id="learning">
+
+                <div class="card-head">
+                    <img src="{% static "/images/card-icons/learning.png" %}" alt="learning image"
+                        class="card-img learning-img" aria-hidden="true" loading="lazy">
+                </div>
+
+                <div class="card-body">
+                    <h3 class="capitalise header-8">Learning fintech</h3>
+                    <p class="pt-16">People learning fintech & banking system</p>
+                </div>
+            </div>
+
+            <div class="card flex-grid two-column-30_70_grid border-right fade-up" id="testing">
+                <div class="card-head">
+                    <img src="{% static "/images/card-icons/testing.png" %}" alt="testing image"
+                        class="card-img testing-img" loading="lazy">
+                </div>
+
+                <div class="card-body">
+                    <h3 class="capitalise header-8">Fun exploring</h3>
+                    <p class="pt-16 small-text">Test, explore, and use banking features without touching live
+                        systems within a simulated environment.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card flex-grid two-column-30_70_grid fade-up" id="simulated">
+                <div class="card-head pr-16 pl-8 fade-up">
+                    <img src="{% static "/images/card-icons/simulated-funds.png" %}" alt="card simulation"
+                        class="card-img simulated-img pr-16" loading="lazy">
+                </div>
+
+                <div class="card-body">
+                    <h3 class="capitalise header-8">Simulation</h3>
+                    <p class="pt-16 small-text">Simulate end-to-end banking journeys (accounts, payments, etc)
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
