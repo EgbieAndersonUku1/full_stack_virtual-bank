@@ -27,7 +27,7 @@ urlpatterns = [
     # path('', include("setup.urls")),
     # path('', include('core_admin.urls')),
     path('', include("home.urls")),
-    # path('', include("authentication.urls"))
+    path('', include("authentication.urls"))
 ]
 
 

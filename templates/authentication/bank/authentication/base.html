@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <link rel="stylesheet" href="{% static "/vendor/fontawesome/css/all.min.css" %}">
+    <link rel="shortcut icon" href="{% static "/images/virtual-bank-logo.png" %}" type="image/x-icon">
+    <title>Virtual bank {% block title %}{% endblock title %}</title>
+</head>
+
+<body>
+    <div class="dim-background" id="dim"></div>
+    <header class="mb-24">
+        <nav aria-label="Main navigation" class="white-bg">
+            <div class="nav-container flex-grid two-column-grid">
+
+                <!-- Logo / Home -->
+                <div class="head">
+                    <a href="/" class="nav-link pt-8 bold" id="virtual-bank-logo">
+                        <img src="{% static "/images/virtual-bank-logo.png" %}" alt="Virtual Bank home" class="logo" />
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="body">
+                    <ul class="flex-grid two-column-grid" role="list">
+
+                        <li>
+                            <a href="{% url 'bank_home' %}" class="nav-link light-bold capitalise" id="nav-home">
+                                Back to Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'login_user' %}" class="nav-link light-bold capitalise" id="nav-security">
+                                Login
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+    <main>
+
+     
+        {% block body %}{% endblock body %}
+
+
+    </main>
+
+
+    <!-- The footer section -->
+    {% include "partials/footer/footer.html" %}
+
+    {% block script %}{% endblock script %}
+
+   
+</body>
+
+</html>

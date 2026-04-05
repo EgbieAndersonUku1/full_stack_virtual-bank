@@ -1,368 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "authentication/bank/authentication/base.html" %}
+{% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/css/style.css">
-    <link rel="stylesheet" href="static/vendor/fontawesome/css/all.min.css">
-    <link rel="shortcut icon" href="static/images/virtual-bank-logo.png" type="image/x-icon">
-    <title>Virtual bank registration page</title>
-</head>
+{% block title %}Login page {% endblock title %}
 
-<body>
-    <div class="dim-background" id="dim"></div>
-    <header class="mb-24">
-        <nav aria-label="Main navigation" class="white-bg">
-            <div class="nav-container flex-grid two-column-grid">
 
-                <!-- Logo / Home -->
-                <div class="head">
-                    <a href="/" class="nav-link pt-8 bold" id="virtual-bank-logo">
-                        <img src="static/images/virtual-bank-logo.png" alt="Virtual Bank home" class="logo" />
-                    </a>
+{% block body %}
+
+
+<section id="login" aria-labelledby="login-heading">
+
+    <div class="login__container">
+
+        <h1 id="login-heading" class="capitalise center header-7">
+            Log in to your account
+        </h1>
+
+        <p id="login-description" class="mt-4 center">
+            Access your account and manage your finances
+        </p>
+
+
+        <form action="" method="post" id="wallet-login-form" class="p-24 white-bg authentication-form"
+            aria-describedby="login-description" role="form">
+
+            <div class="form-group">
+
+                <!-- Email -->
+                <div class="flex-row flex-grid">
+                    <label for="email">
+                        Email <span aria-hidden="true">*</span>
+                    </label>
+                    <input type="email" name="email" id="email" required aria-required="true" maxlength="30">
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="body">
-                    <ul class="flex-grid two-column-grid" role="list">
+                <!-- Passwords -->
+                <div class="flex-row flex-grid">
 
-                        <li>
-                            <a href="/virtual-bank-homepage.html" class="nav-link light-bold capitalise" id="nav-home">
-                                Back to Home
-                            </a>
-                        </li>
+                    <label for="password">
+                        Password <span aria-hidden="true">*</span>
+                    </label>
+                    <input type="password" name="password" id="password" required aria-required="true"
+                        aria-describedby="password-rules" minlength="8" maxlength="25">
 
-                        <li>
-                            <a href="/virtual-bank-login.html" class="nav-link light-bold capitalise" id="nav-security">
-                                Login
-                            </a>
-                        </li>
-
-                    </ul>
                 </div>
 
-            </div>
-        </nav>
-    </header>
-
-    <main>
-
-        <section id="register" aria-labelledby="register-heading">
-
-            <div class="register__container">
-
-                <h1 id="register-heading" class="capitalise center header-7">
-                    Create your bank account
-                </h1>
-
-                <p id="register-description" class="mt-4 center">
-                    Sign up to start managing your finances
-                </p>
-
-                <form action="" method="post" id="wallet-register-form" class="p-24 white-bg authentication-form"
-                    aria-describedby="register-description" role="form">
-
-                    <div class="form-group">
-
-                        <!-- Username -->
-                        <div class="flex-row flex-grid">
-                            <label for="username">
-                                Username <span aria-hidden="true">*</span>
-                            </label>
-                            <input type="text" name="username" id="username" minlength="3" maxlength="30" required
-                                aria-required="true">
-                            <small id="username-exists" class="field-check">Username already exists</small>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="flex-row flex-grid">
-                            <label for="email">
-                                Email <span aria-hidden="true">*</span>
-                            </label>
-                            <input type="email" name="email" id="email" required aria-required="true" maxlength="30">
-                            <small id="email-exists" class="field-check">Email already exists</small>
-                        </div>
-
-                        <!-- Wallet code -->
-                        <div class="flex-row flex-grid" id="wallet-register-code-container">
-                            <span role="button" tabindex="0" aria-label="What is a wallet registration code?"
-                                id="wallet-helper-icon">
-                                <i class="fa-solid fa-circle-question" aria-hidden="true"
-                                    id="wallet-register-code-info"></i>
-                            </span>
-                            <label for="wallet-code">
-                                Wallet registration code
-                            </label>
-
-                            <input type="text" name="wallet_code" id="wallet-code" aria-describedby="wallet-code-help"
-                                maxlength="34" minlength="34" spellcheck="false">
-                            <small id="wallet-unique-code" class="field-check">The wallet registration code is
-                                invalid</small>
-                            <small id="wallet-code-help" class="italic">
-                                If you have already created your wallet, enter the wallet registration ID.
-                            </small>
-                        </div>
-
-                        <!-- Passwords -->
-                        <div class="auth-btns flex-grid two-column-grid">
-
-                            <div class="flex-grid">
-                                <label for="password">
-                                    Password <span aria-hidden="true">*</span>
-                                </label>
-                                <input type="password" name="password" id="password" required aria-required="true"
-                                    aria-describedby="password-rules" minlength="8" maxlength="25">
-                            </div>
-
-                            <div class="flex-grid">
-                                <label for="confirm-password">
-                                    Confirm password <span aria-hidden="true">*</span>
-                                </label>
-                                <input type="password" name="confirm_password" id="confirm-password" required
-                                    aria-required="true" minlength="8" maxlength="25">
-                            </div>
-
-                        </div>
-
-                        <small>
-                            <a href="#">Forgot your password?</a>
-                        </small>
-
-                        <!-- Password strength -->
-                        <div id="password-strength" role="region" aria-labelledby="password-rules-heading"
-                            aria-live="polite">
-
-                            <h3 id="active-password-field" class="mb-8 mt-8 capitalise header-9 light-bold">
-                                Current password field
-                            </h3>
-
-                            <!-- The password strength indicator -->
-
-                            <ul class="password-rules" id="password-rules">
-
-                                <li id="rule-uppercase" class="rule invalid">
-                                    <i class="fa-solid fa-circle-xmark rule-icon" aria-hidden="true"></i>
-                                    <span>Has an uppercase letter</span>
-                                    <span class="sr-only">Not met</span>
-                                </li>
-
-                                <li id="rule-lowercase" class="rule invalid">
-                                    <i class="fa-solid fa-circle-xmark rule-icon" aria-hidden="true"></i>
-                                    <span>Has a lowercase letter</span>
-                                    <span class="sr-only">Not met</span>
-                                </li>
-
-                                <li id="rule-number" class="rule invalid">
-                                    <i class="fa-solid fa-circle-xmark rule-icon" aria-hidden="true"></i>
-                                    <span>Has a number</span>
-                                    <span class="sr-only">Not met</span>
-                                </li>
-
-                                <li id="rule-length" class="rule invalid">
-                                    <i class="fa-solid fa-circle-xmark rule-icon" aria-hidden="true"></i>
-                                    <span>At least 8 characters</span>
-                                    <span class="sr-only">Not met</span>
-                                </li>
-
-                                <li id="rule-symbol" class="rule invalid">
-                                    <i class="fa-solid fa-circle-xmark rule-icon" aria-hidden="true"></i>
-                                    <span>Has at least one symbol</span>
-                                    <span class="sr-only">Not met</span>
-                                </li>
-
-                                <li id="rule-match" class="rule invalid">
-                                    <i class="fa-solid fa-circle-xmark rule-icon" aria-hidden="true"></i>
-                                    <span>Passwords match</span>
-                                    <span class="sr-only">Not met</span>
-                                </li>
-
-                            </ul>
-
-                            <!-- end of password strength indicator -->
-
-                        </div>
-
-                        <!-- Terms -->
-                        <div id="terms-of-condition" class="mt-8">
-                            <input type="checkbox" name="terms_of_condition" id="terms-of-condition-checkbox" required
-                                aria-required="true">
-                            <small id="terms-of-condition-checkbox" class="pl-8">
-                                I agree to the Terms of Service and Privacy Policy
-                            </small>
-                        </div>
-
-                    </div>
-
-                    <!-- Submit btn-->
-                    <div class="button mt-8 mb-8">
-                        <button type="submit" id="register-btn" class="large-btn capitalise center auth-btn">
-                            Register
-                        </button>
-                    </div>
-
-                    <hr class="dividor mt-4 mb-4" aria-hidden="true">
-
-
-                    <div id="already-have-an-account" class="center">
-
-                        <span> Already have an account?</span>
-                        <a href="/virtual-bank-login.html" class="auth-link">Login</a>
-                    </div>
-
-
-
-                </form>
 
             </div>
 
-
-        </section>
-
-        <section class="moodle registration-help centered" id="wallet-registration-code-explained">
-            <div class="container">
-                <h1 class="center mt-24 mb-24 capitalise header-7">Wallet registration code explained</h1>
-
-                <h2 class="mt-8">What is a wallet registration code?</h2>
-                <p>
-                    A wallet registration code is a twenty nine digit unique code created for you after the creation of
-                    your wallet.
-                    It allows you to sign up for a bank account without reusing your email or username.
-                </p>
-
-                <h2 class="mb-24">Do I need wallet registration code?</h2>
-
-                <p>
-                    The short answer is no. You only need a wallet registration code if you created a wallet first and
-                    are then signing up for a virtual bank.
-                </p>
-
-                <p class="mt-4">
-                    If you are registering for a bank account first, you can simply continue using your username, email
-                    address, and password, no registration code is required.
-                    If you have already signed up but choose not to use your registration code, you can still register
-                    using a different email address and username.
-                    Just keep in mind that this may mean having more details to remember later.
-                </p>
-                <h2 class="mt-8">When is a registration code needed?</h2>
-                <p>
-                    The registration code is only needed if you created a wallet before registering for a bank
-                    account. When you have created a wallet, your email address and username are saved and linked to
-                    you.
-                    These details can only be registered once. The registration code allows the system to recognise
-                    that you have already created a wallet.
-                </p>
-
-                <h2 class="mt-8">Why can’t I just use the same email and username again?</h2>
-                <p>
-                    Reusing registered details without an extra check would make it easier for someone else to
-                    attempt to claim an account using information that doesn’t belong to them. The registration code
-                    avoids this by confirming your existing wallet setup without exposing
-                    any sensitive information.
-                </p>
-
-
-                <h2 class="mt-8">What happens when I enter the registration code?</h2>
-                <p>
-                    The code is checked instantly, without refreshing the page. Once confirmed, your email and
-                    username fields are locked, and you can safely set your password to
-                    complete your wallet registration.
-                </p>
-
-            </div>
-        </section>
-
-
-
-
-    </main>
-
-
-    <!-- The footer section -->
-    <footer>
-
-        <div class="footer__container">
-
-            <div class="footer__header">
-                <img src="static/images/virtual-wallet-logo.png" alt="The virtual logo" class="footer-logo">
-
+            <!-- Submit btn-->
+            <div class="button mt-8 mb-8">
+                <button type="submit" id="wallet-login-btn" class="large-btn capitalise center auth-btn">
+                    Login
+                </button>
             </div>
 
+            <hr class="dividor mt-4 mb-4" aria-hidden="true">
 
-            <div class="flex-grid five-column-grid" id="footer-sections">
+            <div id="already-signed-up" class="center">
 
-                <!-- About us column -->
-                <div class="col flex-grid" id="about-us">
-                    <h1 class="footer-head pb-16">About us</h1>
-                    <a href="#" class="footer-link">Our company</a>
-                    <a href="#" class="footer-link">Careers</a>
-                    <a href="#" class="footer-link">Security</a>
-                    <a href="#" class="footer-link">Investor relations</a>
-
-                </div>
-
-                <!-- services column -->
-                <div class="col flex-grid" id="services">
-                    <h1 class="footer-head pb-16">services</h1>
-                    <a href="#" class="footer-link">Online banking</a>
-                    <a href="#" class="footer-link">Mobile app</a>
-                    <a href="#" class="footer-link">Credit app</a>
-                    <a href="#" class="footer-link">Loans and mortgages</a>
-                </div>
-
-                <!-- support column -->
-                <div class="col flex-grid" id="support">
-                    <h1 class="footer-head pb-16">support</h1>
-                    <a href="#" class="footer-link">FAQs</a>
-                    <a href="#" class="footer-link">Help Center</a>
-                    <a href="#" class="footer-link">Contact us</a>
-                    <a href="#" class="footer-link">Live chat</a>
-                </div>
-
-                <div class="col flex-grid" id="resources">
-                    <h1 class="footer-head pb-16">resources</h1>
-                    <a href="#" class="footer-link">Financial Education</a>
-                    <a href="#" class="footer-link">Blog</a>
-                    <a href="#" class="footer-link">News and Insight</a>
-                    <a href="#" class="footer-link">Calculators</a>
-                </div>
-
-                <div class="col" id="download-app">
-                    <h1 class="footer-head">Download our app</h1>
-
-                    <div id="apps" class="flex-grid two-column-grid">
-                        <img src="static/images/footer-icons/appStore.svg" alt="" class="footer-icon">
-                        <img src="static/images/footer-icons/googlePlay.svg" alt="" class="footer-icon">
-                    </div>
-
-
-                </div>
+                <span> Don't have account?</span>
+                <a href="{% url 'register_user' %}" class="auth-link">Sign up</a>
             </div>
 
-            <div class="socials copyright flex-grid two-column-grid pb-24">
+        </form>
 
-                <div class="socials four-column-grid">
-                    <a href="#"><img src="static/images/icons/facebook.svg" alt="facebook" class="social-icon"></a>
-                    <a href="#"><img src="static/images/icons/instagram.svg" alt="facebook" class="social-icon"></a>
+    </div>
 
-                </div>
 
-                <div class="copyright four-column-grid">
-                    <a href="#" class="copyright-link"><span class="copyright-date">@2026 </span>Virtual bank. All
-                        rights reserved</a>
-                    <a href="#" class="copyright-link footer-link">Privacy policy</a>
-                    <a href="#" class="copyright-link footer-link">Terms of use</a>
+</section>
 
-                </div>
-            </div>
-
-        </div>
-
-    </footer>
-
-    <script src="static/js/index.js" type="module"></script>
-    <script type="module" src="static/js/utils/password/checkPasswordStrength.js"></script>
-    <script type="module" src="static/js/authentication/walletRegister.js"></script>
-</body>
-
-</html>
+{% endblock %}

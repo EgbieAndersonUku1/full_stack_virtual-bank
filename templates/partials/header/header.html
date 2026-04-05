@@ -38,11 +38,11 @@
                         <li>
                             <div class="authentication-btns flex-grid two-column-grid" aria-label="Authentication"
                                 id="authentication-btns">
-                                <a href="/virtual-bank-login.html" class="nav-link center authenticate-btn text-uppercase" id="login-btn">
+                                <a href="{% url 'login_user' %}" class="nav-link center authenticate-btn text-uppercase" id="login-btn">
                                     Login
                                 </a>
 
-                                <a href="/vritual-bank-register.html" class="nav-link center authenticate-btn text-uppercase"
+                                <a href="{% url 'register_user' %}" class="nav-link center authenticate-btn text-uppercase"
                                     id="signup-btn">
                                     Signup
                                 </a>
