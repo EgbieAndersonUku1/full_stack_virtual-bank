@@ -1,0 +1,29 @@
+<!--
+Bank Overview Component
+
+This section composes the main dashboard overview by including three
+separate UI components:
+
+1. Bank Account Overview
+2. Connect Wallet
+3. Card Overview
+
+Each component is maintained in its own partial template:
+
+- partials/dashboard/bank-account.html
+- partials/dashboard/connect-my-wallet.html
+- partials/dashboard/bank-cards-overview.html
+
+These partials are combined here in `bank-overview.html` to keep the
+dashboard modular and easy to maintain.
+-->
+
+<div id="bank-overview" class="flex-grid">
+
+    {% include "components/bank/dashboard/_bank_panel.html" %}
+    {% include "components/bank/dashboard/_connect_my_wallet.html" %}
+    {% include "components/bank/dashboard/_bank_cards_overview.html" %}
+   
+   
+
+</div>

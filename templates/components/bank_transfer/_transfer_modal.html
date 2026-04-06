@@ -1,0 +1,100 @@
+<!-- The transfer confirmation modal -->
+
+<section id="bank-transfer-quick-confirmation" class="transfer-confirmation" role="dialog" aria-modal="true"
+    aria-labelledby="transfer-confirmation-title" aria-describedby="transfer-confirmation-description">
+
+    <!-- Modal Header -->
+    <div class="flex flex-space-between pl-48 pt-8 pb-4 pr-24 modal-top">
+        <h3 id="connect-wallet-title" class="capitalise pt-8 pb-8">Confirm Transfer</h3>
+        <button aria-label="Close modal" class="modal-close-btn" id="connect-modal-close-btn">
+            ✕
+        </button>
+    </div>
+
+    <!-- transfer container confirmation -->
+    <!-- Modal Body -->
+    <div class="transfer-confirmation__body p-48">
+
+        <!-- Transfer Accounts -->
+        <div class="transfer-confirmation__accounts flex flex-space-between">
+
+            <div class="transfer-confirmation__account transfer-confirmation__account--from">
+                <h3 class="transfer-confirmation__account-title">
+                    Source account
+                </h3>
+                <p class="transfer-confirmation__source-account-value">
+                    Card ending in 1234
+                </p>
+            </div>
+
+            <div class="transfer-confirmation__account transfer-confirmation__account--to">
+                <h3 class="transfer-confirmation__account-title">
+                    Target account
+                </h3>
+                <p class="transfer-confirmation__target-account-value">
+                    Account ending in 1234
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Transfer Summary -->
+        <div class="transfer-confirmation__summary mt-24 mb-24" aria-labelledby="transfer-summary-title">
+            <h3 id="transfer-summary-title" class="transfer-confirmation__summary-title">
+                Transfer summary
+            </h3>
+
+            <dl class="transfer-confirmation__summary-list mt-8">
+
+                <div class="transfer-confirmation__summary-row flex flex-space-between">
+                    <dt class="transfer-confirmation__summary-label">
+                        Transfer amount
+                    </dt>
+                    <dd class="transfer-confirmation__summary-value">
+                        £2,000
+                    </dd>
+                </div>
+
+                <div class="transfer-confirmation__summary-row flex flex-space-between">
+                    <dt class="transfer-confirmation__summary-label">
+                        Estimated arrival
+                    </dt>
+                    <dd class="transfer-confirmation__summary-value">
+                        Immediately
+                    </dd>
+                </div>
+
+                <div class="transfer-confirmation__summary-row flex flex-space-between">
+                    <dt class="transfer-confirmation__summary-label">
+                        Transaction fee
+                    </dt>
+                    <dd class="transfer-confirmation__summary-value">
+                        £0.00
+                    </dd>
+                </div>
+
+            </dl>
+        </div>
+
+        <!-- Info Message -->
+        <p id="transfer-confirmation-description" class="transfer-confirmation__info deactivate-text">
+            Transfers may be delayed or returned due to network issues or account status.
+        </p>
+
+        <hr class="dividor">
+        <!-- Actions -->
+        <div class="transfer-confirmation__actions flex flex-end mt-8">
+            <button type="button" class="transfer-confirmation__btn transfer-confirmation__btn--cancel btn-large"
+                id="transfer-confirmation-cancel-btn">
+                Close all
+            </button>
+
+            <button type="button" class="transfer-confirmation__btn transfer-confirmation__btn--confirm btn-large"
+                id="transfer-confirmation-confirm-btn">
+                Confirm transfer
+            </button>
+        </div>
+
+    </div>
+
+</section>

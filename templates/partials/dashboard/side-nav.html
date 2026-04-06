@@ -1,0 +1,120 @@
+<nav class="dashboard__container__sidebar" aria-label="Primary dashboard navigation">
+
+    <div class="sidebar-brand">
+        <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+        <span class="sidebar-brand__name">Virtual Bank</span>
+    </div>
+
+    <ul class="sidebar-nav">
+
+        <li class="sidebar-nav__item">
+            <a href="#" class="sidebar-nav__link" aria-current="page">
+                <span class="sidebar-nav__icon" aria-hidden="true">
+                    <i class="fa-regular fa-house"></i>
+                </span>
+                <span class="sidebar-nav__label">Dashboard</span>
+            </a>
+        </li>
+
+        <li class="sidebar-nav__item">
+            <a href="#" class="sidebar-nav__link">
+                <span class="sidebar-nav__icon" aria-hidden="true">
+                    <i class="fa-solid fa-wallet"></i>
+                </span>
+                <span class="sidebar-nav__label">My Wallet</span>
+            </a>
+        </li>
+
+        <li class="sidebar-nav__item">
+            <a href="transfer-money.html" class="sidebar-nav__link">
+                <span class="sidebar-nav__icon" aria-hidden="true">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                </span>
+                <span class="sidebar-nav__label">Money Transfer</span>
+            </a>
+        </li>
+
+        <li class="sidebar-nav__item">
+            <a href="manage-credit-cards.html" class="sidebar-nav__link">
+                <span class="sidebar-nav__icon" aria-hidden="true">
+                    <i class="fa-solid fa-credit-card"></i>
+                </span>
+                <span class="sidebar-nav__label">Manage Credit Cards</span>
+            </a>
+        </li>
+
+        <li class="sidebar-nav__item">
+            <a href="../admin/admin.html" class="sidebar-nav__link">
+                <span class="sidebar-nav__icon" aria-hidden="true">
+                    <i class="fa-solid fa-eye"></i>
+                </span>
+                <span class="sidebar-nav__label">Admin</span>
+            </a>
+        </li>
+
+        <li class="sidebar-nav__item">
+            <a href="#" class="sidebar-nav__link">
+                <span class="sidebar-nav__icon" aria-hidden="true">
+                    <i class="fa-solid fa-gear"></i>
+                </span>
+                <span class="sidebar-nav__label">Settings</span>
+            </a>
+        </li>
+
+        <li class="sidebar-nav__item">
+            <a href="#" class="sidebar-nav__link">
+                <span class="sidebar-nav__icon" aria-hidden="true">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </span>
+                <span class="sidebar-nav__label">Security</span>
+            </a>
+        </li>
+    </ul>
+
+
+
+    <!-- Latest login info -->
+    <section id="latest-login" aria-labelledby="latest-login-heading">
+        <div class="flex-grid two-column-20_80_grid">
+            <span aria-hidden="true">
+                <i class="fa-solid fa-right-to-bracket"></i>
+            </span>
+
+            <div id="latest-login__details">
+                <h2 id="latest-login-heading" class="capitalise header-9">
+                    Last login
+                </h2>
+                <time datetime="2026-01-29T20:32">Today at 20:32</time>
+            </div>
+        </div>
+
+        <hr class="dividor" aria-hidden="true">
+
+        <p id="latest-login__note">
+            Add two-factor authentication recovery codes to your account so you
+            never lose access.
+        </p>
+
+        <div class="btns centre mt-24">
+            <a href="#" class="btn-large manage-security-btn" aria-describedby="latest-login__note">
+                Manage security
+                <span aria-hidden="true"> &gt; </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Logout -->
+    <nav class="logout" aria-label="Account actions">
+        <ul class="sidebar-nav">
+            <li class="sidebar-nav__item">
+                <a href="#" class="sidebar-nav__link" id="logout-dashboard-link">
+                    <span class="sidebar-nav__icon" aria-hidden="true">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </span>
+                    <span class="sidebar-nav__label">Log out</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</nav>

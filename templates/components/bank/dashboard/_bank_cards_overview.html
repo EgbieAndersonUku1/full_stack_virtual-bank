@@ -1,0 +1,248 @@
+<!--
+Dashboard Component: My Credit Cards Overview
+
+This component displays all the user's credit cards that are available
+within the virtual banking dashboard.
+
+Purpose
+-------
+Provides a visual overview of the user's cards, allowing them to
+quickly view balances and select a card to perform further actions
+such as viewing details, transferring funds, freezing a card, or
+closing a card.
+
+Structure
+---------
+1. Section Container
+   - Wrapped in a semantic <section> element.
+   - Uses aria-labelledby to associate the section with its heading
+     for accessibility.
+
+2. Informational Notes
+   - Explains system limitations and usage rules:
+        • A maximum of 5 cards can be added to the system.
+        • Only 3 cards are displayed on the dashboard at once.
+        • Users can choose which cards appear via dashboard settings.
+
+3. User Interaction Guidance
+   - Informs users how card interaction works:
+        • Selecting a card enables additional card actions.
+        • If the "View card details" button is not clicked within
+          10 seconds, the card will automatically deselect.
+
+4. Cards Container
+   - Uses a grid layout to display up to three cards at once.
+   - Each card is represented as an interactive card component.
+
+5. Individual Card Component
+   Each card includes:
+
+   • Bank name
+   • Current balance
+   • Card brand (Visa, Mastercard, Discover, etc.)
+   • Card chip graphic
+   • Transaction type (Credit or Debit)
+   • Masked card number
+   • Card holder name
+   • Expiry date
+
+6. Data Attributes
+   Each card element includes metadata stored as data attributes
+   for use by JavaScript controllers:
+
+   data-card-id
+        Unique identifier for the card.
+
+   data-issued
+        Date the card was issued.
+
+   data-is-active
+        Indicates whether the card is currently active.
+
+   data-card-brand
+        Card provider brand (Visa, Mastercard, Discover).
+
+   data-creation-date
+        Timestamp of when the card was created in the system.
+
+   data-cvc
+        Masked security value placeholder.
+
+
+User Flow
+---------
+Typical usage:
+
+1. User opens the dashboard.
+2. Available credit cards appear in the card overview section.
+3. User selects a card.
+4. Card metadata becomes available to the card details panel.
+5. User can perform actions such as:
+        • View card details
+        • Transfer funds
+        • Freeze the card
+        • Close the card
+
+        
+Security Notes
+--------------
+Sensitive card information is never fully displayed.
+
+• Card numbers are masked.
+• CVC values are not revealed.
+• Real financial operations must be handled securely by
+  backend services.
+
+The UI only represents the card data and triggers actions
+through controlled system endpoints.
+-->
+
+{% load static %}
+
+<!-- my cards overview -->
+<section id="bank-my-cards" class="mb-24" aria-labelledby="my-cards-heading">
+    <div class="bank-my-cards__container ml-24 p-16">
+
+        <h2 id="my-cards-heading" class="header-7 capitalise mb-8">My credit cards overview
+        </h2>
+
+        <!-- Informational notes -->
+        <p class="bank-my-card-info--note">
+            You can add up to 5 cards, but only 3 will appear on your dashboard.
+        </p>
+        <p class="bank-my-card-info--note">
+            Pick which cards to display in your dashboard settings.
+        </p>
+
+        <h3 class="mt-16 mb-4">Note</h3>
+        <p>
+            Select a card to view extra information. If a card is selected and the
+            <span class="light-bold">view card details</span> button is not clicked within 10
+            seconds,
+            the card will automatically be deselected.
+        </p>
+
+
+        <hr class="dividor">
+
+        <!-- Cards container -->
+        <div id="bank-my-cards-overview" class="cards flex-grid three-column-grid mt-8 mb-8">
+
+            <!-- Card 1 -->
+            <div class="bank-card credit-visa-card" role="region"
+                aria-label="Atlas Bank Visa Credit Card, balance £100.00" data-card-id="card_92f3a1"
+                data-issued="2026-02-11" data-is-active="true" data-card-brand="visa" data-creation-date="2026-02-11"
+                data-cvc="***">
+                <div class="card-head">
+                    <div class="card-head-info">
+                        <h3>Atlas Bank</h3>
+                        <p class="bank-card-amount">£100.00</p>
+                    </div>
+
+                    <div class="card-type-logo flex flex-end">
+                        <img src="{% static '/images/icons/visa.svg' %}" alt="Visa logo">
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="chip">
+                        <img src="{% static '/images/icons/sim-card-chip.svg' %}" alt="Card chip">
+                    </div>
+
+                    <div class="credit-transaction-type flex flex-end">
+                        <span class="card-type">Credit</span>
+                    </div>
+
+                    <div class="card-number flex flex-end">
+                        <span class="card-number">************1224</span>
+                    </div>
+                </div>
+
+                <div class="card-footer flex flex-space-between">
+                    <div class="card-name">Johnathan Doe</div>
+                    <div class="card-expiry-date">
+                        Expiry date: January 2029
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bank-card credit-mastercard-card" role="region"
+                aria-label="Atlas Bank Mastercard Credit Card, balance £7.26" data-card-id="card_92f3a2"
+                data-issued="2026-02-12" data-is-active="true" data-card-brand="mastercard"
+                data-creation-date="2026-02-11" data-cvc="***">
+                <div class="card-head">
+                    <div class="card-head-info">
+                        <h3>Atlas Bank</h3>
+                        <p class="bank-card-amount">£0.00</p>
+                    </div>
+
+                    <div class="card-type-logo flex flex-end">
+                        <img src="/static/images/icons/mastercard.svg" alt="Mastercard logo">
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="chip">
+                        <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
+                    </div>
+
+                    <div class="credit-transaction-type flex flex-end">
+                        <span class="card-type">Credit</span>
+                    </div>
+
+                    <div class="card-number flex flex-end">
+                        <span class="card-number">************3336</span>
+                    </div>
+                </div>
+
+                <div class="card-footer flex flex-space-between">
+                    <div class="card-name">Jane Doe</div>
+                    <div class="card-expiry-date">
+                        <p>Expiry date: January 2028</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bank-card credit-discover-card" role="region"
+                aria-label="Atlas Bank Discover Debit Card, balance £2.00" data-card-id="card_92f3a3"
+                data-issued="2026-02-12" data-is-active="false" data-card-brand="discover"
+                data-creation-date="2026-02-11" data-cvc="***">
+                <div class="card-head">
+                    <div class="card-head-info">
+                        <h3>Atlas Bank</h3>
+                        <p class="bank-card-amount">£2.00</p>
+                    </div>
+
+                    <div class="card-type-logo flex flex-end">
+                        <img src="/static/images/icons/discover.svg" alt="Discover logo">
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="chip">
+                        <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
+                    </div>
+
+                    <div class="credit-transaction-type flex flex-end">
+                        <span class="card-type">Credit</span>
+                    </div>
+
+                    <div class="card-number flex flex-end">
+                        <span class="card-number">***********9991</span>
+
+                    </div>
+                </div>
+
+                <div class="card-footer flex flex-space-between">
+                    <div class="card-name">Johnathan Doe</div>
+                    <div class="card-expiry-date">
+                        <p>Expiry date: January 2027</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

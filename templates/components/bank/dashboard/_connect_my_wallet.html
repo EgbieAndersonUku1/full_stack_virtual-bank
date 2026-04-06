@@ -1,0 +1,130 @@
+<!--
+Dashboard Component: My Wallet Card
+
+This component represents the wallet integration panel within the
+dashboard. It allows users to connect their digital wallet to their
+bank account and manage wallet-related functionality.
+
+Purpose
+-------
+Provides a clear entry point for users to connect, monitor, and
+manage their wallet integration with their external bank account.
+
+Once connected, the wallet enables additional financial actions
+and account management features within the dashboard.
+
+Structure
+---------
+1. Section Container
+   - Encapsulated in a semantic <section> element.
+   - Styled as a dashboard card to visually group wallet functionality.
+
+2. Card Header
+   Displays the title of the component.
+
+   • "My Wallet" heading
+   • Positioned at the top of the card for quick identification
+
+3. Wallet Illustration
+   A visual icon representing the wallet feature.
+
+   • Decorative wallet image
+   • Marked with aria-hidden since it does not provide
+     meaningful information for assistive technologies.
+
+4. Wallet Connection Information
+   Provides instructions and contextual information explaining
+   the wallet connection feature.
+
+   Includes:
+
+   • Explanation of what linking a wallet enables
+   • Current wallet connection state
+   • Overview of features available after linking
+
+
+5. Action Buttons
+   Provides primary user interactions related to wallet management.
+
+   Connect Wallet
+        Initiates the wallet linking process.
+
+   Status
+        Opens the wallet connection status or management view.
+
+
+User Flow
+---------
+Typical interaction process:
+
+1. User opens the dashboard.
+2. The wallet panel displays the current wallet status.
+3. If the wallet is not connected:
+        • The user selects "Connect Wallet".
+4. The system initiates the wallet linking process.
+5. Once connected:
+        • The user can access wallet balances
+        • The user can manage the connection status
+        • The user can disconnect the wallet if needed.
+
+        
+Security Notes
+--------------
+Wallet credentials and sensitive financial data must never
+be stored or processed directly in the frontend interface.
+
+All wallet operations should be handled through secure
+authentication flows and verified backend endpoints.
+-->
+{% load static %}
+
+<section id="my-wallet" class="dashboard-card">
+    <div class="my-wallet__container">
+        <div class="my-wallet__container__header p-8">
+            <h3 class="capitalise header-7 pl-24" class="">My Wallet</h3>
+        </div>
+
+        <div class="my-wallet__body">
+            <div class="wallet-head flex-grid two-column-20_80_grid">
+                <div class="my-wallet-img center mt-48">
+
+                    <img src="{% static '/images/card-icons/wallet.png' %}" alt="" class="bank-option-img" aria-hidden="true">
+                </div>
+
+                <div id="my-wallet__link">
+
+                    <!-- Section Heading -->
+                    <h3 class="mt-8 capitalize">Link Account</h3>
+
+                    <!-- Instructions / Messages -->
+                    <p class="mt-8 subtitle">
+                        Connect your wallet to your bank account to securely manage your
+                        funds.
+                    </p>
+                    <p class="subtitle">
+                        Your wallet is currently not linked.
+                    </p>
+                    <p class="subtitle">
+                        Once linked, you will be able to:
+                    </p>
+                    <ul class="subtitle-list">
+                        <li>View your wallet balance</li>
+                        <li>Disconnect your wallet if needed</li>
+                        <li>Access your wallet from the “My Wallet” tab</li>
+                    </ul>
+
+                    <!-- Action Buttons -->
+                    <div class="my-wallet__buttons flex-grid two-column-grid pt-16 pb-16">
+                        <a href="#" class="btn-large capitalize center bank-dashboard-btn"
+                            id="connect-wallet-btn">Connect Wallet</a>
+                        <a href="#" class="btn-large capitalize center bank-dashboard-btn"
+                            id="disconnect-wallet-status">Status</a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>

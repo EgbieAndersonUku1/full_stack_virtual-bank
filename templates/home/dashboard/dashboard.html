@@ -1,0 +1,71 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block body %}
+
+
+<!-- Sidebar navigation -->
+<section class="dashboard__container__main" tabindex="-1">
+
+
+    {% include "partials/dashboard/navbar.html" %}
+
+    <!-- Greetings -->
+    <div class="greeting mt-16 ml-24">
+        <h1 class="header-7 capitalise">Hi, User, Welcome back!</h1>
+        <p class="text-muted capitalise">Manage your finances</p>
+    </div>
+
+
+    <!-- quick menu -->
+    {% include "components/bank/dashboard/_quick_menu_cards.html" %}
+
+    <hr class="dividor">
+
+    <!-- The main content -->
+    <div class="dashboard__container__main__wrapper mt-16">
+
+        <!-- Dasshboard overview main body -->
+        {% include "partials/dashboard/bank-overview.html" %}
+ 
+
+    </div>
+
+    
+    <!--modals-->
+
+    <!-- connect wallet modal-->
+    {% include "components/bank/dashboard/modals/_connect_wallet_modal.html" %}
+
+    <!-- status modal -->
+    {% include "components/bank/dashboard/modals/_status.html" %} 
+
+    <!-- wallet disconnect confirmation modal-->
+    {% include "components/bank/dashboard/modals/_wallet_disconnect_confirmation.html" %}  
+
+    <!-- add bank funds modal -->
+    {% include "components/bank/dashboard/modals/_add_bank_funds.html" %}  
+
+    <!-- bank transfer modal-->
+    {% include "components/bank/dashboard/modals/_bank_transactions.html" %}  
+
+    <!-- view cards modal-->
+    {% include "components/bank/dashboard/modals/_view_card.html" %}  
+
+    <!-- Bank funds transfer modal-->
+    {% include "components/bank/dashboard/modals/_bank_funds_transfer.html" %}  
+
+
+         
+
+</section>
+
+
+
+{% endblock body %}
+
+

@@ -1,0 +1,213 @@
+<!--
+Dashboard Component: Bank Account Summary Card
+
+This component displays an overview of the user's connected bank accounts
+within the dashboard. It provides quick visibility of account status,
+balances, and actions such as adding funds or viewing transactions.
+
+Purpose
+-------
+Allows users to quickly review their connected accounts, see available
+balances, and access important actions without navigating to a full
+account management page.
+
+Structure
+---------
+1. Section Container
+   - Encapsulated in a semantic <section>.
+   - Uses aria-labelledby to associate the component with its heading
+     for screen readers.
+
+2. Header
+   Displays the primary account heading and current connection status.
+
+   • Bank account title
+   • Account status indicator (Active/Inactive)
+   • Status icon with live region support for assistive technologies
+
+3. Bank Account Summary
+   Provides a quick overview showing how many accounts are connected
+   through the system (for example via Open Banking integrations).
+
+4. Account List
+   Displays individual connected accounts.
+
+   Each account entry includes:
+   • Account type (Personal / Saving)
+   • Masked account number
+   • Quick "View" action to inspect account transactions
+
+5. Last Sync Information
+   Indicates when the bank account data was last synchronised and
+   identifies the integration mechanism used (for example Open Banking).
+
+6. Balance Highlights
+   Displays financial summaries across accounts.
+
+   Includes:
+
+   • Total balance across all accounts
+   • Total pending transactions
+   • Available balance for each individual account
+
+   Each balance is structured with:
+
+   - balance-label (description)
+   - balance-value (currency and amount)
+
+7. Action Buttons
+   Provides primary user actions related to bank accounts:
+
+   • Add funds
+        Allows the user to deposit funds into their bank account.
+
+   • View transactions
+        Opens the account transaction history.
+
+
+User Flow
+---------
+Typical interaction sequence:
+
+1. User loads the dashboard.
+2. The bank account summary card appears showing connected accounts.
+3. The user can quickly review balances and account status.
+4. The user can choose to:
+        • Add funds
+        • View transaction history
+        • Inspect individual account activity.
+
+Security Notes
+--------------
+Sensitive banking data is partially masked within the interface.
+
+• Account numbers are partially hidden.
+• Real banking data should be retrieved securely from backend
+  financial services or Open Banking providers.
+• The UI acts only as a presentation and interaction layer.
+
+This component is typically connected to financial APIs that
+synchronise account balances and transaction histories.
+-->
+{% load static %}
+
+<section class="dash-bank-account dashboard-card mb-24" aria-labelledby="bank-account-title">
+
+    <!-- Header -->
+    <div class="dash-bank-account__header flex flex-space-between">
+
+        <h2 id="bank-account-title" class="bank-name capitalise">
+            My bank account
+        </h2>
+
+        <span class="account-status active" role="status" aria-live="polite" aria-label="Bank account status active">
+            <i class="fas fa-circle" aria-hidden="true"></i>
+            Active
+        </span>
+
+    </div>
+
+    <!-- Bank Account Summary -->
+    <div class="bank-account-summary mt-4">
+        2 accounts connected
+    </div>
+
+    <!-- Body -->
+    <div class="dash-bank-account__body flex flex-space-between">
+
+        <div class="dash-bank-account-info">
+
+            <!-- Accounts List -->
+            <ul class="accounts">
+
+                <!-- Personal Account -->
+                <li class="flex-row account-number" aria-label="Personal Account ending in 7052">
+                    Personal Account •••• 7052
+                    <a class="mini-action" aria-label="View Personal Account transactions">View</a>
+                </li>
+
+                <!-- Saving Account -->
+                <li class="flex-row account-number" aria-label="Saving Account ending in 401">
+                    Saving Account •••• 401
+                    <a class="mini-action " aria-label="View Saving Account transactions">View</a>
+                </li>
+
+            </ul>
+
+            <!-- Last synced -->
+            <div class="bank-last-updated">
+                Last updated 2 minutes ago via Open Banking
+            </div>
+
+        </div>
+
+        <!-- Illustration -->
+        <div class="dash-bank-account-main-img">
+            <img src="{% static '/images/icons/bank_icon.png' %}" alt="Illustration representing connected bank account">
+        </div>
+
+    </div>
+
+    <!-- Balance Highlights -->
+
+    <!-- Total Balance -->
+    <div class="balance-highlight total" aria-live="polite" aria-label="Total balance across accounts">
+        <div class="balance-label">
+            Total balance across accounts
+        </div>
+        <div class="balance-value">
+            <span aria-hidden="true">£</span>
+            <span aria-label="1 thousand 500 pounds">1,500.00</span>
+        </div>
+    </div>
+
+    <!-- Total Pending -->
+    <div class="balance-highlight pending" aria-live="polite" aria-label="Total pending transactions">
+        <div class="balance-label">
+            Total pending
+        </div>
+        <div class="balance-value">
+            <span aria-hidden="true">£</span>
+            <span aria-label="500 pounds">500.00</span>
+        </div>
+    </div>
+
+    <!-- Available Balances per Account -->
+    <div class="balance-highlight" aria-live="polite" aria-label="Available balance for saving account">
+        <div class="balance-label">
+            Available balance for saving account
+        </div>
+        <div class="balance-value">
+            <span aria-hidden="true">£</span>
+            <span>0.00</span>
+        </div>
+    </div>
+
+    <div class="balance-highlight" aria-live="polite" aria-label="Available balance for personal account">
+        <div class="balance-label">
+            Available balance for personal account
+        </div>
+        <div class="balance-value">
+            <span aria-hidden="true">£</span>
+            <span>1,500</span>
+        </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="dash-bank-account__footer flex">
+
+        <button class="action-btn primary" aria-label="Add funds to bank account" id="add-funds-bank">
+            <i class="fa-solid fa-plus-circle" aria-hidden="true"></i>
+            <span class="sr-only">Add Funds</span>
+            Add funds
+        </button>
+
+        <button class="action-btn secondary" aria-label="View bank account transactions" id="view-transaction-btn">
+            <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+            <span class="sr-only">View Transactions</span>
+            View Transactions
+        </button>
+
+    </div>
+
+</section>

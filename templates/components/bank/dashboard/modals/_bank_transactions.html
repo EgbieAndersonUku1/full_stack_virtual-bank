@@ -1,0 +1,230 @@
+<!--
+Dashboard Component: Bank Account Transaction Viewer
+
+This component renders the transaction history interface for a bank
+account within the virtual banking dashboard. It provides a structured
+view of transaction records and allows users to optionally filter them
+by date range and transaction type.
+
+Purpose
+-------
+The transaction viewer allows users to:
+
+• Review historical account activity
+• Filter transactions based on specific criteria
+• Identify incoming and outgoing funds
+• Navigate through paginated transaction records
+
+This component acts as the primary interface for transaction reporting
+within the banking dashboard.
+
+Structure
+---------
+1. Header Navigation
+   - Includes the dashboard navigation bar via the navbar component.
+
+2. Account Context Display
+   - Displays the account being viewed (e.g., IB account identifier).
+
+3. Transaction Interaction Guidance
+   - Provides instructions describing how table rows can be selected
+     and deselected by the user.
+
+4. Transaction Filter Form
+   Allows users to filter transactions using:
+
+   • From date
+   • To date
+   • Transaction type selector
+
+5. Transaction Report Table
+   Displays transaction records in a tabular format with:
+
+   • Date and time
+   • Transaction description
+   • Transaction amount
+
+   Amount values are visually differentiated using:
+   - `.positive` for incoming funds
+   - `.negative` for outgoing funds
+
+6. Pagination
+   - Enables navigation across multiple pages of transaction records.
+
+7. Panel Controls
+   - "Close panel" control allows users to exit the transaction view.
+
+
+
+Data Integration
+----------------
+In production environments, transaction rows should be populated
+dynamically from backend transaction data. Expected fields typically
+include:
+
+• transaction_date
+• description
+• amount
+• transaction_type
+• status (optional: pending, completed)
+
+Pagination data may be supplied by the backend API or Django view
+context.
+
+Notes
+-----
+This component is intended for use within the virtual banking dashboard
+and should be rendered in the account management workflow where users
+need to inspect financial activity.
+-->
+
+<section id="bank-account-view-transactions" aria-labelledby="transactions-title">
+    <div class="bank-account-transactions__head">
+
+        {% include "partials/dashboard/navbar.html" %}
+       
+    </div>
+
+    <!-- The body -->
+    <div class="bank-account-transactions__body p-24">
+
+        <h1 id="transactions-title" class="capitalise header-7">
+            View transactions
+        </h1>
+
+        <p class="text-muted">
+            For chase account: IB VB-849500
+        </p>
+
+        <p id="table-instructions" class="table-instructions mt-4">
+            Click a row once and move away to select it. Click it again to deselect.
+        </p>
+
+        <!-- The optional form -->
+        <form action="" method="post" id="bank-transaction-form">
+
+            <div class="bank-transaction-form-wrapper flex-grid three-column-grid">
+
+                <!-- from field -->
+                <div class="form-row flex-grid">
+                    <label for="from">From</label>
+                    <input type="date" name="from" id="from">
+                </div>
+
+                <!-- to field -->
+                <div class="form-row flex-grid">
+                    <label for="to">To</label>
+                    <input type="date" name="to" id="to">
+                </div>
+
+                <!-- type field -->
+                <div class="form-row flex-grid">
+                    <label for="transaction-type">Types</label>
+                    <select name="type" id="transaction-type" required>
+                        <option value="all" disabled>All Types</option>
+                        <option value="deposit" selected>Pay In (Deposits)</option>
+                        <option value="transfer_out">Transfers Out</option>
+                        <option value="transfer_in">Transfers In</option>
+                        <option value="card_payment">Card Payments</option>
+                        <option value="direct_debit">Direct Debits</option>
+                        <option value="subscription">Subscriptions</option>
+                        <option value="utility_payment">Utility Payments</option>
+                        <option value="refund">Refunds</option>
+                        <option value="atm_withdrawal">ATM Withdrawals</option>
+                        <option value="fees">Fees &amp; Charges</option>
+                        <option value="payment_received">Payments Received</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- filter button -->
+            <div class="form-row flex flex-end">
+                <button type="submit" id="bank-filter-btn">
+                    Filter transactions
+                </button>
+            </div>
+
+        </form>
+
+        <!-- The table that displays the transaction form report -->
+        <div id="transaction-report" class="mt-8">
+            <table id="transaction-report-table" aria-describedby="table-instructions">
+                <thead>
+                    <tr id="row-header">
+                        <th scope="col">Date</th>
+                        <th scope="col">Description</th>
+                        <th scope="col" class="align-right">Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Today, 10:32</td>
+                        <td>Payment - TARDIS time-travel seat booking</td>
+                        <td class="align-right negative">-£719.56</td>
+                    </tr>
+
+                    <tr>
+                        <td>11 February 2026</td>
+                        <td>Pending</td>
+                        <td class="align-right negative">-£500.00</td>
+                    </tr>
+
+                    <tr>
+                        <td>25 December 2025</td>
+                        <td>Interplanetary snack delivery subscription from Galifrey</td>
+                        <td class="align-right negative">-£420.00</td>
+                    </tr>
+
+                    <tr>
+                        <td>1st June 2025</td>
+                        <td>Transfer Money</td>
+                        <td class="align-right negative">-£110.00</td>
+                    </tr>
+
+                    <tr>
+                        <td>22 Apr 2024</td>
+                        <td>Utility Payment</td>
+                        <td class="align-right negative">-£87.45</td>
+                    </tr>
+
+                    <tr>
+                        <td>20 Apr 2024</td>
+                        <td>Subscription – Streaming Service</td>
+                        <td class="align-right negative">-£12.99</td>
+                    </tr>
+
+                    <tr>
+                        <td>18 Apr 2024</td>
+                        <td>Donation from Unit for saving the Earth from the Daleks</td>
+                        <td class="align-right positive">£2,500.00</td>
+                    </tr>
+
+                    <tr>
+                        <td>15 Apr 2024</td>
+                        <td>Payment Received from River Song</td>
+                        <td class="align-right positive">£350.00</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="show flex flex-end">
+                <small>Showing page 1 of 3</small>
+            </div>
+
+        </div>
+
+        <a href="#" id="close-transaction-panel">
+            <small class="capitalise">Close panel</small>
+        </a>
+
+        <!-- the pagination -->
+        <div id="bank-account-transactions-pagination" class="pagination flex flex-end">
+
+            <a href="#">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+        </div>
+
+    </div>
+</section>

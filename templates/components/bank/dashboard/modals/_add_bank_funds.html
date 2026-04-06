@@ -1,0 +1,165 @@
+<!--
+Dashboard Component: Add Funds to bank panel
+
+This component provides the interface for adding funds to a virtual bank
+account within the dashboard.
+
+Purpose
+-------
+Allows users to select a funding source and specify an amount to transfer
+into their virtual bank account.
+
+Structure
+---------
+1. Header Navigation
+   - Includes the dashboard navbar partial.
+
+2. Funding Source Selection
+   - Users can choose between multiple funding sources:
+        • Savings account
+        • Debit card
+        • Wallet
+   - Each source is represented as an interactive card.
+
+3. Amount Input
+   - Users specify the amount to add using:
+        • Manual input field
+        • Increment (+) / decrement (−) buttons
+
+4. Action Controls
+   - "Add funds" button to confirm the transfer.
+   - "Close panel" link to exit the add-funds interface.
+
+Accessibility
+-------------
+Funding source cards behave like interactive buttons using:
+- role="button"
+- tabindex="0"
+- aria-label attributes
+
+Notes
+-----
+This component is designed as a reusable dashboard partial and may be
+included in other views where account funding is required.
+-->
+
+
+{% load static %}
+
+<section id="bank-account-add-funds">
+    <div class="bank-account-add-funds__head">
+
+       {% include "partials/dashboard/navbar.html" %}
+        
+    </div>
+
+    <div class="account-add-funds__content mb-16 pl-24 pr-24 pb-4">
+
+        <h1 id="add-funds-title" class="capitalise mt-16 light-bold header-5">
+            Add funds
+        </h1>
+
+        <p class="text-muted light-bold">
+            To your bank account VB: IB145-210-985
+        </p>
+
+        <h2 class="mt-24 mb-8 capitalise header-8 light-bold">
+            Select source
+        </h2>
+
+        <!-- Source cards should behave like buttons -->
+        <div class="account-card flex flex-space-between mb-8 active" role="button" tabindex="0"
+            aria-label="Select bank account ending 705" data-account="savings-account">
+
+            <div class="account-card-details flex-grid two-column-20_80_grid">
+                <div class="account-card__image">
+                    <img src="{% static '/images/card-icons/account-bank-icon.png' %}" alt="Bank account icon">
+                </div>
+
+                <div class="account-card__description pt-16">
+                    <h3 class="card-title">Saving account</h3>
+                    <p>Funding source from Atlas bank ending 701</p>
+                </div>
+            </div>
+
+            <span aria-hidden="true" class="mt-48 pr-24">&gt;</span>
+
+
+        </div>
+
+        <!-- Debit card -->
+        <div class="account-card flex flex-space-between" role="button" tabindex="0"
+            aria-label="Select debit card source" data-account="debit-cards">
+
+            <div class="account-card-details flex-grid two-column-20_80_grid">
+                <div class="account-card__image">
+                    <img src="{%  static '/images/card-icons/credit-card.png' %}" alt="Debit card icon">
+                </div>
+
+                <div class="account-card__description pt-16 ml-4">
+                    <h3 class="card-title">Debit card</h3>
+                    <p>Funding source from your debit cards</p>
+                </div>
+            </div>
+
+            <span aria-hidden="true" class="mt-48 pr-24">&gt;</span>
+        </div>
+
+        <!-- Wallet -->
+        <div class="account-card flex flex-space-between" role="button" tabindex="0"
+            aria-label="Select wallet funding source" data-account="wallet">
+
+            <div class="account-card-details flex-grid two-column-20_80_grid">
+                <div class="account-card__image">
+                    <img src="{% static '/images/icons/wallet-icon.png' %}" alt="Wallet icon">
+                </div>
+
+                <div class="account-card__description pt-16 ml-4">
+                    <h3 class="card-title">Wallet</h3>
+                    <p>Funding source from your wallet</p>
+                </div>
+            </div>
+
+            <span aria-hidden="true" class="mt-48 pr-24">&gt;</span>
+        </div>
+
+        <!-- Amount -->
+        <div class="account-card-input flex flex-space-between mt-24">
+
+            <label for="account-card__amount" class="light-bold">
+                <span class="fas fa-circle-question" aria-hidden="true"></span>
+                Amount
+            </label>
+
+            <div class="account-card__add-amount flex">
+
+                <button type="button" class="amount-btn" id="minus" aria-label="Decrease amount">
+                    −
+                </button>
+
+                <input type="text" id="account-card__amount" inputmode="decimal" placeholder="0.00" class="center"
+                    max="10000000" aria-live="polite" aria-label="Amount to add">
+
+                <button type="button" class="amount-btn" id="plus" aria-label="Increase amount">
+                    +
+                </button>
+
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="account-card__button mt-16 mt-4">
+
+            <button class="btn-large capitalise green-bg white-text" id="account_card__add_funds-btn">
+                Add funds
+            </button>
+
+            <a href="#" class="capitalise" id="add-funds-close-panel">
+                Close panel
+            </a>
+
+        </div>
+
+    </div>
+
+</section>

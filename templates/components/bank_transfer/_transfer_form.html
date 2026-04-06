@@ -1,0 +1,43 @@
+<form id="funds-transfer-form" method="post">
+
+    <div class="form-row">
+        <label for="transfer-type">Transfer source</label>
+        <select name="transfer-type" id="transfer-type" required>
+            <option value="" disabled selected>Select source</option>
+            <option value="bank">Bank</option>
+            <option value="wallet">Wallet</option>
+            <option value="another-card">Another card</option>
+        </select>
+    </div>
+
+    <div class="form-row flex-grid">
+        <label for="transfer-amount">Transfer Amount</label>
+        <input type="number" id="transfer-amount" step="0.01" min="0.01" value="0.00" name="transfer-amount" required>
+    </div>
+
+
+    <div class="form-row flex-grid">
+        <label for="note">Note</label>
+        <textarea name="note" id="bank-transfer-note" rows="5" maxlength="250" required></textarea>
+        <p class="num-of-characters-remaining text-align-right character-usage-message">Minimum
+            characters to use: 50</p>
+        <p class="num-of-characters-to-use text-align-right character-usage-message">Number of
+            characters remaining: 255</p>
+
+    </div>
+
+
+    <div class="form-row">
+        <input type="hidden" id="source-card" class="transfer-hidden-field">
+        <input type="hidden" id="transfer-to-card-id" class="transfer-hidden-field">
+        <input type="hidden" id="transfer-to-card-number" class="transfer-hidden-field">
+    </div>
+
+    <div class="mt-8 mb-8">
+        <button type="submit" class="btn-large" id="transfer-submit">
+            Transfer
+        </button>
+    </div>
+
+
+</form>
