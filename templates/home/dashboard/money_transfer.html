@@ -1,0 +1,82 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block body %}
+
+
+<section id="dashboard-transfer" aria-label="User dashboard transfer">
+
+    <div class="dashboard__container">
+
+        <!-- Sidebar navigation -->
+
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/dashboard/_navbar.html" %}
+
+            <!-- transfer money -->
+
+            <section id="transfer-money">
+
+                <div class="transfer-money__container">
+                    <h1 class="header-7">Transfer/Request funds</h1>
+                    <p class="mt-4 mb-24">Click on the tab to select transfer or request funds from a recipient
+                    </p>
+
+                    <section id="tabs-section" aria-labelledby="transfer/request heading">
+
+                        <div class="tabs flex">
+
+                            <a class="tab-link tab capitalise active" data-action="transfer-money">
+                                Transfer money
+                            </a>
+
+                            <a class="tab-link tab white-text capitalise" data-action="request-money">
+                                request money
+                            </a>
+
+                        </div>
+
+
+                    </section>
+
+                    <!-- bank transfer form -->
+                    {% include "components/bank/money_transfer/forms/_bank_transfer_form.html" %}
+
+                    <!-- bank request form -->
+                    {% include "components/bank/money_transfer/forms/_bank_request_form.html" %}
+
+
+                </div>
+            </section>
+
+
+
+        </section>
+
+        <!-- the recipient form -->
+        {% include "components/bank/dashboard/modals/_add_recipient_section.html" %}
+
+        <!-- the pin form -->
+        {% include "components/bank/dashboard/modals/_add_pin.html" %}
+
+
+    </div>
+
+</section>
+
+
+
+{% endblock body %}
+
+{% block script %}
+
+<script src="{% static '/js/dashboard/money-transfer.js' %}" type="module"></script>
+
+{% endblock script %}

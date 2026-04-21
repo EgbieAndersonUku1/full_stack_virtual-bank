@@ -11,3 +11,8 @@ def bank_home(request):
 
 def dashboard(request):
     return render(request, "home/dashboard/dashboard.html")
+
+
+
+def money_transfer(request):
+    return render(request, "home/dashboard/money_transfer.html")

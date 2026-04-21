@@ -2984,7 +2984,7 @@ time {
 
 .dashboard__container__main__wrapper {
     display: grid;
-    grid-template-columns: 85% 15%;
+    grid-template-columns: 95% 5%;
     grid-template-rows: auto;
     column-gap: var(--space-8);
 }

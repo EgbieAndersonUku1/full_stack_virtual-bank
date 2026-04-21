@@ -8,7 +8,7 @@
     <ul class="sidebar-nav">
 
         <li class="sidebar-nav__item">
-            <a href="#" class="sidebar-nav__link" aria-current="page">
+            <a href="{% url 'dashboard' %}" class="sidebar-nav__link" aria-current="page">
                 <span class="sidebar-nav__icon" aria-hidden="true">
                     <i class="fa-regular fa-house"></i>
                 </span>
@@ -26,7 +26,7 @@
         </li>
 
         <li class="sidebar-nav__item">
-            <a href="transfer-money.html" class="sidebar-nav__link">
+            <a href="{% url 'money_transfer' %}" class="sidebar-nav__link">
                 <span class="sidebar-nav__icon" aria-hidden="true">
                     <i class="fa-solid fa-money-bill-transfer"></i>
                 </span>

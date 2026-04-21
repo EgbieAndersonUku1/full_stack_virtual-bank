@@ -1,0 +1,186 @@
+<form action="" id="bank-transfer-to-form" class="flex-grid" method="post">
+    <div class="form-group flex-grid ">
+        <label for="bank-transfer-selection">Transfer from *</label>
+        <select name="bank-transfer-selection" id="bank-transfer-selection" required>
+            <option value="" disabled selected>Select the transfer source</option>
+            <option value="wallet" data-account-amount="1000" data-account-type="wallet">
+                Wallet - Available £1000</option>
+            <option value="bank" data-account-amount="1500" data-account-type="bank">Bank -
+                Available (£1,500.00)</option>
+        </select>
+
+        <label for="bank-transfer-type">Transfer type *</label>
+        <select name="bank-transfer-type" id="bank-transfer-type" required data-external-transfer-fee="2.00">
+            <option value="" disabled selected>Select the transfer type</option>
+            <option value="internal-transfer">Internal transfer (instant and free)</option>
+            <option value="external-transfer">External (Fee: £2.00)</option>
+        </select>
+
+
+        <div class="recipient flex-grid">
+            <label for="recipient">Recipient *</label>
+            <select name="recipient" id="recipient" required data-recipient="true">
+                <option value="" disabled selected>Select the recipient</option>
+                <option value="add-recipient">Add recipient</option>
+
+            </select>
+        </div>
+
+
+        <!-- shows up if the user is found -->
+        <div class="flex-grid two-column-20_80_grid recipient-user" id="transfer-to-user">
+
+            <div class="profile-icon center">
+                <i class="fa-solid fa-user"></i>
+            </div>
+
+            <div class="verified-user flex-grid">
+                <span id="verified-user-name"></span>
+                <span class="verified-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Recipient Verified
+                </span>
+            </div>
+
+        </div>
+
+        <div class="amount flex-grid">
+            <label for="amount">Amount * <small class="text-muted">(Minimum amount to
+                    transfer is 0.01)</small>
+            </label>
+            <input type="number" name="amount" id="amount" step="0.01" value="0.00" min="0.01" max="1000000000"
+                required>
+            <div class="flex-grid three-column-grid">
+                <div class="flex-row">
+                    <small><span class="light-bold" id="transfer-fee-label">Transfer fee:
+                        </span> <span id="transfer-fee-span">0.00</span></small>
+                </div>
+
+                <div class="flex-row">
+                    <small>
+                        <span class="light-bold" id="transfer-fee-total-label">Amount to
+                            transfer:
+                        </span>
+                        <span class="transfer-total" id="transfer-total">0.00</span>
+                    </small>
+                </div>
+
+                <div class="flex-row flex flex-end">
+                    <small>
+                        <span class="light-bold" id="transfer-account-label"> </span>
+                        <span class="transfer-account-amount dark-green" id="transfer-account-amount"></span>
+                    </small>
+                </div>
+            </div>
+
+        </div>
+
+
+        <label for="bank-transfer-when">Payment time *</label>
+        <select name="bank-transfer-form" id="bank-transfer-schedule" required data-transfer-type="true">
+            <option value="" disabled selected>Select the transfer date</option>
+            <option value="immediately">Send now</option>
+            <option value="future_date">Schedule for later</option>
+        </select>
+
+        <div id="future-schedule-date" class="mt-12 hide">
+            <input type="datetime-local" name="future-schedule-date" id="future-schedule-date-input">
+        </div>
+
+        <div class="flex-grid text-area-wrapper">
+            <label for="note">Note *</label>
+
+
+            <textarea name="note" id="transfer-recipient-note" rows="5" maxlength="250" required></textarea>
+            <p class="num-of-characters-remaining text-align-right character-usage-message">
+                Minimum
+                characters to use: 50</p>
+            <p class="num-of-characters-to-use text-align-right character-usage-message">
+                Number of
+                characters remaining: 255</p>
+
+        </div>
+
+    </div>
+
+
+    <hr class="dividor mt-24">
+    <div class="schedule mt-24">
+
+        <fieldset class="schedule-group">
+            <legend class="header-7 bold">Recurring transfer</legend>
+
+            <p class="text-muted">
+                Choose how often this payment should repeat.
+            </p>
+
+            <div class="schedule-options">
+
+                <label class="schedule-option">
+                    <input type="radio" name="schedule" value="none" checked>
+                    <span>None</span>
+                </label>
+
+                <label class="schedule-option">
+                    <input type="radio" name="schedule" value="daily">
+                    <span>Daily</span>
+                    <small>(Everyday)</small>
+                </label>
+
+                <label class="schedule-option">
+                    <input type="radio" name="schedule" value="weekly">
+                    <span>Weekly</span>
+                    <small>(Every 7 days)</small>
+                </label>
+
+                <label class="schedule-option">
+                    <input type="radio" name="schedule" value="biweekly">
+                    <span>Fortnightly</span>
+                    <small>(Every 14 days)</small>
+
+                </label>
+
+                <label class="schedule-option">
+                    <input type="radio" name="schedule" value="monthly">
+                    <span>Monthly</span>
+                    <small>(The end of every given month)</small>
+                </label>
+
+            </div>
+
+        </fieldset>
+
+    </div>
+
+
+    <hr class="dividor">
+    <div class="flex-row mt-16 mb-16">
+
+        <h2 class="header-7">Future save</h2>
+
+
+        <input type="checkbox" name="save_recipient" id="save-recipient-for-future-transfer">
+
+        <!-- the recipient name will be replaced with real name once the backend is built e.g Save Johnny for future transfer -->
+        <span id="save-recipient-label" class="text-muted">
+            Save this recipient for future transfers
+        </span>
+
+    </div>
+
+
+
+    <div class="daily-limit-container flex flex-space-between mt-48">
+        <div class="daily-limit-info pt-8 pl-8">
+            <span>Daily Transfer Limit </span><span id="daily-transfer-limit" class="light-bold">£5000</span> |
+            <span>Remaining limit </span><span id="daily-transfer-limit" class="light-bold">£2000</span>
+        </div>
+
+        <div class="buttons" id="find-recipient-buttons">
+            <button type="button">Cancel</button>
+            <button type="submit" class="blue-bg white-text capitalise">Review
+                Transfer</button>
+        </div>
+    </div>
+
+</form>
