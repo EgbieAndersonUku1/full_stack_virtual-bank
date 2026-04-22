@@ -3,7 +3,11 @@
 <nav class="dashboard__container__navbar flex flex-space-between">
     <div class="dashbaord__container__nav-head sidebar-brand">
         <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
-        <span class="sidebar-brand__name dashboard-nav-site-name">Virtual Bank</span>
+        <a href="{% url 'bank_home' %}">
+
+            <span class="sidebar-brand__name dashboard-nav-site-name">Virtual Bank</span>
+
+        </a>
     </div>
 
     <div class="dashboard__container__nav-body flex-grid three-column-grid">

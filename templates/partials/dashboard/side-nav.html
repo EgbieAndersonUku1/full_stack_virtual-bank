@@ -35,7 +35,7 @@
         </li>
 
         <li class="sidebar-nav__item">
-            <a href="manage-credit-cards.html" class="sidebar-nav__link">
+            <a href="{% url 'manage_cards' %}" class="sidebar-nav__link">
                 <span class="sidebar-nav__icon" aria-hidden="true">
                     <i class="fa-solid fa-credit-card"></i>
                 </span>
@@ -44,7 +44,7 @@
         </li>
 
         <li class="sidebar-nav__item">
-            <a href="../admin/admin.html" class="sidebar-nav__link">
+            <a href="{% url 'manage_admin' %}" class="sidebar-nav__link">
                 <span class="sidebar-nav__icon" aria-hidden="true">
                     <i class="fa-solid fa-eye"></i>
                 </span>
@@ -53,7 +53,7 @@
         </li>
 
         <li class="sidebar-nav__item">
-            <a href="#" class="sidebar-nav__link">
+            <a href="{% url 'manage_settings' %}" class="sidebar-nav__link">
                 <span class="sidebar-nav__icon" aria-hidden="true">
                     <i class="fa-solid fa-gear"></i>
                 </span>
@@ -61,14 +61,7 @@
             </a>
         </li>
 
-        <li class="sidebar-nav__item">
-            <a href="#" class="sidebar-nav__link">
-                <span class="sidebar-nav__icon" aria-hidden="true">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </span>
-                <span class="sidebar-nav__label">Security</span>
-            </a>
-        </li>
+       
     </ul>
 
 

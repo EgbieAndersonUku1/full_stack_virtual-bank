@@ -1,0 +1,323 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block body %}
+
+
+<section id="dashboard-transfer" aria-label="User dashboard transfer">
+
+    <div class="dashboard__container">
+
+        <!-- Sidebar navigation -->
+
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            <!-- admin panel -->
+            <section id="admin-panel">
+                <div class="admin-panel__container">
+
+                    <p class="mb-24 mt-24 admin-message">You are seeing this page because your are either an
+                        admin or a superuser</p>
+                    <!-- core admin -->
+                    <h1 class="capitalise">Core Admin Tools</h1>
+                    <p class="section-subtitle">Essential tools for managing users, monitoring activity, and
+                        investigating platform
+                        behaviour.</p>
+
+
+                    <div class="cards flex-grid three-column-grid admin-cards">
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/admin_fraud.png' %}" alt="admin fraud img"
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Fraud Monitoring</h1>
+                                <p>
+                                    Detect and investigate suspicious transactions and account activity
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/admin_risk-analysis.png' %}"
+                                    alt="admin risk analysis" class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Risk Scoring</h1>
+                                <p>
+                                    Analyse transactions with automated risk sorting algorithms
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/admin_user-management.png' %}"
+                                    alt="admin user managemenet image" class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">User Management</h1>
+                                <p>Oversee user accounts, roles, and permissions effortlessly.</p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin_kyc_verifications.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">KYC Verifications</h1>
+                                <p>
+                                    Verify customer identities and ensure regulatory compliance.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin_transactions.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Transaction Monitoring</h1>
+                                <p>
+                                    Track and review all account transactions in real time.
+                                </p>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+                    </div>
+
+
+
+                    <!-- financial operations -->
+                    <h1 class="capitalise">Financial Operations</h1>
+                    <p class="section-subtitle">Manage transactions, funding sources, and financial controls
+                        across the platform.</p>
+                    <div class="cards flex-grid three-column-grid admin-cards">
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin__funding.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Funding Sources</h1>
+                                <p>
+                                    Manage and monitor the external funding methods connected to user accounts.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin__payment-process.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Payment Processing</h1>
+                                <p>
+                                    Monitor and manage the processing of transfers, payments, and transaction
+                                    flows.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin_kyc_verifications.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Account Restrictions</h1>
+                                <p>
+                                    Control account restrictions including freezes, transfer limits, and access
+                                    blocks.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin__compliance.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Compliance Monitoring</h1>
+                                <p>
+                                    Track compliance checks and identify transactions that may breach regulatory
+                                    policies.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- platform operations -->
+                    <h1 class="capitalise">Platform Operations</h1>
+                    <p class="section-subtitle">Monitor system performance, infrastructure health, and
+                        operational alerts.</p>
+                    <div class="cards flex-grid three-column-grid admin-cards">
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin__system-check.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">System Health</h1>
+                                <p>
+                                    Monitor the status and performance of core platform services and
+                                    infrastructure.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin__system-alert.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">System Alerts</h1>
+                                <p>
+                                    View and manage alerts triggered by system events, failures, or unusual
+                                    activity.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin_audit.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Audit Logs</h1>
+                                <p>
+                                    Access a complete history of platform events and administrative changes.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin__platform.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Platform Analytics</h1>
+                                <p>
+                                    Analyse platform performance, user activity, and transaction trends.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- security and access -->
+                    <h1 class="capitalise">Security & Access</h1>
+                    <p class="section-subtitle">Control administrator permissions, access rights, and security
+                        events across the
+                        platform.</p>
+                    <div class="cards flex-grid three-column-grid admin-cards">
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin__roles.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Admin Roles</h1>
+                                <p>
+                                    Define and manage administrative roles and permission levels across the
+                                    platform.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin__access-control.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Access Control</h1>
+                                <p>
+                                    Manage access permissions to ensure only authorised administrators can use
+                                    sensitive tools.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static 'images/card-icons/admin__security-events.png' %}" alt=""
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Security Events</h1>
+                                <p>
+                                    Monitor and review security-related activity such as login attempts and
+                                    access changes.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </section>
+
+
+
+        </section>
+
+
+
+    </div>
+
+</section>
+
+
+
+{% endblock body %}
+
+{% block script %}
+
+
+
+{% endblock script %}
