@@ -253,6 +253,10 @@ html {
     padding-right: var(--space-8);
 }
 
+.pr-16 {
+    padding-right: var(--space-16);
+}
+
 .pr-24 {
     padding-right: var(--space-24);
 }
@@ -571,6 +575,13 @@ img:hover {
     grid-template-rows: auto;
 
 }
+
+.two-column-80_20_grid {
+    grid-template-columns: 80% 20%;
+    grid-template-rows: auto;
+
+}
+
 
 /* Site logo */
 
@@ -2984,7 +2995,7 @@ time {
 
 .dashboard__container__main__wrapper {
     display: grid;
-    grid-template-columns: 75% 25%;
+    grid-template-columns: 95% 5%;
     grid-template-rows: auto;
     column-gap: var(--space-8);
 }
@@ -4306,3 +4317,129 @@ clicks the button
     font-size: 0.95rem;
     text-align: center;
 }
+
+
+
+/* Account settings */
+
+.account-settings__container .tabs .tab:not(:last-child) {
+    border-right: 2px solid lavender;
+    text-align: center;
+}
+
+.account-settings__container .tabs .tab {
+    text-align: center;
+    cursor: pointer;
+}
+
+
+.profile-img {
+    height: 100px;
+}
+
+
+.account-settings__container {
+    border: 1px solid lavender;
+    padding: var(--space-16);
+    margin: var(--space-24);
+    background: ghostwhite;
+    box-shadow: var(--box-shadow-primary);
+}
+
+
+.profile__container {
+    padding: var(--space-24);
+    background: white;
+}
+
+
+
+.profile-stat-container  {
+    border-top: 2px solid lavender;
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-16);
+    position: relative;
+}
+
+.profile-stat-container + .profile-stat-container {
+    border-top: 2px solid lavender;
+}
+
+
+.profile-label {
+    font-weight: 600;
+    text-transform: capitalize;
+
+}
+
+
+#profile,
+.profile-p-label-value {
+    display: none;
+}
+
+#profile.show,
+.profile-p-label-value.show {
+    display: block;
+}
+
+
+
+
+
+.profile-stats__spinner {
+    height: 30px;
+    width: 30px;
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    display: none;
+
+}
+
+
+.profile-stats input,
+.profile-stats select,
+.profile-stats {
+    width: 100%;
+}
+
+
+
+#profile,
+#security,
+#verified-documents,
+#notifications,
+#bank-accounts,
+.profile-stats select,
+.profile-stats input  {
+    display: none;
+}
+
+#profile.show,
+#security.show,
+#verified-documents.show,
+#notifications.show,
+#bank-accounts.show,
+.profile-stats select.show,
+.profile-stats input.show {
+    display: block;
+}
+
+
+.border-box {
+    border: 2px solid lavender;
+    padding: 16px;
+    margin-top: 8px;
+    box-shadow: var(--box-shadow-secondary);
+    background: white;
+}
+
+
+#two-fa-description {
+    width: 80%;
+}
+
+
+
+ 

@@ -1,0 +1,156 @@
+<!--
+Dashboard Component: Wallet / Bank Disconnection Confirmation Dialog
+
+This component provides a secure confirmation dialog used when a user
+attempts to disconnect a linked wallet or external bank account from
+the virtual banking dashboard.
+
+Purpose
+-------
+Prevents accidental disconnection of financial integrations by requiring
+explicit user confirmation before the system removes the connection.
+
+The dialog informs the user of the consequences and requires them to
+type a confirmation phrase before the action can proceed.
+
+Structure
+---------
+1. Modal Container
+   - Rendered as an accessible dialog using:
+        role="dialog"
+        aria-modal="true"
+   - Includes labelled title and description for assistive technologies.
+
+2. Warning Header
+   - Displays a warning icon and confirmation question asking whether
+     the user truly wants to disconnect the wallet or bank account.
+
+3. Disconnection Consequences
+   Lists the effects of disconnecting the account:
+
+   • Synchronisation and transaction display will stop
+   • Automatic transaction updates will stop
+   • Historical financial data will be removed from the application
+   • The user must reconnect the account to restore access
+
+4. Confirmation Instruction
+   - Users must type the word **DISCONNECT** to verify their intent.
+   - This prevents accidental account removal.
+
+5. Confirmation Input Field
+   - Secure input field requiring the exact confirmation phrase.
+   - Includes accessibility support and validation constraints.
+
+6. Footer Actions
+   Provides final user controls:
+
+   • Cancel
+        - Closes the dialog without making changes.
+
+   • Disconnect account
+        - Initiates the disconnection process once confirmation
+          requirements are satisfied.
+
+
+User Flow
+---------
+Typical disconnection process:
+
+1. User initiates a disconnect action from the account management panel.
+2. The confirmation dialog appears.
+3. User reviews the consequences of disconnecting the account.
+4. User types "DISCONNECT" to confirm intent.
+5. User selects either Cancel or Disconnect account.
+
+Notes
+-----
+This component is intended for destructive actions that remove
+financial integrations.
+
+Actual disconnection operations should be handled by backend services
+that revoke the connection and remove associated synchronised data.
+Sensitive information and credentials must never be exposed in the UI.
+-->
+
+<section id="wallet-disconnection-confirmation" role="dialog" aria-modal="true"
+    aria-labelledby="wallet-disconnect-modal-title" aria-describedby="wallet-disconnect-warning">
+
+    <!-- Header -->
+    <div class="flex flex-space-between pl-24 pt-8 pb-4 pr-24 modal-top">
+
+        <h2 id="wallet-disconnect-modal-title" class="capitalise header-8 mt-8 mb-8 light-bold">
+            Disconnect wallet or bank account
+        </h2>
+
+        <button aria-label="Close disconnect confirmation dialog" class="modal-close-btn"
+            id="disconnection-modal-close-btn" type="button">
+            <span aria-hidden="true">✕</span>
+        </button>
+    </div>
+
+    <div class="wallet-disconnection-confirmation__container">
+
+        <!-- Warning block -->
+        <div class="flex-grid disconnection-info__container mt-16 mb-16">
+
+            <div class="disconnection-info-icon center">
+                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+            </div>
+
+            <div class="disconnection-description">
+
+                <h3 id="wallet-disconnect-title" class="header-9 disconnect-heading light-bold">
+                    Are you sure you want to disconnect this wallet from your external bank account?
+                </h3>
+
+            </div>
+        </div>
+
+        <!-- Consequences -->
+        <ul id="wallet-disconnect-warning" class="mt-4 ml-16 mr-16 mb-16 pt-16 pb-16 flex-grid">
+            <li>Synchronisation and display will stop</li>
+            <li>Transaction updates will stop</li>
+            <li>Historical financial data will be removed</li>
+            <li>You must reconnect to access data again</li>
+        </ul>
+
+        <!-- Confirmation instruction -->
+        <p id="disconnect-confirm-instruction" class="ml-16">
+            Please type <strong>DISCONNECT</strong> below to confirm.
+        </p>
+
+        <!-- Input -->
+        <div id="confirmation-disconnection-input-field" class="flex-grid two-column-20_80_grid ml-16 mr-16 mb-16 mt-8">
+
+            <div class="lock center p-8">
+                <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                <span class="sr-only">Secure confirmation input</span>
+            </div>
+
+            <div class="form-row">
+                <label for="wallet-disconnect" class="sr-only">
+                    Type DISCONNECT to confirm bank disconnection
+                </label>
+
+                <input type="text" name="wallet-disconnect" id="wallet-disconnect-inputfield" maxlength="10"
+                    minlength="10" aria-describedby="disconnect-confirm-instruction" autocomplete="off" required>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="wallet-disconnection-confirmation__footer" class="flex flex-end mr-16 mb-24">
+
+        <button type="button" class="mr-8" id="cancel-disconnect-btn">
+            Cancel
+        </button>
+
+        <button type="button" id="confirm-disconnect-btn">
+            Disconnect account
+        </button>
+
+    </div>
+
+</section>

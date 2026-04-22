@@ -1,0 +1,174 @@
+<!--
+Dashboard Component: Banking Options Grid
+
+This component presents a set of quick-access banking actions
+available to the user within the dashboard. Each option is displayed
+as a card that acts as a navigation entry point to a specific
+financial feature.
+
+Purpose
+-------
+Provides users with a clear and visually organised way to access
+core banking features such as adding funds, transferring money,
+managing credit cards, or interacting with their wallet.
+
+The card layout enables quick recognition and easy navigation
+within the dashboard interface.
+
+Structure
+---------
+1. Section Container
+   - Encapsulated in a semantic <section> element.
+   - Uses aria-labelledby to associate the section with a heading
+     for accessibility purposes.
+
+
+2. Individual Option Card
+   Each card represents a primary banking action.
+
+   Card structure includes:
+
+   • Card Head
+        Displays a visual icon representing the feature.
+
+   • Card Body
+        Displays the main action title.
+
+   • Card Footer
+        Provides a short descriptive explanation of the feature.
+
+3. Available Banking Actions
+   The component currently includes the following options:
+
+   Add Funds
+        Allows the user to deposit funds into their account.
+
+   Transfer Money
+        Enables transferring money to another bank account.
+
+   Credit Cards
+        Provides access to credit card management features.
+
+   Wallet Transfer
+        Allows users to move funds between their bank account
+        and their connected wallet.
+
+4. Navigation Links
+   Each card is wrapped in a clickable link element that directs
+   the user to the corresponding feature or workflow.
+   
+
+User Flow
+---------
+Typical interaction process:
+
+1. User opens the dashboard.
+2. The banking options grid is displayed.
+3. The user selects a banking action by clicking a card.
+4. The system navigates to the selected financial feature.
+
+Design Considerations
+---------------------
+The card-based layout improves usability by:
+
+• Providing visually distinct actions
+• Supporting quick scanning of available features
+• Keeping the dashboard organised and uncluttered
+
+Icons are used to reinforce feature recognition and
+improve the overall visual hierarchy.
+
+Security Notes
+--------------
+This component provides only navigation to banking features.
+
+Actual financial operations such as transfers or fund deposits
+should be handled through secure backend services and validated
+financial APIs.
+-->
+<section id="bank-options" aria-labelledby="bank-options-title">
+    <div class="bank-options__container mb-24 mt-16">
+
+        <!-- Section Heading for Screen Readers -->
+        <h2 id="bank-options-title" class="sr-only">Banking Options</h2>
+
+        <ul class="bank-options__cards flex-grid four-column-grid" role="list">
+
+            <li>
+                <a href="#" class="bank-option-card-link" aria-label="Add funds to your account">
+                    <div class="bank-options__card center">
+                        <div class="card-head">
+                            <img src="/static/images/card-icons/wallet.png" alt="" class="bank-option-img"
+                                aria-hidden="true">
+                        </div>
+
+                        <div class="card-body">
+                            <h3 class="header-9">Add Funds</h3>
+                        </div>
+
+                        <div class="card-footer">
+                            <small>Top up your account</small>
+                        </div>
+                    </div>
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="bank-option-card-link" aria-label="Transfer money to another account">
+                    <div class="bank-options__card center">
+                        <div class="card-head">
+                            <img src="/static/images/card-icons/transfer.png" alt="" class="bank-option-img"
+                                aria-hidden="true">
+                        </div>
+
+                        <div class="card-body">
+                            <h3 class="header-9">Transfer Money</h3>
+                        </div>
+
+                        <div class="card-footer">
+                            <small>Send to another account</small>
+                        </div>
+                    </div>
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="bank-option-card-link" aria-label="Manage your credit cards">
+                    <div class="bank-options__card center">
+                        <div class="card-head">
+                            <img src="/static/images/card-icons/credit-card.png" alt="" class="bank-option-img"
+                                aria-hidden="true">
+                        </div>
+
+                        <div class="card-body">
+                            <h3 class="header-9">Credit Cards</h3>
+                        </div>
+
+                        <div class="card-footer">
+                            <small>Manage your cards</small>
+                        </div>
+                    </div>
+                </a>
+            </li>
+
+            <li>
+                <a href="#" class="bank-option-card-link" aria-label="Transfer money to your wallet">
+                    <div class="bank-options__card center">
+                        <div class="card-head">
+                            <img src="/static/images/card-icons/wallet-activity.png" alt="" class="bank-option-img"
+                                aria-hidden="true">
+                        </div>
+
+                        <div class="card-body">
+                            <h3 class="header-9">Wallet Transfer</h3>
+                        </div>
+
+                        <div class="card-footer">
+                            <small>Transfer to wallet</small>
+                        </div>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+</section>

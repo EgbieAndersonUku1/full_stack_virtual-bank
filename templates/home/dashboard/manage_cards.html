@@ -1,0 +1,480 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block body %}
+
+
+
+<section id="dashboard-transfer" aria-label="User dashboard transfer">
+
+    <div class="dashboard__container">
+
+        <!-- Sidebar navigation -->
+
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/dashboard/_navbar.html" %}
+
+            <!-- transfer money -->
+
+               <!-- order new card section -->
+                    <section class="card order-card flex-grid two-column-25_75_grid p-8 mb-8">
+
+    
+                        <div class="order-card-visual flex center">
+                            <div class="add-card-icon">+</div>
+                        </div>
+
+                        <div class="credit-card-info pl-16 pr-24 pt-24">
+                            <h2 class="header-7">Order new card</h2>
+
+                            <p class="text-muted">
+                                Request a new physical or virtual credit card.
+                            </p>
+
+                            <div class="card-actions manage-card">
+                                <button class="btn-primary">Order card</button>
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <!-- card management -->
+                    <section class="credit-menu p-16 mt-8 white-bg mb-8">
+                        <h1 class="capitalise header-7 light-bold mb-8">Credit card management</h1>
+
+                        <p>Manage your cards or add a new one.</p>
+                        <p>Select up to three cards to show on your dashboard.</p>
+                        <p class="dashboard-limit mt-8">
+                            <span class="bold"> Dashboard cards:</span>
+                            <span id="num-of-card-selected">3</span> / <span id="maximum-cards">3</span> selected
+                        </p>
+
+                    </section>
+
+
+                    <!-- list of cards to manage -->
+                    <section id="my-cards" aria-labelledby="credit-cards-heading">
+                        <div class="my_cards__container p-16">
+
+                            <h2 class="pl-16 header-7 capitalise light-bold">Credit cards</h2>
+                            <hr class="dividor">
+
+                            <!-- bank card 1 -->
+                            <div class="card flex-grid two-column-25_75_grid p-8 mb-8">
+
+                                <!-- bank card -->
+                                <div class="bank-card credit-visa-card" role="region"
+                                    aria-label="Atlas Bank Visa Credit Card, balance £100.00" data-card-id="card_92f3a1"
+                                    data-issued="2026-02-11" data-is-active="true" data-card-brand="visa"
+                                    data-creation-date="2026-02-11" data-cvc="***">
+                                    <div class="card-head">
+                                        <div class="card-head-info">
+                                            <h3>Atlas Bank</h3>
+                                            <p class="bank-card-amount">£100.00</p>
+                                        </div>
+
+                                        <div class="card-type-logo flex flex-end">
+                                            <img src="/static/images/icons/visa.svg" alt="Visa logo">
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="chip">
+                                            <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
+                                        </div>
+
+                                        <div class="credit-transaction-type flex flex-end">
+                                            <span class="card-type">Credit</span>
+                                        </div>
+
+                                        <div class="card-number flex flex-end">
+                                            <span class="card-number">************1224</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer flex flex-space-between">
+                                        <div class="card-name">Johnathan Doe</div>
+                                        <div class="card-expiry-date">
+                                            Expiry date: January 2029
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- bank card info-->
+                                <div class="credit-card-info pl-16 pr-24 pt-24">
+                                    <div class="credit-card-info__head flex flex-space-between">
+                                        <h2 class="header-7">Atlas Bank</h2>
+                                        <p class="credit-card-info-amount header-7 bold">£100</p>
+                                    </div>
+
+                                    <hr class="dividor">
+                                    <div class="credit-card-info__body flex flex-space-between">
+
+                                        <div class="credit-card-quick-view">
+                                            <span class="bold">Bank Balance: £1,250.00 </span>
+                                            <span class="bold">Expiry date: January 2029</span>
+                                            <span class="bold">Status: <span
+                                                    class="text-muted active-text bold">Verified</span></span>
+                                        </div>
+
+                                        <div class="show-in-dashboard-container">
+                                            <form action="" method="post" class="show-in-dashboard-form">
+                                                <label for="credit-card-1" class="text-muted">Show in dashboard</label>
+                                                <input type="checkbox" name="show-in-dashboard" id="credit-card-1">
+                                            </form>
+                                        </div>
+
+                                    </div>
+
+                                    <hr class="dividor">
+
+                                    <div class="card-actions manage-card">
+                                        <button class="btn-secondary">View transactions</button>
+                                        <button class="btn-warning">Freeze card</button>
+                                        <button class="btn-danger">Remove card</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- bank card 2 -->
+                            <div class="card flex-grid two-column-25_75_grid p-8 mb-8">
+
+                                <div class="bank-card credit-mastercard-card" role="region"
+                                    aria-label="Atlas Bank Mastercard Credit Card, balance £7.26"
+                                    data-card-id="card_92f3a2" data-issued="2026-02-12" data-is-active="true"
+                                    data-card-brand="mastercard" data-creation-date="2026-02-11" data-cvc="***">
+                                    <div class="card-head">
+                                        <div class="card-head-info">
+                                            <h3>Atlas Bank</h3>
+                                            <p class="bank-card-amount">£0.00</p>
+                                        </div>
+
+                                        <div class="card-type-logo flex flex-end">
+                                            <img src="/static/images/icons/mastercard.svg" alt="Mastercard logo">
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="chip">
+                                            <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
+                                        </div>
+
+                                        <div class="credit-transaction-type flex flex-end">
+                                            <span class="card-type">Credit</span>
+                                        </div>
+
+                                        <div class="card-number flex flex-end">
+                                            <span class="card-number">************3336</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer flex flex-space-between">
+                                        <div class="card-name">Jane Doe</div>
+                                        <div class="card-expiry-date">
+                                            <p>Expiry date: January 2028</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="credit-card-info pl-16 pr-24 pt-24">
+                                    <div class="credit-card-info__head flex flex-space-between">
+                                        <h2 class="header-7">Atlas Bank</h2>
+                                        <p class="credit-card-info-amount header-7 bold">£0.00</p>
+                                    </div>
+
+                                    <hr class="dividor">
+                                    <div class="credit-card-info__body flex flex-space-between">
+
+                                        <div class="credit-card-quick-view">
+                                            <span class="bold">Bank Balance: £1,250.00 </span>
+                                            <span class="bold">Expiry date: January 2028</span>
+                                            <span class="bold">Status: <span
+                                                    class="text-muted active-text bold">Verified</span></span>
+                                        </div>
+
+                                        <div class="show-in-dashboard-container">
+                                            <form action="" method="post" class="show-in-dashboard-form">
+                                                <label for="credit-card-2" class="text-muted">Show in dashboard</label>
+                                                <input type="checkbox" name="show-in-dashboard" id="credit-card-2">
+                                            </form>
+                                        </div>
+
+                                    </div>
+
+                                    <hr class="dividor">
+
+                                    <div class="card-actions manage-card">
+                                        <button class="btn-secondary">View transactions</button>
+                                        <button class="btn-warning">Freeze card</button>
+                                        <button class="btn-danger">Remove card</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- bank card 3 -->
+                            <div class="card flex-grid two-column-25_75_grid p-8 mb-8">
+
+                                <div class="bank-card credit-discover-card" role="region"
+                                    aria-label="Atlas Bank Discover Debit Card, balance £2.00"
+                                    data-card-id="card_92f3a3" data-issued="2026-02-12" data-is-active="false"
+                                    data-card-brand="discover" data-creation-date="2026-02-11" data-cvc="***">
+                                    <div class="card-head">
+                                        <div class="card-head-info">
+                                            <h3>Atlas Bank</h3>
+                                            <p class="bank-card-amount">£2.00</p>
+                                        </div>
+
+                                        <div class="card-type-logo flex flex-end">
+                                            <img src="/static/images/icons/discover.svg" alt="Discover logo">
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="chip">
+                                            <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
+                                        </div>
+
+                                        <div class="credit-transaction-type flex flex-end">
+                                            <span class="card-type">Credit</span>
+                                        </div>
+
+                                        <div class="card-number flex flex-end">
+                                            <span class="card-number">***********9991</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer flex flex-space-between">
+                                        <div class="card-name">Johnathan Doe</div>
+                                        <div class="card-expiry-date">
+                                            <p>Expiry date: January 2027</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="credit-card-info pl-16 pr-24 pt-24">
+                                    <div class="credit-card-info__head flex flex-space-between">
+                                        <h2 class="header-7">Atlas Bank</h2>
+                                        <p class="credit-card-info-amount header-7 bold">£2.00</p>
+                                    </div>
+
+                                    <hr class="dividor">
+                                    <div class="credit-card-info__body flex flex-space-between">
+
+                                        <div class="credit-card-quick-view">
+                                            <span class="bold">Bank Balance: £1,250.00 </span>
+                                            <span class="bold">Expiry date: January 2027</span>
+                                            <span class="bold">Status: <span
+                                                    class="text-muted active-text bold">Verified</span></span>
+                                        </div>
+
+                                        <div class="show-in-dashboard-container">
+                                            <form action="" method="post" class="show-in-dashboard-form">
+                                                <label for="credit-card-3" class="text-muted">Show in dashboard</label>
+                                                <input type="checkbox" name="show-in-dashboard" id="credit-card-3">
+                                            </form>
+                                        </div>
+
+                                    </div>
+
+                                    <hr class="dividor">
+
+                                    <div class="card-actions manage-card">
+                                        <button class="btn-secondary">View transactions</button>
+                                        <button class="btn-warning">Freeze card</button>
+                                        <button class="btn-danger">Remove card</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- bank card 4 -->
+                            <div class="card flex-grid two-column-25_75_grid p-8 mb-8">
+
+                                <div class="bank-card credit-visa-card" role="region"
+                                    aria-label="Atlas Bank Visa Credit Card, balance £100.00" data-card-id="card_92f3a4"
+                                    data-issued="2026-02-11" data-is-active="true" data-card-brand="visa"
+                                    data-creation-date="2026-02-11" data-cvc="***">
+                                    <div class="card-head">
+                                        <div class="card-head-info">
+                                            <h3>Atlas Bank</h3>
+                                            <p class="bank-card-amount">£5000.00</p>
+                                        </div>
+
+                                        <div class="card-type-logo flex flex-end">
+                                            <img src="/static/images/icons/visa.svg" alt="Visa logo">
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="chip">
+                                            <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
+                                        </div>
+
+                                        <div class="credit-transaction-type flex flex-end">
+                                            <span class="card-type">Credit</span>
+                                        </div>
+
+                                        <div class="card-number flex flex-end">
+                                            <span class="card-number">************1744</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer flex flex-space-between">
+                                        <div class="card-name">Johnathan Doe</div>
+                                        <div class="card-expiry-date">
+                                            Expiry date: January 2029
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="credit-card-info pl-16 pr-24 pt-24">
+                                    <div class="credit-card-info__head flex flex-space-between">
+                                        <h2 class="header-7">Atlas Bank</h2>
+                                        <p class="credit-card-info-amount header-7 bold">£5000</p>
+                                    </div>
+
+                                    <hr class="dividor">
+                                    <div class="credit-card-info__body flex flex-space-between">
+
+                                        <div class="credit-card-quick-view">
+                                            <span class="bold">Bank Balance: £1,250.00 </span>
+                                            <span class="bold">Expiry date: January 2029</span>
+                                            <span class="bold">Status: <span
+                                                    class="text-muted active-text bold">Verified</span></span>
+                                        </div>
+
+                                        <div class="show-in-dashboard-container">
+                                            <form action="" method="post" class="show-in-dashboard-form">
+                                                <label for="credit-card-4" class="text-muted">Show in dashboard</label>
+                                                <input type="checkbox" name="show-in-dashboard" id="credit-card-4">
+                                            </form>
+                                        </div>
+
+                                    </div>
+
+                                    <hr class="dividor">
+
+                                    <div class="card-actions manage-card">
+                                        <button class="btn-secondary">View transactions</button>
+                                        <button class="btn-warning">Freeze card</button>
+                                        <button class="btn-danger">Remove card</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- bank card 5 -->
+                            <div class="card flex-grid two-column-25_75_grid p-8 mb-8">
+
+                                <div class="bank-card credit-visa-card" role="region"
+                                    aria-label="Atlas Bank Visa Credit Card, balance £100.00" data-card-id="card_92f3a5"
+                                    data-issued="2026-02-11" data-is-active="true" data-card-brand="visa"
+                                    data-creation-date="2026-02-11" data-cvc="***">
+                                    <div class="card-head">
+                                        <div class="card-head-info">
+                                            <h3>Atlas Bank</h3>
+                                            <p class="bank-card-amount">£1000.00</p>
+                                        </div>
+
+                                        <div class="card-type-logo flex flex-end">
+                                            <img src="/static/images/icons/visa.svg" alt="Visa logo">
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="chip">
+                                            <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
+                                        </div>
+
+                                        <div class="credit-transaction-type flex flex-end">
+                                            <span class="card-type">Credit</span>
+                                        </div>
+
+                                        <div class="card-number flex flex-end">
+                                            <span class="card-number">************7124</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer flex flex-space-between">
+                                        <div class="card-name">Johnathan Doe</div>
+                                        <div class="card-expiry-date">
+                                            Expiry date: January 2029
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="credit-card-info pl-16 pr-24 pt-24">
+                                    <div class="credit-card-info__head flex flex-space-between">
+                                        <h2 class="header-7">Atlas Bank</h2>
+                                        <p class="credit-card-info-amount header-7 bold">£1000</p>
+                                    </div>
+
+                                    <hr class="dividor">
+                                    <div class="credit-card-info__body flex flex-space-between">
+
+                                        <div class="credit-card-quick-view">
+                                            <span class="bold">Bank Balance: £1,250.00 </span>
+                                            <span class="bold">Expiry date: January 2029</span>
+                                            <span class="bold">Status: <span
+                                                    class="text-muted deactivate-text bold">Unverified</span></span>
+                                        </div>
+
+                                        <div class="show-in-dashboard-container">
+                                            <form action="" method="post" class="show-in-dashboard-form">
+                                                <label for="credit-card-5" class="text-muted">Show in dashboard</label>
+                                                <input type="checkbox" name="show-in-dashboard" id="credit-card-5">
+                                            </form>
+                                        </div>
+
+                                    </div>
+
+                                    <hr class="dividor">
+
+                                    <div class="card-actions manage-card">
+                                        <button class="btn-secondary">View transactions</button>
+                                        <button class="btn-warning">Freeze card</button>
+                                        <button class="btn-danger">Remove card</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="credit-card-setting-info pl-24 m-24">
+                            <p>Tip: You can manage your credit cards settings, set credit card limits, and make payments
+                                right from this page</p>
+                            <p>Click on <a href="card-transaction-limit.html">set card limits her</a> to proceed</p>
+                        </div>
+
+                    </section>
+
+
+        </section>
+
+      
+
+
+    </div>
+
+</section>
+
+
+
+
+{% endblock body %}
+
+{% block script %}
+
+
+
+{% endblock script %}

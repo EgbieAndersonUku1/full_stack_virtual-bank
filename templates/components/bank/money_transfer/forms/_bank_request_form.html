@@ -1,0 +1,98 @@
+<form action="" method="post" id="bank-request-form" class="flex-grid">
+
+
+    <div class="account-wrapper">
+
+        <h4 class="mt-24">Account details</h4>
+        <hr class="dividor mb-16">
+
+        <div class="form-row mt-24">
+            <label for="first-name" class="mt-8">Recipient name</label>
+            <input type="text" name="name" id="name" maxlength="30" required>
+        </div>
+
+
+        <fieldset class="form-row mt-24">
+
+            <legend>Sort code *</legend>
+
+            <div class="flex-grid six-column-grid sortcode-fields request-recipient-account">
+                <input type="text" name="sortcode_1" id="request_recipient_sortcode_1" maxlength="1"
+                    aria-label="Sort code digit 1" required>
+
+                <input type="text" name="sortcode_2" id="request_recipient_sortcode_2" maxlength="1"
+                    aria-label="Sort code digit 2" required>
+
+                <input type="text" name="sortcode_3" id="request_recipient_sortcode_3" maxlength="1"
+                    aria-label="Sort code digit 3" required>
+
+                <input type="text" name="sortcode_4" id="request_recipient_sortcode_4" maxlength="1"
+                    aria-label="Sort code digit 4" required>
+
+                <input type="text" name="sortcode_5" id="request_recipient_sortcode_5" maxlength="1"
+                    aria-label="Sort code digit 5" required>
+
+                <input type="text" name="sortcode_6" id="request_recipient_sortcode_6" maxlength="1"
+                    aria-label="Sort code digit 6" required>
+            </div>
+        </fieldset>
+
+
+        <fieldset class="form-row">
+            <legend class="mt-8">Account number *</legend>
+
+            <div class="flex-grid six-column-grid account-fields request-recipient-account">
+                <input type="text" name="account_digit_1" id="request_recipient_account_1" maxlength="1"
+                    aria-label="Account number digit 1" required>
+
+                <input type="text" name="account_digit_2" id="request_recipient_account_2" maxlength="1"
+                    aria-label="Account number digit 2" required>
+
+                <input type="text" name="account_digit_3" id="request_recipient_account_3" maxlength="1"
+                    aria-label="Account number digit 3" required>
+
+                <input type="text" name="account_digit_4" id="request_recipient_account_4" maxlength="1"
+                    aria-label="Account number digit 4" required>
+
+                <input type="text" name="account_digit_5" id="request_recipient_account_5" maxlength="1"
+                    aria-label="Account number digit 5" required>
+
+                <input type="text" name="account_digit_6" id="request_recipient_account_6" maxlength="1"
+                    aria-label="Account number digit 6" required>
+
+                <input type="text" name="account_digit_7" id="request_recipient_account_7" maxlength="1"
+                    aria-label="Account number digit 7" required>
+
+                <input type="text" name="account_digit_8" id="request_recipient_account_8" maxlength="1"
+                    aria-label="Account number digit 8" required>
+            </div>
+        </fieldset>
+    </div>
+
+    <hr class="dividor mt-8">
+
+    <div class="flex-grid text-area-wrapper mt-24">
+
+        <label for="note">Request funds *</label>
+
+
+        <textarea name="note" id="request-note" rows="5" maxlength="250" required
+            placeholder="Hey, I just wanted to remind you that you still owe me money for dinner last week..."></textarea>
+
+        <p class="num-of-characters-remaining text-align-right character-usage-message">
+            Minimum
+            characters to use: 50
+        </p>
+
+        <p class="num-of-characters-to-use text-align-right character-usage-message">
+            Number of
+            characters remaining: 255
+        </p>
+
+    </div>
+
+    <div class="flex flex-end mt-16">
+        <button type="submit" class="white-text" id="request-funds-btn">request
+            funds</button>
+    </div>
+</form>

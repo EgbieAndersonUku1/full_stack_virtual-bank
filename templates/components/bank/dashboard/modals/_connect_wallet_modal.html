@@ -1,0 +1,529 @@
+<!--
+Dashboard Component: Connect Wallet Modal
+
+This component provides a multi-step modal interface that allows users
+to securely link an external wallet to their virtual bank account.
+
+Purpose
+-------
+Enables users to connect a digital wallet so that wallet balances and
+transactions can be integrated with their virtual bank account.
+
+Once connected, users can:
+• View wallet transaction history
+• Synchronise wallet activity with their bank dashboard
+• Transfer funds between wallet and bank account (if supported)
+
+Structure
+---------
+1. Modal Container
+   - Rendered as an accessible dialog using:
+        role="dialog"
+        aria-modal="true"
+   - Includes modal header with title and close button.
+
+2. Step 1: Wallet Selection
+   - Introduces the wallet linking process.
+   - Displays the wallet option available for connection.
+   - Shows progress indicator (Step 1 of 3).
+   - Continue button advances to step two.
+
+3. Step 2: Connection Method Selection
+   Users choose how to authenticate the wallet connection:
+
+   • Connect with Wallet ID (recommended)
+   • Enter wallet credentials manually
+
+   Each option includes:
+   - Description of the authentication method
+   - Selection button to proceed.
+
+4. Step 3: Review and Confirmation
+   - Displays selected wallet details.
+   - Requires user authorisation via confirmation checkbox.
+   - Provides final action buttons:
+        • Cancel
+        • Link account
+
+5. Wallet ID Authentication Section
+   Provides secure verification using a 12-digit wallet ID.
+
+   Features:
+   • Segmented input fields for each digit
+   • Verification submission
+   • Authentication progress indicator
+   • Success confirmation message
+
+6. Manual Wallet Credential Verification
+   Alternative authentication method allowing users to enter:
+
+   • Email
+   • Username
+   • Password
+
+   Includes validation messaging and privacy notice.
+
+
+User Flow
+---------
+Typical wallet linking process:
+
+1. User opens the connect wallet modal.
+2. Selects the wallet to link.
+3. Chooses authentication method.
+4. Completes verification (Wallet ID or manual credentials).
+5. Reviews wallet details and confirms the connection.
+
+
+Notes
+-----
+This component is designed for use within the virtual banking dashboard
+and should be triggered by wallet connection actions such as
+"Link Wallet" or "Add Wallet".
+
+Wallet verification and credential validation should be handled
+securely by backend services or API endpoints. Sensitive information
+must never be stored directly within the client interface.
+-->
+
+{% load static %}
+
+
+<section id="connect-wallet-modal" role="dialog" aria-modal="true" aria-labelledby="connect-wallet-title">
+    <div class="connect-wallet-modal__container">
+
+        <div class="flex flex-space-between pl-24 pt-8 pb-4 pr-24 modal-top">
+            <h2 id="connect-wallet-title" class="capitalise">Link new wallet</h2>
+            <button aria-label="Close modal" class="modal-close-btn" id="connect-modal-close-btn">
+                ✕
+            </button>
+        </div>
+
+
+        <!-- step one -->
+        <div id="connect-wallet-modal__step-one" class="p-24">
+            <h3 class="capitalise">Choose Your new Wallet</h3>
+            <p class="subtitle mt-8">
+                Follow these simple steps to securely link your wallet to your bank account.
+            </p>
+            <p class="subtitle">
+                Once linked, you will be able to view all wallet transactions, including your past
+                activity.
+            </p>
+
+            <hr class="divider">
+
+            <p class="step mt-24 mb-8">
+                Step 1: <span> Let’s begin linking</span>
+            </p>
+
+            <div class="choose-wallet">
+                <div class="wallet-active flex-grid two-column-20_80_grid">
+                    <div class="my-wallet-img mt-8 center">
+                        <img src="{% static '/images/card-icons/wallet.png' %}" alt="Wallet icon" class="bank-option-img">
+                    </div>
+
+                    <div class="choice flex flex-space-between">
+                        <div class="flex-box mt-16">
+                            <h4>Wallet</h4>
+                            <small>
+                                <span class="check-mark mr-4" id="wallet-to-connect-checkmark" aria-checked="true"
+                                    role="status"><i class="fas fa-check"></i>
+                                </span> Wallet option
+                            </small>
+                        </div>
+
+                        <div class="check-mark mt-24" aria-hidden="true" id="choice-check-mark">
+                            ✓
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="completion-steps" class="mt-8">
+                <div class="completion-steps" aria-live="polite">
+                    <div class="step">Step 1 of 3</div>
+                    <div id="completion-percentage">
+                        <div class="percentage-container step1-percentage"></div>
+                    </div>
+                </div>
+
+                <button id="connect-wallet-step1-btn" class="btn-large mt-16 connect-wallet__continue-btn">
+                    Continue
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="connect-wallet-modal__step-two" class="p-24">
+
+            <a href="#" id="wallet-modal-previous-step1" class="mb-8">&lt; back</a>
+            <h3 id="step-two-title">Link Your Wallet</h3>
+
+            <p class="subtitle mt-8">
+                Select a method to securely link your wallet to your bank account.
+            </p>
+
+            <hr class="dividor" aria-hidden="true">
+
+            <p class="step mt-24 mb-8">
+                Step 2 of 3: <span>Link bank account</span>
+            </p>
+
+            <div class="choose-wallet-connection">
+
+                <div class="flex-grid">
+
+                    <!-- Option 1 -->
+                    <div id="wallet-option__one" class="wallet-active our-recommendation choose-wallet-option"
+                        role="group" aria-labelledby="wallet-option-id">
+
+                        <div class="wallet-option__one_logo">
+                            <img src="{% static '/images/card-icons/security-badge.png' %}" alt="Secure wallet connection icon"
+                                class="wallet-option-img">
+                        </div>
+
+                        <div class="wallet-option__one_description mt-16">
+
+                            <h4 id="wallet-option-id" class="capitalise light-bold">
+                                Connect with Wallet ID
+                                <span class="recommendation">(Recommended)</span>
+                            </h4>
+
+                            <p class="pt-4 wallet-option-info">
+                                Securely connect using wallet ID credentials for a fast and secure
+                                connection.
+                            </p>
+
+                        </div>
+
+                        <div class="wallet-option__one_confirmation mr-8 mt-24">
+
+                            <button class="blue-bg white-text center btn-large wallet-option-btn"
+                                id="wallet-id-connect">
+                                Select wallet id connection
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Option 2 -->
+                    <div id="wallet-option__two" class="mt-16 choose-wallet-option" role="group"
+                        aria-labelledby="wallet-option-manual">
+
+                        <div class="wallet-option__one_logo center">
+                            <i class="fa fa-pencil" aria-hidden="true" id="wallet-option-icon"></i>
+                        </div>
+
+                        <div class="wallet-option__two_description">
+
+                            <h4 id="wallet-option-manual" class="capitalise light-bold">
+                                Enter wallet credentials manually
+                            </h4>
+
+                            <p class="pt-4 wallet-option-info">
+                                Use the email, username and password associated with your wallet.
+                            </p>
+
+                        </div>
+
+                        <div class="wallet-option__one_confirmation mr-8 mt-16">
+
+                            <button class="blue-bg white-text center btn-large wallet-option-btn"
+                                id="select-manual-connection">
+                                Select manual connection
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Progress -->
+            <div id="completion-steps" class="mt-8">
+
+                <div class="completion-steps" aria-live="polite">
+                    <div class="step">Step 2 of 3</div>
+
+                    <div id="completion-percentage" role="progressbar" aria-valuemin="0" aria-valuemax="3"
+                        aria-valuenow="2" aria-label="Wallet connection progress">
+
+                        <div class="percentage-container step2-percentage"></div>
+
+                    </div>
+                </div>
+
+                <button id="connect-wallet-step2-btn" class="btn-large mt-16 connect-wallet__continue-btn">
+                    Continue
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- Step 3 -->
+        <div id="connect-wallet-modal__step-three" class="p-24">
+
+            <a href="#" id="wallet-modal-previous-step2" class="mb-8">&lt; back</a>
+            <h3 id="step-three-title">Review and confirm</h3>
+
+            <p class="subtitle mt-8">
+                Please review the information below before linking your wallet to your bank account.
+            </p>
+
+            <hr class="dividor" aria-hidden="true">
+
+            <p class="step mt-24 mb-8">
+                Step 3 of 3: <span>Link wallet account</span>
+            </p>
+
+            <div class="choose-wallet-connection">
+
+                <div class="flex-grid">
+
+                    <!-- Option 1 -->
+                    <div id="wallet-option__three"
+                        class="wallet-option our-recommendation flex-grid two-column-20_80_grid" role="group"
+                        aria-labelledby="wallet-option-label">
+
+                        <div class="wallet-option__one_logo center">
+                            <img src="{% static '/images/card-icons/wallet.png' %}" alt="Wallet icon" class="wallet-option-img">
+                        </div>
+
+                        <div class="wallet-option__one_description mt-16">
+
+                            <h4 id="wallet-option-label" class="capitalise light-bold">
+                                Wallet
+                                <span class="recommendation">****3658</span>
+                            </h4>
+                            <small>
+                                <span class="check-mark mr-4" id="wallet-to-connect-checkmark" aria-checked="true"
+                                    role="status"><i class="fas fa-check"></i>
+                                </span> Verified
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Confirmation form -->
+                    <div id="wallet-option__three-form" class="mt-16" role="group"
+                        aria-labelledby="wallet-option-manual">
+
+                        <form action="" method="post" id="link-wallet-form">
+
+                            <div class=" mt-8 mb-24">
+                                <input type="checkbox" name="verify-wallet" id="verify-wallet-checkbox" required>
+                                <label for="verify-wallet" class="mr-8">
+                                    I authorise Virtual bank to link this wallet
+                                </label>
+                            </div>
+
+                            <div class="buttons flex-grid two-column-grid mt-16" id="confirmation-buttons">
+
+                                <!-- Cancel button -->
+                                <button id="connect-wallet__cancel-btn" class="btn-large cancel-btn" type="button"
+                                    data-action="cancel">
+                                    Cancel
+                                </button>
+
+                                <!-- Submit button -->
+                                <button id="connect-wallet-step3-btn" class="btn-large blue-bg white-text"
+                                    type="submit">
+                                    Link account
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Progress -->
+            <div id="completion-steps" class="mt-8">
+
+                <div class="completion-steps" aria-live="polite">
+                    <div class="step">Step 3 of 3</div>
+
+                    <div id="completion-percentage" role="progressbar" aria-valuemin="0" aria-valuemax="3"
+                        aria-valuenow="2" aria-label="Wallet connection progress">
+
+                        <div class="percentage-container step3-percentage"></div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <section id="connect-with-wallet-id">
+
+            <a href="#" id="wallet-modal-connect-back-anchor" class="mb-8">&lt; back</a>
+
+            <div id="connect-with-wallet-id__container">
+                <h1 class="center header-6">Connect with wallet ID</h1>
+                <h2 class="mb-8 center">Enter your 12-digit wallet ID</h2>
+
+                <p class="subtitle mt-16 mb-16">
+                    You can find your wallet ID in your wallet settings. This allows your two accounts
+                    to be
+                    linked
+                </p>
+
+                <form action="" method="post" id="connect-wallet-form">
+
+
+                    <div id="connect-wallet-auth-id-wrapper">
+
+                        <input type="text" name="wallet_auth_id_1" id="connect-wallet-auth-id-1" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_2" id="connect-wallet-auth-id-2" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_3" id="connect-wallet-auth-id-3" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_4" id="connect-wallet-auth-id-4" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_5" id="connect-wallet-auth-id-5" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_6" id="connect-wallet-auth-id-6" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_7" id="connect-wallet-auth-id-7" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_8" id="connect-wallet-auth-id-8" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_9" id="connect-wallet-auth-id-9" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_10" id="connect-wallet-auth-id-10" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_11" id="connect-wallet-auth-id-11" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+                        <input type="text" name="wallet_auth_id_12" id="connect-wallet-auth-id-12" inputmode="numeric"
+                            maxlength="1" class="connect-wallet-auth-id-input" required>
+
+
+                    </div>
+
+                    <div class="button center" id="auth-verify-btn">
+                        <button type="submit" class="btn-semi-medium blue-bg white-text">Verify</button>
+                    </div>
+
+                    <h3 class="center mt-16 capitalise mb-24">Wallet Connection authentication progress
+                    </h3>
+
+                    <div class="wallet-progress" id="walletProgress">
+                        <div class="wallet-progress__inner center">
+                            <span id="walletProgressValue">0%</span>
+                        </div>
+
+
+                    </div>
+
+                </form>
+
+                <div id="wallet-auth-completion" class="center mt-8 hide">
+                    <p id="wallet-connect-msg" class="mt-8">Your wallet has successfully been
+                        verified, you can now close the page and proceed to step 3
+                    </p>
+                    <button id="auth-wallet__cancel-btn" class="btn-semi-medium mt-8 blue-bg white-text" type="button"
+                        data-action="cancel">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- The wallet verification linkage -->
+        <section id="link-wallet-verifcation">
+            <div class="link-wallet-verification-form__container">
+
+                <a href="#" id="wallet-manually-form-back-step" class="mb-8 mt-8 ml-8">&lt; back</a>
+
+                <div class="flex-grid two-column-20_80_grid pl-24" id="link-wallet-verification-form__header">
+                    <div class="logo-img-container center">
+                        <img src="{% static '/images/icons/wallet-icon.png' %}" alt="" srcset="">
+                    </div>
+
+                    <div class="title mt-24">
+                        <h1 class="capitalise header-7">Enter wallet credentials manually</h1>
+                        <small class="ml-24">Use the email, username and password associated with your
+                            wallet</small>
+                    </div>
+                </div>
+
+
+                <div class="error-msg center" id="manually-wallet-error-msg">
+                    Your wallet credentials is invalid. Please try again.
+                </div>
+
+
+
+                <form action="" method="post" id="manually-verification-wallet-form"
+                    aria-labelledby="wallet-form-title">
+                    <h2 id="wallet-form-title" class="sr-only">Manually Link Your Wallet</h2>
+
+                    <div class="flex-row flex-grid">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" required aria-required="true"
+                            aria-describedby="email-note" maxlength="40">
+                        <small id="email-note" class="sr-only">Enter your email associated with the
+                            wallet</small>
+                    </div>
+
+                    <div class="flex-row flex-grid">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" required aria-required="true"
+                            aria-describedby="username-note" maxlength="20">
+                        <small id="username-note" class="sr-only">Enter your wallet username</small>
+                    </div>
+
+                    <div class="flex-row flex-grid">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" required aria-required="true"
+                            aria-describedby="password-note" maxlength="40" minlength="8">
+                        <small id="password-note" class="sr-only">Enter your wallet password
+                            securely</small>
+                    </div>
+
+                    <div class="buttons mt-16 mb-16">
+                        <button type="submit" class="btn-large blue-bg white-text capitalise"
+                            id="manually-wallet-link-btn">
+                            verify Wallet credentials!
+                        </button>
+                    </div>
+
+                    <div class="center">
+                        <small class="center" id="privacy-note">
+                            We do not share your wallet credentials
+                        </small>
+                    </div>
+                </form>
+
+            </div>
+
+        </section>
+
+
+
+</section>

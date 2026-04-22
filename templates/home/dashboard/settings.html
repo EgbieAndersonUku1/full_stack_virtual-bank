@@ -1,0 +1,570 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block body %}
+
+
+<section id="dashboard-transfer" aria-label="User dashboard transfer">
+
+    <div class="dashboard__container">
+
+        <!-- Sidebar navigation -->
+
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/dashboard/_navbar.html" %}
+
+
+             <hr class="dividor">
+
+                    <!-- The main content -->
+                    <div class="dashboard__container__main__wrapper mt-16">
+
+
+                        <section id="account-settings">
+
+                            <h1 class="ml-24 header-7">Account Settings</h1>
+
+                            <div class="account-settings__container">
+
+
+
+                                <!-- the tabs -->
+                                <article class="tabs active flex-grid five-column-grid">
+                                    <div class="tab active" data-section-name="profile">Profile</div>
+                                    <div class="tab" data-section-name="verified-documents">Verified documents</div>
+                                    <div class="tab" data-section-name="security">Security</div>
+                                    <div class="tab" data-section-name="notifications">Notification</div>
+                                    <div class="tab" data-section-name="bank-accounts">Bank Accounts</div>
+
+                                </article>
+
+
+                                <!-- profile -->
+                                <section id="profile" aria-labelledby="profile-title" class="section-tab">
+
+                                    <div class="profile__container">
+
+                                        <h2 id="profile-title" class="header-7">Profile information</h2>
+                                        <hr class="dividor">
+
+                                        <div class="main-profile-stats flex-grid two-column-20_80_grid">
+
+                                            <div class="profile-img-container">
+                                                <img src="{% static '/images/icons/profile.png' %}"
+                                                    alt="Profile picture of Sherlock Holmes" class="profile-img">
+                                            </div>
+
+                                            <div class="profile-info mt-16 flex-grid">
+                                                <div class="profile-info-name">
+                                                    Sherlock Holmes
+                                                    <span aria-hidden="true">
+                                                        <i class="fa-solid fa-circle-check"></i>
+                                                    </span>
+                                                    
+                                                    <span class="sr-only">(Identity verified)</span>
+                                                </div>
+
+                                                <p class="text-muted">Identity verified</p>
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- First name -->
+                                        <div class="flex flex-space-between profile-stat-container">
+                                            <div class="profile-stats">
+                                                <p id="profile-first-name-label" class="profile-label">First name</p>
+                                                <p aria-labelledby="profile-first-name-label"
+                                                    class="profile-p-label-value show">Sherlock Holmes</p>
+                                                <input type="text" id="first-name-input" value="Sherlock holmes"
+                                                    class="hidden profile-input-hidden-field mt-8">
+                                            </div>
+
+                                            <div class="spinner profile-stats__spinner" id="spinner__first-name"
+                                                data-spinner="true"></div>
+                                            <a href="#" aria-label="Edit first name" class="profile_edit capitalise"
+                                                data-input-id="first-name-input">Edit</a>
+
+
+                                        </div>
+
+                                        <!-- Email -->
+                                        <div class="flex flex-space-between profile-stat-container">
+                                            <div class="profile-stats">
+                                                <p id="profile-email-label" class="profile-label">Email</p>
+
+                                                <p aria-labelledby="profile-email-label"
+                                                    class="profile-p-label-value show">sherlock.holmes@bakerstreet.co.uk
+                                                </p>
+                                                <input type="email" id="email-name-input"
+                                                    value="sherlock.holmes@bakerstreet.co.uk" class=" mt-8">
+                                                <small id="emailError"></small>
+                                                <p class="text-muted">Email verified</p>
+                                            </div>
+
+                                            <div class="spinner profile-stats__spinner" id="spinner__email"
+                                                data-spinner="true"></div>
+                                            <a href="#" aria-label="Edit first name" class="profile_edit capitalise"
+                                                data-input-id="email-name-input">Edit</a>
+                                        </div>
+
+                                        <!-- Gender -->
+                                        <div class="flex flex-space-between profile-stat-container">
+                                            <div class="profile-stats">
+                                                <p id="profile-gender-label" class="profile-label">Gender</p>
+                                                <p aria-labelledby="profile-gender-label"
+                                                    class="profile-p-label-value show">Male</p>
+                                                <select name="gender" id="gender" class="profile-input-hidden">
+                                                    <option value="" disabled selected>Choose your gender</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Prefer not to say">Prefer not to say</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="spinner profile-stats__spinner" id="spinner__gender"
+                                                data-spinner="true"></div>
+                                            <a href="#" aria-label="Edit gender" class="profile_edit capitalise"
+                                                data-input-id="gender-name-input">Edit</a>
+                                        </div>
+
+                                        <!-- Phone -->
+                                        <div class="flex flex-space-between profile-stat-container">
+                                            <div class="profile-stats">
+                                                <p id="profile-phone-label" class="profile-label">Phone number</p>
+                                                <p aria-labelledby="profile-phone-label"
+                                                    class="profile-p-label-value show">+44 20 7224 3688</p>
+                                                <input type="tel" id="tel-name-input" value="44 20 7224 368"
+                                                    class=" mt-8">
+                                            </div>
+
+                                            <div class="spinner profile-stats__spinner" id="spinner__phone"
+                                                data-spinner="true"></div>
+
+                                            <a href="#" aria-label="Edit phone number" class="profile_edit capitalise"
+                                                data-input-id="tel-name-input">Edit</a>
+                                        </div>
+
+                                        <!-- Address -->
+                                        <div class="flex flex-space-between profile-stat-container">
+                                            <div class="profile-stats">
+                                                <p id="profile-address-label" class="profile-label">Address</p>
+
+                                                <address aria-labelledby="profile-address-label"
+                                                    class="profile-p-label-value show">
+                                                    221B Baker Street<br>
+                                                    Marylebone<br>
+                                                    London NW1 6XE<br>
+                                                    United Kingdom
+                                                </address>
+                                                <input type="text" id="address-name-input"
+                                                    value="221B Baker Street, Marylebone, London NW1 6XE United Kingdom"
+                                                    class=" mt-8">
+                                            </div>
+
+                                            <div class="spinner profile-stats__spinner" id="spinner__address"
+                                                data-spinner="true"></div>
+                                            <a href="#" aria-label="Edit address" class="profile_edit capitalise"
+                                                data-input-id="address-name-input">Edit</a>
+                                        </div>
+
+                                        <!-- Location -->
+                                        <div class="flex flex-space-between profile-stat-container">
+                                            <div class="profile-stats">
+                                                <p id="profile-location-label" class="profile-label">Location</p>
+                                                <p aria-labelledby="profile-location-label"
+                                                    class="profile-p-label-value show">London</p>
+                                                <input type="text" id="location-name-input" value="London"
+                                                    class=" mt-8">
+
+                                            </div>
+
+                                            <div class="spinner profile-stats__spinner" id="spinner__location"
+                                                data-spinner="true"></div>
+                                            <a href="#" aria-label="Edit location" class="profile_edit capitalise"
+                                                data-input-id="location-name-input">Edit</a>
+                                        </div>
+                                </section>
+
+                                <!-- verified documents -->
+                                <section id="verified-documents" class="section-tab">
+                                    not yet implemented
+                                </section>
+
+                                <!-- security -->
+                                <section id="security" aria-labelledby="security-heading" class="section-tab">
+
+                                    <div class="security__container">
+                                        <h2 id="security-heading" class="security-section__heading mt-16 mb-16">
+                                            Security
+                                        </h2>
+
+                                        <!-- Change Password -->
+                                        <div id="change-password" class="border-box security-card">
+
+                                            <div class="security-card__header mt-8">
+                                                <h3 class="security-card__title">Change Password</h3>
+                                            </div>
+
+                                            <hr>
+
+                                            <div class="security-card__row flex-grid two-column-80_20_grid mt-16">
+
+                                                <p class="security-card__description">
+                                                    Update your password to keep your account secure.
+                                                </p>
+
+                                                <div class="security-card__actions">
+                                                    <button type="button"
+                                                        class="btn-large blue-bg white-text capitalise">
+                                                        Change password
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                        <!-- 2FA Recovery Codes -->
+                                        <div id="two-fa-recovery" class="border-box security-card">
+
+                                            <div class="security-card__header">
+                                                <h3 class="security-card__title">Recovery Codes</h3>
+                                            </div>
+
+                                            <form action="" id="two-fa-recovery-form" class="mt-8">
+
+                                                <div class="flex-grid two-column-80_20_grid">
+
+                                                    <div>
+                                                        <p id="two-fa-description" class="security-card__description">
+                                                            Generate one-time recovery codes to access your account if
+                                                            you lose your two-factor authentication device.
+                                                        </p>
+
+                                                        <p id="two-fa-helper" class="security-card__helper mt-8">
+                                                            Each code can only be used once. Store them somewhere safe.
+                                                        </p>
+                                                    </div>
+
+                                                    <fieldset class="two-fa-toggle flex"
+                                                        aria-describedby="two-fa-description two-fa-helper">
+
+                                                        <legend class="text-muted">
+                                                            Enable recovery codes
+                                                        </legend>
+
+                                                        <div class="two-fa-toggle__option pr-16">
+                                                            <input type="radio" name="two-fa-status" id="two-fa-on"
+                                                                value="on" checked data-input-id="two-fa-status">
+                                                            <label for="two-fa-on">On</label>
+                                                        </div>
+
+                                                        <div class="two-fa-toggle__option">
+                                                            <input type="radio" name="two-fa-status" id="two-fa-off"
+                                                                data-input-id="two-fa-status" value="off">
+                                                            <label for="two-fa-off">Off</label>
+                                                        </div>
+
+                                                    </fieldset>
+
+                                                </div>
+
+                                            </form>
+
+                                            <hr class="dividor">
+                                            <hr>
+
+                                            <div class="security-card__row flex-grid two-column-80_20_grid mt-16">
+
+                                                <p class="security-card__label">
+                                                    Manage recovery codes
+                                                </p>
+
+                                                <div class="security-card__actions">
+                                                    <button type="button"
+                                                        class="btn-large blue-bg white-text capitalise">
+                                                        View and regenerate codes
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                        <!-- Susipicious alerts -->
+                                        <div id="suspicious-alerts" class="border-box security-card">
+
+                                            <div class="security-card__header">
+                                                <h3 class="security-card__title">Suspicious alerts</h3>
+                                            </div>
+
+                                            <form action="" id="suspicious-alerts-form" class="mt-8">
+
+                                                <div class="flex-grid two-column-80_20_grid">
+
+                                                    <div>
+                                                        <p id="suspicious-alerts-description"
+                                                            class="security-card__description">
+                                                            Receive alerts for suspicious activiity for your account
+                                                        </p>
+
+
+                                                    </div>
+
+                                                    <fieldset class="suspicious-alerts-toggle flex"
+                                                        aria-describedby="suspicious-alert-description suspicious-alert-helper">
+
+                                                        <legend class="text-muted">
+                                                            Enable suspicious alert
+                                                        </legend>
+
+                                                        <div class="suspicious-alerts-toggle__option pr-16">
+                                                            <input type="radio" name="suspicious-alerts-status"
+                                                                id="suspicious-alert-on" value="on" checked
+                                                                data-input-id="suspicious-alerts-status">
+                                                            <label for="suspicious-alert-on">On</label>
+                                                        </div>
+
+                                                        <div class="suspicious-alerts-toggle__option">
+                                                            <input type="radio" name="suspicious-alerts-status"
+                                                                id="suspicious-alert-off" value="off"
+                                                                data-input-id="suspicious-alerts-status">
+                                                            <label for="suspicious-alert-off">Off</label>
+                                                        </div>
+
+                                                    </fieldset>
+
+                                                </div>
+
+                                            </form>
+
+
+
+
+                                        </div>
+
+                                    </div>
+
+                                </section>
+
+
+                                <!-- Notifications -->
+                                <section id="notifications" class="section-tab">
+                                    <div class="notification__container">
+
+                                        <h2 id="notifications-heading"
+                                            class="notification-section__heading mt-16 mb-16">
+                                            Notification Preferences
+                                        </h2>
+
+                                        <!-- Account Activity Alerts -->
+                                        <div id="account-activity-alerts" class="border-box security-card">
+
+                                            <div class="security-card__header">
+                                                <h3 class="security-card__title">Account activity</h3>
+                                            </div>
+
+                                            <form id="account-activity-form" class="mt-8">
+
+                                                <div class="flex-grid two-column-80_20_grid">
+
+                                                    <div>
+                                                        <p id="account-activity-description"
+                                                            class="security-card__description">
+                                                            Receive notifications when there are login attempts or
+                                                            important changes to your account.
+                                                        </p>
+
+                                                        <p id="account-activity-helper"
+                                                            class="security-card__helper mt-8">
+                                                            Recommended to keep this enabled to stay informed about your
+                                                            account security.
+                                                        </p>
+                                                    </div>
+
+                                                    <fieldset class="toggle-group flex"
+                                                        aria-describedby="account-activity-description account-activity-helper">
+
+                                                        <legend class="text-muted">
+                                                            Account activity alerts
+                                                        </legend>
+
+                                                        <div class="toggle-option pr-16">
+                                                            <input type="radio" name="account-activity-status"
+                                                                id="account-activity-on" value="on" checked
+                                                                data-input-id="account-activity-status">
+                                                            <label for="account-activity-on">On</label>
+                                                        </div>
+
+                                                        <div class="toggle-option">
+                                                            <input type="radio" name="account-activity-status"
+                                                                id="account-activity-off" value="off"
+                                                                data-input-id="account-activity-status">
+                                                            <label for="account-activity-off">Off</label>
+                                                        </div>
+
+                                                    </fieldset>
+
+                                                </div>
+
+                                            </form>
+
+                                        </div>
+
+
+                                        <!-- Transaction Alerts -->
+                                        <div id="transaction-alerts" class="border-box security-card">
+
+                                            <div class="security-card__header">
+                                                <h3 class="security-card__title">Transaction alerts</h3>
+                                            </div>
+
+                                            <form id="transaction-alerts-form" class="mt-8">
+
+                                                <div class="flex-grid two-column-80_20_grid">
+
+                                                    <div>
+                                                        <p id="transaction-alerts-description"
+                                                            class="security-card__description">
+                                                            Get notified about important transactions and unusual
+                                                            activity related to your account. Receive notifications for 
+                                                            withdrawals, deposits and payments.
+                                                        </p>
+
+                                                        <p id="transaction-alerts-helper"
+                                                            class="security-card__helper mt-8">
+                                                            Helps you quickly identify unauthorised or unexpected
+                                                            activity.
+                                                        </p>
+                                                    </div>
+
+                                                    <fieldset class="toggle-group flex"
+                                                        aria-describedby="transaction-alerts-description transaction-alerts-helper">
+
+                                                        <legend class="text-muted">
+                                                            Transaction alerts
+                                                        </legend>
+
+                                                        <div class="toggle-option pr-16">
+                                                            <input type="radio" name="transaction-alerts-status"
+                                                                id="transaction-alerts-on" value="on" checked
+                                                                data-input-id="transaction-alerts-status">
+                                                            <label for="transaction-alerts-on">On</label>
+                                                        </div>
+
+                                                        <div class="toggle-option">
+                                                            <input type="radio" name="transaction-alerts-status"
+                                                                id="transaction-alerts-off" value="off"
+                                                                data-input-id="transaction-alerts-status">
+                                                            <label for="transaction-alerts-off">Off</label>
+                                                        </div>
+
+                                                    </fieldset>
+
+                                                </div>
+
+                                            </form>
+
+                                        </div>
+
+
+                                        <!-- Promotional Notifications -->
+                                        <div id="promotional-notifications" class="border-box security-card">
+
+                                            <div class="security-card__header">
+                                                <h3 class="security-card__title">Promotional notifications</h3>
+                                            </div>
+
+                                            <form id="promotional-notifications-form" class="mt-8">
+
+                                                <div class="flex-grid two-column-80_20_grid">
+
+                                                    <div>
+                                                        <p id="promotional-description"
+                                                            class="security-card__description">
+                                                            Receive updates about offers, new features, and product
+                                                            announcements.
+                                                        </p>
+
+                                                        <p id="promotional-helper" class="security-card__helper mt-8">
+                                                            Optional, you can turn this off if you prefer not to
+                                                            receive marketing messages.
+                                                        </p>
+                                                    </div>
+
+                                                    <fieldset class="toggle-group flex"
+                                                        aria-describedby="promotional-description promotional-helper">
+
+                                                        <legend class="text-muted">
+                                                            Promotional notifications
+                                                        </legend>
+
+                                                        <div class="toggle-option pr-16">
+                                                            <input type="radio" name="promotional-status"
+                                                                id="promotional-on" value="on" checked
+                                                                data-input-id="promotional-status">
+                                                            <label for="promotional-on">On</label>
+                                                        </div>
+
+                                                        <div class="toggle-option">
+                                                            <input type="radio" name="promotional-status"
+                                                                id="promotional-off" value="off"
+                                                                data-input-id="promotional-status">
+                                                            <label for="promotional-off">Off</label>
+                                                        </div>
+
+                                                    </fieldset>
+
+                                                </div>
+
+                                            </form>
+
+                                        </div>
+
+                                    </div>
+                                </section>
+
+                                <!-- bank account -->
+                                <section id="bank-accounts" class="section-tab">
+                                    not yet implemented
+                                </section>
+
+
+
+                            </div>
+                        </section>
+
+
+
+
+                    </div>
+
+
+       
+
+
+        </section>
+
+       
+
+    </div>
+
+</section>
+
+
+
+{% endblock body %}
+
+{% block script %}
+
+    <script src="{% static '/js/dashboard/settings.js' %}" type="module"></script>
+
+{% endblock script %}

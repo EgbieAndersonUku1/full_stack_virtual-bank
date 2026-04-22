@@ -1,0 +1,89 @@
+<section id="add-recipient-section" aria-labelledby="find-account-heading" aria-describedby="find recipient">
+    <div class="flex flex-space-between pl-24 pt-8 pb-4 pr-24 modal-top flex-end">
+        <button aria-label="Close modal" class="modal-close-btn p-4" id="find-recipient-close-btn">
+            ✕
+        </button>
+    </div>
+
+
+    <div class="add-recipient__container">
+        <div class="spinner" id="add-recipient__spinner"></div>
+        <h1 id="find-account-heading" class="mt-16 capitalise header-7">Find recipient</h1>
+
+        <p id="account-description" class="mt-8">
+            Enter the details of the recipient you want to transfer to.
+        </p>
+
+        <form id="find-recipient-form" method="post">
+
+            <div class="form-row mt-24">
+                <label for="first-name">First name</label>
+                <input type="text" name="first_name" id="first-name" maxlength="30" required>
+            </div>
+
+            <div class="form-row">
+                <label for="surname">Surname</label>
+                <input type="text" name="surname" id="surname" maxlength="30" required>
+            </div>
+
+
+            <fieldset class="form-row">
+                <legend>Sort code</legend>
+
+                <div class="flex-grid six-column-grid sortcode-fields recipient-account">
+                    <input type="text" name="sortcode_1" id="sortcode_1" maxlength="1" aria-label="Sort code digit 1"
+                        required>
+                    <input type="text" name="sortcode_2" id="sortcode_2" maxlength="1" aria-label="Sort code digit 2"
+                        required>
+                    <input type="text" name="sortcode_3" id="sortcode_3" maxlength="1" aria-label="Sort code digit 3"
+                        required>
+                    <input type="text" name="sortcode_4" id="sortcode_4" maxlength="1" aria-label="Sort code digit 4"
+                        required>
+                    <input type="text" name="sortcode_5" id="sortcode_5" maxlength="1" aria-label="Sort code digit 5"
+                        required>
+                    <input type="text" name="sortcode_6" id="sortcode_6" maxlength="1" aria-label="Sort code digit 6"
+                        required>
+                </div>
+
+            </fieldset>
+
+            <fieldset class="form-row">
+                <legend>Account number</legend>
+
+                <div class="flex-grid six-column-grid account-fields recipient-account">
+                    <input type="text" name="account_digit_1" id="account_1" maxlength="1"
+                        aria-label="Account number digit 1" required>
+                    <input type="text" name="account_digit_2" id="account_2" maxlength="1"
+                        aria-label="Account number digit 2" required>
+                    <input type="text" name="account_digit_3" id="account_3" maxlength="1"
+                        aria-label="Account number digit 3" required>
+                    <input type="text" name="account_digit_4" id="account_4" maxlength="1"
+                        aria-label="Account number digit 4" required>
+                    <input type="text" name="account_digit_5" id="account_5" maxlength="1"
+                        aria-label="Account number digit 5" required>
+                    <input type="text" name="account_digit_6" id="account_6" maxlength="1"
+                        aria-label="Account number digit 6" required>
+                    <input type="text" name="account_digit_7" id="account_7" maxlength="1"
+                        aria-label="Account number digit 7" required>
+                    <input type="text" name="account_digit_8" id="account_8" maxlength="1"
+                        aria-label="Account number digit 8" required>
+                </div>
+
+            </fieldset>
+
+            <div class="button">
+                <button class="btn-large green-bg white-text capitalise">
+                    Find recipient
+                </button>
+            </div>
+
+            <small>
+                If the account exists, you can proceed with the transfer.
+            </small>
+
+        </form>
+
+
+
+    </div>
+</section>

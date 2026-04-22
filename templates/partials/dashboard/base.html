@@ -1,0 +1,48 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <link rel="shortcut icon" href="{% static '/images/virtual-bank-logo.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static '/vendor/fontawesome/css/all.min.css' %}">
+    <title>Virtual bank Dashboard - {% block title %}{% endblock title %}</title>
+</head>
+
+<body>
+
+
+    <main>
+          <section id="dashboard" aria-label="User dashboard">
+
+            <div class="dashboard__container">
+
+                
+                <!-- Sidebar navigation -->
+                {% include "partials/dashboard/side-nav.html" %}
+
+                
+                {% block body %}{% endblock body %}
+
+
+                <!-- The footer section -->
+                {% include "partials/footer/footer.html" %}
+
+
+            </div>
+
+        </section>
+
+    </main>
+
+     <script src="{% static '\vendor\sweetalert2\sweetalert2.all.min.js' %}"></script>
+    <script src="{% static '/js/dashboard/bank-dashboard.js' %}" type="module"></script>
+
+    {% block script %}{% endblock script %}
+
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<!--
+Dashboard Component: Bank Funds Transfer
+
+This component provides the user interface for transferring funds between
+accounts, wallets, or cards within the virtual banking dashboard.
+
+Purpose
+-------
+Allows users to initiate a simulated transfer by selecting a funding source,
+entering an amount, adding a note, and confirming the transaction through a
+modal confirmation dialog.
+
+Structure
+---------
+1. Transfer Form
+   - Allows the user to configure the transfer:
+        • Select transfer source (Bank, Wallet, Another Card)
+        • Enter transfer amount
+        • Add a note for the transaction
+   - Hidden fields store selected source card and target card details.
+
+2. Card Selection Panel
+   - A dynamic panel that displays available cards.
+   - Cards are generated dynamically via JavaScript and allow the user
+     to select the source or destination account.
+
+3. Transfer Confirmation Modal
+   - Displays a transfer summary before final submission.
+   - Shows:
+        • Source account
+        • Target account
+        • Transfer amount
+        • Estimated arrival
+        • Transaction fee
+   - User must confirm the transfer to proceed.
+
+Accessibility
+-------------
+Interactive panels and dialogs use accessible modal attributes:
+- role="dialog"
+- aria-modal="true"
+- aria-labelledby
+- aria-describedby
+
+These attributes improve screen reader compatibility and define modal context.
+
+Notes
+-----
+This component is part of the virtual banking dashboard and simulates
+end-to-end transfer workflows for educational or testing purposes.
+Dynamic behaviors such as card selection, validation, and modal
+interaction are handled via JavaScript.
+-->
+{% load static %}
+
+<section id="bank-funds-transfer">
+    <div class="bank-funds-transfer__container flex-grid p-48">
+
+        <h1 class="center header-5">Funds Transfer</h1>
+        <div class="transfer-logo center">
+            <img src="{% static '/images/icons/income-transfer.png' %}" alt="transfer">
+        </div>
+
+        <!-- funds transfer form -->
+        {% include "components/bank-transfer/_form.html" %}
+    
+    </div>
+</section>
+
+
+
+<!-- The transfer selected card -->
+{% include "components/bank-transfer/_transfer_card_panels.html" %}
+
+
+<!-- The transfer confirmation modal -->
+{% include "components/bank-transfer/_transfer_modal.html" %}
+

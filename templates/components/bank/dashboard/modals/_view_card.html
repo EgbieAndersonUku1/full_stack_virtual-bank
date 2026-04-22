@@ -1,0 +1,99 @@
+<!--
+Dashboard Component: Bank Card Details Viewer
+
+This component provides an interface for displaying and managing
+details of a selected bank card within the virtual banking dashboard.
+
+Purpose
+-------
+Allows users to inspect full card information and to perform common
+card-related actions such as transferring funds, adding funds,
+freezing the card, or closing it.
+
+The component acts as a contextual information panel that updates
+dynamically when a user selects a card.
+
+Structure
+---------
+1. Card Details Panel
+   - Displays the panel title "Card details".
+   - Shows a placeholder message until a card is selected.
+
+2. Dynamic Card Information Area
+   - The `#full-card-details-info` container is populated
+     dynamically using JavaScript when a card is selected.
+   - Expected information may include:
+        • Card type
+        • Card holder name
+        • Masked card number
+        • Expiry date
+        • Card status
+
+3. Card Action Buttons
+   Provides quick actions for the selected card:
+
+   • Transfer
+        - Initiates a transfer from the selected card.
+
+   • Add
+        - Allows funds to be added to the card.
+
+   • Freeze
+        - Temporarily disables card transactions.
+
+   • Close
+        - Permanently deactivates the card.
+
+4. Card Details Trigger Button
+   - The `View card details` button opens or reveals
+     the card details panel when clicked.
+
+
+User Flow
+---------
+Typical interaction sequence:
+
+1. User clicks a card within the dashboard.
+2. The card details panel becomes visible.
+3. JavaScript populates the dynamic details section.
+4. User selects an action (transfer, add, freeze, close).
+
+Notes
+-----
+This component relies on JavaScript to dynamically populate
+card information. The interface should only display masked
+or non-sensitive card data to maintain security best practices.
+
+Card management actions should trigger secure backend
+operations via API endpoints or server-side views.
+-->
+
+
+<article id="view-card-panel">
+
+    <div class="view-card-panel__container p-48 center">
+
+        <h3 class="capitalise light-bold">Card details</h3>
+
+        <div id="full-card-details">
+            Click on any card
+        </div>
+
+        <div id="full-card-details-info" class="text-align-left">
+            <!-- render dynamically with js -->
+        </div>
+
+        <div class="view-card-panel-buttons flex four-column-grid mt-8 mb-8 ">
+            <button class="btn-large view-card-panel-button" id="card-transfer-btn">Transfer</button>
+            <button class="btn-large view-card-panel-button" id="card-add-btn">Add</button>
+            <button class="btn-large view-card-panel-button" id="card-freeze-btn">freeze</button>
+            <button class="btn-large view-card-panel-button" id="card-close-btn">close</button>
+        </div>
+
+    </div>
+
+
+</article>
+
+
+<button id="view-more-bank-card" type="button">View card details</button>

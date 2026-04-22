@@ -1,0 +1,292 @@
+<!--
+Dashboard Component: Account Connection Status & Management Panel
+
+This component provides an interface for viewing and managing a
+connected external financial account (such as a bank account or wallet)
+within the virtual banking dashboard.
+
+Purpose
+-------
+Allows users to inspect the status of their connected financial
+account, monitor connection health, and perform management actions
+such as refreshing, testing, or disconnecting the integration.
+
+This component acts as the central management interface for external
+account integrations.
+
+Structure
+---------
+1. Modal Container
+   - Rendered as a dialog using:
+        role="dialog"
+        aria-modal="true"
+   - Contains header, body, and footer sections.
+   - Includes a close button to exit the management panel.
+
+2. Connected Account Summary
+   Displays a high-level overview of the connected account including:
+   • Bank logo
+   • Connected institution name
+   • Account identifier (partially masked)
+
+3. Bank Account Details
+   Displays structured account information using a definition list:
+
+   • Bank name
+   • Account number (masked)
+   • Account type
+   • Currency
+
+4. Connection Metadata
+   Shows additional integration details including:
+   • Entity type (external bank account)
+   • Integration provider (e.g., Plaid)
+   • System status messaging
+
+5. Connection Health Status
+   Indicates whether the external account connection is functioning
+   correctly.
+
+   Includes:
+   • Visual verification indicator
+   • Connection health message
+   • Last synchronisation timestamp
+
+6. Connection Management Actions
+   Provides tools to interact with the integration:
+
+   • Refresh connection
+        - Forces the system to synchronise with the external account.
+
+   • Test connection
+        - Verifies that the external provider API is reachable.
+
+7. Disconnection Information
+   Explains the consequences of disconnecting the account, including:
+
+   • Transaction synchronisation will stop
+   • Account data will no longer update
+   • Historical financial data will be removed
+   • Reconnection will be required to restore access
+
+8. Footer Controls
+   Contains final management actions including:
+
+   • Disconnect account button
+   • Simulated environment notice (for demo or development systems)
+
+
+User Flow
+---------
+Typical user interaction with this component:
+
+1. User opens the account management panel.
+2. Reviews connected account details.
+3. Checks connection health and last synchronisation time.
+4. Optionally refreshes or tests the connection.
+5. Disconnects the account if they wish to remove the integration.
+
+Notes
+-----
+This component is intended for use within the virtual banking dashboard
+to manage third-party financial integrations.
+
+Connection health, synchronisation, and testing actions should be
+handled by backend services that communicate with the external
+integration provider (e.g., Plaid). Sensitive account information
+should always remain masked in the user interface.
+-->
+{% load static %}
+
+<section id="dashboard__status" role="dialog" aria-modal="true" aria-labelledby="connect-wallet-title">
+
+    <!-- Header -->
+    <div class="flex flex-space-between pl-24 pt-8 pb-4 pr-24 modal-top">
+        <h2 id="connect-wallet-title" class="capitalise header-8 mt-8 mb-8 light-bold">
+            Manage account
+        </h2>
+
+        <button aria-label="Close manage account dialog" class="modal-close-btn" id="dashboard-status-modal-close-btn"
+            type="button">
+            <span aria-hidden="true" id="">✕</span>
+        </button>
+
+
+    </div>
+
+    <div id="status__container" class="pt-8">
+
+        <!-- Connected account summary -->
+        <div class="status__head">
+            <div class="status__head_body flex-grid two-column-20_80_grid">
+
+                <div class="img-container">
+                    <img src="{% static '/images/card-icons/atlas-bank.png' %}" alt="Elm Financial bank logo"
+                        class="status__head-img">
+                </div>
+
+                <div class="status__bank-attributes">
+                    <p class="mt-48">
+                        Connected account: Elm Financial checking ending in 1246
+                    </p>
+                </div>
+            </div>
+
+            <hr class="dividor">
+        </div>
+
+        <!-- Body -->
+        <div class="status__body pl-24">
+            <p id="manage-bank-description" class="mb-8">
+                View and manage your connected bank account.
+            </p>
+
+            <div class="status__body__container">
+
+                <!-- Bank details -->
+                <section aria-labelledby="bank-details-title">
+                    <h3 id="bank-details-title" class="sr-only">
+                        Bank account details
+                    </h3>
+
+                    <dl class="status__bank_details flex-grid two-column-grid">
+
+                        <div class="bank-name flex flex-space-between">
+                            <dt>Bank name</dt>
+                            <dd>Elm Financing</dd>
+                        </div>
+
+                        <div class="bank-account flex flex-space-between border-right">
+                            <dt>Account number</dt>
+                            <dd>Ending in 7502</dd>
+                        </div>
+
+                        <div class="account-type flex flex-space-between">
+                            <dt>Account type</dt>
+                            <dd>Current</dd>
+                        </div>
+
+                        <div class="account-currency flex flex-space-between border-right">
+                            <dt>Currency</dt>
+                            <dd>GBP</dd>
+                        </div>
+
+                    </dl>
+                </section>
+
+                <!-- Connection info -->
+                <div class="bank-connection flex flex-space-between mt-8 mb-8">
+
+                    <span class="bank-entity-type capitalise">
+                        <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+                        Entity type: External bank account
+                    </span>
+
+                    <span class="bank-connection-status text-muted" id="bank-connection-status" role="status"
+                        aria-live="polite">
+                        Virtual bank connected via
+                        <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+                        Plaid
+                    </span>
+                </div>
+
+                <!-- Health status -->
+                <div id="bank-connection">
+
+                    <div class="connection-check-status">
+
+                        <div class="connection-status-health">
+                            <i class="fa-solid fa-check verified" aria-hidden="true"></i>
+                            <span class="sr-only">Connection healthy</span>
+                        </div>
+
+                        <div class="connection-status-description">
+                            <p class="light-bold" id="connection-status-description__title">
+                                Connection is healthy
+                            </p>
+                            <small id="sync-time">
+                                Last synced February 6 2026 at 22:30 hrs
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr class="dividor">
+
+                    <!-- Actions -->
+                    <div class="connection__actions flex-grid two-column-grid">
+
+                        <button type="button" id="refresh-connection-btn"
+                            class="connection__button btn-large blue-bg white-text js-refresh-connection">
+                            <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
+                            Refresh connection
+                        </button>
+
+                        <button type="button" id="test-connection-btn"
+                            class="connection__button btn-large green-bg white-text js-test-connection">
+                            <i class="fa-solid fa-plug" aria-hidden="true"></i>
+                            Test connection
+                        </button>
+
+                    </div>
+                </div>
+
+                <!-- Disconnect information -->
+                <section class="status__bank-disconnection flex-grid two-column-20_80_grid mt-8"
+                    aria-labelledby="disconnect-title">
+
+                    <div class="bank-connection-activities flex-grid">
+                        <a href="#" class="status__info-link">
+                            Recent activities
+                        </a>
+                    </div>
+
+                    <div class="disconnection-info mr-48">
+                        <div class="flex-grid disconnection-info__container">
+
+                            <div class="disconnection-info-icon center">
+                                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                            </div>
+
+                            <div class="disconnection-description">
+                                <h3 id="disconnect-title" class="header-9">
+                                    Disconnect wallet or bank account
+                                </h3>
+
+                                <p class="mt-4">
+                                    Disconnecting will stop transaction sync
+                                    and remove account data from this app.
+                                </p>
+
+                                <ul class="mt-8">
+                                    <li>Synchronisation and display will stop</li>
+                                    <li>Transaction updates will stop</li>
+                                    <li>Historical financial data will be removed</li>
+                                    <li>You must reconnect to access data again</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="status__footer pl-24 flex flex-space-between mr-24 mb-16">
+            <small class="simulated-environment">
+                This is a simulated environment
+            </small>
+
+            <div class="connection__actions">
+                <button type="button" id="disconnect-btn"
+                    class="connection__button btn-large white-text disconnect-btn capitalise"
+                    aria-describedby="disconnect-title">
+                    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                    Disconnect
+                </button>
+            </div>
+        </div>
+
+    </div>
+</section>
