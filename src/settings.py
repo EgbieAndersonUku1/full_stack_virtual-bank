@@ -31,10 +31,15 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+AUTH_USER_MODEL = 'authentication.User'
+
+
+
 # Application definition
 
 INSTALLED_APPS = [
-
+    'jazzmin',
+    
     # my apps
     'bank.apps.BankConfig',
     'wallet.apps.WalletConfig',
