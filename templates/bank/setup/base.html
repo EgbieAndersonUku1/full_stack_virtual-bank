@@ -1,0 +1,54 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <link rel="shortcut icon" href="{% static '/images/virtual-bank-logo.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static '/vendor/fontawesome/css/all.min.css' %}">
+    <title>Bank setup - {% block title %}{% endblock title %}</title>
+</head>
+
+<body>
+
+    <header class="mb-16">
+        <nav aria-label="Main navigation" id="bank-pin-navbar">
+            <div class="nav-container flex-grid two-column-grid">
+
+                <!-- Logo / Home -->
+                <div class="head">
+                    <a href="/" class="nav-link pt-8 bold" id="virtual-bank-logo">
+                        <img src="{% static '/images/virtual-bank-logo.png' %}" alt="Virtual Bank home" class="logo" />
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="body flex flex-end">
+                    <ul class="flex-grid two-column-grid" role="list">
+
+
+                        <li>
+                            <a href="/vritual-bank-register.html" class="nav-link light-bold capitalise"
+                                id="nav-security">
+                                Hi, User
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+    <main>
+       {% block body %}{% endblock body %}
+    </main>
+
+    {% block script %}{% endblock script %}
+</body>
+
+</html>

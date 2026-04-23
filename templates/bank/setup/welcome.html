@@ -1,0 +1,45 @@
+{% extends "bank/setup/base.html" %}
+{% load static %}
+
+{% block title %}Let's get started{% endblock title %}
+
+{% block body %}
+
+<section id="bank-welcome" class="mt-12 mb-48">
+
+    <div class="bank-welcome__container p-48 account-setup">
+
+        <div class="bank-status mb-24">
+            <small>Step 1 of 4</small>
+            <h1 class="capitalise light-bold">Let’s get you set up</h1>
+
+
+
+            <div class="bank-welcome__onboarding flex-grid mt-24">
+
+                <div class="bank-welcome__message mt-12">
+
+                    <p>Let’s get your new bank account up and running.</p>
+                    <p>We will guide you through each step, one at a time.</p>
+                    <p>You stay in control and decide what happens next.</p>
+                </div>
+
+                <div class="bank-welcome__image">
+                    <img src="{% static '/images/card-icons/welcome.png' %}" alt="Welcome illustration"
+                        id="bank-welcome__image">
+                </div>
+
+            </div>
+            <hr class="dividor">
+            <div class="welcome-btn flex">
+                <a href="{% url 'choose_bank' %}" class="btn-medium bank-btn-continue capitalise"
+                    id="onbard_begin-btn">Let's begin!</a>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+{% endblock body %}

@@ -1,0 +1,91 @@
+{% extends "bank/setup/base.html" %}
+{% load static %}
+
+{% block title %} Add pin{% endblock title %}
+
+
+
+{% block body %}
+
+     <section id="bank-pin-setup" class="mt-48 mb-48 fade-up">
+            <div class="bank-pin-setup__container account-setup">
+                <div class="bank-status mb-24">
+                    <small>Step 3 of 4</small>
+                    <h1 class="capitalise light-bold">Set your pin</h1>
+                    <p>Create a secure 6-digit PIN to approve bank transactions</p>
+
+                    <hr class="dividor">
+                    <p class="">This will keep your account secure. Don't share your PIN with anyone
+                        and try not to set it as something as easy to guess like 123456
+                    </p>
+
+                </div>
+
+                <form action="" id="bank-pin-form" role="form">
+
+                    <h1 class="capitalise center header-6 light-bold">Set your 6 digit PIN</h1>
+                    <p class="center mb-16 text-muted">Create a secure 6-digit PIN to approve bank transactions </p>
+
+                    <!-- Hidden input for actual pin value (for screen readers + form) -->
+                    <label for="pin-hidden" class="sr-only">Enter 6 digit PIN</label>
+                    <input id="pin-hidden" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]*"
+                        autocomplete="one-time-code" class="sr-only" aria-describedby="pin-status pin-error">
+
+                     <!-- Visual PIN display -->
+                    <div class="pin-wrapper flex-grid six-column-grid">
+                        <input type="text" name="first_pin" id="first-pin" inputmode="numeric" maxlength="1" class="pin-number" readonly >
+                        <input type="text" name="second_pin" id="second-pin" inputmode="numeric" maxlength="1" class="pin-number" readonly >
+                        <input type="text" name="third_pin" id="third-pin" inputmode="numeric" maxlength="1" class="pin-number" readonly>
+                        <input type="text" name="fourth_pin" id="fourth-pin" inputmode="numeric" maxlength="1" class="pin-number" readonly>
+                        <input type="text" name="fifth_pin" id="fifth-pin" inputmode="numeric" maxlength="1" class="pin-number" readonly >
+                        <input type="text" name="six_pin" id="six-pin" inputmode="numeric" maxlength="1"  class="pin-number" readonly>
+                    </div>
+
+                    <!-- Number pad -->
+                    <div id="pin-selection" class="mt-24">
+
+                        <div class="pin-selector__container flex-grid three-column-grid" aria-label="PIN digits">
+                            <div class="pin-pad-btn" data-number="1">1</div>
+                            <div class="pin-pad-btn" data-number="2">2</div>
+                            <div class="pin-pad-btn" data-number="3">3</div>
+                            <div class="pin-pad-btn" data-number="4">4</div>
+                            <div class="pin-pad-btn" data-number="5">5</div>
+                            <div class="pin-pad-btn" data-number="6">6</div>
+                            <div class="pin-pad-btn" data-number="7">7</div>
+                            <div class="pin-pad-btn" data-number="8">8</div>
+                            <div class="pin-pad-btn" data-number="9">9</div>
+                        </div>
+
+                        <div class="pin-keypad__actions flex-grid two-column-grid mt-8">
+                            <div class="pin-pad-btn" data-number="0">0</div>
+                            <div class="pin-pad-btn" data-number="backspace"><i class="fa-solid fa-delete-left"></i>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+
+
+                <div class="choose-bank__btns flex flex-end mt-8 fade-up">
+                    <a href="{% url 'choose_bank' %}"
+                        class="capitalise btn-medium mr-24 bank-btn-back center capitalise" aria-label="Go back to bank choices">
+                        back</a>
+                    
+                     <a href="/bankSetup/bank-completion.html" class="btn-medium bank-btn-continue capitalise">
+                        Continue
+                    </a>
+
+                </div>
+
+            </div>
+        </section>
+
+
+
+
+{% endblock body %}
+
+
+{% block script %}
+<script src="{% static '/js/bankSetup/bankPinSetup.js' %}" type="module"></script>
+{% endblock script %}
