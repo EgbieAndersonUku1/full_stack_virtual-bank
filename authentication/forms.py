@@ -8,22 +8,6 @@ class RegisterForm(forms.ModelForm):
     class Meta:
         model  = User 
         fields = ["username", "email"]
-
-    # username = forms.CharField(label="Username*", 
-    #                            max_length=80,
-    #                            min_length=3, 
-    #                            widget=forms.TextInput(
-    #                                attrs={
-    #                                  "aria-required": True,
-    #                                }
-    #                            ))
-    
-    # email    = forms.EmailField(label="Email*", max_length=200, 
-    #                             widget=forms.EmailInput(
-    #                                 attrs={
-    #                                     "aria-required": True,
-    #                                 }
-    #                             ))
     
     wallet_registeration_code = forms.CharField(label="Wallet registeration code", 
                                                 max_length=34,
