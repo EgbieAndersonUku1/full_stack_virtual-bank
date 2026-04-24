@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="{% static '/css/style.css' %}">
     <link rel="stylesheet" href="{% static "/vendor/fontawesome/css/all.min.css" %}">
     <link rel="shortcut icon" href="{% static "/images/virtual-bank-logo.png" %}" type="image/x-icon">
+    <meta name="description" content="{% block meta-description %}{% endblock %}">
+    <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
+    <meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+    
     <title>Virtual bank {% block title %}{% endblock title %}</title>
 </head>
 
