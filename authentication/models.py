@@ -61,3 +61,27 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
     objects = BaseUser()
+
+    @classmethod
+    def get_by_username(cls, username):
+        """"""
+        return cls._get_value(field_value=username, field_name="username")
+
+    @classmethod
+    def get_by_email(cls, email):
+        """"""
+        return cls._get_value(field_value=email, field_name="email")
+
+    @classmethod
+    def _get_value(cls, field_value, field_name="username"):
+        """"""
+        if not (isinstance(field_value, str) and isinstance(field_name, str)):
+            return TypeError(_("The field value and field name must be string. Got type {} for field value and got type for field name".format(type(field_value), type(field_name))))
+        try:
+            if field_name == "username":
+                return cls.objects.get(username=field_value)
+            elif field_name == "email":
+                return cls.objects.get(email=field_value)
+        except cls.DoesNotExist:
+            return None
+            
