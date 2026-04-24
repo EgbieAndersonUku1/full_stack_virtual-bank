@@ -1380,8 +1380,8 @@ input[type="checkbox"] {
     column-gap: 10px;
 }
 
-label {
-    margin-top: 8px;
+.label {
+    margin-top: var(--space-8)
 }
 
 /* Fade-up animation (mobile-first, desktop-only) */
@@ -4440,6 +4440,18 @@ clicks the button
     width: 80%;
 }
 
+
+.errorlist {
+    color: red;
+    margin-top: var(--space-4);
+    padding-left: 0;
+    list-style: none;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+}
 
 
  

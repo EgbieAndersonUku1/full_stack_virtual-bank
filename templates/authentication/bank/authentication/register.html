@@ -22,39 +22,49 @@
         <form action="" method="post" id="wallet-register-form" class="p-24 white-bg authentication-form"
             aria-describedby="register-description" role="form">
 
+            {% csrf_token %}
+
+           
+
             <div class="form-group">
 
                 <!-- Username -->
                 <div class="flex-row flex-grid">
-                    <label for="username">
-                        Username <span aria-hidden="true">*</span>
-                    </label>
-                    <input type="text" name="username" id="username" minlength="3" maxlength="30" required
-                        aria-required="true">
+
+                    <div class="label">
+                         {{ form.username.label }}
+                    </div>
+                   
+                    {{ form.username }}
+                    {{ form.username.errors }}
+                  
                     <small id="username-exists" class="field-check">Username already exists</small>
                 </div>
 
                 <!-- Email -->
                 <div class="flex-row flex-grid">
-                    <label for="email">
-                        Email <span aria-hidden="true">*</span>
-                    </label>
-                    <input type="email" name="email" id="email" required aria-required="true" maxlength="30">
+                    <div class="label">
+                          {{ form.email.label }}
+                    </div>
+                   
+                    {{ form.email }}
+                    {{ form.email.errors }}
                     <small id="email-exists" class="field-check">Email already exists</small>
                 </div>
 
                 <!-- Wallet code -->
                 <div class="flex-row flex-grid" id="wallet-register-code-container">
-                    <span role="button" tabindex="0" aria-label="What is a wallet registration code?"
+                    <span role="button" tabindex="0" aria-label="What is a wallet registration code?" class="mb-4"
                         id="wallet-helper-icon">
                         <i class="fa-solid fa-circle-question" aria-hidden="true" id="wallet-register-code-info"></i>
                     </span>
-                    <label for="wallet-code">
-                        Wallet registration code
-                    </label>
-
-                    <input type="text" name="wallet_code" id="wallet-code" aria-describedby="wallet-code-help"
-                        maxlength="34" minlength="34" spellcheck="false">
+                    
+                    <div class="label">
+                          {{ form.wallet_registeration_code.label }}
+                    </div>
+                  
+                    {{ form.wallet_registeration_code }}
+                    
                     <small id="wallet-unique-code" class="field-check">The wallet registration code is
                         invalid</small>
                     <small id="wallet-code-help" class="italic">
@@ -66,19 +76,19 @@
                 <div class="auth-btns flex-grid two-column-grid">
 
                     <div class="flex-grid">
-                        <label for="password">
-                            Password <span aria-hidden="true">*</span>
-                        </label>
-                        <input type="password" name="password" id="password" required aria-required="true"
-                            aria-describedby="password-rules" minlength="8" maxlength="25">
+                        <div class="label">
+                              {{ form.password.label }} 
+                        </div>
+                      
+                        {{ form.password }}
                     </div>
 
                     <div class="flex-grid">
-                        <label for="confirm-password">
-                            Confirm password <span aria-hidden="true">*</span>
-                        </label>
-                        <input type="password" name="confirm_password" id="confirm-password" required
-                            aria-required="true" minlength="8" maxlength="25">
+                        <div class="label">
+                              {{ form.confirm_password.label }}
+                        </div>
+                      
+                        {{ form.confirm_password }}
                     </div>
 
                 </div>
@@ -142,8 +152,7 @@
 
                 <!-- Terms -->
                 <div id="terms-of-condition" class="mt-8">
-                    <input type="checkbox" name="terms_of_condition" id="terms-of-condition-checkbox" required
-                        aria-required="true">
+                    {{ forms.terms_and_conditions }}
                     <small id="terms-of-condition-checkbox" class="pl-8">
                         I agree to the Terms of Service and Privacy Policy
                     </small>
