@@ -1,5 +1,7 @@
 
 
+⚠️ This project is actively under development
+
 # Virtual Bank & Wallet (Django + PostgreSQL) Ongoing
 
 This project is a **virtual banking simulation system** built with Django and PostgreSQL.  
@@ -165,6 +167,8 @@ python manage.py runserver
 Visit:
 
 * App: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+* [http://127.0.0.1:8000/dashboard](http://127.0.0.1:8000/dashboard)
+
 * Admin: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
 ---
