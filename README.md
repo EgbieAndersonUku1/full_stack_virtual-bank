@@ -96,7 +96,7 @@ Create a `.env` file in the project root using `.env.example`:
 
 ```env
 DB_NAME=
-DB_USER=
+DB_USER=postgres
 DB_PASSWORD=
 DB_HOST=localhost
 DB_PORT=5432
@@ -116,16 +116,15 @@ DB_PORT=5432
 
 ## ⚙️ Django Database getenvuration
 
-Install dependency:
 
 ```bash
-pip install python-decouple psycopg2-binary
+
 ```
 
 Then update `settings.py`:
 
 ```python
-from os import getenv
+
 
 DATABASES = {
     'default': {
