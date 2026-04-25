@@ -121,7 +121,7 @@ DB_PORT=5432
 
 ```
 
-Then update `settings.py`:
+Then update `settings.py` with the following:
 
 ```python
 
@@ -167,7 +167,7 @@ Visit:
 
 * App: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 * [http://127.0.0.1:8000/dashboard](http://127.0.0.1:8000/dashboard)
-
+* [http://127.0.0.1:8000/terms-and-conditions](http://127.0.0.1:8000/terms-and-conditions/)
 * Admin: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
 ---
