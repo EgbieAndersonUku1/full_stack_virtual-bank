@@ -71,7 +71,7 @@
                 </div>
 
                 <!-- Passwords -->
-                <div class="auth-btns flex-grid two-column-grid">
+                <div class="auth-btns">
 
                     <div class="flex-grid">
                         <div class="label">
@@ -79,6 +79,7 @@
                         </div>
                       
                         {{ form.password }}
+                        {{ form.password.errors }}
                     </div>
 
                     <div class="flex-grid">
@@ -87,6 +88,7 @@
                         </div>
                       
                         {{ form.confirm_password }}
+                         {{ form.confirm_password.errors }}
                     </div>
 
                 </div>
@@ -150,9 +152,10 @@
 
                 <!-- Terms -->
                 <div id="terms-of-condition" class="mt-8">
-                    {{ forms.terms_and_conditions }}
+                    {{ form.terms_and_condition }}
                     <small id="terms-of-condition-checkbox" class="pl-8">
-                        I agree to the Terms of Service and Privacy Policy
+                        <a href="{% url 'terms_and_conditions' %}"> I agree to the Terms of Service and Privacy Policy</a>
+                      
                     </small>
                 </div>
 
@@ -247,5 +250,6 @@
 <script type="module" src="{% static 'js/index.js' %}"></script>
 <script type="module" src="{% static 'js/utils/password/checkPasswordStrength.js' %}"></script>
 <script type="module" src="{% static 'js/authentication/bankRegister.js' %}"></script>
+
 
 {% endblock script %}

@@ -1,5 +1,24 @@
 import { getCsrfToken } from "../security/csrf.js";
 import fetchData from "../fetch.js";
+import CheckFrontEndPasswordStrength from "../utils/password/checkPasswordStrength.js";
+import { applyDashToInput, checkIfHTMLElement, dimBackground } from "../utils.js";
+
+
+const walletHelperMoodle          = document.getElementById("wallet-registration-code-explained");
+const registerFormSectionElement  = document.getElementById("register");
+const walletCodeInputFieldElement = document.getElementById("wallet-code");
+const dimBackgroundElement        = document.getElementById("dim");
+const djangoUsernameError         = document.getElementById("id_username_error");
+const djangoEmailError            = document.getElementById("id_email_error");
+
+
+
+// TODO one time function checker to be added later. This is a one time check that checks if the elements are available before the addEventListener is called
+registerFormSectionElement.addEventListener("click", handleDelegation)
+walletCodeInputFieldElement.addEventListener("click",  handleCodeInputField);
+walletCodeInputFieldElement.addEventListener("input",  handleCodeInputField);
+
+
 
 // input fields
 const emailInputField = document.getElementById("id_email");
@@ -31,6 +50,7 @@ async function handleEmailInputFieldClick(e) {
 
     });
     
+    clearElementField(djangoEmailError)    
     toggleFieldMsg(emailExists, resp.data);
 
 }
@@ -50,6 +70,7 @@ async function handleUserInputFieldClick(e) {
 
     })   
 
+    clearElementField(djangoUsernameError)
     toggleFieldMsg(usernnameExists, resp.data);
    
 }
@@ -72,5 +93,60 @@ function toggleFieldMsg(element, data) {
 
 
 function isFieldEmpty(e) {
-    e.target.value === "" ? true : false;
+    return e.target.value === "" ? true : false;
+}
+
+
+
+
+
+new CheckFrontEndPasswordStrength()
+.setPasswordFieldElementId("password")
+.setConfirmPasswordFieldElementId("confirm-password")
+.setHasCapitalElementId("rule-uppercase")
+.setHasLowercaseElementId("rule-lowercase")
+.setHasNumberElementId("rule-number")
+.setHasMinLengthElementId("rule-length")
+.setHasSpecialElementId("rule-symbol")
+.setDoPasswordsMatchElementId("rule-match")
+.setValidCSSRuleId("valid")
+.setInvalidCSSRuleId("invalid")
+.setActivePasswordFieldId("active-password-field")
+.setPasswordStrengthBoardId("password-strength")
+.setPasswordStrengthDisplayBoardCssSelector("show")
+.startEventListener()
+
+
+
+
+
+
+function handleDelegation(e) {
+    const WALLET_ICON_HELPER = "wallet-helper-icon";
+
+    const helperIcon = e.target.closest(`#${WALLET_ICON_HELPER}`);
+
+   
+    if (!helperIcon) {
+        walletHelperMoodle.classList.remove("show");
+        dimBackground(dimBackgroundElement, false);
+        return;
+    }
+
+    dimBackground(dimBackgroundElement, true);
+    walletHelperMoodle.classList.add("show");
+}
+
+
+function handleCodeInputField(e) {
+    const lengthPerDash = 5;
+    e.preventDefault();
+    applyDashToInput(e, lengthPerDash, false, true);
+}
+
+
+function clearElementField(element) {
+    if (!checkIfHTMLElement(element, "unknown", true)) return;
+ 
+    element.textContent = "";
 }

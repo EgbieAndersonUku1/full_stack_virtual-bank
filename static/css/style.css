@@ -4454,3 +4454,36 @@ clicks the button
 
 
  
+
+#terms-and-conditions {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    color: #222;
+}
+
+#terms-and-conditions h1,
+#terms-and-conditions h2 {
+    color: #111;
+}
+
+#terms-and-conditions h1 {
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+#terms-and-conditions section {
+    margin-bottom: var(--space-32);
+    margin-top: var(--space-32);
+}
+
+#terms-and-conditions ul {
+    margin-left: 20px;
+}
+
+#terms-and-conditions .updated {
+    color: #666;
+    font-size: 14px;
+}

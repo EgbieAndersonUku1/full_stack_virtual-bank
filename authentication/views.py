@@ -1,5 +1,3 @@
-import json
-from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 
@@ -26,6 +24,9 @@ def register_user(request):
         form = RegisterForm(request.POST or None)
 
         if form.is_valid():
+            cleaned_data = form.cleaned_data
+
+            print(cleaned_data)
             user = form.save(commit=False)
             print("The form has been submitted") # for testing
             return redirect("login_user")
@@ -101,3 +102,7 @@ def does_email_exists(request):
       
     return handle_json_post_request(request, handle_username)
 
+
+
+def terms_and_conditions(request):
+    return render(request, "terms_and_conditions.html")
