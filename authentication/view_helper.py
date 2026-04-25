@@ -61,6 +61,6 @@ def create_json_msg(field_name, field_value, is_available):
     field_name = field_name.lower()
     field_value = field_value.lower()
     return {"FIELD_NAME": field_value,
-               "IS_AVAILABLE": not is_available,
+               "IS_AVAILABLE": not is_available if field_name != '' else False,
                "MSG": f"The {field_name} is not avaialbe" if is_available else f"The {field_name} is available"
                }
