@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../../static/vendor/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../../../static/css/style.css">
+    <title>Verify your registration code</title>
+</head>
+
+<body>
+
+    <section id="verify-registration-code" aria-labelledby="verify-title">
+
+        <div class="verify-registration-code__container">
+
+            <div class="flex-grid">
+
+                <!-- Header / intro -->
+                <div class="auth-card flex two-column-45_65_grid mt-16">
+
+                    <div class="auth-card__image">
+                        <img src="../../../static/images/card-icons/auth-2fa.png"
+                            alt="Illustration of two-factor authentication security">
+                    </div>
+
+                    <div class="auth-card__content pt-48">
+                        <h1 id="verify-title" class="auth-card__title mt-24 header-3">
+                            Verify Confirmation Code
+                        </h1>
+                        <p id="verify-description" class="auth-card__description">
+                            We have sent an 12-digit verification code.
+                        </p>
+                        <p class="auth-card__description">
+                            Enter the code below to continue.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Form -->
+                <form action="" id="verify-registration-confirmation-code-form" aria-describedby="verify-description" method="post">
+
+                    <!-- Group inputs properly -->
+                    <fieldset class="code-wrapper flex-grid" role="group" aria-labelledby="code-group-label">
+
+                        <legend id="code-group-label" class="sr-only">
+                            Enter 12-digit verification code
+                        </legend>
+
+                        <input type="text" name="first_code" id="first-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 1 of 12" autocomplete="one-time-code" required>
+
+                        <input type="text" name="second_code" id="second-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 2 of 12" required>
+
+                        <input type="text" name="third_code" id="third-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 3 of 12" required>
+
+                        <input type="text" name="fourth_code" id="fourth-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 4 of 12" required>
+
+                        <input type="text" name="fifth_code" id="fifth-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 5 of 12" required>
+
+                        <input type="text" name="six_code" id="six-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 6 of 12" required>
+
+                        <input type="text" name="seventh_code" id="seventh-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 7 of 12" required>
+
+                        <input type="text" name="eighth_code" id="eighth-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 8 of 12">
+
+                        <input type="text" name="ninth_code" id="ninth-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 9 of 12" required>
+
+                        <input type="text" name="tenth_code" id="tenth-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 10 of 12" required>
+
+                        <input type="text" name="eleventh_code" id="eleventh-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 11 of 12" required>
+
+                        <input type="text" name="twelfth_code" id="twelfth-code" inputmode="numeric" pattern="[0-9]*"
+                            maxlength="1" class="code-number" aria-label="Digit 12 of 12" required>
+                    </fieldset>
+
+                    <hr class="dividor">
+
+                    <!-- Timer -->
+                    <div class="center flex-grid">
+
+                        <p id="code-expiry" aria-live="polite">
+                            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+                            <span>Code expires in 1 hours</span>
+                        </p>
+
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="btn center">
+                        <button type="submit" class="btn-large mt-16 blue-bg white-text"
+                            id="verify-register-code-btn">Verify Code</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </section>
+
+    <script src="../../../static/js/authentication/confirmCode.js" type="module"></script>

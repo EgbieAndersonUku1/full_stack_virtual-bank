@@ -93,16 +93,20 @@ def does_email_exists(request):
         - Delegates request handling to `handle_json_post_request`.
     """
     
-    def handle_username(request_body):
+    def handle_email(request_body):
        
        email             = request_body.get("email")
        does_email_exists = User.objects.filter(email=email).exists()
     
        return create_json_msg(field_name="email", field_value=email, is_available=does_email_exists)
       
-    return handle_json_post_request(request, handle_username)
+    return handle_json_post_request(request, handle_email)
 
 
 
 def terms_and_conditions(request):
     return render(request, "terms_and_conditions.html")
+
+
+def verify_registration_code(request):
+    return render(request, "authentication/bank/authentication/verify_code.html")
