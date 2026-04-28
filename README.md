@@ -1,40 +1,71 @@
 
 
-⚠️ This project is actively under development
+## ⚠️ This project is actively under developmen
+## Virtual Bank & Wallet (Django + PostgreSQL)
 
-# Virtual Bank & Wallet (Django + PostgreSQL) Ongoing
-
-This project is a **virtual banking simulation system** built with Django and PostgreSQL.  
+This project is a **virtual banking simulation system** built with Django and PostgreSQL.
 It includes wallet functionality, user management, and financial operations in a simulated environment.
 
 ---
 
-##Project Setup
+## Python Version Requirements (IMPORTANT)
 
-### 1. Clone the repository
+This project is tested and recommended with:
+
+* Python **3.11 – 3.13.x**
+* Python **3.14+ is not recommended yet** due to partial ecosystem support across Django dependencies and third-party packages
+
+See [https://www.python.org/downloads/](http://127.0.0.1:8000/) to see the stable python
+
+### Recommended check before setup
 
 ```bash
-git clone https://github.com/EgbieAndersonUku1/full_stack_virtual-bank .
-
-````
+python --version
+```
 
 ---
 
-### 2. Create a virtual environment
+##  Project Setup
+
+## 1. Clone the repository
 
 ```bash
-python -m venv venv
+git clone https://github.com/EgbieAndersonUku1/full_stack_virtual-bank .
 ```
 
-Activate it:
+---
 
-**Windows**
+## 2. Create a virtual environment (IMPORTANT)
+
+### Recommended (ensures correct Python version)
+
+```bash
+py -3.13 -m venv venv
+```
+
+If Python 3.13 is not installed, use:
+
+```bash
+py -3.12 -m venv venv
+```
+
+---
+
+## Activate virtual environment
+
+### Windows (PowerShell)
+
+```bash
+.\venv\Scripts\Activate.ps1
+```
+
+### Windows (CMD)
 
 ```bash
 venv\Scripts\activate
 ```
 
-**macOS / Linux**
+### macOS / Linux
 
 ```bash
 source venv/bin/activate
@@ -42,105 +73,93 @@ source venv/bin/activate
 
 ---
 
-### 3. Install dependencies
+## 3. Upgrade pip (recommended)
+
+```bash
+python -m pip install --upgrade pip
+```
+
+---
+
+## 4. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
+
 ---
 
 ## 🗄️ Database Setup (PostgreSQL + pgAdmin)
 
-### Requirements
+## Requirements
 
-Make sure you have installed:
-
-* Python 3.10+
+* Python 3.11–3.13
 * PostgreSQL
 * pgAdmin 4
 * pip / virtualenv
 
 ---
 
-## Installation
-
-### Install PostgreSQL & pgAdmin
+## Install PostgreSQL & pgAdmin
 
 1. Download pgAdmin: [https://www.pgadmin.org/download/](https://www.pgadmin.org/download/)
 2. Download PostgreSQL: [https://www.postgresql.org/download/](https://www.postgresql.org/download/)
-3. During installation, set a password for the `postgres` user
-4. Restart your computer if pgAdmin does not load correctly
+3. Set `postgres` password during installation
+4. Restart system if pgAdmin does not load
 
 ---
 
-## Create the Database
+## Create Database
 
-### Using pgAdmin:
+In pgAdmin:
 
-* Open pgAdmin
-* Expand **Servers → PostgreSQL**
+* Servers → PostgreSQL
 * Right-click **Databases**
-* Click **Create → Database**
-* Set:
-
-  * **Database name:** `virtual_bank` (or your choice)
-  * **Owner:** `postgres`
-* Click **Save**
+* Create → Database
+* Name: `virtual_bank`
+* Owner: `postgres`
 
 ---
 
-## 🔐 Environment Variables
+##  Environment Variables
 
-Create a `.env` file in the project root using `.env.example`:
+Create `.env` file:
 
 ```env
-DB_NAME=
-DB_USER=postgres
-DB_PASSWORD=
-DB_HOST=localhost
-DB_PORT=5432
+NAME=
+USER=postgres
+PASSWORD=
+HOST=localhost
+PORT=5432
 ```
-
-### Fill in:
-
-* `NAME` → your database name
-* `USER` → usually `postgres`
-* `PASSWORD` → your PostgreSQL password
-* `HOST` → keep as `localhost`
-* `PORT` → keep as `5432`
 
 ⚠️ Never commit `.env` to GitHub
 
 ---
 
-## ⚙️ Django Database getenvuration
+## Django Database Configuration
 
-
-```bash
+Then configure `settings.py`:
 
 ```
-
-Then update `settings.py` with the following:
-
-```python
-
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': getenv('DB_NAME'),
-        'USER': getenv('DB_USER'),
-        'PASSWORD': getenv('DB_PASSWORD'),
-        'HOST': getenv('DB_HOST'),
-        'PORT': getenv('DB_PORT'),
+        'NAME': getenv("NAME"),
+        'USER': getenv('USER'),
+        'PASSWORD': getenv("PASSWORD"),
+        'HOST': getenv("HOST"),
+        'PORT': getenv("PORT"),
     }
+
 }
 ```
 
 ---
 
-## 🧱 Run Migrations
+## Run Migrations
 
 ```bash
 python manage.py makemigrations
@@ -157,43 +176,51 @@ python manage.py createsuperuser
 
 ---
 
-## ▶️ Run the Server
+## Run Server
 
 ```bash
 python manage.py runserver
 ```
 
-Visit:
+---
+
+## Some Available Routes
 
 * App: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-* [http://127.0.0.1:8000/dashboard](http://127.0.0.1:8000/dashboard)
-* [http://127.0.0.1:8000/terms-and-conditions](http://127.0.0.1:8000/terms-and-conditions/)
+* Dashboard: [http://127.0.0.1:8000/dashboard](http://127.0.0.1:8000/dashboard)
+* Terms: [http://127.0.0.1:8000/terms-and-conditions](http://127.0.0.1:8000/terms-and-conditions)
 * Admin: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
 ---
 
-## 🧪 Troubleshooting
+# 🧪 Troubleshooting
 
-### ❌ Connection refused
+## ❌ Dependency or import errors
 
-* Ensure PostgreSQL service is running
-* Check pgAdmin server status
+* Ensure correct Python version (3.11–3.13)
+* Recreate virtual environment
 
-### ❌ Authentication failed
+## ❌ Database connection failed
 
-* Verify username/password in `.env`
-* Check PostgreSQL role settings
+* Check PostgreSQL service is running
+* Verify `.env` values
 
-### ❌ Database does not exist
+## ❌ Migration issues
 
-* Confirm database name matches pgAdmin
+```bash
+python manage.py migrate --run-syncdb
+```
 
 ---
 
 ## 📌 Notes
 
-* pgAdmin is only a database management GUI
-* Django connects directly to PostgreSQL
-* Always use environment variables for sensitive data
+* Django connects directly to PostgreSQL (pgAdmin is only a GUI)
+* Always use environment variables for secrets
+* Keep dependencies pinned for production stability
+* Recreate venv if Python version changes
 
-```
+---
+
+
+---

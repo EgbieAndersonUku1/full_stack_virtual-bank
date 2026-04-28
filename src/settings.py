@@ -14,6 +14,7 @@ from pathlib import Path
 from os.path import join
 from dotenv import load_dotenv
 from os import getenv
+from os import makedirs
 
 
 load_dotenv()
@@ -155,3 +156,65 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = join(BASE_DIR, 'staticfiles')
 
+
+
+Q_CLUSTER = {
+    'name': 'virtualBank',
+    'workers': 4,
+    'recycle': 500,
+    'timeout': 60,
+    'compress': True,
+    'save_limit': 1000,
+    'queue_limit': 1000,
+    'label': 'Django Q',
+    'orm': "default",
+}
+
+
+# for now send the email to the console since we are in development, later wire it to gmail
+# EMAIL BACKEND (DEV)
+EMAIL_HOST   = "test@example.com"
+
+if DEBUG:
+ 
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    DEFAULT_FROM_EMAIL = "Virtual Bank <no-reply@virtualbank.local>"
+
+    EMAIL_FILE_PATH    = BASE_DIR / 'sent_emails' / 'dev'
+    makedirs(EMAIL_FILE_PATH, exist_ok=True)
+
+
+
+
+# -------------------------------------------------------------------
+# settings.py
+#--------------------------------------------------------------------
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,  
+    "formatters": {
+        'right_indented': {
+            '()': 'utils.utils.RightIndentedFormatter',  
+            'format': '[%(asctime)s] %(levelname)-8s %(name)-13s: [%(message)s]',
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "right_indented",  # Use 'right_indented' formatter here
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "emails.log",  # Specify your log file name here
+            "formatter": "right_indented",  # Use 'right_indented' formatter here
+        },
+    },
+    "loggers": {
+        "email_sender": {  # Logger name used by EmailSender or whatever name you chose
+            "handlers": ["console", "file"],  # Both handlers for console and file
+            "level": "DEBUG",  # Set log level to DEBUG or as needed
+            "propagate": False,  # This prevents propagation to parent loggers
+        },
+    },
+}

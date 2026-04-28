@@ -1,11 +1,13 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../../static/vendor/fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="../../../static/css/style.css">
+    <link rel="stylesheet" href="{% static '/vendor/fontawesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
     <title>Verify your registration code</title>
 </head>
 
@@ -21,7 +23,7 @@
                 <div class="auth-card flex two-column-45_65_grid mt-16">
 
                     <div class="auth-card__image">
-                        <img src="../../../static/images/card-icons/auth-2fa.png"
+                        <img src="{% static '/images/card-icons/auth-2fa.png' %}"
                             alt="Illustration of two-factor authentication security">
                     </div>
 
@@ -111,4 +113,4 @@
 
     </section>
 
-    <script src="../../../static/js/authentication/confirmCode.js" type="module"></script>
+    <script src="{% static '/js/authentication/confirmCode.js' %}" type="module"></script>

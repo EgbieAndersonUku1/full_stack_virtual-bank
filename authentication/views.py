@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_protect
 from .forms import RegisterForm
 from .models import User
 from .view_helper import handle_json_post_request, create_json_msg
+from utils.send_email import send_confirmation_email
 
 # Create your views here.
 
@@ -29,6 +30,9 @@ def register_user(request):
             print(cleaned_data)
             user = form.save(commit=False)
             print("The form has been submitted") # for testing
+
+            # test to see it wired
+            send_confirmation_email("test@example.com", "Test email", "12345678") 
             return redirect("login_user")
         
     
