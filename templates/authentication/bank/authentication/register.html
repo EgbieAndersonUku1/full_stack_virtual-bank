@@ -22,6 +22,7 @@
         <form action="" method="post" id="wallet-register-form" class="p-24 white-bg authentication-form"
             aria-describedby="register-description" role="form">
 
+            <div class="spinner" id="registration-spinner"></div>
             {% csrf_token %}
 
             <div class="form-group">

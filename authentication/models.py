@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from datetime import timedelta
 from django.core.exceptions import ValidationError
+from django_email_sender.models import EmailBaseLog 
 
 
 
@@ -70,6 +71,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._IS_EMAIL_VERIFIED_FLAG = "is_email_verified"
+
+    def __str__(self):
+        if self.email:
+            return str(self.email.lower())
 
     def is_user_email_verified(self):
         return self.is_email_verified == True
@@ -161,6 +166,11 @@ class Verification(models.Model):
     last_updated      = models.DateTimeField(auto_now=True)
     expiry_date       = models.DateTimeField()
  
+
+    def __str__(self):
+        if self.user:
+            return str(self.user)
+        
     @classmethod
     def get_by_user(cls, user: User) -> User | None:
         """"""
@@ -212,3 +222,11 @@ class Verification(models.Model):
             raise ValidationError(_("expiry_date must be set before saving."))
         return super().save(*args, **kwargs)
     
+
+
+class EmailLog(EmailBaseLog):
+    sent_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"To email: {self.to_email} from {self.from_email}"
+  

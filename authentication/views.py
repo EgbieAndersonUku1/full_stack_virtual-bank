@@ -1,19 +1,18 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
+from human_seconds.converter import SecondsToTime
+from django.contrib import messages
 
 from .forms import RegisterForm
-from .models import User
+from .models import User, Verification
 from .view_helper import handle_json_post_request, create_json_msg
-from utils.send_email import send_confirmation_email
+from utils.security.generator import generate_secure_code
+from utils.send_email import send_confirmation_email_with_async
 
 # Create your views here.
 
 
 def login_user(request):
-
-    # pin setup
-    # bank setup
-
     return render(request, "authentication/bank/authentication/login.html")
 
 
@@ -25,14 +24,24 @@ def register_user(request):
         form = RegisterForm(request.POST or None)
 
         if form.is_valid():
-            cleaned_data = form.cleaned_data
+         
+            user        = form.save()
+            secure_code = generate_secure_code()
 
-            print(cleaned_data)
-            user = form.save(commit=False)
-            print("The form has been submitted") # for testing
+            verification = Verification(user=user,
+                                        verification_code=secure_code,
+                                        description="Verify email for registration code"
+                                        )
+            verification.set_expiry(minutes=15)
+            verification.save()
 
-            # test to see it wired
-            send_confirmation_email("test@example.com", "Test email", "12345678") 
+            send_confirmation_email_with_async(email=user.email, 
+                                                subject="Confirm email address", 
+                                                verification_code=secure_code,
+                                                expiry_time=SecondsToTime(verification.get_expiry_seconds()).format_to_human_readable())
+            
+            messages.info(request, "We've sent a confirmation email. Please check your inbox to continue.")
+            
             return redirect("login_user")
         
     

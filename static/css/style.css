@@ -1360,7 +1360,9 @@ textarea {
 
 }
 
-
+#wallet-register-form {
+    position: relative;
+}
 
 #wallet-register-form .form-group input[type="text"],
 #wallet-register-form .form-group input[type="password"],
@@ -4547,4 +4549,62 @@ clicks the button
 #verify-title {
   color: #6B7280;   
   font-weight: bolder;
+}
+
+
+/* the spinner for the registration form */
+#registration-spinner {
+    position: absolute;
+    top: 30%;
+    left: 42%;
+    z-index: 10000;
+ 
+    width: 100px;
+    height: 100px;
+    border: 8px solid #e5e5e5;
+    border-top: 8px solid #333;
+    display: none;
+  
+    
+}
+
+
+.messages li {
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    font-weight: 500;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+/* INFO */
+.info {
+    background-color: #eff6ff;
+    color: #1e3a8a;
+    border-left: 4px solid #2563eb;
+}
+
+/* SUCCESS */
+ .success {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border-left: 4px solid #10b981;
+}
+
+/* WARNING */
+.warning {
+    background-color: #fffbeb;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+}
+
+/* ERROR */
+.error {
+    background-color: #fef2f2;
+    color: #7f1d1d;
+    border-left: 4px solid #ef4444;
 }

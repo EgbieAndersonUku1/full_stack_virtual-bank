@@ -176,10 +176,22 @@ python manage.py createsuperuser
 
 ---
 
-## Run Server
+## Open two terminals
+
+### In termainal one run Server
 
 ```bash
 python manage.py runserver
+```
+
+
+### In terminal two run Django-q 
+
+This allows tasks to be run in the background e.g sending emails
+
+```bash
+
+python manage.py qcluster
 ```
 
 ---

@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 from os.path import join
 from dotenv import load_dotenv
@@ -46,7 +48,7 @@ AUTH_USER_MODEL = 'authentication.User'
 
 INSTALLED_APPS = [
     'jazzmin',
-    
+     'django_q',
     # my apps
     'bank.apps.BankConfig',
     'wallet.apps.WalletConfig',
@@ -185,36 +187,58 @@ if DEBUG:
 
 
 
-
 # -------------------------------------------------------------------
 # settings.py
-#--------------------------------------------------------------------
+# -------------------------------------------------------------------
+
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+makedirs(LOG_DIR, exist_ok=True)
+
 
 LOGGING = {
     "version": 1,
-    "disable_existing_loggers": False,  
+    "disable_existing_loggers": False,
+
+    # -------------------------
+    # Formatters
+    # -------------------------
     "formatters": {
-        'right_indented': {
-            '()': 'utils.utils.RightIndentedFormatter',  
-            'format': '[%(asctime)s] %(levelname)-8s %(name)-13s: [%(message)s]',
+        "right_indented": {
+            "()": "utils.utils.RightIndentedFormatter",
+            "format": "[%(asctime)s] %(levelname)-8s %(name)-13s: [%(message)s]",
         },
     },
+
+    # -------------------------
+    # Handlers
+    # -------------------------
     "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "right_indented",  # Use 'right_indented' formatter here
-        },
         "file": {
-            "class": "logging.FileHandler",
-            "filename": "emails.log",  # Specify your log file name here
-            "formatter": "right_indented",  # Use 'right_indented' formatter here
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_DIR, "emails.log"),
+            "maxBytes": 5 * 1024 * 1024,  # 5MB
+            "backupCount": 3,
+            "formatter": "right_indented",
         },
     },
+
+    # -------------------------
+    # Loggers
+    # -------------------------
     "loggers": {
-        "email_sender": {  # Logger name used by EmailSender or whatever name you chose
-            "handlers": ["console", "file"],  # Both handlers for console and file
-            "level": "DEBUG",  # Set log level to DEBUG or as needed
-            "propagate": False,  # This prevents propagation to parent loggers
+        "email_sender": {
+            "handlers": ["file"],  
+            "level": "DEBUG",
+            "propagate": False,
         },
+    },
+
+    # -------------------------
+    # Root Logger (safety net)
+    # -------------------------
+    "root": {
+        "handlers": ["file"],
+        "level": "WARNING",
     },
 }

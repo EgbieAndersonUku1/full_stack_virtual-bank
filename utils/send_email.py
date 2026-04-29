@@ -1,46 +1,13 @@
-import logging
 
-from django_email_sender.email_sender import EmailSender
-from django_email_sender.email_logger import EmailSenderLogger
-from django_email_sender.email_sender_constants import LoggerType
-from django_email_sender.email_sender_constants import EmailSenderConstants
-from django.conf import settings
-from django.utils.translation import gettext_lazy as _
+from django_q.tasks import async_task
 
-logger = logging.getLogger("email_sender")
+from tasks.verification_tasks import send_confirmation_email
 
 
-def send_confirmation_email(email: str, subject: str, verification_code: str, expiry_time: str = "10"):
-    """"""
-    params = {
-        "email": email,
-        "subject": subject,
-        "verification_code": verification_code,
-        "expiry_time": expiry_time
-    }
-
-    for name, value in params.items():
-        if not isinstance(value, str):
-            raise ValueError(
-                _(f"Expected {name} to be a string but got {type(value).__name__}")
-            )
-        
-        
-    email_sender_logger = EmailSenderLogger.create()
-
-    (
-        email_sender_logger
-        .start_logging_session()
-        .enable_verbose()
-        .add_email_sender_instance(EmailSender())
-        .config_logger(logger, LoggerType.DEBUG)
-        .from_address(settings.EMAIL_HOST)
-        .exclude_fields_from_logging(EmailSenderConstants.Fields.CONTEXT.value)
-        .to(email)
-        .with_subject(subject)
-        .with_context({"verification_code": verification_code, "expiry_time": expiry_time})
-        .with_html_template("confirmation.html", folder_name="register")
-        .with_text_template("confirmation.txt", folder_name="register")
-        .send()
-    )
-    
+def send_confirmation_email_with_async(email: str, subject: str, verification_code: str, expiry_time: str = "10"):
+    async_task(send_confirmation_email,
+               email,
+               subject,
+               verification_code,
+               expiry_time
+               )
