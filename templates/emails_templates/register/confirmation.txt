@@ -1,0 +1,14 @@
+Welcome to Your Virtual Bank
+
+Thank you for registering.
+
+To complete your account setup, please confirm your email using the verification code below:
+
+{{ verification_code }}
+
+This code will expire {{ expiry_time }}.
+
+If you did not create this account, please ignore this email.
+
+Regards,
+Your Virtual Bank Team

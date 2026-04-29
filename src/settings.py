@@ -10,10 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 from os.path import join
 from dotenv import load_dotenv
 from os import getenv
+from os import makedirs
 
 
 load_dotenv()
@@ -45,7 +48,7 @@ AUTH_USER_MODEL = 'authentication.User'
 
 INSTALLED_APPS = [
     'jazzmin',
-    
+     'django_q',
     # my apps
     'bank.apps.BankConfig',
     'wallet.apps.WalletConfig',
@@ -155,3 +158,87 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = join(BASE_DIR, 'staticfiles')
 
+
+
+Q_CLUSTER = {
+    'name': 'virtualBank',
+    'workers': 4,
+    'recycle': 500,
+    'timeout': 60,
+    'compress': True,
+    'save_limit': 1000,
+    'queue_limit': 1000,
+    'label': 'Django Q',
+    'orm': "default",
+}
+
+
+# for now send the email to the console since we are in development, later wire it to gmail
+# EMAIL BACKEND (DEV)
+EMAIL_HOST   = "test@example.com"
+
+if DEBUG:
+ 
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    DEFAULT_FROM_EMAIL = "Virtual Bank <no-reply@virtualbank.local>"
+
+    EMAIL_FILE_PATH    = BASE_DIR / 'sent_emails' / 'dev'
+    makedirs(EMAIL_FILE_PATH, exist_ok=True)
+
+
+
+# -------------------------------------------------------------------
+# settings.py
+# -------------------------------------------------------------------
+
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+makedirs(LOG_DIR, exist_ok=True)
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    # -------------------------
+    # Formatters
+    # -------------------------
+    "formatters": {
+        "right_indented": {
+            "()": "utils.utils.RightIndentedFormatter",
+            "format": "[%(asctime)s] %(levelname)-8s %(name)-13s: [%(message)s]",
+        },
+    },
+
+    # -------------------------
+    # Handlers
+    # -------------------------
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_DIR, "emails.log"),
+            "maxBytes": 5 * 1024 * 1024,  # 5MB
+            "backupCount": 3,
+            "formatter": "right_indented",
+        },
+    },
+
+    # -------------------------
+    # Loggers
+    # -------------------------
+    "loggers": {
+        "email_sender": {
+            "handlers": ["file"],  
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+
+    # -------------------------
+    # Root Logger (safety net)
+    # -------------------------
+    "root": {
+        "handlers": ["file"],
+        "level": "WARNING",
+    },
+}

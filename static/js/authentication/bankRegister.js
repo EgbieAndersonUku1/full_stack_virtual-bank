@@ -1,7 +1,8 @@
 import { getCsrfToken } from "../security/csrf.js";
 import fetchData from "../fetch.js";
 import CheckFrontEndPasswordStrength from "../utils/password/checkPasswordStrength.js";
-import { applyDashToInput, checkIfHTMLElement, dimBackground } from "../utils.js";
+import { applyDashToInput, checkIfHTMLElement, dimBackground, showSpinnerFor, toggleSpinner } from "../utils.js";
+
 
 
 const walletHelperMoodle          = document.getElementById("wallet-registration-code-explained");
@@ -10,14 +11,15 @@ const walletCodeInputFieldElement = document.getElementById("wallet-code");
 const dimBackgroundElement        = document.getElementById("dim");
 const djangoUsernameError         = document.getElementById("id_username_error");
 const djangoEmailError            = document.getElementById("id_email_error");
-
+const registerForm                = document.getElementById("wallet-register-form");
+const registerFormSpinner         = document.getElementById("registration-spinner")
 
 
 // TODO one time function checker to be added later. This is a one time check that checks if the elements are available before the addEventListener is called
 registerFormSectionElement.addEventListener("click", handleDelegation)
 walletCodeInputFieldElement.addEventListener("click",  handleCodeInputField);
 walletCodeInputFieldElement.addEventListener("input",  handleCodeInputField);
-
+registerForm.addEventListener("submit", handleRegisterForm)
 
 
 // input fields
@@ -149,4 +151,25 @@ function clearElementField(element) {
     if (!checkIfHTMLElement(element, "unknown", true)) return;
  
     element.textContent = "";
+}
+
+
+function handleRegisterForm(e) {
+    e.preventDefault();
+
+    const SUBMIT_DELAY = 2000;
+
+    if (!registerForm) return;
+
+    if (registerForm.checkValidity()) {
+        console.log("submitted");
+
+        toggleSpinner(registerFormSpinner, true);
+
+        setTimeout(() => {
+            registerForm.submit();
+        }, SUBMIT_DELAY);
+    } else {
+        registerForm.reportValidity();
+    }
 }

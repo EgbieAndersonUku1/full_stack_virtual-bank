@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirm Your Registration</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+    
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 10px;">
+        
+        <h2 style="color: #2c3e50;">Welcome to Your Virtual Bank</h2>
+        
+        <p>
+            Thank you for registering. To complete your account setup, please confirm your email using the verification code below:
+        </p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <span style="font-size: 28px; letter-spacing: 4px; font-weight: bold; color: #1a73e8;">
+                {{ verification_code }}
+            </span>
+        </div>
+        
+        <p>
+            This code will expire in {{ expiry_time }}. If you did not create this account, please ignore this email.
+        </p>
+        
+        <p style="margin-top: 30px;">
+            Regards,<br>
+            <strong>Your Virtual Bank Team</strong>
+        </p>
+        
+    </div>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 import CheckFrontEndPasswordStrength from "../utils/password/checkPasswordStrength.js";
 import { applyDashToInput, dimBackground } from "../utils.js";
 
+
 const walletHelperMoodle          = document.getElementById("wallet-registration-code-explained");
 const registerFormSectionElement  = document.getElementById("register");
 const walletCodeInputFieldElement = document.getElementById("wallet-code");

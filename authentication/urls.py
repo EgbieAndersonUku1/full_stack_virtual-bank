@@ -7,4 +7,5 @@ urlpatterns = [
     path("username/exists/", view=views.does_username_exists, name="does_username_exists"),
     path("email/exists/", view=views.does_email_exists, name="does_email_exists"),
     path("terms-and-conditions/", view=views.terms_and_conditions, name="terms_and_conditions"),
+    path("verify-registration-code/", view=views.verify_registration_code, name="confirm_registration_code")
 ]
