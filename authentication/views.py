@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 from human_seconds.converter import SecondsToTime
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 
-from .forms import RegisterForm
+
+from .forms import RegisterForm, LoginForm
 from .models import User, Verification
 from .view_helper import handle_json_post_request, create_json_msg
 from utils.security.generator import generate_secure_code
@@ -13,7 +15,33 @@ from utils.send_email import send_confirmation_email_with_async
 
 
 def login_user(request):
-    return render(request, "authentication/bank/authentication/login.html")
+    form = LoginForm()
+
+    if request.method == "POST":
+        form = LoginForm(request.POST or None)
+
+        if form.is_valid():
+
+            cleaned_data = form.cleaned_data
+            email         = cleaned_data.get("email").lower()
+            password      = cleaned_data.get("password")
+            user          = authenticate(request, email=email, password=password)
+        
+            if user is not None:
+               
+               login(request, user)
+
+               if not user.is_user_email_verified():
+                   return redirect("confirm_registration_code")
+               return redirect("dashboard")
+               
+
+        messages.error(request, "The email and password is invalid")
+    
+    context = {
+        "form": form
+    }
+    return render(request, "authentication/bank/authentication/login.html", context=context)
 
 
 def register_user(request):
@@ -51,6 +79,10 @@ def register_user(request):
 
     return render(request, "authentication/bank/authentication/register.html", context=context)
 
+
+def logout_user(request):
+    logout(request)
+    return redirect("bank_home")
 
 
 @csrf_protect

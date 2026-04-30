@@ -41,7 +41,7 @@ class BaseUser(BaseUserManager):
         if not extra_fields.get("is_active"):
             raise ValueError(_("is_active must be set to True"))
         
-        return self.create_user(username, email, password, **extra_fields)
+        return self.create_user(email, username, password, **extra_fields)
 
     def _validate_user_details(self, username, email):
         """"""
@@ -74,7 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         if self.email:
-            return str(self.email.lower())
+            return self.email.lower()
 
     def is_user_email_verified(self):
         return self.is_email_verified == True
@@ -151,11 +151,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         if not (isinstance(field_value, str) and isinstance(field_name, str)):
             raise TypeError(_("The field value and field name must be string. Got type {} for field value and got type for field name".format(type(field_value), type(field_name))))
         try:
+            field_value = field_value.lower()
             if field_name == "username":
                 return cls.objects.get(username=field_value)
             return cls.objects.get(email=field_value)
         except cls.DoesNotExist:
             return None
+        
+    def save(self, *args, **kwargs):
+
+        if self.email:
+            self.email = self.email.lower().strip()
+
+        if self.username:
+            self.username = self.username.lower().strip()
+
+        super().save(*args, **kwargs)
         
 
 class Verification(models.Model):
@@ -230,3 +241,4 @@ class EmailLog(EmailBaseLog):
     def __str__(self):
         return f"To email: {self.to_email} from {self.from_email}"
   
+

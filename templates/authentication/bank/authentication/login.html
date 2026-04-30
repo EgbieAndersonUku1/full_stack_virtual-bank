@@ -21,27 +21,24 @@
         </p>
 
 
-        <form action="" method="post" id="wallet-login-form" class="p-24 white-bg authentication-form"
+        <form action="{% url 'login_user' %}" method="post" id="wallet-login-form" class="p-24 white-bg authentication-form"
             aria-describedby="login-description" role="form">
+
+            {% csrf_token %}
 
             <div class="form-group">
 
                 <!-- Email -->
                 <div class="flex-row flex-grid">
-                    <label for="email">
-                        Email <span aria-hidden="true">*</span>
-                    </label>
-                    <input type="email" name="email" id="email" required aria-required="true" maxlength="30">
+                     {{ form.email.label }}
+                     {{ form.email }}
                 </div>
 
                 <!-- Passwords -->
                 <div class="flex-row flex-grid">
 
-                    <label for="password">
-                        Password <span aria-hidden="true">*</span>
-                    </label>
-                    <input type="password" name="password" id="password" required aria-required="true"
-                        aria-describedby="password-rules" minlength="8" maxlength="25">
+                    {{ form.password.label }}
+                    {{ form.password }}
 
                 </div>
 

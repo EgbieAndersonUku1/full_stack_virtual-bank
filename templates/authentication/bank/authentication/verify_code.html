@@ -1,19 +1,10 @@
+{% extends "home/base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block title %}Verify your registration code {% endblock title %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static '/vendor/fontawesome/css/all.min.css' %}">
-    <link rel="stylesheet" href="{% static '/css/style.css' %}">
-    <title>Verify your registration code</title>
-</head>
-
-<body>
-
-    <section id="verify-registration-code" aria-labelledby="verify-title">
+{% block body %}
+  <section id="verify-registration-code" aria-labelledby="verify-title" class="mb-48">
 
         <div class="verify-registration-code__container">
 
@@ -90,15 +81,7 @@
 
                     <hr class="dividor">
 
-                    <!-- Timer -->
-                    <div class="center flex-grid">
-
-                        <p id="code-expiry" aria-live="polite">
-                            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
-                            <span>Code expires in 1 hours</span>
-                        </p>
-
-                    </div>
+                  
 
                     <!-- Submit -->
                     <div class="btn center">
@@ -112,5 +95,15 @@
         </div>
 
     </section>
+{% endblock body %}
 
-    <script src="{% static '/js/authentication/confirmCode.js' %}" type="module"></script>
+
+{% block script %}
+   <script src="{% static 'js/authentication/confirmCode.js' %}" type="module"></script>
+
+{% endblock script %}
+
+  
+
+  
+
