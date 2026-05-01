@@ -4,10 +4,14 @@
 {% block title %}Verify your registration code {% endblock title %}
 
 {% block body %}
-  <section id="verify-registration-code" aria-labelledby="verify-title" class="mb-48">
+
+ {% include "partials/messages/messages.html" %}
+  <section id="verify-registration-code" aria-labelledby="verify-title" class="mb-8">
+
 
         <div class="verify-registration-code__container">
 
+            <div class="spinner" id="confirmation-code-spinner"></div>
             <div class="flex-grid">
 
                 <!-- Header / intro -->
@@ -35,6 +39,10 @@
                 <!-- Form -->
                 <form action="" id="verify-registration-confirmation-code-form" aria-describedby="verify-description" method="post">
 
+                
+
+
+                    {% csrf_token %}
                     <!-- Group inputs properly -->
                     <fieldset class="code-wrapper flex-grid" role="group" aria-labelledby="code-group-label">
 
@@ -43,7 +51,7 @@
                         </legend>
 
                         <input type="text" name="first_code" id="first-code" inputmode="numeric" pattern="[0-9]*"
-                            maxlength="1" class="code-number" aria-label="Digit 1 of 12" autocomplete="one-time-code" required>
+                            maxlength="1" class="code-number" aria-label="Digit 1 of 12" autocomplete="one-time-code" required data-codeNumber="code-number">
 
                         <input type="text" name="second_code" id="second-code" inputmode="numeric" pattern="[0-9]*"
                             maxlength="1" class="code-number" aria-label="Digit 2 of 12" required>
@@ -79,10 +87,12 @@
                             maxlength="1" class="code-number" aria-label="Digit 12 of 12" required>
                     </fieldset>
 
+
+                    <!-- hidden field -->
+                     {{ form.code }}
                     <hr class="dividor">
 
-                  
-
+                    
                     <!-- Submit -->
                     <div class="btn center">
                         <button type="submit" class="btn-large mt-16 blue-bg white-text"
@@ -93,8 +103,16 @@
 
             </div>
         </div>
-
+          
     </section>
+
+    <nav id="resend-link" class="center mb-48">
+         <a href="" id="resend-link" class="center">Resend code</a>
+    </nav>
+   
+  
+    
+ 
 {% endblock body %}
 
 

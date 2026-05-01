@@ -3,9 +3,13 @@ from django.views.decorators.csrf import csrf_protect
 from human_seconds.converter import SecondsToTime
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.decorators import login_required
+
+from utils.decorators import is_email_verified
 
 
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, EmailConfirmCodeForm
 from .models import User, Verification
 from .view_helper import handle_json_post_request, create_json_msg
 from utils.security.generator import generate_secure_code
@@ -63,7 +67,8 @@ def register_user(request):
             verification.set_expiry(minutes=15)
             verification.save()
 
-            send_confirmation_email_with_async(email=user.email, 
+            send_confirmation_email_with_async(username=user.username,
+                                                email=user.email, 
                                                 subject="Confirm email address", 
                                                 verification_code=secure_code,
                                                 expiry_time=SecondsToTime(verification.get_expiry_seconds()).format_to_human_readable())
@@ -153,5 +158,40 @@ def terms_and_conditions(request):
     return render(request, "terms_and_conditions.html")
 
 
+@login_required
 def verify_registration_code(request):
-    return render(request, "authentication/bank/authentication/verify_code.html")
+
+    form = EmailConfirmCodeForm()
+  
+    if request.method == "POST":
+        form = EmailConfirmCodeForm(request.POST or None)
+        error_msg = _("The code entered is invalid!")
+
+        if form.is_valid():
+
+            code         = form.cleaned_data.get("code")
+            verification = Verification.get_by_user_and_code(user=request.user, verification_code=code)
+
+            if verification:
+
+                if verification.is_code_expired():
+                    error_msg    = _("Your verification code has expired. Please request a new one.")
+                    verification.mark_as_expired()
+                if verification.is_used:
+                     error_msg = _("You have already used the code")
+                else:
+                    request.user.mark_email_as_verified()
+                    verification.mark_as_used()
+
+                    messages.success(request, "You have successfully verified your code. Next we begin your onboarding")
+                    return redirect("setup_welcome")
+
+        messages.error(request, error_msg)
+            
+    
+    context = {
+        "form": form,
+      
+    }
+
+    return render(request, "authentication/bank/authentication/verify_code.html", context=context)

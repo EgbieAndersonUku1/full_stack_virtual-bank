@@ -12,9 +12,10 @@ from authentication.models import EmailLog
 logger = logging.getLogger("email_sender")
 
 
-def send_confirmation_email(email: str, subject: str, verification_code: str, expiry_time: str = "10") -> None:
+def send_confirmation_email(username, email: str, subject: str, verification_code: str, expiry_time: str = "10") -> None:
     """"""
     params = {
+        "username": username,
         "email": email,
         "subject": subject,
         "verification_code": verification_code,
@@ -42,7 +43,7 @@ def send_confirmation_email(email: str, subject: str, verification_code: str, ex
         .exclude_fields_from_logging(EmailSenderConstants.Fields.CONTEXT.value)
         .to(email)
         .with_subject(subject)
-        .with_context({"verification_code": verification_code, "expiry_time": expiry_time})
+        .with_context({"verification_code": verification_code, "expiry_time": expiry_time, "username": username})
         .with_html_template("confirmation.html", folder_name="register")
         .with_text_template("confirmation.txt", folder_name="register")
         .send()

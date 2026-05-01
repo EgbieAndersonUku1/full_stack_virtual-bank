@@ -1,8 +1,11 @@
 Welcome to Your Virtual Bank
 
+Hi {{ username | title }}
+
 Thank you for registering.
 
 To complete your account setup, please confirm your email using the verification code below:
+
 
 {{ verification_code }}
 

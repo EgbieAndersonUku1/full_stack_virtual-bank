@@ -53,27 +53,26 @@
 
                                 {% if request.user.is_superuser %}
                                     <a href="" class="nav-link center" id="user-greeting">
-                                        Hi, {{ request.user.username | title }} 
+                                         Hi, {{ request.user.username|truncatechars:5|title }}
                                     
                                     </a>
                                     <span>(Superuser)</span>
 
                                 {% elif request.user.is_admin %} 
                                     <a href="" class="nav-link center" id="user-greeting">
-                                        Hi, {{ request.user.username | title }}
+                                        Hi, {{ request.user.username|truncatechars:5|title }}
                                     
                                     </a>
                                     <span>(Admin)</span>
                                 {% elif request.user.is_staff %}
                                      <a href="" class="nav-link center" id="user-greeting">
-                                        Hi, {{ request.user.username | title }} 
+                                       Hi, {{ request.user.username|truncatechars:5|title }}
                                     
                                     </a>
                                       <span>(Staff)</span>
                                 {% else %}
-                                      <a href="" class="nav-link center" id="user-greeting">
-                                        Hi, {{ request.user.username | title }} 
-                                    
+                                     <a href="" class="nav-link center" id="user-greeting">
+                                        Hi, {{ request.user.username|truncatechars:5|title }}
                                     </a>
                                 {% endif %}
 

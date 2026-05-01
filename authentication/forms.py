@@ -113,3 +113,25 @@ class LoginForm(forms.Form):
         })
     )
     
+
+class EmailConfirmCodeForm(forms.Form):
+    code = forms.CharField(
+        max_length=12,
+        min_length=12,
+        widget=forms.HiddenInput(attrs={
+            "id": "code-verification",
+        })  
+    )
+
+    def clean_code(self):
+        code = self.cleaned_data["code"]
+        MAXIMUM_ALLOWED_LENGTH = 12
+      
+        if not code.isdigit():
+            raise forms.ValidationError(_("Code must contain only digits."))
+        
+        code_length = len(code)
+        if code_length < MAXIMUM_ALLOWED_LENGTH:
+            raise forms.ValidationError(_(f"The maximum length of the code must be {MAXIMUM_ALLOWED_LENGTH}. Got code with length {code_length} "))
+
+        return code
