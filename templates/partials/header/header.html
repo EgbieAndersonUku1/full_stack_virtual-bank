@@ -17,7 +17,7 @@
                     <ul class="flex-grid four-column-grid" role="list">
 
                         <li>
-                            <a href="#" class="nav-link light-bold capitalise" id="nav-home" aria-current="page">
+                            <a href="{% url 'bank_home' %}" class="nav-link light-bold capitalise" id="nav-home" aria-current="page">
                                 Home
                             </a>
                         </li>
@@ -29,13 +29,14 @@
                         </li>
 
                         <li>
-                            <a href="/virtual-wallet-homepage.html" class="nav-link light-bold capitalise" id="nav-wallet">
+                            <a href="#" class="nav-link light-bold capitalise" id="nav-wallet">
                                 Wallet Home
                             </a>
                         </li>
 
                         <!-- Authentication -->
                         <li>
+                            {% if not request.user.is_authenticated %}
                             <div class="authentication-btns flex-grid two-column-grid" aria-label="Authentication"
                                 id="authentication-btns">
                                 <a href="{% url 'login_user' %}" class="nav-link center authenticate-btn text-uppercase" id="login-btn">
@@ -47,6 +48,42 @@
                                     Signup
                                 </a>
                             </div>
+                            {% else %}
+                              <div class="flex-grid two-column-grid" aria-label="" id="authentication-btns">
+
+                                {% if request.user.is_superuser %}
+                                    <a href="" class="nav-link center" id="user-greeting">
+                                         Hi, {{ request.user.username|truncatechars:5|title }}
+                                    
+                                    </a>
+                                    <span>(Superuser)</span>
+
+                                {% elif request.user.is_admin %} 
+                                    <a href="" class="nav-link center" id="user-greeting">
+                                        Hi, {{ request.user.username|truncatechars:5|title }}
+                                    
+                                    </a>
+                                    <span>(Admin)</span>
+                                {% elif request.user.is_staff %}
+                                     <a href="" class="nav-link center" id="user-greeting">
+                                       Hi, {{ request.user.username|truncatechars:5|title }}
+                                    
+                                    </a>
+                                      <span>(Staff)</span>
+                                {% else %}
+                                     <a href="" class="nav-link center" id="user-greeting">
+                                        Hi, {{ request.user.username|truncatechars:5|title }}
+                                    </a>
+                                {% endif %}
+
+                                <a href="{% url 'logout_user' %}" class="nav-link center text-uppercase"
+                                    id="logout-btn">
+                                    Logout
+                                </a>
+                            </div>
+                            {% endif %}
+
+
                         </li>
 
                     </ul>

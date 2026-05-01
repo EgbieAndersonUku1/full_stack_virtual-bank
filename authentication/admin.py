@@ -22,17 +22,30 @@ class UserAdminModel(admin.ModelAdmin):
 
 
 class VerificationAdminModel(admin.ModelAdmin):
-    readonly_fields     = ["created_on", "last_updated", "expiry_date", "user", "verification_code"]
-    list_display        = ["id", "user", "verification_code", "expiry_date", "created_on", "last_updated", ]
+    readonly_fields     = ["created_on", "last_updated", "masked_code", "description", "is_used", "used_at", "expiry_date", "user"]
+    list_display        = ["id", "user", "expiry_date", "is_used", "created_on", "last_updated" ]
     search_fields       = ["user", "id"]
     list_display_links  = ["id", "user"]
     list_per_page       = 25
 
     fieldsets = [
-        (None, {"fields": ["user", "verification_code", "description", "expiry_date"]}),
-        ("Audit", {"fields": ["created_on", "last_updated"]})
+        ("User & Code", {
+            "fields": ["user", "masked_code", "description"]
+        }),
+        ("Status", {
+            "fields": ["is_used", "used_at"]
+        }),
+        ("Expiry", {
+            "fields": ["expiry_date"]
+        }),
+        ("Audit", {
+            "fields": ["created_on", "last_updated"]
+        }),
     ]
 
+    def masked_code(self, obj):
+        code = obj.verification_code or ""
+        return f"****{code[-3:]}" if len(code) >= 3 else "****"
 
 
 class EmailLogAdminModel(admin.ModelAdmin):

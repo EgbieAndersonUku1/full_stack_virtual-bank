@@ -133,6 +133,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -242,3 +245,15 @@ LOGGING = {
         "level": "WARNING",
     },
 }
+
+
+
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL           = "login_user"
+LOGOUT_REDIRECT_URL = "login_user" 
+
+
+
+MAX_VERIFICATION_CODE_RESENDS_PER_USER    = 10
+RESEND_COOLDOWN_PERIOD_IN_SECONDS         = 300
+

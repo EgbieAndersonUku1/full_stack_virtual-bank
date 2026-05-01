@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django_email_sender.models import EmailBaseLog 
+from django.conf import settings
 
 
 
@@ -41,7 +42,7 @@ class BaseUser(BaseUserManager):
         if not extra_fields.get("is_active"):
             raise ValueError(_("is_active must be set to True"))
         
-        return self.create_user(username, email, password, **extra_fields)
+        return self.create_user(email, username, password, **extra_fields)
 
     def _validate_user_details(self, username, email):
         """"""
@@ -74,7 +75,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         if self.email:
-            return str(self.email.lower())
+            return self.email.lower()
 
     def is_user_email_verified(self):
         return self.is_email_verified == True
@@ -151,30 +152,46 @@ class User(AbstractBaseUser, PermissionsMixin):
         if not (isinstance(field_value, str) and isinstance(field_name, str)):
             raise TypeError(_("The field value and field name must be string. Got type {} for field value and got type for field name".format(type(field_value), type(field_name))))
         try:
+            field_value = field_value.lower()
             if field_name == "username":
                 return cls.objects.get(username=field_value)
             return cls.objects.get(email=field_value)
         except cls.DoesNotExist:
             return None
         
+    def save(self, *args, **kwargs):
+
+        if self.email:
+            self.email = self.email.lower().strip()
+
+        if self.username:
+            self.username = self.username.lower().strip()
+
+        super().save(*args, **kwargs)
+        
 
 class Verification(models.Model):
-    user              = models.ForeignKey(User, on_delete=models.CASCADE)
-    verification_code = models.CharField(max_length=32)
-    description       = models.CharField(max_length=255)
-    created_on        = models.DateTimeField(auto_now_add=True)
-    last_updated      = models.DateTimeField(auto_now=True)
-    expiry_date       = models.DateTimeField()
- 
 
+    user                  = models.ForeignKey(User, on_delete=models.CASCADE)
+    verification_code     = models.CharField(max_length=32)
+    description           = models.CharField(max_length=255)
+    expiry_date           = models.DateTimeField()
+    sent_at               = models.DateTimeField(blank=True, null=True)
+    num_of_resends        = models.PositiveSmallIntegerField(default=0)
+    created_on            = models.DateTimeField(auto_now_add=True)
+    last_updated          = models.DateTimeField(auto_now=True)
+    is_used               = models.BooleanField(default=False, blank=True, null=True)
+    used_at               = models.DateTimeField(blank=True, null=True)
+    deletion_scheduled_at = models.DateTimeField(blank=True, null=True)
+   
+ 
     def __str__(self):
-        if self.user:
-            return str(self.user)
+        return f"Verification for {self.user}"
         
     @classmethod
     def get_by_user(cls, user: User) -> User | None:
         """"""
-        return cls.objects.filter(user)
+        return cls.objects.filter(user=user)
     
     @classmethod
     def get_by_user_and_code(cls, user: User, verification_code: str) -> User | None:
@@ -184,7 +201,7 @@ class Verification(models.Model):
         except cls.DoesNotExist:
             return None
     
-    def set_expiry(self, minutes=10, hours=0, days=0):
+    def set_expiry(self, minutes: int = 10, hours: int = 0, days: int = 0) -> None:
         if not all(isinstance(value, int) for value in (minutes, hours, days)):
               raise ValueError(
                 _(
@@ -194,6 +211,7 @@ class Verification(models.Model):
                     f"days={type(days).__name__}"
                 )
             )
+        
         if (minutes < 0 or hours < 0 or days < 0):
              raise ValueError(
                 _(
@@ -204,25 +222,72 @@ class Verification(models.Model):
                 )
             )
 
-
         self.expiry_date = timezone.now() + timedelta(minutes=minutes, hours=hours, days=days)
-    
-    def is_code_valid(self):
+             
+    def is_code_expired(self) -> bool:
         """"""
-        return timezone.now() < self.expiry_date
+        return timezone.now() >= self.expiry_date
     
     def get_expiry_seconds(self) -> int:
         if not self.expiry_date:
             return 0
         delta = self.expiry_date - timezone.now()
         return int(delta.total_seconds())
+    
+    def can_resend(self) -> bool:
+        """"""
+        if self.is_code_expired():
+            return False
+        
+        if self.num_of_resends >= settings.MAX_VERIFICATION_CODE_RESENDS_PER_USER:
+            return False
+
+        cooldown_passed = timezone.now() >= (
+            self.sent_at + timedelta(seconds=settings.RESEND_COOLDOWN_PERIOD_IN_SECONDS)
+        )
+        return cooldown_passed
+    
+    def increment_resend(self, commit: bool = True) -> Verification | None:
+
+        if not self.can_resend():
+            raise ValidationError(_("Cannot resend yet."))
+
+        self.num_of_resends += 1
+        self.sent_at = timezone.now()
+
+        if commit:
+             self.save(update_fields=["num_of_resends", "sent_at"])
+             return self
+    
+    def mark_as_used(self, commit = True):
+
+        now          = timezone.now()
+        self.is_used = True
+        self.used_at = now
+
+        self.deletion_scheduled_at = now + timedelta(seconds=self.get_expiry_seconds())
+
+        if commit:
+            self.save()
+            return self
+    
+    def mark_as_expired(self, commit = True):
+        """"""
+        self.deletion_scheduled_at = timezone.now() + timedelta(seconds=self.get_expiry_seconds())
+
+        if commit:
+            self.save()
+            return self
         
     def save(self, *args, **kwargs):
         if not self.expiry_date:
             raise ValidationError(_("expiry_date must be set before saving."))
+        
+        if not self.pk:
+            self.sent_at = timezone.now()
+
         return super().save(*args, **kwargs)
     
-
 
 class EmailLog(EmailBaseLog):
     sent_at = models.DateTimeField(auto_now_add=True)
@@ -230,3 +295,4 @@ class EmailLog(EmailBaseLog):
     def __str__(self):
         return f"To email: {self.to_email} from {self.from_email}"
   
+

@@ -31,9 +31,13 @@
 
 
                         <li>
-                            <a href="/vritual-bank-register.html" class="nav-link light-bold capitalise"
+                            <a href="/vritual-bank-register.html" class="nav-link light-bold capitalise mr-8"
                                 id="nav-security">
-                                Hi, User
+                                Hi, {{ request.user.username | title }}
+                            </a>
+                            |
+                            <a href="{% url 'logout_user' %}" class="nav-link light-bold capitalise pl-8" id="logout">
+                               logout
                             </a>
                         </li>
 

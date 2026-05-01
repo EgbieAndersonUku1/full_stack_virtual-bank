@@ -4526,12 +4526,13 @@ clicks the button
     border: 2px solid lavender;
     margin-top: var(--space-48);
     background: white;
+    position: relative;
 }
 
 
 #verify-registration-confirmation-code-form {
     padding: var(--space-24);
-    /* background: white; */
+    
    
 }
 
@@ -4553,6 +4554,7 @@ clicks the button
 
 
 /* the spinner for the registration form */
+#confirmation-code-spinner,
 #registration-spinner {
     position: absolute;
     top: 30%;
@@ -4607,4 +4609,15 @@ clicks the button
     background-color: #fef2f2;
     color: #7f1d1d;
     border-left: 4px solid #ef4444;
+}
+
+
+#resend-link {
+    position: relative;
+    z-index: 100000;
+} 
+
+#resend-link:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
