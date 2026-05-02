@@ -254,6 +254,14 @@ LOGOUT_REDIRECT_URL = "login_user"
 
 
 
-MAX_VERIFICATION_CODE_RESENDS_PER_USER    = 10
-RESEND_COOLDOWN_PERIOD_IN_SECONDS         = 300
 
+
+# Maximum number of resend attempts allowed per user before requiring cooldown or blocking further requests
+MAX_VERIFICATION_CODE_RESENDS_PER_USER  = 5
+
+# Cooldown period (in seconds) enforced between consecutive resend requests
+# Prevents users from spamming the resend endpoint
+RESEND_COOLDOWN_PERIOD_IN_SECONDS  = 60
+
+# Default lifespan (in minutes) for a verification code before it becomes invalid
+DEFAULT_CODE_EXPIRY_IN_MINUTES  = 5

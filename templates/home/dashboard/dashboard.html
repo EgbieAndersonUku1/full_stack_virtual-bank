@@ -14,9 +14,11 @@
 
     {% include "partials/dashboard/_navbar.html" %}
 
+    {% include "partials/messages/messages.html" %}
+
     <!-- Greetings -->
     <div class="greeting mt-16 ml-24">
-        <h1 class="header-7 capitalise">Hi, User, Welcome back!</h1>
+        <h1 class="header-7 capitalise">Hi, {{ request.user.username | title }}, Welcome back!</h1>
         <p class="text-muted capitalise">Manage your finances</p>
     </div>
 
