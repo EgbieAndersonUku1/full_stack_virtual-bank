@@ -1,8 +1,13 @@
+
+from __future__ import annotations
+
 import json
 from django.http import JsonResponse, HttpRequest
+from typing import Callable, Any
+from django.utils.translation import gettext_lazy as _
 
 
-def handle_json_post_request(request, func):
+def handle_json_post_request(request: HttpRequest, func:  Callable[[Any], Any]) -> JsonResponse:
     """
     Handles a JSON POST request and passes the parsed body to a callable function.
 
@@ -35,7 +40,7 @@ def handle_json_post_request(request, func):
 
 
 
-def create_json_msg(field_name, field_value, is_available):
+def create_json_msg(field_name: str, field_value: str, is_available: bool) -> dict:
     """
     Creates a standardised JSON response message for field availability checks.
 
@@ -58,9 +63,20 @@ def create_json_msg(field_name, field_value, is_available):
             - IS_AVAILABLE: boolean indicating availability
             - MSG: human-readable status message
     """
-    field_name = field_name.lower()
-    field_value = field_value.lower()
+
+    try:
+        field_name = field_name.lower()
+        field_value = field_value.lower()
+    except AttributeError as e:
+       return {
+            "FIELD_NAME": '',
+            "IS_AVAILABLE": '',
+            "MSG": _("An error occurred and the request could not be processed"),
+            "ERROR": f"{type(e).__name__}: {e}"
+        }
+
     return {"FIELD_NAME": field_value,
                "IS_AVAILABLE": not is_available if field_name != '' else False,
-               "MSG": f"The {field_name} is not avaialbe" if is_available else f"The {field_name} is available"
+               "MSG": _(f"The {field_name} is not avaialbe" if is_available else f"The {field_name} is available"),
+               "ERROR": '',
                }

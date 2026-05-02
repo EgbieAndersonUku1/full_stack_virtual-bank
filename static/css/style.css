@@ -4621,3 +4621,15 @@ clicks the button
     cursor: pointer;
     text-decoration: underline;
 }
+
+
+#resend-limit-exceeded {
+    padding: var(--space-12);
+    color: white;
+    background: var(--red);
+}
+
+.blocked__image {
+    height: 500px;
+    width: 500px;
+}
