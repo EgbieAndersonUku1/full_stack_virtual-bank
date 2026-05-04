@@ -77,7 +77,7 @@
                 <h2 id="latest-login-heading" class="capitalise header-9">
                     Last login
                 </h2>
-                <time datetime="2026-01-29T20:32">Today at 20:32</time>
+                <time datetime="2026-01-29T20:32"> {{ request.user.last_login }}</time>
             </div>
         </div>
 
@@ -100,7 +100,7 @@
     <nav class="logout" aria-label="Account actions">
         <ul class="sidebar-nav">
             <li class="sidebar-nav__item">
-                <a href="#" class="sidebar-nav__link" id="logout-dashboard-link">
+                <a href="{% url 'logout_user' %}" class="sidebar-nav__link" id="logout-dashboard-link">
                     <span class="sidebar-nav__icon" aria-hidden="true">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </span>

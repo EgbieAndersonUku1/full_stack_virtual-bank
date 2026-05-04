@@ -1,3 +1,4 @@
+{% load static %}
 <!--
 Dashboard Component: Banking Options Grid
 
@@ -86,7 +87,7 @@ Actual financial operations such as transfers or fund deposits
 should be handled through secure backend services and validated
 financial APIs.
 -->
-<section id="bank-options" aria-labelledby="bank-options-title">
+<section id="bank-options" aria-labelledby="bank-options-title" class="ml-8 mt-48">
     <div class="bank-options__container mb-24 mt-16">
 
         <!-- Section Heading for Screen Readers -->
@@ -98,7 +99,7 @@ financial APIs.
                 <a href="#" class="bank-option-card-link" aria-label="Add funds to your account">
                     <div class="bank-options__card center">
                         <div class="card-head">
-                            <img src="/static/images/card-icons/wallet.png" alt="" class="bank-option-img"
+                            <img src="{% static "/images/card-icons/wallet.png" %}" alt="" class="bank-option-img"
                                 aria-hidden="true">
                         </div>
 
@@ -117,7 +118,7 @@ financial APIs.
                 <a href="#" class="bank-option-card-link" aria-label="Transfer money to another account">
                     <div class="bank-options__card center">
                         <div class="card-head">
-                            <img src="/static/images/card-icons/transfer.png" alt="" class="bank-option-img"
+                            <img src="{% static "/images/card-icons/transfer.png" %}" alt="" class="bank-option-img"
                                 aria-hidden="true">
                         </div>
 
@@ -136,7 +137,7 @@ financial APIs.
                 <a href="#" class="bank-option-card-link" aria-label="Manage your credit cards">
                     <div class="bank-options__card center">
                         <div class="card-head">
-                            <img src="/static/images/card-icons/credit-card.png" alt="" class="bank-option-img"
+                            <img src="{% static "/images/card-icons/credit-card.png" %}" alt="" class="bank-option-img"
                                 aria-hidden="true">
                         </div>
 
@@ -155,7 +156,7 @@ financial APIs.
                 <a href="#" class="bank-option-card-link" aria-label="Transfer money to your wallet">
                     <div class="bank-options__card center">
                         <div class="card-head">
-                            <img src="/static/images/card-icons/wallet-activity.png" alt="" class="bank-option-img"
+                            <img src="{% static "/images/card-icons/wallet-activity.png" %}" alt="" class="bank-option-img"
                                 aria-hidden="true">
                         </div>
 
