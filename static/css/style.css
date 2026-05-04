@@ -622,6 +622,9 @@ img:hover {
     color: #2563EB;
 }
 
+.nav-footer {
+    gap: var(--space-24);
+}
 
 /* header */
 header {
@@ -630,7 +633,7 @@ header {
     left: 4%;
     right: 0;
     margin-bottom: var(--space-24);
-    z-index: 10000;
+    z-index: 1000;
 }
 
 
@@ -2090,6 +2093,8 @@ take up 50 to left and 50 up
     font-weight: 400;
 }
 
+
+
 .dashboard__container__sidebar li span {
     padding-right: var(--space-12);
     flex-shrink: 0;
@@ -2206,7 +2211,7 @@ time {
 
 
 .notification-dashboard-img,
-.dashboard-profile-img {
+.virtual-bank-nav-profile-img {
     height: 30px;
 }
 
@@ -2222,11 +2227,11 @@ time {
     font-size: 1.1rem;
 }
 
-.dashboard__profile {
+.virtual-bank-nav-profile {
     position: relative;
 }
 
-.dashboard__container__dropdown-menu {
+.virtual-bank-container__dropdown-menu {
     position: absolute;
     right: 10px;
     background: white;
@@ -2234,6 +2239,8 @@ time {
     padding: var(--space-8);
     box-shadow: var(--box-shadow-secondary);
     border: 4px solid lavender;
+    padding: 20px;
+  
 
     /* hidden state */
     opacity: 0;
@@ -2249,7 +2256,7 @@ time {
 }
 
 
-.dashboard__container__dropdown-menu.show {
+.virtual-bank-container__dropdown-menu.show {
     opacity: 1;
     transform: translateY(0) scale(1);
     visibility: visible;
@@ -2268,7 +2275,16 @@ time {
     padding: var(--space-16);
     text-transform: capitalize;
     cursor: pointer;
+    font-size: 0.92rem;
+    gap: var(--space-12);
 }
+
+
+.dropdown-menu li a:hover {
+   text-decoration: underline;
+   color: var(--green-600);
+}
+
 
 
 .dropdown-menu li:hover:not(:first-child) {
@@ -3301,12 +3317,12 @@ clicks the button
 /* override it */
 #view-card-panel,
 #bank-account-add-funds {
-    top: 0;
-    width: 35%;
-    left: 35%;
-    bottom: 1px;
+    top: 62px;
+    width: 45%;
+    left: 30%;
     border-radius: 16px;
     display: none;  
+   
 }
 
 
@@ -3486,6 +3502,7 @@ clicks the button
 #view-card-panel {
     top: 0;
     left: 0;
+    bottom: 0;
     width: 25%;
    
 }

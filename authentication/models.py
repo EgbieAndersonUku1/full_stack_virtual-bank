@@ -301,7 +301,7 @@ class Verification(models.Model):
 
         self.num_of_resend_requests += 1
         self.sent_at = timezone.now()
-        fields_to_update = ["num_of_resend_requests", "sent_at"]
+        fields_to_update = ["num_of_resend_requests", "sent_at", "last_updated"]
 
         if self.is_resend_limit_exceeded():
             fields_to_update.append("status")

@@ -12,12 +12,12 @@
 <section class="dashboard__container__main" tabindex="-1">
 
 
-    {% include "partials/dashboard/_navbar.html" %}
+    {% include "partials/header/header.html" %}
 
     {% include "partials/messages/messages.html" %}
 
     <!-- Greetings -->
-    <div class="greeting mt-16 ml-24">
+    <div class="greeting mt-24 ml-24">
         <h1 class="header-7 capitalise">Hi, {{ request.user.username | title }}, Welcome back!</h1>
         <p class="text-muted capitalise">Manage your finances</p>
     </div>
@@ -71,3 +71,7 @@
 {% endblock body %}
 
 
+{% block script %}
+
+   <script src="{% static 'js/dashboard/bank-dashboard.js' %}" type="module"></script>
+{% endblock script %}

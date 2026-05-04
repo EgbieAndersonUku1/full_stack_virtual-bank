@@ -13,8 +13,6 @@ const connectWalletStepOne = document.getElementById("connect-wallet-modal__step
 const connectWalletStepThree = document.getElementById("connect-wallet-modal__step-three");
 const connectWalletStepTwo = document.getElementById("connect-wallet-modal__step-two");
 const dashboard = document.getElementById("dashboard");
-const dashboardProfileElement = document.getElementById("dashboard-profile");
-const dropdownMenu = document.getElementById("dashboard__container__dropdown-menu");
 const linkAccountForm = document.getElementById("link-wallet-form");
 const progressElement = document.getElementById("walletProgress");
 const progressValue = document.getElementById("walletProgressValue");
@@ -50,8 +48,6 @@ const transferAmountElement = document.querySelector('.transfer-confirmation__su
 
 // hidden form values
 
-
-console.log(walletAuthForm)
 const MAX_TRANSFER_AMOUNT = 1_000_000;
 let walletModalStep2Button;
 
@@ -91,7 +87,7 @@ const WalletWizardIds = {
 
 
 // TODO add one time checker here for one time static element check
-dashboardProfileElement.addEventListener("click", handleDropDownMenu);
+
 dashboard.addEventListener("click", handleDelegation);
 dashboard.addEventListener("change", handleDelegation)
 walletAuthForm.addEventListener("submit", handleWalletAuthForm);
@@ -215,15 +211,6 @@ const selectedCardStore = {
         this.element = null;
     }
 };
-
-
-
-function handleDropDownMenu(e) {
-    const profileImg = e.target.closest("img");
-    if (profileImg) {
-        dropdownMenu.classList.toggle("show")
-    }
-}
 
 
 

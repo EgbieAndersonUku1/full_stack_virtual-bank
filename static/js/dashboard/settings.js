@@ -127,7 +127,7 @@ function handleDelegation(e) {
   
     if (e.target.classList.contains("tab")) {
          console.log(e.target.classList.contains("tab"))
-        handleTabs(e)
+        handleTabs(e.target)
     }
 
     if ( !e.target.classList.contains(EXPECTED_CLASS_SELECTOR) &&  
@@ -727,8 +727,8 @@ async function handlePromotionalAlert(e) {
  *
  * @returns {void}
  */
-function handleTabs(e) {
-    const clickedTab          = e.target;
+function handleTabs(clickedTab) {
+ 
     const ACTIVE_TAB_SELECTOR = "active";
     const SHOW_SELECTOR       = "show";
     let sectionToShow;
@@ -741,14 +741,13 @@ function handleTabs(e) {
         errorMsg: "Tabs and sections count mismatch. Each tab must correspond to a section."
     });
     return;
-}
+    }
 
-//  console.log("I am here")
   
- // Single pass to update both tabs and sections.
-// This relies on tabs and sections being equal in number and index-aligned,
-// meaning each tab corresponds directly to a section at the same index.
-// This avoids separate loops and keeps the operation efficient.
+    // Single pass to update both tabs and sections.
+    // This relies on tabs and sections being equal in number and index-aligned,
+    // meaning each tab corresponds directly to a section at the same index.
+    // This avoids separate loops and keeps the operation efficient.
   for (let i = 0; i < tabs.length; i++) {
 
       const tab = tabs[i];

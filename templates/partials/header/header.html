@@ -1,93 +1,163 @@
 {% load static %}
 
-<header class="mb-24">
+<header>
 
-        <nav aria-label="Main navigation" class="navbar">
-            <div class="nav-container flex-grid two-column-grid">
+    <nav class="navbar">
 
-                <!-- Logo / Home -->
-                <div class="head">
-                    <a href="/" class="nav-link pt-8 bold" id="virtual-bank-logo">
-                        <img src="{% static "/images/virtual-bank-logo.png" %}" alt="Virtual Bank home" class="logo" />
+        <div class="flex-grid three-column-grid">
+
+            <div class="head">
+                <a href="/" class="nav-link pt-8 bold" id="virtual-bank-logo">
+                    <img src="{% static "/images/virtual-bank-logo.png" %}" alt="Virtual Bank home" class="logo" />
+                </a>
+            </div>
+
+
+            <div class="body flex-grid three-column-grid">
+
+                <a href="{% url 'bank_home' %}" class="nav-link light-bold capitalise" id="nav-home" aria-current="page">
+                    Home
+                </a>
+
+                {% if request.resolver_match.url_name == "bank_home" %}
+                <a href="#features" class="nav-link light-bold capitalise" id="nav-features">
+                    Features
+                </a>
+
+                 <a href="#" class="nav-link light-bold capitalise" id="nav-wallet">
+                    Wallet Home
+                </a>
+                {% endif %}
+            
+               
+            </div>
+
+
+            <div class="nav-footer flex flex-end">
+
+                {% if not request.user.is_authenticated %}
+
+                <div class="authentication-btns flex-grid two-column-grid" aria-label="Authentication"
+                    id="authentication-btns">
+                    <a href="{% url 'login_user' %}" class="nav-link center authenticate-btn text-uppercase"
+                        id="login-btn">
+                        Login
+                    </a>
+
+                    <a href="{% url 'register_user' %}" class="nav-link center authenticate-btn text-uppercase"
+                        id="signup-btn">
+                        Signup
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="body">
-                    <ul class="flex-grid four-column-grid" role="list">
+                {% else %}
+                <div class="virtual-bank_container__amount">
+                    <span class="bold"><span class="currency">£</span>1,500</span>
+                </div>
 
-                        <li>
-                            <a href="{% url 'bank_home' %}" class="nav-link light-bold capitalise" id="nav-home" aria-current="page">
-                                Home
-                            </a>
-                        </li>
+                <div class="virtual-bank-nav-profile" id="virtual-bank-nav-profile">
+                    <img src="/static/images/icons/profile.png" alt="" class="virtual-bank-nav-profile-img">
 
-                        <li>
-                            <a href="#features" class="nav-link light-bold capitalise" id="nav-features">
-                                Features
-                            </a>
-                        </li>
+                    <div class="virtual-bank-container__dropdown-menu dropdown-menu"
+                        id="virtual-bank-container__dropdown-menu">
 
-                        <li>
-                            <a href="#" class="nav-link light-bold capitalise" id="nav-wallet">
-                                Wallet Home
-                            </a>
-                        </li>
+                        <ul>
+                            <li class="flex-grid two-column-20_80_grid">
+                                <span>
+                                    <img src="/static/images/icons/profile.png" alt=""
+                                        class="virtual-bank-nav-profile-img">
+                                </span>
 
-                        <!-- Authentication -->
-                        <li>
-                            {% if not request.user.is_authenticated %}
-                            <div class="authentication-btns flex-grid two-column-grid" aria-label="Authentication"
-                                id="authentication-btns">
-                                <a href="{% url 'login_user' %}" class="nav-link center authenticate-btn text-uppercase" id="login-btn">
-                                    Login
-                                </a>
-
-                                <a href="{% url 'register_user' %}" class="nav-link center authenticate-btn text-uppercase"
-                                    id="signup-btn">
-                                    Signup
-                                </a>
-                            </div>
-                            {% else %}
-                              <div class="flex-grid two-column-grid" aria-label="" id="authentication-btns">
-
-                                {% if request.user.is_superuser %}
-                                    <a href="" class="nav-link center" id="user-greeting">
-                                         Hi, {{ request.user.username|truncatechars:5|title }}
+                                <span class="flex-grid">
+                                    {% if request.user.is_superuser %}
+                                    <span class="bold">{{ request.user.username|truncatechars:8|title }} (Superuser)</span>
+                                    {% elif request.user.is_admin %}
+                                      <span class="bold">{{ request.user.username|truncatechars:8|title }} (Admin)</span>
+                                    {% elif request.user.is_staff %}
+                                      <span class="bold">{{ request.user.username|truncatechars:8|title }} (Staff)</span>
+                                    {% else %}
+                                        <span class="bold">{{ request.user.username|truncatechars:8|title }} </span>
+                                    {% endif %}
+                                    <span class="lower-case">{{ request.user.email|lower }}</span>
                                     
-                                    </a>
-                                    <span>(Superuser)</span>
+                                </span>
+        
+                            </li>
 
-                                {% elif request.user.is_admin %} 
-                                    <a href="" class="nav-link center" id="user-greeting">
-                                        Hi, {{ request.user.username|truncatechars:5|title }}
-                                    
-                                    </a>
-                                    <span>(Admin)</span>
-                                {% elif request.user.is_staff %}
-                                     <a href="" class="nav-link center" id="user-greeting">
-                                       Hi, {{ request.user.username|truncatechars:5|title }}
-                                    
-                                    </a>
-                                      <span>(Staff)</span>
-                                {% else %}
-                                     <a href="" class="nav-link center" id="user-greeting">
-                                        Hi, {{ request.user.username|truncatechars:5|title }}
-                                    </a>
-                                {% endif %}
 
-                                <a href="{% url 'logout_user' %}" class="nav-link center text-uppercase"
-                                    id="logout-btn">
-                                    Logout
+                            {% if request.user.is_email_verified %}
+                            <li>
+                                <a href="#account" id="navbar-account-dropdown">
+                                    <span><i class="fa-regular fa-user"></i></span><span>Account</span>
                                 </a>
-                            </div>
+                            </li>
+
+                             <li>
+                                <a href="#">
+                                     <span><i class="fa-solid fa-wallet"></i></span><span>Wallet home</span>
+                                </a>
+                            </li>
+
+                            {% if request.resolver_match.url_name != "dashboard" %}
+                            <li>
+                                <a href="{% url 'dashboard' %}">
+                                    <span><i class="fa-solid fa-gauge"></i></span><span>Dashboard</span>
+
+                                </a>
+                            </li>
                             {% endif %}
 
+                            <li>
+                                <a href="#security"  id="navbar-security-dropdown" data-url="{% url 'manage_settings' %}">
+                                    <span><i class="fa-solid fa-shield-halved"></i></span><span>Security</span>
 
-                        </li>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#help-and-support">
+                                    <span><i class="fa-regular fa-circle-question"></i></span><span>Help &
+                                        Support</span>
+                                </a>
 
-                    </ul>
+                            </li>
+                            {% endif %}
+
+                            <li class="dashboard-logout">
+
+                                <a href="{% url 'logout_user' %}" class="nav-link center" id="logout-btn">
+                                    <span><i class="fa-solid fa-right-from-bracket"></i></span>
+                                        <span class="deactivate-text">Logout</span>
+                                </a>
+                            </li>
+
+
+
+                        </ul>
+                    </div>
+
                 </div>
+
+                <div class="dashboard__container__notification-bell">
+                    <div class="notifications">
+                        <img src="/static/images/icons/notification_smartphone_icon.png" alt=""
+                            class="dashboard-notification-bell-img">
+                    </div>
+
+
+                </div>
+
+
+                {% endif %}
             </div>
-        </nav>
-    </header>
+
+
+
+        </div>
+
+
+    </nav>
+
+
+
+</header>
+

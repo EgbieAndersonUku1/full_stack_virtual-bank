@@ -200,7 +200,6 @@ def verify_registration_code(request):
                     request.user.mark_email_as_verified()
                     verification.mark_as_used()
 
-                    print(verification.is_code_expired)
                     messages.success(request, _("You have successfully verified your code. Next we begin your onboarding"))
                     return redirect("setup_welcome")
 
