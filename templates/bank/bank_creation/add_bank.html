@@ -1,0 +1,208 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block body %}
+
+
+<section id="add-new-bank" aria-label="Add new bank">
+
+    <div class="dashboard__container">
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/header/header.html" %}
+
+
+            <!-- main -->
+            <div class="main-body flex-grid" id="add-new-bank">
+
+                <h1 id="bank-form-title" class="ml-48 header-6 mt-16">Add Bank</h1>
+
+                <p class="form-subtitle ml-48">
+                    Create a new bank profile, branch details, services, and deposit settings.
+                </p>
+
+                <div class="bank-form__wrapper">
+
+                    <form action="" method="post" id="add-bank-form" aria-labelledby="bank-form-title">
+
+                        <!-- Basic Information -->
+                        <fieldset>
+                            <legend class="bold mt-16">Basic Information</legend>
+                            <p class="fieldset-subtitle">
+                                Add the bank’s public name and description shown to users.
+                            </p>
+                            <hr class="dividor">
+
+                            <div class="group">
+                                <label for="bank-name">Bank name</label>
+
+                                <input type="text" name="bank_name" id="bank-name" autocomplete="organization" required>
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="bank-country">Bank country</label>
+                                <select id="bank-country">
+                                    <option value="">Choose country</option>
+                                </select>
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="bank-description">Bank description</label>
+                                <textarea name="bank_description" id="bank-description-text-area" rows="4"
+                                    cols="25"></textarea>
+                                <p class="num-of-characters-remaining text-align-right character-usage-message">Minimum
+                                    characters to use: 50</p>
+                                <p class="num-of-characters-to-use text-align-right character-usage-message">Number of
+                                    characters remaining: 255</p>
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="bank-logo">Bank logo</label>
+                                <input type="file" name="bank_logo" id="bank-logo" accept="image/*">
+                                <small>Upload the bank’s official logo.</small>
+                            </div>
+                        </fieldset>
+
+
+                        <!-- Branch Details -->
+                        <fieldset>
+                            <legend class="bold">Branch Details</legend>
+                            <p class="fieldset-subtitle">
+                                Enter the main branch location and address users can view.
+                            </p>
+                            <hr class="dividor">
+
+                            <div class="group flex-grid">
+                                <label for="branch-name">Branch name</label>
+
+                                <small id="branch-help">
+                                    Used to identify a specific office or location, such as London Central Branch.
+                                </small>
+                                <input type="text" name="branch_name" id="branch-name" aria-describedby="branch-help">
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="branch-address">Address</label>
+                                <textarea name="branch_address" id="branch-address-text-area" rows="4"
+                                    cols="25"></textarea>
+                                <p class="num-of-characters-remaining text-align-right character-usage-message">Minimum
+                                    characters to use: 50</p>
+                                <p class="num-of-characters-to-use text-align-right character-usage-message">Number of
+                                    characters remaining: 255</p>
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="phone-number">Customer support phone number</label>
+                                <input type="tel" name="phone_number" id="phone-number" maxlength="20"
+                                    pattern="^[0-9+\-\s()]{7,20}$">
+                                <small>Main contact number for this branch.</small>
+                            </div>
+
+
+
+                        </fieldset>
+
+
+                        <!-- Banking Services -->
+                        <fieldset>
+                            <legend class="bold">Banking Services</legend>
+                            <p class="fieldset-subtitle">
+                                Select the financial services this bank currently provides.
+                            </p>
+                            <hr class="dividor">
+
+                            <div class="group flex-grid">
+                                <label for="offer-overdraft">Offers overdraft</label>
+                                <select name="offer_overdraft" id="offer-overdraft">
+                                    <option value="">Select option</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="offer-savings-account">Offers savings accounts</label>
+                                <select name="offer_savings_account" id="offer-savings-account">
+                                    <option value="">Select option</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </fieldset>
+
+
+                        <!-- Deposit Settings -->
+                        <fieldset>
+                            <legend class="bold">Deposit Settings</legend>
+                            <p class="fieldset-subtitle">
+                                Configure deposit limits, contribution amounts, and interest timing.
+                            </p>
+                            <hr class="dividor">
+
+                            <div class="group flex-grid">
+                                <label for="interest-period">Interest period</label>
+                                <select name="interest_period" id="interest-period">
+                                    <option value="">Choose period</option>
+                                </select>
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="monthly-deposit">Monthly deposit</label>
+                                <input type="number" name="monthly_deposit" id="monthly-deposit" step="0.01" min="0">
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="minimum-deposit">Minimum deposit</label>
+                                <input type="number" name="minimum_deposit" id="minimum-deposit" step="0.01" min="0">
+                            </div>
+                        </fieldset>
+
+
+                        <hr class="dividor">
+
+                        <!-- the buttons on the right hand side-->
+                        <div class="bank-btns flex-grid">
+
+                            <button type="submit" class="btn-large red-bg white-text">Save</button>
+                            <a href="">
+                                <button type="button" class="btn-large green-bg white-text">Manage Banks</button>
+                            </a>
+
+                            <a href="{% url 'bank_operation_centre' %}">
+
+                                <button type="button" class="btn-large blue-bg white-text"> Bank Operations
+                                    Centre</button>
+                            </a>
+
+                        </div>
+
+                    </form>
+
+
+
+
+                </div>
+
+
+
+
+            </div>
+
+
+        </section>
+
+
+
+    </div>
+
+</section>
+
+
+
+{% endblock body %}

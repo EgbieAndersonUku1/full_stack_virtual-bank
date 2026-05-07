@@ -48,7 +48,10 @@ AUTH_USER_MODEL = 'authentication.User'
 
 INSTALLED_APPS = [
     'jazzmin',
-     'django_q',
+    'django_q',
+    'django_countries',
+
+
     # my apps
     'bank.apps.BankConfig',
     'wallet.apps.WalletConfig',
@@ -56,6 +59,7 @@ INSTALLED_APPS = [
     'core_admin.apps.CoreAdminConfig',
     'home.apps.HomeConfig',
     'authentication.apps.AuthenticationConfig',
+    'user_profile.apps.UserProfileConfig',
 
 
     # third party django apps

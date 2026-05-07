@@ -1,0 +1,100 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block body %}
+
+
+<section id="add-new-bank" aria-label="Add new bank">
+
+    <div class="dashboard__container">
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/header/header.html" %}
+
+
+            <!-- main -->
+
+            <div class="admin-panel__container">
+
+                <p class="mb-24 mt-24 admin-message">
+                    Manage banking institutions, monitor records, and keep platform data accurate and up to date.
+                </p>
+
+                <!-- Bank Administration -->
+                <h1 class="capitalise">Bank Administration</h1>
+                <p class="section-subtitle">
+                    Manage banks, update records, and maintain banking platform settings.
+                </p>
+
+                <div class="cards flex-grid three-column-grid admin-cards">
+
+                    <!-- Card 1 -->
+                    <a href="{% url 'add_bank' %}">
+                        <div class="card admin-card">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/admin_fraud.png' %}" alt="create bank icon"
+                                    class="admin-card-icon">
+                            </div>
+
+                            <div class="body">
+                                <h1 class="capitalize">Create Bank</h1>
+                                <p>
+                                    Add a new bank profile, services, contact details, and deposit settings.
+                                </p>
+                            </div>
+                        </div>
+
+                    </a>
+
+
+                    <!-- Card 2 -->
+                    <div class="card admin-card">
+                        <div class="head center">
+                            <img src="{% static '/images/card-icons/admin_risk-analysis.png' %}"
+                                alt="bank insights icon" class="admin-card-icon">
+                        </div>
+
+                        <div class="body">
+                            <h1 class="capitalize">Bank Insights</h1>
+                            <p>
+                                Review bank performance, customer activity, and account trends.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="card admin-card">
+                        <div class="head center">
+                            <img src="{% static '/images/card-icons/admin_user-management.png' %}"
+                                alt="manage banks icon" class="admin-card-icon">
+                        </div>
+
+                        <div class="body">
+                            <h1 class="capitalize">Manage Banks</h1>
+                            <p>
+                                Edit bank records, update services, and manage existing entries.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+    </div>
+
+</section>
+
+
+
+{% endblock body %}
