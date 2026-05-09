@@ -269,3 +269,6 @@ RESEND_COOLDOWN_PERIOD_IN_SECONDS  = 60
 
 # Default lifespan (in minutes) for a verification code before it becomes invalid
 DEFAULT_CODE_EXPIRY_IN_MINUTES  = 5
+
+# Fixed size of the sort code range allocated to each bank
+SORT_CODE_ALLOCATION_BLOCK = 200_000

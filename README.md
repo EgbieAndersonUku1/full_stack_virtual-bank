@@ -1,6 +1,6 @@
 
 
-## ⚠️ This project is actively under developmen
+## ⚠️ This project is actively under development
 ## Virtual Bank & Wallet (Django + PostgreSQL)
 
 This project is a **virtual banking simulation system** built with Django and PostgreSQL.
@@ -236,3 +236,114 @@ python manage.py migrate --run-syncdb
 
 
 ---
+
+
+
+## Create banks and bank accounts
+
+
+This project uses **sequential allocation** for both sort codes and account numbers.
+
+The system intentionally does **not** use random number generation for financial identifiers.
+
+### Why Sequential Generation Is Used
+
+Sequential generation provides several important guarantees required in banking and financial systems:
+
+- predictable allocation boundaries
+- collision prevention
+- deterministic identifier issuance
+- easier auditing and traceability
+- efficient concurrency handling
+- allocation integrity across banks
+
+
+In this app, a superuser can add a limited amount of banks to the virtual bank, and when each bank is created, it is assigned an isolated numeric allocation block. All sort codes and account numbers generated for that bank are issued sequentially within the assigned range.
+
+Example:
+
+```text
+Bank A allocation block:
+0 → 200000
+
+Generated identifiers:
+The bank then creates the following accounts:
+
+Sort Code:     000001
+Account No:    00000001
+
+Next:
+Sort Code:     000002
+Account No:    00000002
+
+Next:
+Sort Code:     000003
+Account No:    00000003
+````
+
+Another bank receives a completely different allocation range:
+
+```text
+Bank B allocation block:
+200001 → 400000
+
+Generated identifiers:
+Sort Code:     200001
+Account No:    00200001
+```
+
+This design guarantees that identifier spaces never overlap between banks.
+
+---
+
+## Why Random Generation Is Avoided
+
+Random generation was intentionally avoided because financial systems require strong guarantees around uniqueness, traceability, and allocation safety.
+
+The system could have used a random generator as so
+
+```
+random.randint(0, 9999999)
+```
+
+But Using random identifiers introduces several risks:
+
+* collision handling complexity
+* retry logic under concurrency
+* fragmented identifier space
+* poor auditability
+* non-deterministic allocation behaviour
+* reduced operational transparency
+
+Sequential allocation provides a safer and more deterministic approach for core banking infrastructure.
+
+---
+
+## Concurrency Safety
+
+Identifier generation is protected using database transactions and row-level locking (`select_for_update`) to prevent race conditions during concurrent account creation.
+
+This ensures that:
+
+* two requests cannot generate the same identifier
+* allocation state remains consistent
+* account creation remains atomic
+
+---
+
+## Allocation Architecture
+
+The allocation system is composed of several domain components:
+
+| Component                 | Responsibility                                    |
+| ------------------------- | ------------------------------------------------- |
+| `SortCodeAllocationState` | Tracks global allocation progress                 |
+| `SortCodeRangePool`       | Stores reusable allocation ranges                 |
+| `SortCode`                | Tracks per-bank issued identifiers                |
+| `BankProvisioningService` | Tracks and creates new banks               |
+
+| `AccountService`          | Safely provisions bank accounts                   |
+
+This architecture allows the system to scale safely while maintaining strict allocation integrity and prevents random numbers for account
+
+

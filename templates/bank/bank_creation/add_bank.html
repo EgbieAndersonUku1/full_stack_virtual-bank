@@ -42,20 +42,17 @@
                             <div class="group">
                                 <label for="bank-name">Bank name</label>
 
-                                <input type="text" name="bank_name" id="bank-name" autocomplete="organization" required>
+                                {{ form.name }}
                             </div>
 
                             <div class="group flex-grid">
                                 <label for="bank-country">Bank country</label>
-                                <select id="bank-country">
-                                    <option value="">Choose country</option>
-                                </select>
+                                {{ form.country }}
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="bank-description">Bank description</label>
-                                <textarea name="bank_description" id="bank-description-text-area" rows="4"
-                                    cols="25"></textarea>
+                                {{ form.description.label }}
+                                {{ form.description }}
                                 <p class="num-of-characters-remaining text-align-right character-usage-message">Minimum
                                     characters to use: 50</p>
                                 <p class="num-of-characters-to-use text-align-right character-usage-message">Number of
@@ -63,8 +60,8 @@
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="bank-logo">Bank logo</label>
-                                <input type="file" name="bank_logo" id="bank-logo" accept="image/*">
+                                {{ form.logo.label }}
+                                {{ form.logo }}
                                 <small>Upload the bank’s official logo.</small>
                             </div>
                         </fieldset>
@@ -84,23 +81,28 @@
                                 <small id="branch-help">
                                     Used to identify a specific office or location, such as London Central Branch.
                                 </small>
-                                <input type="text" name="branch_name" id="branch-name" aria-describedby="branch-help">
+                                {{ form.branch_name }}
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="branch-address">Address</label>
-                                <textarea name="branch_address" id="branch-address-text-area" rows="4"
-                                    cols="25"></textarea>
-                                <p class="num-of-characters-remaining text-align-right character-usage-message">Minimum
-                                    characters to use: 50</p>
-                                <p class="num-of-characters-to-use text-align-right character-usage-message">Number of
-                                    characters remaining: 255</p>
+                                <label for="branch-address">Address*</label>
+                                {{ form.address_line_1 }}
+                            </div>
+
+                              <div class="group flex-grid">
+                                <label for="branch-address_2">Address line 2</label> 
+                                <small>Optional</small>
+                                {{ form.address_line_2 }}
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="branch-address_2">Postcode*</label> 
+                                 {{ form.postcode }}
                             </div>
 
                             <div class="group flex-grid">
                                 <label for="phone-number">Customer support phone number</label>
-                                <input type="tel" name="phone_number" id="phone-number" maxlength="20"
-                                    pattern="^[0-9+\-\s()]{7,20}$">
+                                 {{ form.phone_number }}
                                 <small>Main contact number for this branch.</small>
                             </div>
 
@@ -119,20 +121,12 @@
 
                             <div class="group flex-grid">
                                 <label for="offer-overdraft">Offers overdraft</label>
-                                <select name="offer_overdraft" id="offer-overdraft">
-                                    <option value="">Select option</option>
-                                    <option value="yes">Yes</option>
-                                    <option value="no">No</option>
-                                </select>
+                                 {{ form.offer_overdraft}}
                             </div>
 
                             <div class="group flex-grid">
                                 <label for="offer-savings-account">Offers savings accounts</label>
-                                <select name="offer_savings_account" id="offer-savings-account">
-                                    <option value="">Select option</option>
-                                    <option value="yes">Yes</option>
-                                    <option value="no">No</option>
-                                </select>
+                                 {{ form.offer_saving_account}}
                             </div>
                         </fieldset>
 
@@ -147,19 +141,18 @@
 
                             <div class="group flex-grid">
                                 <label for="interest-period">Interest period</label>
-                                <select name="interest_period" id="interest-period">
-                                    <option value="">Choose period</option>
-                                </select>
+                                {{ form.interest_period }}
                             </div>
 
                             <div class="group flex-grid">
                                 <label for="monthly-deposit">Monthly deposit</label>
-                                <input type="number" name="monthly_deposit" id="monthly-deposit" step="0.01" min="0">
+                                 {{ form.monthly_deposit }}
+                                
                             </div>
 
                             <div class="group flex-grid">
                                 <label for="minimum-deposit">Minimum deposit</label>
-                                <input type="number" name="minimum_deposit" id="minimum-deposit" step="0.01" min="0">
+                                  {{ form.minimum_opening_deposit }}
                             </div>
                         </fieldset>
 
@@ -206,3 +199,10 @@
 
 
 {% endblock body %}
+
+{% block script %}
+
+<script src="{% static '/js/bankSetup/add_bank.js' %}" type="module"></script>
+{% endblock script %}
+
+

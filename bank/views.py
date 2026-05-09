@@ -3,12 +3,23 @@ from django.contrib.auth.decorators import login_required
 
 from utils.decorators import has_superuser_permissions
 
+from bank.forms import AddBankForm
+
+
 # Create your views here.
 
 @has_superuser_permissions
 @login_required
 def add_bank(request):
-    return render(request, "bank/bank_creation/add_bank.html")
+
+    form = AddBankForm()
+    if request.method == "POST":
+        form = AddBankForm(request.POST or None)
+
+    context = {
+        "form": form
+    }
+    return render(request, "bank/bank_creation/add_bank.html", context=context)
 
 
 @has_superuser_permissions
