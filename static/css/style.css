@@ -4743,3 +4743,21 @@ clicks the button
     color: #666;
 }
 
+
+
+/* the bank wrapper form */
+.bank-form__wrapper {
+    position: relative;
+}
+
+#bank-add-form-spinner {
+    position: absolute;
+    left: 25%;
+    display: none;
+}
+
+
+#user-status {
+    position: relative;
+    z-index: 100000;
+}

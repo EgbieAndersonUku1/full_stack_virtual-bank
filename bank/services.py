@@ -1,12 +1,14 @@
 from __future__ import annotations
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 from bank.models import (SortCodeRangePool,
                          SortCodeAllocationStateLog,
                          Bank, 
                          BankAccount,
                           SortCodeAllocationState, 
+                          SortCodeAllocatorLastRecordLookup,
                           SortCode)
 from user_profile.models import UserProfile
 from utils.security.generator import generate_secure_code
@@ -15,19 +17,51 @@ from utils.security.generator import generate_secure_code
 
 class BankProvisioningService:
     """
-    Handles the creation and provisioning of Bank entities within the system.
+    Creates and fully provisions a new Bank instance.
 
-    This service is responsible for orchestrating all steps required to safely
-    initialise a fully operational Bank, including allocation of a valid sort
-    code range and recording allocation metadata for audit purposes.
+    This method performs the complete bank onboarding workflow within
+    a single database transaction to ensure atomicity. If any step fails,
+    the transaction is rolled back and no partial provisioning is persisted.
 
-    Responsibilities:
-        - Validates input parameters for bank creation
-        - Creates the Bank domain entity
-        - Allocates a SortCode range either from the reusable pool or by
-          requesting a new allocation block
-        - Persists the assigned range to the SortCode model
-        - Records allocation decisions for auditing and traceability
+    Expected bank_data fields:
+        {
+            "name": str,
+            "country": str,
+            "description": str,
+            "logo": InMemoryUploadedFile | File,
+            "branch_name": str,
+            "address_line_1": str,
+            "address_line_2": str,
+            "post_code": str,
+            "interest_period": str,
+            "phone_number": str,
+            "minimum_opening_deposit": Decimal,
+            "offer_overdraft": str,
+            "offer_saving_account": str,
+            "monthly_deposit": Decimal,
+        }
+
+    Workflow:
+        1. Creates the Bank entity.
+        2. Generates and assigns a unique bank code.
+        3. Attempts to claim an available sort code range block.
+        4. Allocates a new sort code block if none are available.
+        5. Creates the bank sort code range record.
+        6. Logs the allocation event for auditing purposes.
+
+    Args:
+        bank_data (dict):
+            Validated bank data used to create the Bank instance.
+            Typically sourced from a Django ModelForm's cleaned_data.
+
+    Returns:
+        Bank:
+            The fully provisioned Bank instance ready for use.
+
+    Raises:
+        ValueError:
+            - If bank_data is not a dictionary.
+            - If a sort code range cannot be allocated.
 
     Important:
         This service MUST be used to create banks in production.
@@ -41,9 +75,18 @@ class BankProvisioningService:
         All Bank instances must be provisioned through this service to ensure
         consistency and integrity of the banking system.
     """
-
+    @classmethod
+    def _create_bank_instance(cls, bank_data: dict) -> Bank:
+        name = bank_data.get("name")
+        bank = Bank(
+                **bank_data,
+                 bank_code = name[0:2] + generate_secure_code(),
+            )
+        bank.save()
+        return bank
+    
     @staticmethod
-    def create_bank(*, name: str, description: str, branch_name: str) -> Bank:
+    def create_bank(bank_data:dict) -> Bank:
         """
         Creates and fully provisions a new Bank instance.
 
@@ -62,25 +105,22 @@ class BankProvisioningService:
         Raises:
             ValueError: If input validation fails or no sort code range can be allocated.
         """
-        if not (all([isinstance(param, str) for param in (name, description, branch_name)])):
-            raise ValueError(_("One or more of the values is not a string",
-                               f"name has type: {type(name).__name__}",
-                               f"description has type: {type(description).__name__}",
-                                f"branch_name has type: {type(branch_name).__name__}",
-                               ))
+        if not isinstance(bank_data, dict):
+            raise ValueError(_(f"The bank data must be a dictionary. Expected a dict got type {type(bank_data).__name__}"))
         
+      
         reassigned = False
         msg        = None
 
         with transaction.atomic():
-        
-            bank = Bank(
-                name=name,
-                description=description,
-                branch_name=branch_name,
-                bank_code = name[0:2] + generate_secure_code(),
+
+            SortCodeAllocatorLastRecordLookup.objects.get_or_create(
+                    pk=1,
+                    defaults={"block_size": settings.SORT_CODE_ALLOCATION_BLOCK},
             )
-            bank.save()
+
+            bank = BankProvisioningService._create_bank_instance(bank_data)
+
             sortcode_block = SortCodeRangePool.get_available()
 
             if sortcode_block:
@@ -91,16 +131,12 @@ class BankProvisioningService:
                 sortcode_block.claimed_by = bank
                 sortcode_block.save()
             else:
-                sortcode_block = SortCodeAllocationState.allocate_next_range()
-
+                sortcode_block = SortCodeAllocationState.create_allocate_sortcode_range(bank=bank)
+              
             if not (sortcode_block):
                 raise ValueError(_("Expected a sortcode range but got nothing"))
         
-            
-            # add the block range for each bank
-            SortCode.objects.create(bank=bank, 
-                    block_start=sortcode_block.start_range,
-                    block_end=sortcode_block.end_range)
+            SortCode.objects.create(bank=bank)
             
             if not reassigned:
                 msg = "Assigned a new sortcode block"
@@ -112,6 +148,7 @@ class BankProvisioningService:
                 end_range=sortcode_block.end_range,
 
             )
+      
         return bank
 
 
@@ -206,24 +243,27 @@ class AccountService:
         
         with transaction.atomic():
             try:
-                sort_code = (
-                    SortCode.objects
+                sort_code_obj = (
+                    SortCodeAllocationState.objects
                     .select_for_update()
                     .get(bank=bank)
                 )
-            except SortCode.DoesNotExist:
+            except SortCodeAllocationState.DoesNotExist:
                 raise ValueError(_("No sort code found for this bank"))
 
-            sort_code = sort_code.generate_sort_code()
+            allocation_sort_code_block = sort_code_obj.generate_sort_code()
+
+            sort_code = SortCode.objects.create(
+                bank=bank,
+                external_sort_code=allocation_sort_code_block.external_sortcode,
+            )
 
             bank_account = BankAccount(
                 sort_code=sort_code,
-                account_number=str(
-                    sort_code.last_issued_sortcode_number
-                ).zfill(8),
+                account_number=allocation_sort_code_block.account_number,
                 account_type=account_type,
             )
-
+           
             if user_profile:
                 bank_account.user_profile = user_profile
             

@@ -16,6 +16,7 @@
         <section class="dashboard__container__main" tabindex="-1">
 
             {% include "partials/header/header.html" %}
+            {% include "partials/messages/messages.html" %}
 
 
             <!-- main -->
@@ -29,7 +30,16 @@
 
                 <div class="bank-form__wrapper">
 
-                    <form action="" method="post" id="add-bank-form" aria-labelledby="bank-form-title">
+                    <div class="spinner" id="bank-add-form-spinner"></div>
+
+                   
+                    {% for error in form.non_field_errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
+
+                    <form action="{% url 'add_bank' %}" method="post" id="add-bank-form" aria-labelledby="bank-form-title" enctype="multipart/form-data">
+                        
+                        {% csrf_token %}
 
                         <!-- Basic Information -->
                         <fieldset>
@@ -40,19 +50,24 @@
                             <hr class="dividor">
 
                             <div class="group">
-                                <label for="bank-name">Bank name</label>
+                                <label for="id_name">{{ form.name.label }}</label>
 
                                 {{ form.name }}
+                                {{ form.name.errors }}
+                              
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="bank-country">Bank country</label>
+                                <label for="bank-country">{{ form.country.label }}</label>
                                 {{ form.country }}
+                                {{ form.country.errors }}
                             </div>
 
                             <div class="group flex-grid">
-                                {{ form.description.label }}
+                                  <label for="bank-description"> {{ form.description.label }}</label>
+                               
                                 {{ form.description }}
+                                {{ form.description.errors }}
                                 <p class="num-of-characters-remaining text-align-right character-usage-message">Minimum
                                     characters to use: 50</p>
                                 <p class="num-of-characters-to-use text-align-right character-usage-message">Number of
@@ -60,9 +75,12 @@
                             </div>
 
                             <div class="group flex-grid">
-                                {{ form.logo.label }}
+                                <label for="bank-logo"> {{ form.logo.label }}</label>
+                               
                                 {{ form.logo }}
-                                <small>Upload the bank’s official logo.</small>
+                                {{ form.logo.errors }}
+                                <small>Upload the bank’s official logo. Accepts png, jpeg, jpg and svg</small>
+                                <small>Logo must be less 2MB</small>
                             </div>
                         </fieldset>
 
@@ -76,33 +94,39 @@
                             <hr class="dividor">
 
                             <div class="group flex-grid">
-                                <label for="branch-name">Branch name</label>
+                                <label for="branch-name">  {{ form.branch_name.label }}</label>
 
-                                <small id="branch-help">
+                                {{ form.branch_name }}
+                                {{ form.branch_name.errors }}
+                                  <small id="branch-help">
                                     Used to identify a specific office or location, such as London Central Branch.
                                 </small>
-                                {{ form.branch_name }}
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="branch-address">Address*</label>
+                                <label for="branch-address"> {{ form.address_line_1.label }}</label>
                                 {{ form.address_line_1 }}
+                                {{ form.address_line_1.errors }}
                             </div>
 
                               <div class="group flex-grid">
-                                <label for="branch-address_2">Address line 2</label> 
-                                <small>Optional</small>
+                                <label for="branch-address_2"> {{ form.address_line_2.label }}</label> 
+                              
                                 {{ form.address_line_2 }}
+                                {{ form.address_line_2.errors }}
+                                <small>Optional</small>
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="branch-address_2">Postcode*</label> 
-                                 {{ form.postcode }}
+                                <label for="branch-address_2">  {{ form.post_code.label }}</label> 
+                                 {{ form.post_code }}
+                                  {{ form.post_code.errors }}
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="phone-number">Customer support phone number</label>
+                                <label for="phone-number">{{ form.phone_number.label }}</label>
                                  {{ form.phone_number }}
+                                {{ form.phone_number.errors }}
                                 <small>Main contact number for this branch.</small>
                             </div>
 
@@ -120,13 +144,15 @@
                             <hr class="dividor">
 
                             <div class="group flex-grid">
-                                <label for="offer-overdraft">Offers overdraft</label>
-                                 {{ form.offer_overdraft}}
+                                <label for="offer-overdraft">  {{ form.offer_overdraft.label }}</label>
+                                 {{ form.offer_overdraft }}
+                                {{ form.offer_overdraft.errors }}
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="offer-savings-account">Offers savings accounts</label>
-                                 {{ form.offer_saving_account}}
+                                <label for="offer-savings-account"> {{ form.offer_saving_account.label }}</label>
+                                 {{ form.offer_saving_account }}
+                                 {{ form.offer_saving_account.errors }}
                             </div>
                         </fieldset>
 
@@ -140,19 +166,29 @@
                             <hr class="dividor">
 
                             <div class="group flex-grid">
-                                <label for="interest-period">Interest period</label>
+                                <label for="interest-period">  {{ form.interest_period.label }}</label>
                                 {{ form.interest_period }}
+                                {{ form.interest_period.errors }}
+                            </div>
+
+
+                             <div class="group flex-grid">
+                                <label for="interest-period-rate">  {{ form.interest_rate.label }}</label>
+                                {{ form.interest_rate }}
+                                {{ form.interest_rate.errors }}
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="monthly-deposit">Monthly deposit</label>
+                                <label for="monthly-deposit"> {{ form.monthly_deposit.label }}</label>
                                  {{ form.monthly_deposit }}
+                                 {{ form.monthly_deposit.errors }}
                                 
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="minimum-deposit">Minimum deposit</label>
-                                  {{ form.minimum_opening_deposit }}
+                                <label for="minimum-deposit"> {{ form.minimum_opening_deposit.label }}</label>
+                                 {{ form.minimum_opening_deposit }}
+                                {{ form.minimum_opening_deposit.errors }}
                             </div>
                         </fieldset>
 

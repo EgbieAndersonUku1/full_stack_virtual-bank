@@ -289,7 +289,7 @@ Bank B allocation block:
 
 Generated identifiers:
 Sort Code:     200001
-Account No:    20000001
+Account No:    00000001
 ```
 
 This design guarantees that identifier spaces never overlap between banks.
