@@ -1,0 +1,244 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block body %}
+
+
+<section id="add-new-bank" aria-label="Add new bank">
+
+    <div class="dashboard__container">
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/header/header.html" %}
+            {% include "partials/messages/messages.html" %}
+
+
+            <!-- main -->
+            <div class="main-body flex-grid" id="add-new-bank">
+
+                <h1 id="bank-form-title" class="ml-48 header-6 mt-16">Add Bank</h1>
+
+                <p class="form-subtitle ml-48">
+                    Create a new bank profile, branch details, services, and deposit settings.
+                </p>
+
+                <div class="bank-form__wrapper">
+
+                    <div class="spinner" id="bank-add-form-spinner"></div>
+
+                   
+                    {% for error in form.non_field_errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
+
+                    <form action="{% url 'add_bank' %}" method="post" id="add-bank-form" aria-labelledby="bank-form-title" enctype="multipart/form-data">
+                        
+                        {% csrf_token %}
+
+                        <!-- Basic Information -->
+                        <fieldset>
+                            <legend class="bold mt-16">Basic Information</legend>
+                            <p class="fieldset-subtitle">
+                                Add the bank’s public name and description shown to users.
+                            </p>
+                            <hr class="dividor">
+
+                            <div class="group">
+                                <label for="id_name">{{ form.name.label }}</label>
+
+                                {{ form.name }}
+                                {{ form.name.errors }}
+                              
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="bank-country">{{ form.country.label }}</label>
+                                {{ form.country }}
+                                {{ form.country.errors }}
+                            </div>
+
+                            <div class="group flex-grid">
+                                  <label for="bank-description"> {{ form.description.label }}</label>
+                               
+                                {{ form.description }}
+                                {{ form.description.errors }}
+                                <p class="num-of-characters-remaining text-align-right character-usage-message">Minimum
+                                    characters to use: 50</p>
+                                <p class="num-of-characters-to-use text-align-right character-usage-message">Number of
+                                    characters remaining: 255</p>
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="bank-logo"> {{ form.logo.label }}</label>
+                               
+                                {{ form.logo }}
+                                {{ form.logo.errors }}
+                                <small>Upload the bank’s official logo. Accepts png, jpeg, jpg and svg</small>
+                                <small>Logo must be less 2MB</small>
+                            </div>
+                        </fieldset>
+
+
+                        <!-- Branch Details -->
+                        <fieldset>
+                            <legend class="bold">Branch Details</legend>
+                            <p class="fieldset-subtitle">
+                                Enter the main branch location and address users can view.
+                            </p>
+                            <hr class="dividor">
+
+                            <div class="group flex-grid">
+                                <label for="branch-name">  {{ form.branch_name.label }}</label>
+
+                                {{ form.branch_name }}
+                                {{ form.branch_name.errors }}
+                                  <small id="branch-help">
+                                    Used to identify a specific office or location, such as London Central Branch.
+                                </small>
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="branch-address"> {{ form.address_line_1.label }}</label>
+                                {{ form.address_line_1 }}
+                                {{ form.address_line_1.errors }}
+                            </div>
+
+                              <div class="group flex-grid">
+                                <label for="branch-address_2"> {{ form.address_line_2.label }}</label> 
+                              
+                                {{ form.address_line_2 }}
+                                {{ form.address_line_2.errors }}
+                                <small>Optional</small>
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="branch-address_2">  {{ form.post_code.label }}</label> 
+                                 {{ form.post_code }}
+                                  {{ form.post_code.errors }}
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="phone-number">{{ form.phone_number.label }}</label>
+                                 {{ form.phone_number }}
+                                {{ form.phone_number.errors }}
+                                <small>Main contact number for this branch.</small>
+                            </div>
+
+
+
+                        </fieldset>
+
+
+                        <!-- Banking Services -->
+                        <fieldset>
+                            <legend class="bold">Banking Services</legend>
+                            <p class="fieldset-subtitle">
+                                Select the financial services this bank currently provides.
+                            </p>
+                            <hr class="dividor">
+
+                            <div class="group flex-grid">
+                                <label for="offer-overdraft">  {{ form.offer_overdraft.label }}</label>
+                                 {{ form.offer_overdraft }}
+                                {{ form.offer_overdraft.errors }}
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="offer-savings-account"> {{ form.offer_saving_account.label }}</label>
+                                 {{ form.offer_saving_account }}
+                                 {{ form.offer_saving_account.errors }}
+                            </div>
+                        </fieldset>
+
+
+                        <!-- Deposit Settings -->
+                        <fieldset>
+                            <legend class="bold">Deposit Settings</legend>
+                            <p class="fieldset-subtitle">
+                                Configure deposit limits, contribution amounts, and interest timing.
+                            </p>
+                            <hr class="dividor">
+
+                            <div class="group flex-grid">
+                                <label for="interest-period">  {{ form.interest_period.label }}</label>
+                                {{ form.interest_period }}
+                                {{ form.interest_period.errors }}
+                            </div>
+
+
+                             <div class="group flex-grid">
+                                <label for="interest-period-rate">  {{ form.interest_rate.label }}</label>
+                                {{ form.interest_rate }}
+                                {{ form.interest_rate.errors }}
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="monthly-deposit"> {{ form.monthly_deposit.label }}</label>
+                                 {{ form.monthly_deposit }}
+                                 {{ form.monthly_deposit.errors }}
+                                
+                            </div>
+
+                            <div class="group flex-grid">
+                                <label for="minimum-deposit"> {{ form.minimum_opening_deposit.label }}</label>
+                                 {{ form.minimum_opening_deposit }}
+                                {{ form.minimum_opening_deposit.errors }}
+                            </div>
+                        </fieldset>
+
+
+                        <hr class="dividor">
+
+                        <!-- the buttons on the right hand side-->
+                        <div class="bank-btns flex-grid">
+
+                            <button type="submit" class="btn-large red-bg white-text">Save</button>
+                            <a href="">
+                                <button type="button" class="btn-large green-bg white-text">Manage Banks</button>
+                            </a>
+
+                            <a href="{% url 'bank_operation_centre' %}">
+
+                                <button type="button" class="btn-large blue-bg white-text"> Bank Operations
+                                    Centre</button>
+                            </a>
+
+                        </div>
+
+                    </form>
+
+
+
+
+                </div>
+
+
+
+
+            </div>
+
+
+        </section>
+
+
+
+    </div>
+
+</section>
+
+
+
+{% endblock body %}
+
+{% block script %}
+
+<script src="{% static '/js/bankSetup/add_bank.js' %}" type="module"></script>
+{% endblock script %}
+
+

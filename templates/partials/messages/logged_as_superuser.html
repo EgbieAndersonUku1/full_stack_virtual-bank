@@ -1,0 +1,15 @@
+{% if request.user.is_superuser %}
+<section>
+    <div id="user-status" class="warning center p-24">
+        <span>You are logged in as a superuser</span> 
+         {% if request.resolver_match.url_name == "bank_home" and request.user.is_superuser %}
+                | <a href="{% url 'dashboard' %}" class="nav-link light-bold capitalise" id="nav-features">
+                        Go to Dashboard
+        </a>
+
+              
+        {% endif %}
+            
+    </div>
+</section>
+{% endif %}

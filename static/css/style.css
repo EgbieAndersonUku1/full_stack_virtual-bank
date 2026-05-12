@@ -4650,3 +4650,114 @@ clicks the button
     height: 500px;
     width: 500px;
 }
+
+
+/* The page relating to add new bank html page */
+
+
+
+
+#add-new-bank {
+    background: white;
+   
+}
+
+.bank-btn button {
+    border-radius: 0;
+}
+
+
+#add-bank-form {
+    width: 55%;
+}
+
+.bank-form__wrapper {
+    position: relative;
+    margin-right: var(--space-48);
+    margin-left: var(--space-48);
+    margin-bottom: var(--space-48);
+  
+}
+
+.bank-btns {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    width: 40%;
+    border-radius: 0;
+    border: 2px solid lavender;
+    padding: var(--space-48);
+}
+
+
+.bank-btns button {
+    padding: var(--space-16);
+    border-radius: 0;
+    cursor: pointer;
+    margin-top: var(--space-12);
+}
+.bank-btns button:hover {
+    transform: scale(1);
+    background: black;
+    color: white;
+}
+.bank-btn button:first-child {
+    margin-top: var(--space-12);
+    
+}
+
+
+#add-bank-form fieldset:not(fieldset.first-child) {
+    margin-top: var(--space-24);
+}
+
+#add-bank-form hr {
+    margin-top: 0;
+}
+
+#add-bank-form fieldset .group label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #555;
+    margin-top: var(--space-12);
+}
+
+
+
+.form-subtitle {
+    color: #666;
+    font-size: .95rem;
+    margin-bottom: 1rem;
+}
+
+.fieldset-subtitle {
+    font-size: .9rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.group small {
+    display: block;
+    margin-top: .35rem;
+    font-size: .85rem;
+    color: #666;
+}
+
+
+
+/* the bank wrapper form */
+.bank-form__wrapper {
+    position: relative;
+}
+
+#bank-add-form-spinner {
+    position: absolute;
+    left: 25%;
+    display: none;
+}
+
+
+#user-status {
+    position: relative;
+    z-index: 100000;
+}
