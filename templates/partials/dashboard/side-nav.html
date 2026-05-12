@@ -43,6 +43,18 @@
             </a>
         </li>
 
+        {% if request.user.is_superuser %}
+         <li class="sidebar-nav__item">
+            <a href="{% url 'bank_operation_centre' %}" class="sidebar-nav__link">
+                <span class="sidebar-nav__icon" aria-hidden="true">
+                    <i class="fa-solid fa-eye"></i>
+                </span>
+                <span class="sidebar-nav__label">Bank Operations</span>
+            </a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_admin %}
         <li class="sidebar-nav__item">
             <a href="{% url 'manage_admin' %}" class="sidebar-nav__link">
                 <span class="sidebar-nav__icon" aria-hidden="true">
@@ -51,6 +63,7 @@
                 <span class="sidebar-nav__label">Admin</span>
             </a>
         </li>
+        {% endif %}
 
         <li class="sidebar-nav__item">
             <a href="{% url 'manage_settings' %}" class="sidebar-nav__link">
