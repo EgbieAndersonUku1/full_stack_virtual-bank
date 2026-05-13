@@ -1,7 +1,13 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
+
+
 from django.utils.translation import gettext_lazy as _
 
-from .models import (User, Verification, 
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+from .models import (Verification, 
                      EmailLog, 
                      VerificationPending, 
                      VerificationBlock,
@@ -9,7 +15,9 @@ from .models import (User, Verification,
                      VerificationExpired
                      )
 
-# Register your models here.
+# # Register your models here.
+
+
 
 class BaseVerificationAdmin(admin.ModelAdmin):
     """
@@ -71,7 +79,7 @@ class VerificationStatusAdmin(BaseVerificationAdmin):
 
 
 class UserAdminModel(admin.ModelAdmin):
-    readonly_fields = ["created_on", "last_updated", "last_login", "username", "email"]
+    readonly_fields = ["created_on", "last_updated", "last_login", "username", "email", "username", "password"]
     list_display = ["id", "email", "username", "is_active", "is_staff", "is_admin", "is_superuser", "last_login"]
     list_display_links = ["id", "email", "username"]
 
@@ -81,9 +89,11 @@ class UserAdminModel(admin.ModelAdmin):
 
 
     fieldsets = [
-        (None, {"fields": ["username", "email", "is_active", "is_email_verified"]}),
-        ("Permissions", {"fields": ["is_staff", "is_admin", "is_superuser"]}),
-        ("Audit", {"fields": ["created_on", "last_updated", "last_login"]})
+        (None, {"fields": ["username","password", "email", "is_active", "is_email_verified"]}),
+        ("Permissions", {"fields": ["is_staff", "is_admin", "is_superuser", "groups", "user_permissions"]}),
+        ("Audit", {"fields": ["created_on", "last_updated", "last_login"]}),
+         
+        
     ]
 
 
@@ -120,6 +130,8 @@ class EmailLogAdminModel(admin.ModelAdmin):
 
 
 
+
+
 admin.site.register(User, UserAdminModel)
 admin.site.register(Verification, VerificationAdminModel)
 admin.site.register(VerificationPending, VerificationPendingAdmin)
@@ -127,3 +139,7 @@ admin.site.register(VerificationExpired, VerificationExpiredAdmin)
 admin.site.register(VerificationBlock, VerificationBlockAdmin)
 admin.site.register(VerificationUsed, VerificationUsedAdmin)
 admin.site.register(EmailLog, EmailLogAdminModel)
+
+
+
+
