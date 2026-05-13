@@ -22,6 +22,7 @@ class BankAdmin(admin.ModelAdmin):
     list_display        = ["id", "name", "bank_code", "bank_accounts_count", "branch_name", "country", "phone_number", "created_on"]
     list_display_links  = ["id", "bank_code", "name"]
     list_filter         = ["branch_name", "country", "bank_code", "name"]
+    ordering            = [ "-created_on"]
    
     fieldsets = [(
              "Bank Identity",
@@ -146,6 +147,7 @@ class BankAccountAdmin(admin.ModelAdmin):
                            "Bank name searches are prioritised."
                         )
     list_per_page      =  20
+    ordering           = [ "-created_on"]
     
 
     fieldsets = [(
@@ -226,8 +228,8 @@ class SortCodeAllocationStateAdmin(admin.ModelAdmin):
     list_display        = [ "id", "bank",  "block_size", "start_range", "end_range", 
                           "external_sortcode","last_created_account", "created_on"
                           ]
-    search_fields = ["bank__name", "bank__bank_code"]
-   
+    search_fields      = ["bank__name", "bank__bank_code"]
+    ordering           = [ "-created_on"]
     list_display_links = ["id", "bank", "external_sortcode"]
     fieldsets          = [("Bank Information", { "description": (
                                 "Displays the bank associated with this allocation state and the "
@@ -363,7 +365,7 @@ class SortCodeAdmin(admin.ModelAdmin):
     list_filter        = ["bank"]
     search_fields      = ["external_sort_code"]
     search_help_text   =  ("Search by by external sortcode")
-    
+    ordering           = [ "-created_on"]
     fieldsets = [(
             "Bank Issued To",
             {
@@ -544,3 +546,5 @@ admin.site.register(SortCodeAllocatorLastRecordLookup, SortCodeAllocatorRecordLo
 admin.site.register(SortCodeAllocationState, SortCodeAllocationStateAdmin)
 admin.site.register(SortCodeRangePool, SortCodeRangePoolAdmin)
 admin.site.register(SortCodeAllocationStateLog, SortCodeAllocationStateLogAdmin)
+
+

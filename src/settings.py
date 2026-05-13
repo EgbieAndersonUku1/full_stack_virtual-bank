@@ -51,8 +51,15 @@ INSTALLED_APPS = [
     'django_q',
     'django_countries',
 
+    # third party django apps
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
 
-    # my apps
+     # my apps
     'bank.apps.BankConfig',
     'wallet.apps.WalletConfig',
     'setup.apps.SetupConfig',
@@ -61,14 +68,6 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'user_profile.apps.UserProfileConfig',
 
-
-    # third party django apps
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
 
     
 ]
@@ -272,3 +271,15 @@ DEFAULT_CODE_EXPIRY_IN_MINUTES  = 5
 
 # Fixed size of the sort code range allocated to each bank
 SORT_CODE_ALLOCATION_BLOCK = 200_000
+
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Bank Admin",
+    "site_header": "Bank Core System",
+    "site_brand": "EU VirtualBank",
+    "welcome_sign": "Welcome to the Banking Dashboard",
+    "login_logo": None,
+    "login_logo_dark": None,
+    "site_logo": None,
+}

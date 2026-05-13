@@ -63,6 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff          = models.BooleanField(default=False)
     is_admin          = models.BooleanField(default=False)
     is_superuser      = models.BooleanField(default=False)
+    is_locked         = models.BooleanField(default=False)
     created_on        = models.DateTimeField(auto_now_add=True)
     last_updated      = models.DateTimeField(auto_now=True)
   
@@ -75,8 +76,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         self._IS_EMAIL_VERIFIED_FLAG = "is_email_verified"
 
     def __str__(self):
-        if self.email:
-            return self.email.lower()
+        return self.email
 
     def is_user_email_verified(self):
         return self.is_email_verified == True
@@ -159,7 +159,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             return cls.objects.get(email=field_value)
         except cls.DoesNotExist:
             return None
-        
+    
+    @classmethod
+    def get_all_users(cls, active:bool=True, is_locked:bool=False, order_by:str="email"):
+        return cls.objects.filter(is_active=active, is_locked=is_locked).order_by(order_by)
+    
     def save(self, *args, **kwargs):
 
         if self.email:
