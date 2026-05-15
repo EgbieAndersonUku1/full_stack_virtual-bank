@@ -4765,3 +4765,68 @@ clicks the button
     position: relative;
     z-index: 100000;
 }
+
+
+/* work policies inside employee services */
+
+#work-policies {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.work-policies__meta,
+#work-policies {
+    width: 90%;
+}
+
+.work-policies__meta {
+   
+    margin-left: var(--space-48);
+    margin-bottom: var(--space-48);
+}
+
+.work-policies__container {
+    border: 1px solid lavender;
+    padding: var(--space-32);
+    background: white;
+
+}
+
+.admin-panel__container header {
+    background: #0f172a;
+    color: white;
+    left: 0;
+    margin-bottom: 0;
+           
+}
+
+.work-policies__container p {
+  margin: 0;
+  padding: 0;
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-16);
+  width: 90%;
+
+
+}
+
+.work-policies__container ul li {
+  list-style: auto;
+  margin-left: var(--space-48);
+
+}
+
+.work-policies__container ul {
+  margin-top: var(--space-12);
+  margin-bottom: var(--space-12);
+}
+
+.work-policies__container h2 {
+    color: #111827;
+    font-size: 1.3rem;
+    margin-top: var(--space-16);
+}
+
+.work-policies__container h2:not(h2:first-child) {
+   margin-top: var(--space-24);
+}
