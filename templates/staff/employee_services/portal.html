@@ -1,0 +1,194 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+
+{% block body %}
+
+
+<section id="dashboard-admin" aria-label="Dashboard admin">
+
+    <div class="dashboard__container">
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/header/header.html" %}
+
+
+            <!-- admin panel -->
+            <section id="admin-panel" class="mt-48">
+                <div class="admin-panel__container">
+
+                    <!-- employee portal -->
+                    <!-- employee self-service -->
+                    <h1 class="capitalise">Employee Self-Service</h1>
+                    <p class="section-subtitle">
+                        Access personal requests, schedules, payroll information, and workplace resources.
+                    </p>
+
+                    <div class="cards flex-grid three-column-grid admin-cards">
+
+                        <a href="#" class="card admin-card" aria-label="Open Leave Requests">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/leave_requests.png' %}" alt="Leave Requests"
+                                    class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Leave Requests</h1>
+                                <p>Submit and track your time-off requests.</p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="card admin-card" aria-label="Open Sick Leave">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/sick_leave.png' %}" alt="Sick Leave"
+                                    class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Sick Leave</h1>
+                                <p>Log and manage sick leave notifications.</p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="card admin-card" aria-label="Open Shift Management">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/shift_management.png' %}" alt="Shift Management"
+                                    class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Shift Management</h1>
+                                <p>View and manage your work shifts and schedules.</p>
+                            </div>
+                        </a>
+
+                    </div>
+
+
+                    <!-- payroll & compensation -->
+                    <h1 class="capitalise">Payroll & Compensation</h1>
+                    <p class="section-subtitle">
+                        View salary information, employee benefits, and payroll-related documents.
+                    </p>
+
+                    <div class="cards flex-grid three-column-grid admin-cards">
+
+                        <a href="#" class="card admin-card" aria-label="Open Payslips">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/payslips.png' %}" alt="Payslips"
+                                    class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Payslips</h1>
+                                <p>Access and download your monthly payslips.</p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="card admin-card" aria-label="Open Benefits">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/benefits.png' %}" alt="Benefits"
+                                    class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Benefits</h1>
+                                <p>Explore employee benefits and available perks.</p>
+                            </div>
+                        </a>
+
+                    </div>
+
+
+                    <!-- learning & development -->
+                    <h1 class="capitalise">Learning & Development</h1>
+                    <p class="section-subtitle">
+                        Improve skills, complete workplace training, and review employee performance.
+                    </p>
+
+                    <div class="cards flex-grid three-column-grid admin-cards">
+
+                        <a href="#" class="card admin-card" aria-label="Open Training">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/training.png' %}" alt="Training"
+                                    class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Training</h1>
+                                <p>Enroll in and track mandatory training programs.</p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="card admin-card" aria-label="Open Performance Reviews">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/performance_reviews.png' %}"
+                                    alt="Performance Reviews" class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Performance Reviews</h1>
+                                <p>View your performance feedback and review history.</p>
+                            </div>
+                        </a>
+
+                    </div>
+
+
+                    <!-- workplace resources -->
+                    <h1 class="capitalise">Workplace Resources</h1>
+                    <p class="section-subtitle">
+                        Access company information, internal communication tools, and emergency support.
+                    </p>
+
+                    <div class="cards flex-grid three-column-grid admin-cards">
+
+                        <a href="#" class="card admin-card" aria-label="Open Internal Policies">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/internal_policies.png' %}"
+                                    alt="Internal Policies" class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Internal Policies</h1>
+                                <p>Read company policies and workplace guidelines.</p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="card admin-card" aria-label="Open Emergency Contacts">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/emergency_contacts.png' %}"
+                                    alt="Emergency Contacts" class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Emergency Contacts</h1>
+                                <p>Quick access to important emergency contacts.</p>
+                            </div>
+                        </a>
+
+                        <a href="#" class="card admin-card" aria-label="Open HR Messages">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/hr_messages.png' %}" alt="HR Messages"
+                                    class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">HR Messages</h1>
+                                <p>View important updates and messages from HR.</p>
+                            </div>
+                        </a>
+
+                    </div>
+
+                </div>
+            </section>
+
+
+
+        </section>
+
+
+
+    </div>
+
+</section>
+
+
+
+{% endblock body %}

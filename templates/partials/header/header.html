@@ -52,10 +52,14 @@
                     </a>
                 </div>
 
-                {% else %}
+                {% else  %}
+
+
+                {% if not request.user.is_superuser or not request.user.is_staff %}
                 <div class="virtual-bank_container__amount">
                     <span class="bold"><span class="currency">£</span>1,500</span>
                 </div>
+                {% endif %}
 
                 <div class="virtual-bank-nav-profile" id="virtual-bank-nav-profile">
                     <img src="/static/images/icons/profile.png" alt="" class="virtual-bank-nav-profile-img">

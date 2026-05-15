@@ -8,7 +8,6 @@
 {% block body %}
 
 
-
 <section class="dashboard__container__main" tabindex="-1">
 
 
@@ -19,10 +18,13 @@
     <!-- Greetings -->
     <div class="greeting mt-24 ml-24">
         <h1 class="header-7 capitalise">Hi, {{ request.user.username | title }}, Welcome back!</h1>
-        <p class="text-muted capitalise">Manage your finances</p>
+
     </div>
 
 
+    {% if request.user and not request.user.is_superuser or not request.user.is_staff %}
+
+    <p class="text-muted capitalise greeting mt-24 ml-24">Manage your finances</p>
     <!-- quick menu -->
     {% include "components/bank/dashboard/_quick_menu_cards.html" %}
 
@@ -33,36 +35,39 @@
 
         <!-- Dasshboard overview main body -->
         {% include "partials/dashboard/bank-overview.html" %}
- 
+
 
     </div>
 
-    
+
     <!--modals-->
 
     <!-- connect wallet modal-->
     {% include "components/bank/dashboard/modals/_connect_wallet_modal.html" %}
 
     <!-- status modal -->
-    {% include "components/bank/dashboard/modals/_status.html" %} 
+    {% include "components/bank/dashboard/modals/_status.html" %}
 
     <!-- wallet disconnect confirmation modal-->
-    {% include "components/bank/dashboard/modals/_wallet_disconnect_confirmation.html" %}  
+    {% include "components/bank/dashboard/modals/_wallet_disconnect_confirmation.html" %}
 
     <!-- add bank funds modal -->
-    {% include "components/bank/dashboard/modals/_add_bank_funds.html" %}  
+    {% include "components/bank/dashboard/modals/_add_bank_funds.html" %}
 
     <!-- bank transfer modal-->
-    {% include "components/bank/dashboard/modals/_bank_transactions.html" %}  
+    {% include "components/bank/dashboard/modals/_bank_transactions.html" %}
 
     <!-- view cards modal-->
-    {% include "components/bank/dashboard/modals/_view_card.html" %}  
+    {% include "components/bank/dashboard/modals/_view_card.html" %}
 
     <!-- Bank funds transfer modal-->
-    {% include "components/bank/dashboard/modals/_bank_funds_transfer.html" %}  
+    {% include "components/bank/dashboard/modals/_bank_funds_transfer.html" %}
+
+    {% else %}
 
 
-         
+    {% endif %}
+
 
 </section>
 
@@ -73,5 +78,5 @@
 
 {% block script %}
 
-   <script src="{% static 'js/dashboard/bank-dashboard.js' %}" type="module"></script>
+<script src="{% static 'js/dashboard/bank-dashboard.js' %}" type="module"></script>
 {% endblock script %}

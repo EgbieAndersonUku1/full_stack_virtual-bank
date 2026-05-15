@@ -15,6 +15,7 @@ from .models import User, Verification, VerificationStatus
 from .view_helper import handle_json_post_request, create_json_msg
 from utils.security.generator import generate_secure_code
 from utils.send_email import send_confirmation_email_with_async
+from utils.decorators import go_to_staff_page
 
 # Create your views here.
 
@@ -160,7 +161,7 @@ def terms_and_conditions(request):
     return render(request, "terms_and_conditions.html")
 
 
-
+@go_to_staff_page
 @login_required
 def verify_registration_code(request):
 

@@ -696,6 +696,10 @@ header {
     text-align: center;
 }
 
+.admin-cards a {
+    color: black;
+}
+
 .admin-cards .admin-card:hover,
 .view-card-panel-button:hover,
 .bank-card:hover,

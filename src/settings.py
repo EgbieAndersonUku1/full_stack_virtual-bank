@@ -41,6 +41,7 @@ ALLOWED_HOSTS = []
 
 
 AUTH_USER_MODEL = 'authentication.User'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'authentication.apps.AuthenticationConfig',
     'user_profile.apps.UserProfileConfig',
+    'platform_employee.apps.PlatformEmployeeConfig',
 
 
     

@@ -25,3 +25,16 @@ def has_superuser_permissions(func):
         except AttributeError:
              return func(request, *args, **kwargs)
     return wrapper
+
+
+
+def go_to_staff_page(func):
+    @wraps(func)
+    def wrapper(request, *args, **kwargs):
+        try:
+            if request.user and request.user.is_superuser or request.user.is_staff:
+                return redirect("employee_services")
+            return func(request, *args, **kwargs)
+        except AttributeError:
+             return func(request, *args, **kwargs)
+    return wrapper
