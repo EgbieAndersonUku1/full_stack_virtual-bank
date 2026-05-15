@@ -64,6 +64,7 @@
                     Last login
                 </h2>
                 <time datetime="2026-01-29T20:32"> {{ request.user.last_login }}</time>
+                <small>({{ request.user.last_login|timesince }} ago)</small>
             </div>
         </div>
 

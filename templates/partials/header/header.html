@@ -55,7 +55,7 @@
                 {% else  %}
 
 
-                {% if not request.user.is_superuser or not request.user.is_staff %}
+                {% if not request.user.is_superuser and not request.user.is_staff %}
                 <div class="virtual-bank_container__amount">
                     <span class="bold"><span class="currency">£</span>1,500</span>
                 </div>

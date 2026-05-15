@@ -1,0 +1,399 @@
+{% extends "partials/dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Main page{% endblock title %}
+
+{% block body %}
+
+<section id="dashboard-admin" aria-label="Dashboard admin">
+
+    <div class="dashboard__container">
+
+        <!-- MAIN LANDMARK -->
+        <main class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/header/header.html" %}
+
+            <!-- Admin panel -->
+            <section id="admin-panel" class="mt-48" aria-labelledby="admin-panel-title">
+
+                <div class="admin-panel__container">
+
+                    <!-- Breadcrumb -->
+                    <nav aria-label="Breadcrumb" class="ml-48 mb-24">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'employee_services' %}">Services</a>
+                            </li>
+
+                            <li class="breadcrumb-item active" aria-current="page">
+                                Work Guidelines and Policies
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <!-- Work policies-->
+                    <section id="work-policies" class="ml-48" aria-labelledby="work-policies-title">
+
+                     
+                        <header class="work-policies__header">
+
+                            <h1 id="work-policies-title">
+                                Virtual Bank Employee Handbook
+                            </h1>
+
+
+                        </header>
+
+                        <div class="work-policies__container">
+
+                            <!-- Purposes -->
+                            <section aria-labelledby="purpose-title">
+
+                                <h2 id="purpose-title">
+                                    1. Purpose of This Document
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <p>
+                                    This document outlines the expected standards,
+                                    behaviours, and operational procedures for all
+                                    employees of the Virtual Bank.
+                                </p>
+
+                                <p>
+                                    <strong>
+                                        All employees must read and comply with this document.
+                                    </strong>
+                                </p>
+
+                            </section>
+
+                            <!-- Policy scope -->
+                            <section aria-labelledby="policy-scope-title">
+
+                                <h2 id="policy-scope-title">
+                                    2. Policy Scope
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <p>
+                                    These policies apply to all employees,
+                                    contractors, temporary workers, and authorised
+                                    personnel operating within the Virtual Bank platform.
+                                </p>
+
+                                <p>
+                                    Additional department-specific procedures may
+                                    apply depending on role, access level, and
+                                    regulatory responsibilities.
+                                </p>
+
+                            </section>
+
+                            <!-- Code of conduct -->
+                            <section aria-labelledby="conduct-title">
+
+                                <h2 id="conduct-title">
+                                    3. Code of Conduct
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <h3>Employees must:</h3>
+
+                                <ul>
+                                    <li>Treat customers and colleagues with respect and fairness.</li>
+                                    <li>Act honestly and professionally at all times.</li>
+                                    <li>Disclose conflicts of interest immediately.</li>
+                                    <li>Follow internal procedures and escalation paths.</li>
+                                </ul>
+
+                                <h3>Employees must not:</h3>
+
+                                <ul>
+                                    <li>Misuse customer data or access unauthorised information.</li>
+                                    <li>Accept gifts or incentives that influence decisions.</li>
+                                    <li>Engage in discriminatory or inappropriate behaviour.</li>
+                                    <li>Share confidential internal information externally.</li>
+                                </ul>
+
+                            </section>
+
+                            <!-- Data protection -->
+                            <section aria-label="Data protection notice">
+
+                                <h2>
+                                    4. Data Protection & Confidentiality
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <div class="warning pl-8" role="note" aria-label="Data protection warning">
+
+                                    The Virtual Bank operates under strict
+                                    data protection standards aligned with
+                                    UK GDPR principles.
+
+                                </div>
+
+                                <ul>
+                                    <li>Customer data must only be accessed on a need-to-know basis.</li>
+                                    <li>All data must be stored securely in approved systems.</li>
+                                    <li>Passwords must never be shared.</li>
+                                    <li>Lock screens when leaving workstations.</li>
+                                    <li>Report suspected data breaches immediately.</li>
+                                </ul>
+
+                            </section>
+
+                            <!-- Customer service -->
+                            <section aria-labelledby="service-title">
+
+                                <h2 id="service-title">
+                                    5. Customer Service Standards
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <ul>
+                                    <li>Respond to queries within defined service timeframes.</li>
+                                    <li>Communicate clearly and professionally.</li>
+                                    <li>Take ownership of customer issues until resolved.</li>
+                                    <li>Verify customer identity before sharing account details.</li>
+                                </ul>
+
+                            </section>
+
+                            <!-- Fraud -->
+                            <section aria-label="Fraud prevention policy">
+
+                                <h2>
+                                    6. Financial Crime & Fraud Prevention
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <div class="danger" role="alert" aria-label="Zero tolerance fraud policy">
+
+                                    Zero tolerance policy applies to all forms
+                                    of financial crime.
+
+                                </div>
+
+                                <ul>
+                                    <li>Monitor transactions for suspicious activity.</li>
+                                    <li>Report fraud immediately using internal tools.</li>
+                                    <li>Follow AML and KYC procedures at all times.</li>
+                                    <li>Complete enhanced checks for high-risk customers.</li>
+                                </ul>
+
+                            </section>
+
+                            <!-- Security -->
+                            <section aria-labelledby="security-title">
+
+                                <h2 id="security-title">
+                                    7. System Access & Security
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <ul>
+                                    <li>Access only systems required for your role.</li>
+                                    <li>Multi-factor authentication is mandatory.</li>
+                                    <li>No unauthorised software installations.</li>
+                                    <li>All activity is logged and auditable.</li>
+                                </ul>
+
+                            </section>
+
+                            <!-- Acceptable use -->
+                            <section aria-labelledby="acceptable-use-title">
+
+                                <h2 id="acceptable-use-title">
+                                    8. Acceptable Use of Company Systems
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <ul>
+                                    <li>Company systems must only be used for authorised business purposes.</li>
+                                    <li>Employees must not attempt to bypass security controls.</li>
+                                    <li>Unauthorised sharing of internal material is prohibited.</li>
+                                    <li>Use of personal storage devices may be restricted.</li>
+                                </ul>
+
+                            </section>
+
+                            <!-- Communication -->
+                            <section aria-labelledby="communication-title">
+
+                                <h2 id="communication-title">
+                                    9. Work Conduct & Communication
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <ul>
+                                    <li>Use official communication channels only.</li>
+                                    <li>Maintain professional tone in all communications.</li>
+                                    <li>Do not share sensitive data in unsecured systems.</li>
+                                    <li>Attend all mandatory training sessions.</li>
+                                </ul>
+
+                            </section>
+
+                            <!-- Incidents -->
+                            <section aria-labelledby="incident-title">
+
+                                <h2 id="incident-title">
+                                    10. Incident Reporting
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <ul>
+                                    <li>Security breaches</li>
+                                    <li>Fraud or suspicious transactions</li>
+                                    <li>Serious customer complaints</li>
+                                    <li>System failures affecting operations</li>
+                                </ul>
+
+                                <p>
+                                    All incidents must be reported within 1 hour
+                                    where possible using the Internal Incident
+                                    Management System.
+                                </p>
+
+                            </section>
+
+                            <!-- Disciplinary -->
+                            <section aria-labelledby="disciplinary-title">
+
+                                <h2 id="disciplinary-title">
+                                    11. Disciplinary Action
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <ul>
+                                    <li>Verbal warning</li>
+                                    <li>Written warning</li>
+                                    <li>Suspension of access</li>
+                                    <li>Formal investigation</li>
+                                    <li>Termination of employment</li>
+                                </ul>
+
+                                <p>
+                                    Serious breaches may also be reported to
+                                    regulatory authorities.
+                                </p>
+
+                            </section>
+
+                            <!-- Training -->
+                            <section aria-labelledby="training-title">
+
+                                <h2 id="training-title">
+                                    12. Mandatory Training Requirements
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <ul>
+                                    <li>Annual AML and fraud awareness training.</li>
+                                    <li>Data protection and GDPR compliance training.</li>
+                                    <li>Security awareness and phishing prevention training.</li>
+                                    <li>Role-specific operational procedure training.</li>
+                                </ul>
+
+                                <p>
+                                    Employees may temporarily lose access to
+                                    internal systems if mandatory training
+                                    requirements are not completed within
+                                    required timeframes.
+                                </p>
+
+                            </section>
+
+                            <!-- Acknowledgment -->
+                            <section aria-labelledby="ack-title">
+
+                                <h2 id="ack-title">
+                                    13. Acknowledgement
+                                </h2>
+
+                                <hr class="dividor">
+
+                                <p>
+                                    By accessing internal company systems,
+                                    employees confirm that they have read,
+                                    understood, and agreed to comply with all
+                                    policies, procedures, and compliance
+                                    obligations outlined within this handbook.
+                                </p>
+
+                                <div class="warning mt-16 pl-8" role="note" aria-label="Policy compliance notice">
+
+                                    Failure to comply with internal policies may
+                                    result in disciplinary action, suspension of
+                                    access privileges, or formal investigation.
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                    </section>
+
+                    <!-- Document meta-->
+                    <div class="work-policies__meta mt-16 mb-24 flex-grid">
+
+                        <small class="mr-16">
+                            Document Version: 1.0
+                        </small>
+
+                        <small class="mr-16">
+                            Policy Owner: Compliance Department
+                        </small>
+
+                        <small class="mr-16">
+                            Last Updated:
+                            <time datetime="2026-05-15">
+                                May 15, 2026
+                            </time>
+                        </small>
+
+                        <small class="mr-16">
+                            Review Cycle: Annual
+                        </small>
+
+                        <small class="mr-16">
+                            Approved By: Internal Governance Team
+                        </small>
+
+                        <small class="last-login">
+                            Last login:
+                            <time datetime="{{ request.user.last_login|date:'c' }}"
+                                title="{{ request.user.last_login|timesince }} ago">
+                                {{ request.user.last_login|date:"M d, Y H:i" }}
+                            </time>
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</section>
+{% endblock body %}
