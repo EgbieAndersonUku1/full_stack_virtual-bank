@@ -27,7 +27,8 @@ urlpatterns = [
     path('bank/setup/', include("setup.urls")),
     # path('', include('core_admin.urls')),
     path('', include("home.urls")),
-    path('', include("authentication.urls"))
+    path('', include("authentication.urls")),
+    path('employee/', include('platform_employee.urls')),
 ]
 
 

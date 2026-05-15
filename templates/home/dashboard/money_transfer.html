@@ -22,6 +22,8 @@
 
             <!-- transfer money -->
 
+            {% if request.user and not request.user.is_superuser or not request.user.is_staff %}
+
             <section id="transfer-money">
 
                 <div class="transfer-money__container">
@@ -56,6 +58,12 @@
                 </div>
             </section>
 
+            {% else %}
+
+                   <!-- Information for staff will go here -->
+
+
+            {% endif %}
 
 
         </section>
