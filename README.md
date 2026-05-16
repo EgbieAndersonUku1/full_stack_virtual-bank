@@ -41,6 +41,12 @@ The system is designed to simulate banking-style infrastructure and operational 
 - [Database Setup](#️-database-setup-postgresql--pgadmin)
 - [Environment Variables](#environment-variables)
 - [Run Migrations](#run-migrations)
+- [Seed Demo Banking Data](#-seed-demo-banking-data)
+- [Seed Banks](#seed-banks)
+- [Reset Simulation Data](#reset-simulation-data)
+- [Reseeding Workflow](#reseeding-workflow)
+- [Static Logo Files](#static-logo-files)
+- [Why Static Assets Are Used for Logos](#why-static-assets-are-used-for-logos)
 - [Create Superuser](#-create-superuser)
 - [Available Routes](#some-available-routes)
 - [Troubleshooting](#-troubleshooting)
@@ -194,6 +200,70 @@ PORT=5432
 
 ---
 
+
+## PostgreSQL Must Be Running
+
+If the Django development server hangs after:
+
+```
+System check identified no issues (0 silenced).
+```
+
+and does not continue to:
+
+```
+Starting development server at http://127.0.0.1:8000/
+```
+
+then the most likely cause is that the PostgreSQL service is not running.
+
+Django attempts to connect to the database during startup, and if the database is unavailable, the server may appear to freeze or fail to complete startup.
+
+---
+
+### Fix (Windows)
+
+1. Press `Win + R`
+2. Type:
+
+```
+services.msc
+```
+
+3. Locate **PostgreSQL**
+4. Ensure the service is **Running**
+
+   * If not, click **Start**
+   * Or right-click → **Restart**
+5. (Recommended) Set Startup Type to:
+
+```
+Automatic
+```
+
+---
+
+### Quick Port Check
+
+```bash
+netstat -ano | findstr :5432
+```
+
+---
+
+### Why this happens
+
+Django connects to PostgreSQL during startup.
+If the database is not running:
+
+* migrations cannot be checked
+* connection times out
+* server startup halts
+
+---
+
+
+
 # Django Database Configuration
 
 Configure `settings.py`:
@@ -221,6 +291,123 @@ python manage.py migrate
 ```
 
 ---
+
+
+---
+
+# Seed Demo Banking Data
+
+This project includes management commands for seeding and resetting simulation banking data during development.
+
+The seed command provisions demo banks using the internal banking allocation system.
+
+This includes:
+
+* banks
+* sort code allocation ranges
+* allocation state records
+* provisioning metadata
+
+⚠️ These commands are intended for development environments or testing simulations only.
+
+---
+
+# Seed Banks
+
+Run the following command:
+
+```bash
+python manage.py seed_banks
+```
+
+This will create the predefined demo banks included with the project.
+
+Example seeded data includes:
+
+* digital banks
+* investment banks
+* mutual banks
+* high-street banking simulations
+
+The command uses the internal:
+
+```python
+BankProvisioningService
+```
+
+to ensure all required allocation and provisioning workflows are executed correctly.
+
+---
+
+# Reset Simulation Data
+
+To clear simulation banking data during development:
+
+```bash
+python manage.py reset_simulations
+```
+
+This command removes simulation allocation records and seeded banking data so the environment can be reseeded cleanly.
+
+Example cleanup includes:
+
+* bank accounts
+* sort codes
+* allocation state records
+* seeded banks
+
+⚠️ This command should only be used in development or for running the simulation.
+
+---
+
+# Reseeding Workflow
+
+Typical development workflow:
+
+```bash
+python manage.py reset_simulations
+python manage.py seed_banks
+```
+
+This allows the banking simulation environment to be rebuilt from a clean state.
+
+---
+
+# Static Logo Files
+
+Bank logos are stored as static assets.
+
+Expected location:
+
+```text
+static/banks/logo/
+```
+
+Example:
+
+```text
+static/banks/logo/atlas-bank.png
+```
+
+The seed data references these static image paths directly.
+
+---
+
+# Why Static Assets Are Used for Logos
+
+The project intentionally stores demo bank logos inside static assets instead of user-uploaded media files.
+
+This ensures:
+
+* cloned repositories work immediately
+* seeded banks always have logo references
+* contributors do not need manual media setup
+* demo environments remain reproducible
+
+This approach is intended for simulation and development workflows.
+
+---
+
 
 # 👤 Create Superuser
 

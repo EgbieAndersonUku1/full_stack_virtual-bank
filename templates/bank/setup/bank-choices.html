@@ -14,223 +14,68 @@
             <p>Choose from a list of banks</p>
         </div>
 
-        <form action="" method="post" id="chooose-bank-form" role="form">
+        <form action="{% url 'choose_bank' %}" method="post" id="chooose-bank-form" role="form">
 
+            {% csrf_token %}
             <div class="choose-bank__cards flex-grid three-column-grid">
 
                 <!-- card 1 -->
-                <div class="choose-bank__card card flex-grid two-column-20_80_grid is-selected" for="bank-atlas">
 
-                    <div class="card-head card-head--control">
-                        <input type="radio" name="chosen_bank" id="bank-atlas" value="atlas">
-                    </div>
+                {% if not banks %}
+                     <p>No banks have been added yet. Create a bank to continue.</p>
+                {% else %}
+                    {% for bank in banks %}
+                        <div class="choose-bank__card card flex-grid two-column-20_80_grid is-selected" for="bank-atlas">
 
-                    <div class="card-body flex-grid two-column-25_75_grid">
-                        <div class="card-head card-head--logo">
-                            <img src="{% static '/images/card-icons/atlas-bank.png' %}" alt="Atlas Bank logo"
-                                class="choose-bank-img-logo">
+                            <div class="card-head card-head--control">
+                                <input type="radio" name="chosen_bank" value="{{ bank.name }}">
+                            </div>
+
+                            <div class="card-body flex-grid two-column-25_75_grid">
+                                <div class="card-head card-head--logo">
+                                    <img src="{% static bank.logo_image  %}" alt="{{ bank.name }}"
+                                        class="choose-bank-img-logo">
+                                </div>
+                                <div class="bank-details">
+                                    <h1 class="bank-title">{{ bank.name | title }}</h1>
+                                    <p class="mb-8 mt-8">{{ bank.description|truncatechars:100 }}</p>
+                                    <p>Interest rates <span>{{ bank.interest_rate }}%</span></p>
+                                    <p>Minimum deposit <span>
+                                        {% if bank.minimum_opening_deposit == 0 %}
+                                            None
+                                        {% else %}
+                                            £{{ bank.minimum_opening_deposit }}
+                                        {% endif %}
+                                    </span></p>
+                                                                
+                                
+                                    <p>Overdraft <span>{{ bank.offer_overdraft }} </span></p>
+                                    <p>Monthly fee <span>£{{ bank.monthly_deposit }}</span></p>
+
+                                    {% if bank.offer_saving_account %}
+                                        <p>Saving account <span>Available</span></p>
+                                    {% else %}
+                                        <p>Saving account <span>Not available</span></p>
+                                    {% endif %}
+
+                                    {% if bank.offer_loans %}
+                                        <p>Loans <span>Available</span></p>
+                                    {% else %}
+                                        <p>Loans <span>Not available</span></p>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                        <div class="bank-details">
-                            <h1 class="bank-title">Atlas Bank</h1>
-                            <p>Interest <span>0.25%</span></p>
-                            <p>Minimum deposit <span>£0.00</span></p>
-                            <small class="text-muted">No deposit required to activate.</small>
-                            <p>Overdraft <span>No</span></p>
-                            <p>Monthly fee <span>£0.00</span></p>
-                            <p>Saving account <span>Not available</span></p>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- card 2 -->
-                <div class="choose-bank__card card flex-grid two-column-20_80_grid" for="bank-riverline">
-                    <div class="card-head card-head--control">
-                        <input type="radio" name="chosen_bank" id="bank-riverline" value="riverline">
-                    </div>
+                    {% endfor %}
+                {% endif %}
 
-                    <div class="card-body flex-grid two-column-25_75_grid">
-                        <div class="card-head card-head--logo">
-                            <img src="/static/images/card-icons/riverline.png" alt="Riverline logo"
-                                class="choose-bank-img-logo">
-                        </div>
-                        <div class="bank-details">
-                            <h1 class="bank-title">Riverline</h1>
-                            <p>Interest <span>0.10%</span></p>
-                            <p>Minimum deposit <span>£10.00</span></p>
-                            <small class="text-muted">Must deposit at least this amount to activate your
-                                account.</small>
-                            <p>Overdraft <span>Yes (£250)</span></p>
-                            <p>Monthly fee <span>£3</span></p>
-                            <p>Saving account <span>Available</span></p>
-                        </div>
-                    </div>
-                </div>
+               
 
-                <!-- card 3 -->
-                <div class="choose-bank__card card flex-grid two-column-20_80_grid" for="bank-nova">
-                    <div class="card-head card-head--control">
-                        <input type="radio" name="chosen_bank" id="bank-nova" value="nova">
-                    </div>
-
-                    <div class="card-body flex-grid two-column-25_75_grid">
-                        <div class="card-head card-head--logo">
-                            <img src="/static/images/card-icons/nova-credit.png" alt="Nova Credit logo"
-                                class="choose-bank-img-logo">
-                        </div>
-                        <div class="bank-details">
-                            <h1 class="bank-title">Nova Credit</h1>
-                            <p>Interest <span>0.40%</span></p>
-                            <p>Minimum deposit <span>£50.00</span></p>
-                            <small class="text-muted">Must deposit at least this amount to activate your
-                                account.</small>
-                            <p>Overdraft <span>No</span></p>
-                            <p>Monthly fee <span>£0.00</span></p>
-                            <p>Saving account <span>Available</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- card 4 -->
-                <div class="choose-bank__card card flex-grid two-column-20_80_grid" for="bank-steadfast">
-                    <div class="card-head card-head--control">
-                        <input type="radio" name="chosen_bank" id="bank-steadfast" value="steadfast">
-                    </div>
-
-                    <div class="card-body flex-grid two-column-25_75_grid">
-                        <div class="card-head card-head--logo">
-                            <img src="/static/images/card-icons/steadfast.png" alt="Steadfast logo"
-                                class="choose-bank-img-logo">
-                        </div>
-                        <div class="bank-details">
-                            <h1 class="bank-title">Steadfast</h1>
-                            <p>Interest <span>0.15%</span></p>
-                            <p>Minimum deposit <span>£0.00</span></p>
-                            <small class="text-muted">No deposit required to activate.</small>
-                            <p>Overdraft <span>Yes (£500)</span></p>
-                            <p>Monthly fee <span>£5</span></p>
-                            <p>Saving account <span>Not available</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!--card  5 -->
-                <div class="choose-bank__card card flex-grid two-column-20_80_grid" for="bank-pulse">
-                    <div class="card-head card-head--control">
-                        <input type="radio" name="chosen_bank" id="bank-pulse" value="pulse">
-                    </div>
-
-                    <div class="card-body flex-grid two-column-25_75_grid">
-                        <div class="card-head card-head--logo">
-                            <img src="/static/images/card-icons/pulse.png" alt="Pulse logo"
-                                class="choose-bank-img-logo">
-                        </div>
-                        <div class="bank-details">
-                            <h1 class="bank-title">Pulse</h1>
-                            <p>Interest <span>0.30%</span></p>
-                            <p>Minimum deposit <span>£0.00</span></p>
-                            <small class="text-muted">No deposit required to activate.</small>
-                            <p>Overdraft <span>No</span></p>
-                            <p>Monthly fee <span>£2</span></p>
-                            <p>Saving account <span>Not available</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- card 6 -->
-                <div class="choose-bank__card card flex-grid two-column-20_80_grid" for="bank-harbour">
-                    <div class="card-head card-head--control">
-                        <input type="radio" name="chosen_bank" id="bank-harbour" value="harbour">
-                    </div>
-
-                    <div class="card-body flex-grid two-column-25_75_grid">
-                        <div class="card-head card-head--logo">
-                            <img src="/static/images/card-icons/harbour-trust.png" alt="Harbour Trust logo"
-                                class="choose-bank-img-logo">
-                        </div>
-                        <div class="bank-details">
-                            <h1 class="bank-title">Harbour Trust</h1>
-                            <p>Interest <span>0.05%</span></p>
-                            <p>Minimum deposit <span>£25.00</span></p>
-                            <small class="text-muted">Must deposit at least this amount to activate your
-                                account.</small>
-                            <p>Overdraft <span>Yes (£150)</span></p>
-                            <p>Monthly fee <span>£0.00</span></p>
-                            <p>Saving account <span>Available</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- card 7 -->
-                <div class="choose-bank__card card flex-grid two-column-20_80_grid" for="bank-lumen">
-                    <div class="card-head card-head--control">
-                        <input type="radio" name="chosen_bank" id="bank-lumen" value="lumen">
-                    </div>
-
-                    <div class="card-body flex-grid two-column-25_75_grid">
-                        <div class="card-head card-head--logo">
-                            <img src="/static/images/card-icons/lumen.png" alt="Lumen logo"
-                                class="choose-bank-img-logo">
-                        </div>
-                        <div class="bank-details">
-                            <h1 class="bank-title">Lumen</h1>
-                            <p>Interest <span>0.35%</span></p>
-                            <p>Minimum deposit <span>£100.00</span></p>
-                            <small class="text-muted">Must deposit at least this amount to activate your
-                                account.</small>
-                            <p>Overdraft <span>No</span></p>
-                            <p>Monthly fee <span>£0.00</span></p>
-                            <p>Saving account <span>Not available</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- card 8 -->
-                <div class="choose-bank__card card flex-grid two-column-20_80_grid" for="bank-urban">
-                    <div class="card-head card-head--control">
-                        <input type="radio" name="chosen_bank" id="bank-urban" value="urban">
-                    </div>
-
-                    <div class="card-body flex-grid two-column-25_75_grid">
-                        <div class="card-head card-head--logo">
-                            <img src="/static/images/card-icons/urban-bank.png" alt="Urban Bank logo"
-                                class="choose-bank-img-logo">
-                        </div>
-                        <div class="bank-details">
-                            <h1 class="bank-title">Urban Bank</h1>
-                            <p>Interest <span>0.20%</span></p>
-                            <p>Minimum deposit <span>£0.00</span></p>
-                            <small class="text-muted">No deposit required to activate.</small>
-                            <p>Overdraft <span>Yes (£300)</span></p>
-                            <p>Monthly fee <span>£4</span></p>
-                            <p>Saving account <span>Not available</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- card 9 -->
-                <div class="choose-bank__card card flex-grid two-column-20_80_grid" for="bank-elm">
-                    <div class="card-head card-head--control">
-                        <input type="radio" name="chosen_bank" id="bank-elm" value="elm">
-                    </div>
-
-                    <div class="card-body flex-grid two-column-25_75_grid">
-                        <div class="card-head card-head--logo">
-                            <img src="/static/images/card-icons/elm-financial.png" alt="Elm Financial logo"
-                                class="choose-bank-img-logo">
-                        </div>
-                        <div class="bank-details">
-                            <h1 class="bank-title">Elm Financial</h1>
-                            <p>Interest <span>0.18%</span></p>
-                            <p>Minimum deposit <span>£20.00</span></p>
-                            <small class="text-muted">Must deposit at least this amount to activate your
-                                account.</small>
-                            <p>Overdraft <span>No</span></p>
-                            <p>Monthly fee <span>£1</span></p>
-                            <p>Saving account <span>Available</span></p>
-                        </div>
-                    </div>
-                </div>
-
+            
+               
+              
+    
             </div>
 
             <div class="choose-bank__btns flex flex-space-between mt-8 fade-up">
@@ -238,7 +83,7 @@
                     <p>Can’t find your bank? No problem, you can choose a different one.</p>
 
                 </div>
-                <a href="{% url 'choose_pin' %}" class="btn-medium bank-btn-continue capitalise">Continue</a>
+                <button type="submit" class="btn-medium bank-btn-continue capitalise">Continue</button>
 
             </div>
         </form>

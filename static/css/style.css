@@ -4792,11 +4792,13 @@ clicks the button
 
 }
 
+/* The header for the work internal policy */
 .admin-panel__container header {
     background: #0f172a;
     color: white;
     left: 0;
     margin-bottom: 0;
+    z-index: 0;
            
 }
 
