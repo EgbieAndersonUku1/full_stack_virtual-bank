@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Optional
+from django.db.models.query import QuerySet
 from django.conf import settings
 
 from user_profile.models import UserProfile
@@ -44,6 +44,10 @@ class Bank(models.Model):
     class OfferSavingAccountOptions(models.TextChoices):
         YES = "Yes", _("Yes")
         NO  = "No", _("No")
+    
+    class OfferLoans(models.TextChoices):
+        YES = "Yes", _("Yes")
+        NO  = "No", _("No")
 
     name                     = models.CharField(max_length=50, unique=True, verbose_name="Bank name*")
     description              = models.TextField(max_length=600, verbose_name="Bank description*") 
@@ -60,13 +64,11 @@ class Bank(models.Model):
     last_activity_at         = models.DateTimeField(auto_now=True)
     created_on               = models.DateTimeField(auto_now_add=True)
     last_updated             = models.DateTimeField(auto_now=True)
-    offer_overdraft          = models.CharField(max_length=3, choices=OverDraftOptions.choices,
-                                                default=OverDraftOptions.NO, 
-                                                verbose_name="Offer overdraft*")
-    
-    offer_saving_account     = models.CharField(max_length=3, choices=OfferSavingAccountOptions.choices, 
-                                                default=OfferSavingAccountOptions.NO, 
+    offer_overdraft          = models.CharField(max_length=3, choices=OverDraftOptions.choices, default=OverDraftOptions.NO, verbose_name="Offer overdraft*")
+    offer_saving_account     = models.CharField(max_length=3,  choices=OfferSavingAccountOptions.choices, default=OfferSavingAccountOptions.NO,  
                                                 verbose_name="Offer saving accounts*")
+    
+    offer_loans              = models.CharField(max_length=3, choices=OfferLoans.choices, default=OfferLoans.NO, verbose_name="Offer loans*")
     
     logo = models.FileField(upload_to="bank/logo/", null=True, verbose_name="Bank logo",
                             validators=[FileExtensionValidator(["png", "jpg", "jpeg", "svg"])]
@@ -92,6 +94,10 @@ class Bank(models.Model):
             raise ValidationError("Logo must be under 2MB.")
 
     @property
+    def logo_image(self):
+        return self.logo.url
+    
+    @property
     def interest_rate_percent(self):
         return self.interest_rate_bps / 100
  
@@ -109,6 +115,10 @@ class Bank(models.Model):
                 total=Count("bank_accounts")
             )["total"]
         
+
+    @classmethod
+    def get_all_banks(cls, order_by="name") -> QuerySet["Bank"]:
+        return cls.objects.all().order_by(order_by)
 
     @classmethod
     def get_by_bank_name(cls, bank_name: str):
