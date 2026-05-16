@@ -18,9 +18,10 @@ from .models import (Bank,
 
 class BankAdmin(admin.ModelAdmin):
 
-    readonly_fields     = ["last_activity_at", "bank_code", "created_on", "last_updated",  "bank_accounts_count", "interest_rate_bps"]
-    list_display        = ["id", "name", "bank_code", "bank_accounts_count", "branch_name", "country", "phone_number", "created_on"]
-    list_display_links  = ["id", "bank_code", "name"]
+    readonly_fields     = ["last_activity_at", "bank_code", "created_on", "last_updated", 
+                            "bank_accounts_count", "interest_rate_bps", "id"]
+    list_display        = ["name", "bank_code", "bank_accounts_count", "branch_name", "country", "phone_number", "created_on"]
+    list_display_links  = ["bank_code", "name"]
     list_filter         = ["branch_name", "country", "bank_code", "name"]
     ordering            = [ "-created_on"]
    
@@ -32,6 +33,7 @@ class BankAdmin(admin.ModelAdmin):
                     "including its unique bank code, public description, and logo."
                 ),
                 "fields": [
+                    "id",
                     "bank_code",
                     "name",
                     "description",
@@ -78,6 +80,7 @@ class BankAdmin(admin.ModelAdmin):
                 "fields": [
                     "offer_overdraft",
                     "offer_saving_account",
+                    "offer_loans",
                 ],
             },
         ),

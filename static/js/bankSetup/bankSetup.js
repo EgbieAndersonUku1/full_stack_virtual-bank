@@ -19,18 +19,31 @@
 
 
 import runObserver from "../animation.js";
+import { warnError } from "../logger.js";
 
 runObserver({thresholdPercent: 0.10});
 
 
 const chooseBankForm = document.getElementById("chooose-bank-form");
 const bankCards = document.querySelectorAll(".choose-bank__card");
+const inputBankFields = document.querySelectorAll(".card-head--control input")
+
 
 const IS_SELECTED_CLASS = "is-selected";
 
 // add one time checker later
 chooseBankForm.addEventListener("click", handleDelegation);
 chooseBankForm.addEventListener("keydown", handleKeydown);
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (!inputBankFields){
+      warnError("DOMContentLoaded", {
+        expected: "Bank card fields not load"
+      })
+    } else {
+      inputBankFields[0].checked = true;
+    }
+})
 
 
 // Make cards focusable
