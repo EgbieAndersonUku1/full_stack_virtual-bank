@@ -1610,6 +1610,7 @@ take up 50 to left and 50 up
 /* bank and pin elemnts */
 #bank-pin-navbar,
 .bank-pin-setup__container,
+.create-profile__container,
 #choose-bank-navbar,
 .choose-bank__container {
     width: 91%;

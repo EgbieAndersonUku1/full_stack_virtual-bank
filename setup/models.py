@@ -21,8 +21,6 @@ class Pin(models.Model):
     last_updated  = models.DateTimeField(auto_now=True)
     is_active     = models.BooleanField(default=True)
     
-
-
     @property
     def username(self):
         """Returns the username associated with the pin"""
@@ -43,9 +41,11 @@ class Pin(models.Model):
             Returns None instead of raising Pin.DoesNotExist to simplify
             safe lookups in service layers or views.
         """
-        return cls.objects.filter(user=user)
+        if not isinstance(user, User):
+            raise TypeError(_(f"Expected a user object but got User with type ({type(User).__name__})"))
+        
+        return cls.objects.filter(user=user).first()
        
-    
     def is_hashed(self, value: str) -> bool:
         """
         Hash and set the user's PIN securely.
@@ -91,7 +91,7 @@ class Pin(models.Model):
         Returns:
             bool: True if the PIN matches the stored hash, False otherwise.
         """
-        return check_password(self.pin, pin)
+        return check_password(pin, self.pin)
     
     def save(self, *args, **kwargs):
         """
@@ -107,7 +107,7 @@ class Pin(models.Model):
         """
    
         if self.pin and not self.is_hashed(self.pin):
-            raise ValidationError(_("The pin must not be stored in plain text. Set pin using set_pin method"))
+            raise ValidationError(_("The pin must not be stored in plain text. Set pin using set_pin() method"))
         
         super(self, *args, **kwargs)
 

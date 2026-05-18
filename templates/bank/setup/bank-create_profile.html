@@ -1,0 +1,29 @@
+{% extends "bank/setup/base.html" %}
+{% load static %}
+
+{% block title %}Bank Choices{% endblock title %}
+
+{% block body %}
+
+  <section id="create-profile" class="mt-48 mb-48 fade-up" aria-labelledby="bank-completion-title">
+    
+    <div class="create-profile__container account-setup">
+
+        {% include "partials/messages/messages.html" %}
+        
+        <!-- Page header -->
+        <div class="create-profile mb-24">
+            <small>Step 4 of 5</small>
+        </div>
+
+              
+    </div>
+
+   </section>
+
+{% endblock body %}
+
+
+{% block script %}
+<script src="{% static '/js/bankSetup/bankSetup.js' %}" type="module"></script>
+{% endblock script %}
