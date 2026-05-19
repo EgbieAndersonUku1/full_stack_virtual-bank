@@ -296,3 +296,7 @@ JAZZMIN_SETTINGS = {
     "login_logo_dark": None,
     "site_logo": None,
 }
+
+
+BANK_CACHE_KEY = "banks"
+BANK_CACHE_TTL = 300

@@ -4833,3 +4833,12 @@ clicks the button
 .work-policies__container h2:not(h2:first-child) {
    margin-top: var(--space-24);
 }
+
+
+ /* profile creation */
+
+ #profile-details {
+    width: 40%;
+    margin: auto;
+    padding-bottom: var(--space-48);
+ }

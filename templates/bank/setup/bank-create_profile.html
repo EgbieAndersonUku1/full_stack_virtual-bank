@@ -5,21 +5,270 @@
 
 {% block body %}
 
-  <section id="create-profile" class="mt-48 mb-48 fade-up" aria-labelledby="bank-completion-title">
-    
+<section id="create-profile" class="mt-48 mb-48 fade-up" aria-labelledby="bank-completion-title">
+
     <div class="create-profile__container account-setup">
 
         {% include "partials/messages/messages.html" %}
-        
+
         <!-- Page header -->
         <div class="create-profile mb-24">
             <small>Step 4 of 5</small>
         </div>
 
-              
+        <div id="profile-details" class="profile-details">
+
+            <form action="" method="post" role="form" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <header class="profile-header center">
+                    <h1>Create Profile</h1>
+
+                    <p class="text-muted">
+                        Set up your personal profile information.
+                        Fields marked with * are required.
+                    </p>
+                </header>
+
+                <!-- Profile Picture -->
+                <section class="profile-section" aria-labelledby="profile-picture-heading">
+
+                    <div class="section-heading">
+                        <h2 id="profile-picture-heading">Profile Picture</h2>
+
+                        <p class="text-muted">
+                            Upload a profile image so other users can recognise you.
+                        </p>
+                    </div>
+
+                    <div class="profile-pic center">
+                        <div class="profile-img-preview"></div>
+                        image preview
+                    </div>
+
+                    <div class="form-group flex-grid">
+
+                        <label for="profile-pic">
+                            Choose profile picture
+                        </label>
+
+                        {{ form.profile_pic }}
+
+                        <small id="profile-pic-help">
+                            Accepted formats: JPG, PNG, SVG.
+                        </small>
+
+                    </div>
+
+                </section>
+
+
+                <!-- Personal Information -->
+                <section class="profile-section mt-24 mb-24" aria-labelledby="personal-info-heading">
+
+                    <div class="section-heading">
+
+                        <h2 id="personal-info-heading">
+                            Personal Information
+                        </h2>
+
+                        <p class="text-muted">
+                            Enter your basic personal details.
+                        </p>
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="first-name">
+                                First name <span aria-hidden="true">*</span>
+                            </label>
+
+                            {{ form.first_name }}
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="last-name">
+                                Last name <span aria-hidden="true">*</span>
+                            </label>
+
+                            {{ form.last_name }}
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="middle-name">
+                                Middle name
+                            </label>
+
+                            {{ form.middle_name }}
+
+                        </div>
+
+                        <div class="form-group flex-grid">
+
+                            <label for="gender">
+                                Gender <span aria-hidden="true">*</span>
+                            </label>
+
+                            {{ form.gender }}
+
+                            <small id="gender-help">
+                                Select your gender.
+                            </small>
+
+                        </div>
+
+                        <div class="form-group flex-grid">
+
+                            <label for="bio">
+                                Bio
+                            </label>
+
+                            {{ form.bio }}
+
+                            <p class="num-of-characters-remaining text-align-right character-usage-message">
+                                Minimum characters to use: 50
+                            </p>
+
+                            <p class="num-of-characters-to-use text-align-right character-usage-message">
+                                Number of characters remaining: 150
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- Contact Information -->
+                <section class="profile-section" aria-labelledby="contact-info-heading">
+
+                    <div class="section-heading">
+
+                        <h2 id="contact-info-heading">
+                            Contact Information
+                        </h2>
+
+                        <p class="text-muted">
+                            Add your contact details so we can reach you when needed.
+                        </p>
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="email">
+                                Email address
+                            </label>
+
+                            <input type="email" id="email" value="{{ request.user.email }}" readonly>
+
+                        </div>
+
+                        <div class="form-group flex-grid">
+
+                            <label for="phone-number">
+                                Phone number <span aria-hidden="true">*</span>
+                            </label>
+
+                            {{ form.phone_number }}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- Address Information -->
+                <section class="profile-section mt-24 mb-24" aria-labelledby="address-heading">
+
+                    <div class="section-heading">
+
+                        <h2 id="address-heading">
+                            Address Information
+                        </h2>
+
+                        <p class="text-muted">
+                            Provide your current residential address.
+                        </p>
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="address-line-1">
+                                Address line 1
+                                <span aria-hidden="true">*</span>
+                            </label>
+
+                            {{ form.address_line_1 }}
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="address-line-2">
+                                Address line 2
+                            </label>
+
+                            {{ form.address_line_2 }}
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="city">
+                                City <span aria-hidden="true">*</span>
+                            </label>
+
+                            {{ form.city }}
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="postcode">
+                                Postcode <span aria-hidden="true">*</span>
+                            </label>
+
+                            {{ form.postcode }}
+
+                        </div>
+
+                        <div class="form-group flex-grid">
+
+                            <label for="country">
+                                Country <span aria-hidden="true">*</span>
+                            </label>
+
+                            {{ form.country }}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </form>
+
+        </div>
+
     </div>
 
-   </section>
+</section>
 
 {% endblock body %}
 

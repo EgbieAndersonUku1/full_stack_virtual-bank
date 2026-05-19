@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+
 
 from bank.models import Bank
+from user_profile.forms import UserProfileForm
 from utils.decorators import is_email_verified
 from .forms import PinConfirmCodeForm
 from utils.safe_cache import get_cache_or_set
+
 
 # Create your views here.
 
@@ -37,8 +41,12 @@ def bank_setup_pin(request):
 @login_required
 def bank_setup_bank_choices(request):
 
-    banks     = banks = get_cache_or_set(key="banks", value_or_func=lambda: Bank.get_all_banks(), ttl=300)
-    bank_id   = request.POST.get("chosen_bank")
+    banks = banks = get_cache_or_set(key=settings.BANK_CACHE_KEY, 
+                                    value_or_func=lambda: Bank.get_all_banks(), 
+                                    ttl=settings.BANK_CACHE_TTL
+                                    )
+    
+    bank_id = request.POST.get("chosen_bank")
 
     if bank_id:
         request.session["bank_id"] = bank_id
@@ -54,7 +62,17 @@ def bank_setup_bank_choices(request):
 @is_email_verified
 @login_required
 def bank_setup_create_profile(request):
-    return  render(request, "bank/setup/bank-create_profile.html")
+    
+    form = UserProfileForm()
+
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, request.FILES)
+
+    context = {
+        "form": form,
+    }
+
+    return  render(request, "bank/setup/bank-create_profile.html", context=context)
 
 
 @is_email_verified

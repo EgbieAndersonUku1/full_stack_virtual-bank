@@ -1,8 +1,11 @@
 from django.core.management.base import BaseCommand
 from bank.services import BankProvisioningService
-
-
 from decimal import Decimal
+
+from django.conf import settings
+
+from utils.safe_cache import set_cache_with_retry
+from bank.models import Bank
 
 BANK_SEED_DATA = [
     {
@@ -165,4 +168,6 @@ class Command(BaseCommand):
         for bank_data in BANK_SEED_DATA:
             BankProvisioningService.create_bank(bank_data)
 
+        banks = Bank.get_all_banks()
+        set_cache_with_retry(key=settings.BANK_CACHE_KEY, value=banks, ttl=settings.BANK_CACHE_TTL, log_failures=True)
         self.stdout.write(self.style.SUCCESS("Banks seeded successfully"))
