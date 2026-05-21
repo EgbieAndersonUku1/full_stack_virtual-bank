@@ -7,7 +7,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import FileExtensionValidator
 
 from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _
+
 
 
 User = get_user_model()
@@ -24,11 +24,11 @@ class UserProfile(models.Model):
     first_name     = models.CharField(max_length=20)
     last_name      = models.CharField(max_length=20)
     middle_name    = models.CharField(max_length=20, blank=True)
-    gender         = models.CharField(choices=Gender.choices)
+    gender         = models.CharField(max_length=20, choices=Gender.choices)
     bio            = models.TextField(max_length=150, blank=True, null=True)
     email          = models.CharField(max_length=300, blank=True, null=True)
     phone_number   = PhoneNumberField(unique=True)
-    profile_pic    = models.FileField(upload_to="profile/pic/", null=True, verbose_name="Bank logo",
+    profile_pic    = models.FileField(upload_to="profile/pic/", null=True, 
                             validators=[FileExtensionValidator(["png", "jpg", "jpeg", "svg"])]
                            )
     city           = models.CharField(max_length=40)

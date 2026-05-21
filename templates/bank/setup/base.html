@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="{% static '/css/style.css' %}">
     <link rel="shortcut icon" href="{% static '/images/virtual-bank-logo.png' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static '/vendor/fontawesome/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cropper.min.css' %}">
+    <meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+
     <title>Bank setup - {% block title %}{% endblock title %}</title>
 </head>
 
@@ -55,4 +58,5 @@
     {% block script %}{% endblock script %}
 </body>
 
+<script src="{% static 'js/cropper.min.js' %}" defer></script>
 </html>

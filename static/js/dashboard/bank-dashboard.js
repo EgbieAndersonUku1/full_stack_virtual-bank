@@ -1,4 +1,12 @@
-import { sanitizeText, formatCurrency, parseCurrency, checkIfHTMLElement, deselectAllElements, selectElement, toTitle  } from "../utils.js";
+import { sanitizeText, 
+       formatCurrency,
+        parseCurrency, 
+        checkIfHTMLElement, 
+        deselectAllElements,
+         selectElement, 
+         toTitle,
+        toggleElement  } from "../utils.js";
+        
 import { AlertUtils } from "../alerts.js";
 import { cardImplementer, createCardDetails } from "../card/cardBuilder.js";
 import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js";
@@ -780,26 +788,6 @@ function clearDisconnectInputField() {
     disconnectInputFieldElement.value = "";
 }
 
-
-/**
- * Toggles the visibility of a DOM element.
- * @param {Object} options - Options object.
- * @param {HTMLElement} options.element - The element to toggle.
- * @param {cSSSelector} - The selector for the element
- * @param {boolean} options.show - Whether to show (true) or hide (false) the element.
- * @returns {void}
- */
-
-function toggleElement({ element, cSSSelector = "show", show = true }) {
-    if (!checkIfHTMLElement(element, "Unknown"));
-
-    if (show) {
-        element.classList.add(cSSSelector);
-        return;
-    }
-
-    element.classList.remove(cSSSelector);
-}
 
 
 
