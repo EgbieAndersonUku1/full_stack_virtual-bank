@@ -43,8 +43,13 @@
                     </div>
 
                     <div class="profile-pic center">
-                        <div class="profile-img-preview"></div>
-                        image preview
+                        <div id="profile-img-preview">
+                            <img src="{% static 'images/icons/profile.png' %}" alt="" srcset="" id="profile-bank-placeholder-img">
+
+                        </div>
+                        <p class="text-muted"> image preview</p>
+                        <button type="button" class="btn-large green-bg white-text mb-24" id="profile-preview-btn">Save preview</button>
+                       
                     </div>
 
                     <div class="form-group flex-grid">
@@ -275,4 +280,5 @@
 
 {% block script %}
 <script src="{% static '/js/bankSetup/bankSetup.js' %}" type="module"></script>
+<script src="{% static '/js/bankSetup/profile-pic-crop.js' %}" type="module"></script>
 {% endblock script %}

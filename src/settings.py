@@ -300,3 +300,7 @@ JAZZMIN_SETTINGS = {
 
 BANK_CACHE_KEY = "banks"
 BANK_CACHE_TTL = 300
+
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
