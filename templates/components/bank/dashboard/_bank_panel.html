@@ -104,15 +104,24 @@ synchronise account balances and transaction histories.
 
         <span class="account-status active" role="status" aria-live="polite" aria-label="Bank account status active">
             <i class="fas fa-circle" aria-hidden="true"></i>
-            Active
+
+            {% if current_account %}
+                {{ current_account.status | title }}
+            {% endif %}
         </span>
 
     </div>
 
     <!-- Bank Account Summary -->
-    <div class="bank-account-summary mt-4">
-        2 accounts connected
-    </div>
+    {% if number_of_accounts == 2 %}
+        <div class="bank-account-summary mt-4">
+            {{ number_of_accounts }} accounts connected
+        </div>
+    {% else %}
+          <div class="bank-account-summary mt-4">
+            {{ number_of_accounts }} account connected
+        </div>
+    {% endif %}
 
     <!-- Body -->
     <div class="dash-bank-account__body flex flex-space-between">
@@ -122,23 +131,33 @@ synchronise account balances and transaction histories.
             <!-- Accounts List -->
             <ul class="accounts">
 
+                <li class="flex-row account-number" aria-label="Bank name">
+                   Bank name: {{ current_account.bank_name }}
+                  
+                </li>
                 <!-- Personal Account -->
+              
                 <li class="flex-row account-number" aria-label="Personal Account ending in 7052">
-                    Personal Account •••• 7052
+                    Personal Account {{ current_account.account_last_four_digits }}
                     <a class="mini-action" aria-label="View Personal Account transactions">View</a>
                 </li>
+               
 
                 <!-- Saving Account -->
+                {% if saving_account %}
                 <li class="flex-row account-number" aria-label="Saving Account ending in 401">
-                    Saving Account •••• 401
+                    Saving Account {{ saving_account.account_last_four_digits }}
                     <a class="mini-action " aria-label="View Saving Account transactions">View</a>
                 </li>
+                {% endif %}
 
             </ul>
 
             <!-- Last synced -->
             <div class="bank-last-updated">
-                Last updated 2 minutes ago via Open Banking
+            
+                {{ current_account.last_updated | timesince}} via Open Banking
+              
             </div>
 
         </div>
@@ -152,6 +171,84 @@ synchronise account balances and transaction histories.
 
     <!-- Balance Highlights -->
 
+     <div class="balance-highlight total" aria-live="polite" aria-label="Account information">
+        <div class="balance-label mb-8">
+            Crucial Account information
+        </div>
+
+        <div class="balance-label ml-8">
+            <span>&plus;</span>
+            The interest rate for this account is {{ interest_rates }}%
+        </div>
+
+        {% if met_conditions  == False %}
+            <div class="balance-label ml-8">
+                <span>&plus;</span>
+                You chose an account with a minimum deposit of £{{ minimum_deposit }}.
+            </div>
+
+            <div class="balance-label ml-8">
+                <span>&plus;</span>
+                You monthly deposit for this account is £{{ monthly_deposit }}.
+            </div>
+
+            <div class="balance-label ml-8">
+                <span>&plus;</span>
+                You have one month to fund your account, otherwise your account will be locked. 
+            </div>
+        {% endif %}
+
+        {% if offer_loans == "No" %}
+            <div class="balance-label ml-8">
+                <span>&plus;</span>
+                <span>Loans are not available for this account.</span>
+            </div>
+        {% else %}
+            <div class="balance-label ml-8">
+                <span>&plus;</span>
+                <span>
+                    Loans are available for this account, but you must meet the eligibility requirements before applying.
+                    Please see our terms and conditions.
+                </span>
+            </div>
+        {% endif %}
+
+        {% if has_overdraft == "Yes" %}
+            <div class="balance-label ml-8">
+                <span>&plus;</span>
+                <span>
+                    This account includes overdraft protection, subject to eligibility checks and approval.
+                    Please refer to our terms and conditions.
+                </span>
+            </div>
+        {% else %}
+            <div class="balance-label ml-8">
+                <span>&plus;</span>
+                <span>
+                    Overdraft facilities are not available for this account.
+                </span>
+            </div>
+        {% endif %}
+
+       {% if has_saving_account == "Yes" %}
+            <div class="balance-label ml-8">
+                <span>&plus;</span>
+                <span>
+                    Your account comes with a savings account. Interest rates apply to this account.
+                </span>
+            </div>
+        {% else %}
+            <div class="balance-label ml-8">
+                <span>&plus;</span>
+                <span>
+                    Your account does not come with a savings account.
+                </span>
+            </div>
+        {% endif %}
+
+
+    </div>
+
     <!-- Total Balance -->
     <div class="balance-highlight total" aria-live="polite" aria-label="Total balance across accounts">
         <div class="balance-label">
@@ -159,7 +256,7 @@ synchronise account balances and transaction histories.
         </div>
         <div class="balance-value">
             <span aria-hidden="true">£</span>
-            <span aria-label="1 thousand 500 pounds">1,500.00</span>
+            <span aria-label="1">{{ current_account.balance }}</span>
         </div>
     </div>
 
@@ -170,7 +267,7 @@ synchronise account balances and transaction histories.
         </div>
         <div class="balance-value">
             <span aria-hidden="true">£</span>
-            <span aria-label="500 pounds">500.00</span>
+            <span aria-label="500 pounds">0.00</span>
         </div>
     </div>
 
@@ -191,7 +288,7 @@ synchronise account balances and transaction histories.
         </div>
         <div class="balance-value">
             <span aria-hidden="true">£</span>
-            <span>1,500</span>
+            <span>{{ current_account.balance }}</span>
         </div>
     </div>
 

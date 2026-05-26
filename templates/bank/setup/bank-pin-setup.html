@@ -7,10 +7,14 @@
 
 {% block body %}
 
-     <section id="bank-pin-setup" class="mt-48 mb-48 fade-up">
+  
+     <section id="bank-pin-setup" class="mt-48 mb-48">
             <div class="bank-pin-setup__container account-setup">
                 <div class="bank-status mb-24">
-                    <small>Step 3 of 4</small>
+                    
+                    {% include "partials/messages/messages.html" %}
+                    
+                    <small>Step 3 of 5</small>
                     <h1 class="capitalise light-bold">Set your pin</h1>
                     <p>Create a secure 6-digit PIN to approve bank transactions</p>
 
@@ -21,7 +25,14 @@
 
                 </div>
 
-                <form action="" id="bank-pin-form" role="form">
+                <form action="{% url 'choose_pin' %}" id="bank-pin-form" role="form" method="post">
+                    {% csrf_token %}
+
+                    <p id="pin-error-msg" class="center mb-4 deactivate-text"></p>
+
+                    {% for error in form.non_field_errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
 
                     <h1 class="capitalise center header-6 light-bold">Set your 6 digit PIN</h1>
                     <p class="center mb-16 text-muted">Create a secure 6-digit PIN to approve bank transactions </p>
@@ -30,6 +41,10 @@
                     <label for="pin-hidden" class="sr-only">Enter 6 digit PIN</label>
                     <input id="pin-hidden" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]*"
                         autocomplete="one-time-code" class="sr-only" aria-describedby="pin-status pin-error">
+                    
+
+                    <!-- Hidden input field that sends the pin as a single code to the back end-->
+                    {{ form.pin }}
 
                      <!-- Visual PIN display -->
                     <div class="pin-wrapper flex-grid six-column-grid">
@@ -63,19 +78,23 @@
                         </div>
 
                     </div>
+
+                      <div class="choose-bank__btns flex flex-end mt-8">
+                    
+                    <a href="{% url 'choose_bank' %}"
+                        class="capitalise btn-medium mr-24 btn-large bank-btn-back center capitalise" aria-label="Go back to bank choices">
+                        <button type="button">Back</button>
+                    </a>
+                    
+                     <button type="submit" class="btn-large bank-btn-continue capitalise">
+                        Continue
+                    </button>
+
+                    </div>
                 </form>
 
 
-                <div class="choose-bank__btns flex flex-end mt-8 fade-up">
-                    <a href="{% url 'choose_bank' %}"
-                        class="capitalise btn-medium mr-24 bank-btn-back center capitalise" aria-label="Go back to bank choices">
-                        back</a>
-                    
-                     <a href="/bankSetup/bank-completion.html" class="btn-medium bank-btn-continue capitalise">
-                        Continue
-                    </a>
-
-                </div>
+              
 
             </div>
         </section>

@@ -92,21 +92,16 @@ export default async function fetchData({ url,
 
         const allowedMethods = ["POST", "GET"];
 
-        
         if (!allowedMethods.includes(method)) {
             throw new Error(`Invalid method: ${method}. Allowed methods are ${allowedMethods.join(", ")}`);
         };
-
      
         if (method === "POST" && (typeof body !== "object")) {
                throw new Error(`Body must be a non-null object for POST requests, received: ${typeof body}`);
         }
 
-
-        const headers = {
-            "Content-Type": "application/json",
-        };
-
+        const headers = {}
+       
         if (csrfToken) {
             headers["X-CSRFToken"] = csrfToken;
         };
@@ -117,10 +112,18 @@ export default async function fetchData({ url,
         };
 
     
-         if (method === "POST" && body) {
-            options.body = JSON.stringify(body);
-        };
+        if (method === "POST" && body) {
 
+              if (!(body instanceof FormData)) {
+                    headers["Content-Type"] = "application/json";
+                    options.body = JSON.stringify(body);
+              } else {
+                options.body = body
+              }
+             
+        } 
+        
+      
         const response = await fetch(url, options);
 
         if (returnRawResponse) {

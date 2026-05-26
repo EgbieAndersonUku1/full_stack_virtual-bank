@@ -1,0 +1,13 @@
+{% if not request.user.is_superuser and not request.user.is_staff %}
+
+<div class="virtual-bank_container__amount">
+
+    {% if bank_balance != None %}
+        <span class="bold">
+            <span class="currency">£</span>{{ bank_balance }}
+        </span>
+    {% endif %}
+
+</div>
+
+{% endif %}

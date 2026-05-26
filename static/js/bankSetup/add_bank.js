@@ -2,13 +2,13 @@ import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js
 import { AlertUtils } from "../alerts.js"
 import { toggleSpinner, sanitizeText, applyDashToInput } from "../utils.js"
 import { warnError } from "../logger.js";
+import { handleNameSanitization, handleAddressSanitization, handlePostCode } from "./handlers.js";
 
 
 const bankDescriptionTextArea = document.getElementById("id_description");
 const bankName      = document.getElementById("id_name")
 const addBankForm   = document.getElementById("add-bank-form");
 const spinner       = document.getElementById("bank-add-form-spinner");
-const phoneNumber   = document.getElementById("id_phone_number");
 const branchName    = document.getElementById("id_branch_name");
 const addressOne    = document.getElementById("id_address_line_1");
 const addressTwo    = document.getElementById("id_address_line_2")
@@ -18,7 +18,6 @@ const postCode      = document.getElementById("id_post_code")
 
 // add one time checker later
 addBankForm.addEventListener("submit", handleBankFormSubmission);
-phoneNumber.addEventListener("input", handlePhoneNumber);
 bankName.addEventListener("input", handleNameSanitization);
 branchName.addEventListener("input", handleNameSanitization);
 addressOne.addEventListener("input", handleAddressSanitization);
@@ -39,44 +38,6 @@ minimumCharactersToUse(bankDescriptionTextArea, {
 })
 
 
-
-function handlePhoneNumber(e) {
-    const includeChars = ["+",  "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ];
-    handleInputSanitization(e, includeChars);
-}
-
-
-function handleNameSanitization(e) {
-    const includeChars = [" ", "&", "-", "'", "."];
-    handleInputSanitization(e, includeChars);
-}
-
-
-function handleAddressSanitization(e) {
-    const includeChars = [" ",  "&",  "-",  "'",  "/",  ".",  ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ];
-    handleInputSanitization(e, includeChars);
-}
-
-
-function handlePostCode(e) {
-    const includeChars = [" ",  "-", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-     handleInputSanitization(e, includeChars);
-}
-
-
-function handleInputSanitization(e, includeChars, allowNumber=false) {
-
-    if (!Array.isArray(includeChars)) {
-        warnError( handleInputSanitization, {
-            expected: "Expected the includeChars to be a list",
-            received: `${typeof includeChars}`
-        })
-        return;
-    }
-
-    e.target.value = sanitizeText(e.target.value, false, true, includeChars)
-
-}
 
 
 async function handleBankFormSubmission(e) {

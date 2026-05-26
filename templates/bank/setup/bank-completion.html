@@ -10,7 +10,7 @@
 
                 <!-- Page header -->
                 <div class="bank-completion__status mb-24">
-                    <small>Step 4 of 4</small>
+                    <small>Step 5 of 5</small>
                 </div>
 
                 <div class="bank-completion__content">
@@ -19,11 +19,11 @@
                     <div role="status" aria-live="polite">
                         <h2 id="completion-success" class="capitalise center" tabindex="-1">
                             <span class="check" aria-hidden="true">✔</span>
-                            <span>Account setup complete</span>
+                            <span>Account setup confirmation step</span>
                         </h2>
 
                         <p class="center mb-24">
-                            You are all set! Your bank account is active and ready to use.
+                            You are almost set! Please confirm the details and hit continue to create your account.
                         </p>
                     </div>
 
@@ -35,9 +35,29 @@
                         <dl class="bank-completion__details">
 
 
-                            <div class="bank-completion__row flex flex-space-between">
+                            <div class="bank-completion__row flex-grid">
                                 <dt>Bank</dt>
-                                <dd>Bank Atlas</dd>
+                                <dd>{{ chosen_bank.name | title }}</dd>
+                            </div>
+
+                            <div class="bank-completion__row flex-grid mt-8">
+                                <dt>Description</dt>
+                                <dd class="mt-8 lighter-bold">{{ chosen_bank.description }}</dd>
+                            </div>
+
+                            <div class="bank-completion__row flex-grid mt-8">
+                                <dt>Address</dt>
+                                <dd class="mt-8 lighter-bold">
+                                    <address>{{ chosen_bank.address_line_1 }}</address>
+                                    <address>{{ chosen_bank.address_line_2 }}</address>
+                                    <address>{{ chosen_bank.country }}</address>
+                                    <address>{{ chosen_bank.post_code }}</address>
+                                </dd>
+                            </div>
+
+                             <div class="bank-completion__row flex-grid mt-8">
+                                <dt>Phone number</dt>
+                                <dd class="lighter-bold">{{ chosen_bank.phone_number }}</dd>
                             </div>
 
                             <hr class="dividor">
@@ -50,57 +70,91 @@
 
                             <div class="bank-completion__row flex flex-space-between">
                                 <dt>Sort code</dt>
-                                <dd>400217</dd>
+                                <dd>xx-xx-xx</dd>
                             </div>
 
                             <hr class="dividor">
 
                             <div class="bank-completion__row flex flex-space-between">
                                 <dt>Account</dt>
-                                <dd>00327502</dd>
+                                <dd>xx-xx-xxxx</dd>
                             </div>
 
                             <hr class="dividor">
                             <div class="bank-completion__row flex flex-space-between">
                                 <dt>Status</dt>
-                                <dd class="active">Active</dd>
+                                <dd class="active">To be created</dd>
+                            </div>
+
+                          
+                            <hr class="dividor">
+                            <div class="bank-completion__row">
+
+                                <div class="bank-information flex flex-space-between">
+                                     <dt>Overdraft offered</dt>
+                                    <dd>{{ chosen_bank.offer_overdraft }}</dd>
+                                </div>
+
+                              {% if chosen_bank.offer_overdraft == "Yes" %}
+                               <div class="bank-notice mt-8">
+                                    <small>
+                                        Overdrafts are available for eligible customers only and are subject to approval.
+                                    </small>
+                                </div>
+                              {% endif %}
+                               
+                               
+                            </div>
+
+
+                              <hr class="dividor">
+                            <div class="bank-completion__row flex flex-space-between">
+                                <dt>Interest rate</dt>
+                                <dd> {{ chosen_bank.interest_rate_percent }}%</dd>
+
                             </div>
 
                             <hr class="dividor">
                             <div class="bank-completion__row flex flex-space-between">
-                                <dt>Interest available</dt>
-                                <dd>No</dd>
-
-                            </div>
-
-                            <hr class="dividor">
-                            <div class="bank-completion__row flex flex-space-between">
-                                <dt>Overdraft limit</dt>
-                                <dd>None</dd>
-                            </div>
-
-                            <hr class="dividor">
-                            <div class="bank-completion__row flex flex-space-between">
-                                <dt>Interest available</dt>
-                                <dd>0.25%</dd>
+                                <dt>Interest period</dt>
+                                <dd>{{ chosen_bank.interest_period | title }}</dd>
                             </div>
 
                             <hr class="dividor">
                             <div class="bank-completion__row flex flex-space-between">
                                 <dt>Minimum deposition</dt>
-                                <dd><span id="currency">£</span>0.00</dd>
+                                <dd><span id="currency">£</span>{{ chosen_bank.minimum_opening_deposit }}</dd>
                             </div>
 
                             <hr class="dividor">
                             <div class="bank-completion__row flex flex-space-between">
                                 <dt>Monthly fee</dt>
-                                <dd><span id="currency">£</span>0.00</dd>
+                                <dd><span id="currency">£</span>{{ chosen_bank.monthly_deposit }}</dd>
                             </div>
 
                             <hr class="dividor">
                             <div class="bank-completion__row flex flex-space-between">
-                                <dt>Saving account</dt>
-                                <dd><span>Not available</span></dd>
+                                <dt>Saving account available</dt>
+                                <dd><span>{{ chosen_bank.offer_saving_account }}</span></dd>
+                            </div>
+
+                            <hr class="dividor">
+                            <div class="bank-completion__row">
+
+                                <div class="bank-information flex flex-space-between">
+                                     <dt>Loans available</dt>
+                                    <dd>{{ chosen_bank.offer_loans }}</dd>
+                                </div>
+
+                              {% if chosen_bank.offer_loans == "Yes" %}
+                               <div class="bank-notice mt-8">
+                                    <small>
+                                        Loans are available for eligible customers only and are subject to approval.
+                                    </small>
+                                </div>
+                              {% endif %}
+                               
+                               
                             </div>
 
                         </dl>
@@ -121,14 +175,14 @@
 
 
                     <div class="bank-completion__actions center flex-grid two-column-grid">
-                        <a href="{% url 'dashboard' %}" class="btn-large dashboard-btn capitalise fade-up"
-                            aria-label="Go to your dashboard">
-                            Go to dashboard
+                        <a href="{% url 'create_profile' %}" class="btn-large dashboard-btn capitalise fade-up"
+                            aria-label="Go to create profile">
+                            Back
                         </a>
 
-                        <a href="/add-funds" class="btn-large add-funds-btn capitalise fade-up"
+                        <a href="{% url 'create_account' %}" class="btn-large add-funds-btn capitalise fade-up"
                             aria-label="Add funds to your bank account">
-                            Add funds
+                            Create account
                         </a>
 
                     </div>

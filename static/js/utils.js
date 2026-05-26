@@ -769,5 +769,56 @@ export function enableAutoFocusNavigation(inputElements, onlyNumbers = true) {
             }
         });
 
+
     });
+}
+
+
+
+export function parseCharsFromObject(fieldObject) {
+
+    const objectType = typeof fieldObject
+    console.log(objectType)
+    if (objectType !== "object") {
+        logError("parseCharsFromObject", {
+            field: "fieldObject",
+            error: "The field must be an object",
+            typeReceived: objectType
+        });
+        return;
+    }
+
+    const values = [];
+
+    for (const [key, value] of Object.entries(fieldObject)) {
+        values.push(value);
+    }
+
+    return {
+        values: values.join("")
+    };
+
+
+}
+
+
+
+/**
+ * Toggles the visibility of a DOM element.
+ * @param {Object} options - Options object.
+ * @param {HTMLElement} options.element - The element to toggle.
+ * @param {cSSSelector} - The selector for the element
+ * @param {boolean} options.show - Whether to show (true) or hide (false) the element.
+ * @returns {void}
+ */
+
+export function toggleElement({ element, cSSSelector = "show", show = true }) {
+    if (!checkIfHTMLElement(element, "Unknown"));
+
+    if (show) {
+        element.classList.add(cSSSelector);
+        return;
+    }
+
+    element.classList.remove(cSSSelector);
 }

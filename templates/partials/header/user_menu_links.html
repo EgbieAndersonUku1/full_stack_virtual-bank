@@ -1,0 +1,23 @@
+{% if request.user.is_email_verified %}
+
+<li><a href="#account"><i class="fa-regular fa-user"></i> Account</a></li>
+
+<li><a href="#"><i class="fa-solid fa-wallet"></i> Wallet home</a></li>
+
+{% if request.resolver_match.url_name != "dashboard" %}
+<li>
+    <a href="{% url 'dashboard' %}">
+        <i class="fa-solid fa-gauge"></i> Dashboard
+    </a>
+</li>
+{% endif %}
+
+<li>
+    <a href="#security" data-url="{% url 'manage_settings' %}">
+        <i class="fa-solid fa-shield-halved"></i> Security
+    </a>
+</li>
+
+<li><a href="#help-and-support"><i class="fa-regular fa-circle-question"></i> Help & Support</a></li>
+
+{% endif %}

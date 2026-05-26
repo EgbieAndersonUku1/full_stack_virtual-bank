@@ -19,18 +19,72 @@
 
 
 import runObserver from "../animation.js";
+import { warnError } from "../logger.js";
+import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js";
+import { sanitizeText } from "../utils.js";
+import { handleNameSanitization, handleAddressSanitization, handlePostCode } from "./handlers.js";
+
 
 runObserver({thresholdPercent: 0.10});
 
 
-const chooseBankForm = document.getElementById("chooose-bank-form");
-const bankCards = document.querySelectorAll(".choose-bank__card");
+const chooseBankForm       = document.getElementById("chooose-bank-form");
+const bankCards             = document.querySelectorAll(".choose-bank__card");
+const inputBankFields       = document.querySelectorAll(".card-head--control input")
+const createProfileTextArea = document.getElementById("bio");
+
+// personal details
+const firstName     = document.getElementById("first-name")
+const lastName      = document.getElementById("last-name")
+const middleName    = document.getElementById("middle-name")
+const address1      = document.getElementById("address-line-1")
+const address2      = document.getElementById("address-line-2")
+const city          = document.getElementById("city")
+const postCode      = document.getElementById("postcode");
+
 
 const IS_SELECTED_CLASS = "is-selected";
 
 // add one time checker later
-chooseBankForm.addEventListener("click", handleDelegation);
-chooseBankForm.addEventListener("keydown", handleKeydown);
+
+if (chooseBankForm != null) {
+  chooseBankForm.addEventListener("click", handleDelegation);
+  chooseBankForm.addEventListener("keydown", handleKeydown);
+
+}
+
+ifNotNullRunAddListenerForPersonlInformationFields()
+
+
+
+
+// Displays the number of characters to display in a given textbox area
+minimumCharactersToUse(createProfileTextArea, {
+    minCharClass: ".num-of-characters-remaining",
+    maxCharClass: ".num-of-characters-to-use",
+    minCharMessage: "Minimum characters to use: ",
+    maxCharMessage: "Number of characters remaining: ",
+    minCharsLimit: 50,
+    maxCharsLimit: 150,
+    disablePaste: true,
+})
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (!inputBankFields){
+      warnError("DOMContentLoaded", {
+        expected: "Bank card fields not load"
+      })
+    } else {
+
+      const firstFieldBankInputField =inputBankFields[0];
+      if (firstFieldBankInputField !== undefined) {
+         firstFieldBankInputField.checked = true;
+      }
+      
+    }
+})
 
 
 // Make cards focusable
@@ -76,8 +130,29 @@ function selectBankCard(e) {
   cardElement.classList.add(IS_SELECTED_CLASS);
 }
 
+
+
 function deSelectAllBankCards() {
   bankCards.forEach(card =>
     card.classList.remove(IS_SELECTED_CLASS)
   );
+}
+
+
+
+
+function ifNotNullRunAddListenerForPersonlInformationFields() {
+
+  if (!(firstName && lastName && middleName && address1 && address2 && city && postCode)) {
+      return;
+  }
+
+  firstName.addEventListener("input", handleNameSanitization);
+  lastName.addEventListener("input", handleNameSanitization);
+  middleName.addEventListener("input", handleNameSanitization);
+  address1.addEventListener("input", handleAddressSanitization);
+  address2.addEventListener("input", handleAddressSanitization);
+  city.addEventListener("input", handleNameSanitization);
+  postCode.addEventListener("input", handlePostCode);
+
 }

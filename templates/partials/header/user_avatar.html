@@ -1,0 +1,5 @@
+{% if request.user.profile %}
+    <img src="{{ request.user.profile.profile_img }}" class="virtual-bank-nav-profile-img">
+{% else %}
+    <img src="{% static 'images/icons/profile.png' %}" class="virtual-bank-nav-profile-img">
+{% endif %}

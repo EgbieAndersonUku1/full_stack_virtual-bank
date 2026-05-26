@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Case, When, Value, IntegerField
 from django.db.models import Count
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django_countries.fields import CountryField
@@ -9,6 +10,9 @@ from django.utils.translation import gettext_lazy as _
 from decimal import Decimal, ROUND_HALF_UP
 from django.db.models.query import QuerySet
 from django.conf import settings
+from django.templatetags.static import static
+
+
 
 from user_profile.models import UserProfile
 from bank.errors import SortCodeRangeExhaustedError
@@ -16,6 +20,36 @@ from bank.errors import SortCodeRangeExhaustedError
 
 
 # Create your models here.
+
+class BankQuerySet(models.QuerySet):
+
+    def seeded(self):
+        return self.filter(source=Bank.Source.SEEDED)
+
+    def admin_created(self):
+        return self.filter(source=Bank.Source.ADMIN)
+
+    def by_source(self, source=None):
+        if source:
+            return self.filter(source=source)
+        return self
+    
+
+class BankManager(models.Manager):
+
+    def get_queryset(self):
+        return BankQuerySet(self.model, using=self._db)
+
+    def seeded(self):
+        return self.get_queryset().seeded()
+
+    def admin_created(self):
+        return self.get_queryset().admin_created()
+
+    def by_source(self, source=None):
+        return self.get_queryset().by_source(source)
+                                             
+
 
 class Bank(models.Model):
     """
@@ -29,6 +63,10 @@ class Bank(models.Model):
     and may result in incomplete system configuration such as bank not having
     a range of sortcodes to use.
     """
+
+    class Source(models.TextChoices):
+        SEEDED = "Seeded", _("Seeded")
+        ADMIN  = "Admin", _("Admin")
 
     class InterestPeriod(models.TextChoices):
         DAILY = "DAILY", _("Daily")
@@ -74,18 +112,17 @@ class Bank(models.Model):
                             validators=[FileExtensionValidator(["png", "jpg", "jpeg", "svg"])]
                            )
 
+    source = models.CharField(max_length=10, choices=Source.choices, default=Source.ADMIN)
+
     # stored in basis points (bank standard for storing)
-    interest_rate  = models.PositiveIntegerField(validators=[MinValueValidator(0),
-                                                                        MaxValueValidator(100)],
-                                                                        default=0,
-                                                                        verbose_name="Interest rate (%)*",
-                                                                        )  # 100%
-    
-    interest_rate_bps        = models.PositiveIntegerField(validators=[MinValueValidator(0),
-                                                                        MaxValueValidator(10000)],
-                                                                        default=0,
-                                                                      
-                                                                        )  # 100%
+    interest_rate_bps = models.PositiveIntegerField(default=0, validators=[
+                                                                MinValueValidator(0),
+                                                                MaxValueValidator(10000),  # 0% to 100%
+                                                                ],
+                                                                help_text="Annual interest rate in basis points (bps). 100 bps = 1%",
+                                                    )
+
+    objects = BankManager()
 
     def validate_logo_size(file):
         max_size = 2 * 1024 * 1024  # 2MB
@@ -115,11 +152,14 @@ class Bank(models.Model):
                 total=Count("bank_accounts")
             )["total"]
         
+    @classmethod
+    def get_by_id(cls, bank_id: int):
+        return cls.objects.filter(pk=bank_id).first()
 
     @classmethod
     def get_all_banks(cls, order_by="name") -> QuerySet["Bank"]:
-        return cls.objects.all().order_by(order_by)
-
+       return cls.objects.all().order_by(order_by)  
+      
     @classmethod
     def get_by_bank_name(cls, bank_name: str):
         
@@ -127,7 +167,27 @@ class Bank(models.Model):
             return cls.objects.get(name=bank_name.title())
         except cls.DoesNotExist:
             return None
-        
+    
+    @property
+    def get_static_logo(self):
+        """
+        Return the static logo for a bank if it exists.
+
+        This is used for predefined banks created via seed data,
+        as opposed to banks created or edited by an admin that may
+        use uploaded logos stored in MEDIA.
+
+        This ensures predefined bank logos are served from the
+        static files system rather than MEDIA storage. Without
+        this any predefined banks created in the seed won't show
+        up
+        """
+       
+        if self.logo:
+            name = self.logo_image.split("/")[-1]
+            url  = f"banks/logo/{name}"
+            return static(url)
+
     def save(self, *args, **kwargs):
 
         if self.name:
@@ -135,7 +195,7 @@ class Bank(models.Model):
 
         if self.branch_name:
             self.branch_name = self.branch_name.title()
-
+        
         return super().save(*args, **kwargs)
     
     def __str__(self):
@@ -391,7 +451,7 @@ class SortCodeAllocationState(models.Model):
    
             if commit:
                 self.save()
-                return self
+            return self
     
     def _has_exhausted_block(self) -> bool:
         """
@@ -577,11 +637,52 @@ class BankAccount(models.Model):
     def bank_name(self):
         return self.sort_code.bank.name
 
+    @classmethod
+    def get_all_account_by_user_profile(cls, user_profile: UserProfile):
+
+        if not isinstance(user_profile, UserProfile):
+            raise TypeError(_("User profile is not an instance of User profile. " \
+            "Expected an instance but got type {}".format(type(user_profile).__name__)))
+        
+        return cls.objects.filter(user_profile=user_profile).order_by(
+            Case(
+                When(account_type=cls.AccountType.BASIC, then=Value(1)),
+                When(account_type=cls.AccountType.SAVINGS, then=Value(2)),
+                When(account_type=cls.AccountType.PREMIUM, then=Value(3)),
+                default=Value(99),
+                output_field=IntegerField(),
+            )
+        )
+              
     def clean(self):
         if self.pk is None and not self.sort_code:
             raise ValidationError({
                 "sort_code": "BankAccount must be created via AccountService"
             })
+    
+    @property
+    def has_met_minimum_deposit_conditions(self):
+        return self.balance >= self.sort_code.bank.minimum_opening_deposit
+    
+    @property
+    def supports_overdraft(self):
+        return self.sort_code.bank.offer_overdraft == Bank.OverDraftOptions.YES
+    
+    @property
+    def supports_loans(self):
+        return self.sort_code.bank.offer_loans == Bank.OfferLoans.YES
+    
+    @property
+    def account_last_four_digits(self):
+        if self.account_number:
+            return f"********{self.account_number[-4:]}"
+    
+    @property
+    def sortcode_last_two_digits(self):
+
+        sortcode = self.sort_code.external_sort_code
+        if sortcode:
+            return f"********{sortcode}"
         
     def save(self, *args, **kwargs):
         self.full_clean()

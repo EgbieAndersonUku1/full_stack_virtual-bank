@@ -82,6 +82,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+
 ]
 
 ROOT_URLCONF = 'src.urls'
@@ -96,6 +98,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'bank.context_processors.bank_details',
             ],
         },
     },
@@ -202,7 +205,6 @@ if DEBUG:
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 makedirs(LOG_DIR, exist_ok=True)
 
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -221,11 +223,23 @@ LOGGING = {
     # Handlers
     # -------------------------
     "handlers": {
-        "file": {
+
+        # Email log file
+        "email_file": {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": os.path.join(LOG_DIR, "emails.log"),
-            "maxBytes": 5 * 1024 * 1024,  # 5MB
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
+            "formatter": "right_indented",
+        },
+
+        # General app log file
+        "app_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_DIR, "application.log"),
+            "maxBytes": 5 * 1024 * 1024,
             "backupCount": 3,
             "formatter": "right_indented",
         },
@@ -235,23 +249,23 @@ LOGGING = {
     # Loggers
     # -------------------------
     "loggers": {
+
+        # Email-only logs
         "email_sender": {
-            "handlers": ["file"],  
+            "handlers": ["email_file"],
             "level": "DEBUG",
             "propagate": False,
         },
     },
 
     # -------------------------
-    # Root Logger (safety net)
+    # Root logger
     # -------------------------
     "root": {
-        "handlers": ["file"],
-        "level": "WARNING",
+        "handlers": ["app_file"],
+        "level": "DEBUG",
     },
 }
-
-
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL           = "login_user"
@@ -285,3 +299,13 @@ JAZZMIN_SETTINGS = {
     "login_logo_dark": None,
     "site_logo": None,
 }
+
+
+BANK_CACHE_KEY = "banks"
+BANK_CACHE_TTL = 300
+
+
+TEMP_PROFILE_IMAGE_SESSION_KEY = "temp_profile_image"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

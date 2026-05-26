@@ -6,7 +6,8 @@ from bank.models import Bank
 
 
 class AddBankForm(forms.ModelForm):
-   
+    interest_rate = forms.DecimalField(max_digits=5, decimal_places=2, min_value=0, max_value=100)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)  
 
@@ -14,16 +15,19 @@ class AddBankForm(forms.ModelForm):
             self.fields["phone_number"].widget.attrs.update({"minlength": "10", 
                                                              "maxlength": "15", 
                                                              "placeholder": "e.g. +44 7700 900000 (test number)" })
-            
+        
+        if "interest_rate" in self.fields:
             self.fields["interest_rate"].widget.attrs.update({"step": "0.01",
-                                                              "min": "0",
-                                                              "max": "100",
+                                                             
                                                              })
-            
+
+        if "monthly_deposit" in self.fields: 
             self.fields["monthly_deposit"].widget.attrs.update({"step": "0.01",
                                                               "min": "0",
                                                               "max": "100",
                                                              })
+            
+        if "minimum_opening_deposit" in self.fields:
             self.fields["minimum_opening_deposit"].widget.attrs.update({"step": "0.01",
                                                               "min": "0",
                                                               "max": "100",
@@ -35,7 +39,7 @@ class AddBankForm(forms.ModelForm):
         fields = ["name", "country", "description", "logo", "branch_name", "address_line_1",
                   "address_line_2", "post_code", "country", "interest_period", "phone_number",
                   "minimum_opening_deposit", "offer_overdraft", "offer_saving_account", "offer_loans",
-                  "monthly_deposit", "interest_rate",
+                  "monthly_deposit",
                   ]
 
     def save(self, commit=True):

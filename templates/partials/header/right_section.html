@@ -1,0 +1,17 @@
+<div class="nav-footer flex flex-end">
+
+    {% if not request.user.is_authenticated %}
+
+        {% include "partials/headers/auth_buttons.html" %}
+
+    {% else %}
+
+        {% include "partials/headers/user_balance.html" %}
+
+        {% include "partials/headers/user_menu.html" %}
+
+        {% include "partials/headers/notifications.html" %}
+
+    {% endif %}
+
+</div>

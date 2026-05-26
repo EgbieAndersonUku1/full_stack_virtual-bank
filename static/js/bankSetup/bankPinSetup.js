@@ -1,16 +1,29 @@
 import runObserver from "../animation.js";
+import { enableAutoFocusNavigation, parseCharsFromObject } from "../utils.js";
+import { parseFormData } from "../formUtils.js";
+import { logError } from "../logger.js";
+
+
 
 runObserver();
 
-const bankPinForm           = document.getElementById("bank-pin-form")
-const inputPinFieldsElements = document.querySelectorAll(".pin-number")
+const bankPinForm            = document.getElementById("bank-pin-form")
+const inputPinFieldsElements = document.querySelectorAll(".pin-number");
+const pinForm                = document.getElementById("bank-pin-form");
+const pinInputFields         = document.querySelectorAll(".pin-wrapper input");
+const hiddenFullCodeElement  = document.getElementById("pin-confirmation");
+const hiddenInputField       = document.getElementById("pin-confirmation")
+const pinErrorMsg            = document.getElementById("pin-error-msg")
 
 
 // TODO
 // Add one time check for bank form element exist before running
 
+pinInputFields[0].focus()
+enableAutoFocusNavigation(pinInputFields, true)
 
 bankPinForm.addEventListener("click", handleDelegation)
+pinForm.addEventListener("submit", handleForm);
 
 
 
@@ -173,3 +186,60 @@ function togglePinInputFieldBackgroundState(pinInputField, isActive = true) {
     }
      pinInputField.classList.remove(cssSelector);
 }
+
+
+
+
+
+function handleForm(e){
+    e.preventDefault();
+ 
+    try {
+        
+        const formData = new FormData(pinForm);
+        const EXPECTED_PIN_LENGTH = 6;
+        const parsedData = parseFormData(formData, [
+                "first_pin",
+                "second_pin",
+                "third_pin",
+                "fourth_pin",
+                "fifth_pin",
+                "six_pin"
+            ])
+
+        const pin = parseCharsFromObject(parsedData);
+                  
+        if (pin && pin.values.length === EXPECTED_PIN_LENGTH ) {
+            hiddenInputField.value = pin.values;
+            pinForm.submit()
+            return;
+        } else {
+          
+            logError("handleForm", {
+                error: "The pin is invalid",
+                expectedPinLength: EXPECTED_PIN_LENGTH,
+                receivedPinLength: pin.values.length,
+                valueReceived: pin.values
+         })
+        }
+
+    } catch (error) {
+
+        /*
+        * PIN fields are readonly by design and can only be populated
+        * through the PIN pad interface.
+        *
+        * Since readonly inputs bypass normal required validation,
+        * missing input is handled manually through the error message UI.
+        */
+         const errorMsg = error.message.split("_").join(" ");
+         logError("handleForm", {
+            error: errorMsg
+         })
+         pinErrorMsg.textContent = errorMsg
+    }
+   
+  
+    
+}
+

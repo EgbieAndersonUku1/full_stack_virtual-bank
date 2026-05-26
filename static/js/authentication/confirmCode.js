@@ -1,4 +1,6 @@
-import { enableAutoFocusNavigation, toggleSpinner } from "../utils.js";
+import { enableAutoFocusNavigation, toggleSpinner, parseCharsFromObject } from "../utils.js";
+import { parseFormData } from "../formUtils.js";
+import { warnError } from "../logger.js";
 
 const codeInputFields         = document.querySelectorAll(".code-wrapper input");
 const confirmVerificationForm = document.getElementById("verify-registration-confirmation-code-form");
@@ -19,8 +21,35 @@ function handleForm(e) {
     const DELAY_MS = 1500;
 
     if (confirmVerificationForm.checkValidity()) {
-        const code = parseCodeFromInputFields();
-        hiddenFullCodeElement.value = code;
+
+        const EXPECTED_PIN_LENGTH = 12;
+        const formData   = new FormData(confirmVerificationForm);
+        const parsedData = parseFormData(formData, [
+                'first_code',
+                'second_code',
+                'third_code',
+                'fourth_code',
+                'fifth_code',
+                'six_code',
+                'seventh_code',
+                'eighth_code',
+                'ninth_code',
+                'tenth_code',
+                'eleventh_code',
+                'twelfth_code'
+        ])
+        
+             
+        const code = parseCharsFromObject(parsedData);
+        if (!code) {
+            warnError("handleForm", {
+                error: "Code not found",
+                received: code,
+            })
+            return
+        }
+        hiddenFullCodeElement.value = code.values;
+        console.log(code.values)
 
         toggleSpinner(spinner, true)
 
@@ -32,20 +61,4 @@ function handleForm(e) {
     } else {
         confirmVerificationForm.reportValidity()
     }
-}
-
-
-function parseCodeFromInputFields() {
-   const codeInputs =  document.querySelectorAll("input[class='code-number']");
-
-   const code = [];
-
-   codeInputFields.forEach((inputField) => {
-        code.push((inputField.value))
-
-   });
-
-   return code.join("");
-   
-
 }
