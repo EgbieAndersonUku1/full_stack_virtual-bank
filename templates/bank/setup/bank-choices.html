@@ -15,68 +15,72 @@
             <p>Choose from a list of banks</p>
         </div>
 
+        {% if not banks %}
+        <p>No banks have been added yet. Create a bank to continue.</p>
+        {% else %}
+
+
         <form action="{% url 'choose_bank' %}" method="post" id="chooose-bank-form" role="form">
 
             {% csrf_token %}
+
+            <h1 class="header-7">Recommended Banks</h1>
+            <hr class="dividor mb-8">
+
             <div class="choose-bank__cards flex-grid three-column-grid">
 
                 <!-- card 1 -->
 
-                {% if not banks %}
-                     <p>No banks have been added yet. Create a bank to continue.</p>
-                {% else %}
-                    {% for bank in banks %}
-                        <div class="choose-bank__card card flex-grid two-column-20_80_grid is-selected" for="bank-atlas">
 
-                            <div class="card-head card-head--control">
-                                <input type="radio" name="chosen_bank" value="{{ bank.id }}">
-                            </div>
+                {% for bank in banks %}
+                <div class="choose-bank__card card flex-grid two-column-20_80_grid is-selected" for="bank-atlas">
 
-                            <div class="card-body flex-grid two-column-25_75_grid">
-                                <div class="card-head card-head--logo">
-                                    <img src="{% static bank.logo_image  %}" alt="{{ bank.name }}"
-                                        class="choose-bank-img-logo">
-                                </div>
-                                <div class="bank-details">
-                                    <h1 class="bank-title">{{ bank.name | title }}</h1>
-                                    <p class="mb-8 mt-8">{{ bank.description|truncatechars:100 }}</p>
-                                    <p>Interest rates <span>{{ bank.interest_rate }}%</span></p>
-                                    <p>Minimum deposit <span>
-                                        {% if bank.minimum_opening_deposit == 0 %}
-                                            None
-                                        {% else %}
-                                            £{{ bank.minimum_opening_deposit }}
-                                        {% endif %}
-                                    </span></p>
-                                                                
-                                
-                                    <p>Overdraft <span>{{ bank.offer_overdraft }} </span></p>
-                                    <p>Monthly fee <span>£{{ bank.monthly_deposit }}</span></p>
+                    <div class="card-head card-head--control">
+                        <input type="radio" name="chosen_bank" value="{{ bank.id }}">
+                    </div>
 
-                                    {% if bank.offer_saving_account %}
-                                        <p>Saving account <span>Available</span></p>
-                                    {% else %}
-                                        <p>Saving account <span>Not available</span></p>
-                                    {% endif %}
+                    <div class="card-body flex-grid two-column-25_75_grid">
+                        <div class="card-head card-head--logo">
+                            {% if bank.get_static_logo %}
 
-                                    {% if bank.offer_loans %}
-                                        <p>Loans <span>Available</span></p>
-                                    {% else %}
-                                        <p>Loans <span>Not available</span></p>
-                                    {% endif %}
-                                </div>
-                            </div>
+                            <img src="{{ bank.get_static_logo  }}" alt="{{ bank.name }}" class="choose-bank-img-logo">
+                            {% else %}
+                            <img src="{{ bank.logo.url }}" alt="{{ bank.name }}" class="choose-bank-img-logo">
+                            {% endif %}
                         </div>
+                        <div class="bank-details">
+                            <h1 class="bank-title">{{ bank.name | title }}</h1>
+                            <p class="mb-8 mt-8 bank-description">{{ bank.description|truncatechars:86 }}</p>
+                            <p>Interest rates <span>{{ bank.interest_rate_percent }}%</span></p>
+                            <p>Minimum deposit <span>
+                                    {% if bank.minimum_opening_deposit == 0 %}
+                                    None
+                                    {% else %}
+                                    £{{ bank.minimum_opening_deposit }}
+                                    {% endif %}
+                                </span></p>
 
-                    {% endfor %}
-                {% endif %}
 
-               
+                            <p>Overdraft <span>{{ bank.offer_overdraft }} </span></p>
+                            <p>Monthly fee <span>£{{ bank.monthly_deposit }}</span></p>
 
-            
-               
-              
-    
+                            {% if bank.offer_saving_account %}
+                            <p>Saving account <span>Available</span></p>
+                            {% else %}
+                            <p>Saving account <span>Not available</span></p>
+                            {% endif %}
+
+                            {% if bank.offer_loans %}
+                            <p>Loans <span>Available</span></p>
+                            {% else %}
+                            <p>Loans <span>Not available</span></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+
             </div>
 
             <div class="choose-bank__btns flex flex-space-between mt-8 fade-up">
@@ -88,6 +92,10 @@
 
             </div>
         </form>
+
+        {% endif %}
+
+
     </div>
 </section>
 

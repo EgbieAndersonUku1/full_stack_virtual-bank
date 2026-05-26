@@ -1,0 +1,47 @@
+Dear {{ first_name }} {{ last_name }},
+
+
+Welcome to {{ bank_name | title }} bank.
+
+We’re pleased to confirm that your account has been successfully opened and is now active.
+
+You can now access your account using your online banking dashboard.
+
+---
+
+ACCOUNT SUMMARY
+Account holder: {{ full_name }}
+Account number: {{ account_last_4 }}
+Sort code: {{ sort_code_masked }}
+
+Account status: Pending
+
+---
+
+NEXT STEPS
+You can now:
+• View your balance and transactions
+• Make and receive payments
+• Manage your account settings
+• Add payees and beneficiaries
+
+To get started, log in to your secure online banking area:
+{{ dashboard_url }}
+
+---
+
+IMPORTANT INFORMATION
+For your security:
+• We will never ask for your full account number, password, or security codes via email.
+• Always ensure you are logging in through our official website or mobile app.
+• If you did not request this account, please contact us immediately.
+
+---
+
+NEED HELP?
+If you have any questions, our support team is available 24/7.
+
+Thank you for choosing Your Bank.
+
+Kind regards,  
+Your Bank Customer Services

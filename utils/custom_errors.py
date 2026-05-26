@@ -18,3 +18,19 @@ class UnsupportedFormatError(Exception):
 
 class IncorrectImageDimensionError(Exception):
     pass
+
+
+class PredifinedBanksCreationError(Exception):
+    pass
+
+
+class MissingBankInformationError(Exception):
+    pass
+
+
+class OnBoardingFailureError(Exception):
+    pass
+
+
+class ProfileNotFoundError(Exception):
+    pass

@@ -1,11 +1,14 @@
 import fetchData from "../fetch.js"
 import { warnError } from "../logger.js"
-import { toggleElement } from "../utils.js";
+import { toggleElement, toggleSpinner } from "../utils.js";
 import { getCsrfToken } from "../security/csrf.js";
+
 
 const profileImgInput = document.getElementById("profile-pic")
 const profileImgPreview = document.getElementById("profile-bank-placeholder-img");
 const savePreviewButton = document.getElementById("profile-preview-btn");
+const spinner           = document.getElementById("create-profile-spinner");
+
 
 
 const state = {
@@ -26,7 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 
-savePreviewButton.addEventListener("click", handleSavePreviewButtonClick)
+savePreviewButton.addEventListener("click", handleSavePreviewButtonClick);
+profileImgInput.addEventListener("change", handleProfileImageChange)
 
 
 /**
@@ -35,15 +39,26 @@ savePreviewButton.addEventListener("click", handleSavePreviewButtonClick)
  */
 profileImgInput.addEventListener("change", (event) => {
 
-    const file = getSelectedImageFile(event)
+    const DELAY_MS = 1000;
 
-    if (!file) {
-        return
-    }
+    toggleSpinner(spinner, true);
 
-    setImagePreview(profileImgPreview, file, (previewUrl) => {
-        setCropper(profileImgPreview, previewUrl)
-    })
+    setTimeout(() => {
+         const file = getSelectedImageFile(event)
+
+        if (!file) {
+            return
+        }
+
+        setImagePreview(profileImgPreview, file, (previewUrl) => {
+            setCropper(profileImgPreview, previewUrl)
+        })
+
+        toggleSpinner(spinner, false);
+
+    }, DELAY_MS);
+   
+
 })
 
 
@@ -184,7 +199,6 @@ function setCropper(imgElement, objectUrl) {
  */
 async function getCropFile() {
 
-    const formData = new FormData();
     const canvas = state.cropper.getCroppedCanvas();
 
     const blob = await new Promise((resolve) => {
@@ -297,5 +311,31 @@ async function handleSavePreviewButtonClick(e) {
     formData.append("image", croppedFile);
   
     await handleFetchAndCleanUp(formData)
+
+}
+
+
+
+function handleProfileImageChange(e) {
+  const DELAY_MS = 1000;
+
+    toggleSpinner(spinner, true);
+
+    console.log("clicked");
+
+    setTimeout(() => {
+         const file = getSelectedImageFile(event)
+
+        if (!file) {
+            return
+        }
+
+        setImagePreview(profileImgPreview, file, (previewUrl) => {
+            setCropper(profileImgPreview, previewUrl)
+        })
+
+        toggleSpinner(spinner, false);
+
+    }, DELAY_MS);
 
 }

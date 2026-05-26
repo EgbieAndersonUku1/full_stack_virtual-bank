@@ -1,22 +1,58 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
+from bank.utils import get_account_context
 from utils.decorators import is_email_verified, go_to_staff_page
+from bank.services import BankAccountCacheService
+from user_profile.services import ProfileCacheService
+from setup.decorators import onboarding_required
+
 
 # Create your views here.
 
 @go_to_staff_page
 @is_email_verified
 def bank_home(request):
-    return render(request, "home/bank/virtual-bank.html")
 
+    uncompleted_on_boarding_step = request.session.get("next_step")
+    
+    context = {
+        "on_boarding_step": uncompleted_on_boarding_step
+    }
+    return render(request, "home/bank/virtual-bank.html", context=context)
+
+
+@onboarding_required
 @go_to_staff_page
 @is_email_verified
 @login_required
 def dashboard(request):
-    return render(request, "home/dashboard/dashboard.html")
+
+    bank_account = BankAccountCacheService.get_accounts(user = request.user)
+    context = {
+        "number_of_accounts": 0,
+        "current_account": None,
+        "saving_account": None,
+    }
+
+    if bank_account:
+      
+        context.update(get_account_context(bank_account))
+              
+        bank                           = context["current_account"].sort_code.bank
+        context["minimum_deposit"]     = bank.minimum_opening_deposit
+        context["monthly_deposit"]     = bank.monthly_deposit
+        context["met_conditions"]      = context["current_account"].has_met_minimum_deposit_conditions
+        context["offer_loans"]         = bank.offer_loans
+        context["has_overdraft"]       = bank.offer_overdraft
+        context["interest_rates"]      = bank.interest_rate_percent
+        context["has_saving_account"]  = bank.offer_saving_account
 
 
+    return render(request, "home/dashboard/dashboard.html", context=context)
+
+
+@onboarding_required
 @go_to_staff_page
 @is_email_verified
 @login_required
@@ -24,19 +60,33 @@ def money_transfer(request):
     return render(request, "home/dashboard/money_transfer.html")
 
 
+@onboarding_required
 @go_to_staff_page
 @is_email_verified
 @login_required
 def manage_credit_cards(request):
     return render(request, "home/dashboard/manage_cards.html")
 
-
+@onboarding_required
 @is_email_verified
 @login_required
 def manage_admin(request):
     return render(request, "home/dashboard/admin/system_tools.html")
 
 
+@onboarding_required
+@is_email_verified
 @login_required
 def manage_settings(request):
-    return render(request,  "home/dashboard/settings.html")
+
+    user         = request.user
+    profile      = ProfileCacheService.get_user_profile(user=user)
+    bank_account = BankAccountCacheService.get_accounts(user = request.user)
+   
+    context = {
+        "profile": profile,
+
+    }
+    context.update(get_account_context(bank_account))
+   
+    return render(request,  "home/dashboard/settings.html", context=context)

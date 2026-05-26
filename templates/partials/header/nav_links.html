@@ -1,0 +1,17 @@
+<div class="body flex-grid three-column-grid">
+
+    <a href="{% url 'bank_home' %}" class="nav-link light-bold capitalise" id="nav-home">
+        Home
+    </a>
+
+    {% if request.resolver_match.url_name == "bank_home" %}
+        <a href="#features" class="nav-link light-bold capitalise" id="nav-features">
+            Features
+        </a>
+
+        <a href="#" class="nav-link light-bold capitalise" id="nav-wallet">
+            Wallet Home
+        </a>
+    {% endif %}
+
+</div>

@@ -1,0 +1,23 @@
+<li class="flex-grid two-column-20_80_grid">
+
+    <span>
+        <img src="{{ request.user.profile.profile_img }}" class="virtual-bank-nav-profile-img">
+    </span>
+
+    <span class="flex-grid">
+
+        {% if request.user.is_superuser %}
+            <span class="bold">{{ request.user.username|truncatechars:8|title }} (Superuser)</span>
+        {% elif request.user.is_admin %}
+            <span class="bold">{{ request.user.username|truncatechars:8|title }} (Admin)</span>
+        {% elif request.user.is_staff %}
+            <span class="bold">{{ request.user.username|truncatechars:8|title }} (Staff)</span>
+        {% else %}
+            <span class="bold">{{ request.user.username|truncatechars:8|title }}</span>
+        {% endif %}
+
+        <span class="lower-case">{{ request.user.email|lower }}</span>
+
+    </span>
+
+</li>

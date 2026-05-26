@@ -7,6 +7,18 @@
 {% block title %}Home page{% endblock title %}
 {% block body %}
 
+       
+        {% if request.user.is_authenticated and not request.user.profile  %}
+        <div class="warning center">
+                <p>You haven’t completed your onboarding yet. Click below to continue where you left off.</p>
+
+                 {% if on_boarding_step %}
+                    <a href="{% url on_boarding_step %}" id="on-boarding-step-link">Go to onboarding </a>
+                 {% else %}
+                    <a href="{% url 'setup_welcome' %}" id="on-boarding-step-link">Go to onboarding </a>
+                {% endif %}
+        </div>
+        {% endif %}
         
 
         <!-- call to action section -->

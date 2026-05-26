@@ -7,6 +7,8 @@ from django.contrib.auth.hashers import make_password, check_password, identify_
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from user_profile.models import UserProfile
+
 
 User = get_user_model()
 
@@ -17,6 +19,7 @@ class Pin(models.Model):
 
     pin           = models.CharField(max_length=128)
     user          = models.OneToOneField(User, on_delete=models.CASCADE, related_name="pin")
+    user_profile  = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name="pin", blank=True, null=True)
     created_on    = models.DateTimeField(auto_now_add=True)
     last_updated  = models.DateTimeField(auto_now=True)
     is_active     = models.BooleanField(default=True)
@@ -42,7 +45,7 @@ class Pin(models.Model):
             safe lookups in service layers or views.
         """
         if not isinstance(user, User):
-            raise TypeError(_(f"Expected a user object but got User with type ({type(User).__name__})"))
+            raise TypeError(_(f"Expected a user object but got User with type ({type(user).__name__})"))
         
         return cls.objects.filter(user=user).first()
        
@@ -109,6 +112,6 @@ class Pin(models.Model):
         if self.pin and not self.is_hashed(self.pin):
             raise ValidationError(_("The pin must not be stored in plain text. Set pin using set_pin() method"))
         
-        super(self, *args, **kwargs)
+        super().save(*args, **kwargs)
 
 

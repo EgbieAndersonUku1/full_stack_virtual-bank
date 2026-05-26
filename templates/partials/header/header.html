@@ -5,33 +5,31 @@
 
     <nav class="navbar">
 
+        <!-- The bank logo -->
         <div class="flex-grid three-column-grid">
+
 
             <div class="head">
                 <a href="/" class="nav-link pt-8 bold" id="virtual-bank-logo">
-                    <img src="{% static "/images/virtual-bank-logo.png" %}" alt="Virtual Bank home" class="logo" />
+                    <img src="{% static " /images/virtual-bank-logo.png" %}" alt="Virtual Bank home" class="logo" />
                 </a>
             </div>
 
 
             <div class="body flex-grid three-column-grid">
 
-                <a href="{% url 'bank_home' %}" class="nav-link light-bold capitalise" id="nav-home" aria-current="page">
-                    Home
-                </a>
+                <a href="{% url 'bank_home' %}" class="nav-link light-bold capitalise" id="nav-home" aria-current="page"> Home </a>
 
                 {% if request.resolver_match.url_name == "bank_home" %}
-                <a href="#features" class="nav-link light-bold capitalise" id="nav-features">
-                    Features
-                </a>
+                    <a href="#features" class="nav-link light-bold capitalise" id="nav-features">
+                        Features
+                    </a>
 
-                 <a href="#" class="nav-link light-bold capitalise" id="nav-wallet">
-                    Wallet Home
-                </a>
+                    <a href="#" class="nav-link light-bold capitalise" id="nav-wallet">
+                        Wallet Home
+                    </a>
                 {% endif %}
-                
-            
-               
+
             </div>
 
 
@@ -52,17 +50,31 @@
                     </a>
                 </div>
 
-                {% else  %}
+                {% else %}
 
 
                 {% if not request.user.is_superuser and not request.user.is_staff %}
+
                 <div class="virtual-bank_container__amount">
-                    <span class="bold"><span class="currency">£</span>1,500</span>
+
+                    {% if bank_balance != None %}
+                         <span class="bold"><span class="currency">£</span>{{ bank_balance }}</span>
+                    {% endif %}
+
                 </div>
+
                 {% endif %}
 
+
                 <div class="virtual-bank-nav-profile" id="virtual-bank-nav-profile">
-                    <img src="/static/images/icons/profile.png" alt="" class="virtual-bank-nav-profile-img">
+
+                    {% if request.user.profile %}
+                    <img src="{{ request.user.profile.profile_img }}" alt="profile img"
+                        class="virtual-bank-nav-profile-img">
+                    {% else %}
+                    <img src="{% static '/images/icons/profile.png' %}" alt="profile img"
+                        class="virtual-bank-nav-profile-img">
+                    {% endif %}
 
                     <div class="virtual-bank-container__dropdown-menu dropdown-menu"
                         id="virtual-bank-container__dropdown-menu">
@@ -70,24 +82,25 @@
                         <ul>
                             <li class="flex-grid two-column-20_80_grid">
                                 <span>
-                                    <img src="/static/images/icons/profile.png" alt=""
+                                      <img src="{{ request.user.profile.profile_img }}" alt="profile img" 
                                         class="virtual-bank-nav-profile-img">
                                 </span>
 
                                 <span class="flex-grid">
                                     {% if request.user.is_superuser %}
-                                    <span class="bold">{{ request.user.username|truncatechars:8|title }} (Superuser)</span>
+                                    <span class="bold">{{ request.user.username|truncatechars:8|title }}
+                                        (Superuser)</span>
                                     {% elif request.user.is_admin %}
-                                      <span class="bold">{{ request.user.username|truncatechars:8|title }} (Admin)</span>
+                                    <span class="bold">{{ request.user.username|truncatechars:8|title }} (Admin)</span>
                                     {% elif request.user.is_staff %}
-                                      <span class="bold">{{ request.user.username|truncatechars:8|title }} (Staff)</span>
+                                    <span class="bold">{{ request.user.username|truncatechars:8|title }} (Staff)</span>
                                     {% else %}
-                                        <span class="bold">{{ request.user.username|truncatechars:8|title }} </span>
+                                    <span class="bold">{{ request.user.username|truncatechars:8|title }} </span>
                                     {% endif %}
                                     <span class="lower-case">{{ request.user.email|lower }}</span>
-                                    
+
                                 </span>
-        
+
                             </li>
 
 
@@ -98,9 +111,9 @@
                                 </a>
                             </li>
 
-                             <li>
+                            <li>
                                 <a href="#">
-                                     <span><i class="fa-solid fa-wallet"></i></span><span>Wallet home</span>
+                                    <span><i class="fa-solid fa-wallet"></i></span><span>Wallet home</span>
                                 </a>
                             </li>
 
@@ -114,7 +127,8 @@
                             {% endif %}
 
                             <li>
-                                <a href="#security"  id="navbar-security-dropdown" data-url="{% url 'manage_settings' %}">
+                                <a href="#security" id="navbar-security-dropdown"
+                                    data-url="{% url 'manage_settings' %}">
                                     <span><i class="fa-solid fa-shield-halved"></i></span><span>Security</span>
 
                                 </a>
@@ -132,7 +146,7 @@
 
                                 <a href="{% url 'logout_user' %}" class="nav-link center" id="logout-btn">
                                     <span><i class="fa-solid fa-right-from-bracket"></i></span>
-                                        <span class="deactivate-text">Logout</span>
+                                    <span class="deactivate-text">Logout</span>
                                 </a>
                             </li>
 
@@ -166,4 +180,3 @@
 
 
 </header>
-

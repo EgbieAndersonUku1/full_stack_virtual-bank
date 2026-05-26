@@ -5,15 +5,20 @@ import logging
 from PIL import Image, UnidentifiedImageError, ImageFile
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 from types import SimpleNamespace
 from django.http import HttpRequest
 from pathlib import PurePosixPath
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from utils.custom_errors import TempImageStorageError, LargeFileImageError, UnsupportedFormatError, IncorrectImageDimensionError
+from utils.custom_errors import (TempImageStorageError, 
+                                 LargeFileImageError,
+                                   UnsupportedFormatError, 
+                                   IncorrectImageDimensionError)
 
 
-TEMP_PROFILE_IMAGE_SESSION_KEY = "temp_profile_image"
+cache_key = settings.TEMP_PROFILE_IMAGE_SESSION_KEY 
+
 ImageFile.LOAD_TRUNCATED_IMAGES = False
 
 logger = logging.getLogger(__name__)
@@ -43,7 +48,7 @@ class SecureImageValidator:
     @classmethod
     def _validate_size(cls, file):
         if file.size > cls.MAX_FILE_SIZE:
-            raise ValueError("Image file too large")
+            raise LargeFileImageError(_("Image file too large"))
 
     @classmethod
     def _open_image(cls, file):
@@ -110,12 +115,14 @@ class TempImageStorageService:
     def store_temp_image(cls, 
                          image: UploadedFile, 
                          request: HttpRequest,
-                         file_path: str = "media/temp/",
+                         cache_key: str,
+                         file_path: str = "profile_previews/",
                         ) -> SimpleNamespace:
         
         buffer = io.BytesIO()
     
         filename = cls._create_filename_from_file_path(file_path)
+    
 
         try:
             image = SecureImageValidator.validate(image)
@@ -130,15 +137,15 @@ class TempImageStorageService:
 
             raise TempImageStorageError( _("Failed to store temporary image")) from exc
 
-        cls._delete_previous_temp_image(request)
-        request.session[TEMP_PROFILE_IMAGE_SESSION_KEY] = path
+        cls._delete_previous_temp_image(request, cache_key)
+        request.session[cache_key] = path[0] if path and isinstance(path, tuple) else path
 
         return SimpleNamespace(temp_path = path, temp_url = temp_url)
          
     @classmethod
-    def _delete_previous_temp_image(cls, request: HttpRequest):
+    def _delete_previous_temp_image(cls, request: HttpRequest, cache_key: str):
         
-        old_temp_image = request.session.get(TEMP_PROFILE_IMAGE_SESSION_KEY)
+        old_temp_image = request.session.get(cache_key)
 
         if old_temp_image:
             default_storage.delete(old_temp_image)

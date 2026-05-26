@@ -13,12 +13,13 @@
 
         <!-- Page header -->
         <div class="create-profile mb-24">
+              {% include "partials/messages/messages.html" %}
             <small>Step 4 of 5</small>
         </div>
 
         <div id="profile-details" class="profile-details">
 
-            <form action="" method="post" role="form" enctype="multipart/form-data">
+            <form action="{% url 'create_profile' %}" method="post" role="form" enctype="multipart/form-data">
 
                 {% csrf_token %}
 
@@ -38,12 +39,14 @@
                         <h2 id="profile-picture-heading">Profile Picture</h2>
 
                         <p class="text-muted">
-                            Upload a profile image so other users can recognise you.
+                            Upload a profile image to personalise your account
                         </p>
                     </div>
 
-                    <div class="profile-pic center">
+                    <div class="profile-pic center" id="profile-pic-preview">
+                        <div class="spinner center" id="create-profile-spinner"></div>
                         <div id="profile-img-preview">
+                         
                             <img src="{% static 'images/icons/profile.png' %}" alt="" srcset="" id="profile-bank-placeholder-img">
 
                         </div>
@@ -59,9 +62,10 @@
                         </label>
 
                         {{ form.profile_pic }}
+                        {{ form.profile_pic.errors }}
 
                         <small id="profile-pic-help">
-                            Accepted formats: JPG, PNG, SVG.
+                            Accepted formats: JPG, PNG
                         </small>
 
                     </div>
@@ -93,6 +97,7 @@
                             </label>
 
                             {{ form.first_name }}
+                            {{ form.first_name.errors }}
 
                         </div>
 
@@ -103,6 +108,8 @@
                             </label>
 
                             {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                            
 
                         </div>
 
@@ -113,6 +120,7 @@
                             </label>
 
                             {{ form.middle_name }}
+                            {{ form.middle_name.errors }}
 
                         </div>
 
@@ -123,6 +131,7 @@
                             </label>
 
                             {{ form.gender }}
+                            {{ form.gender.errors }}
 
                             <small id="gender-help">
                                 Select your gender.
@@ -133,11 +142,11 @@
                         <div class="form-group flex-grid">
 
                             <label for="bio">
-                                Bio
+                                Bio*
                             </label>
 
                             {{ form.bio }}
-
+                             {{ form.bio.errors }}
                             <p class="num-of-characters-remaining text-align-right character-usage-message">
                                 Minimum characters to use: 50
                             </p>
@@ -187,6 +196,8 @@
                             </label>
 
                             {{ form.phone_number }}
+                            {{ form.phone_number.errors }}
+
 
                         </div>
 
@@ -220,6 +231,7 @@
                             </label>
 
                             {{ form.address_line_1 }}
+                            {{ form.address_line_1.errors }}
 
                         </div>
 
@@ -230,6 +242,7 @@
                             </label>
 
                             {{ form.address_line_2 }}
+                            {{ form.address_line_2.errors }}
 
                         </div>
 
@@ -240,6 +253,7 @@
                             </label>
 
                             {{ form.city }}
+                            {{ form.city.errors }}
 
                         </div>
 
@@ -250,6 +264,7 @@
                             </label>
 
                             {{ form.postcode }}
+                            {{ form.postcode.errors }}
 
                         </div>
 
@@ -260,6 +275,7 @@
                             </label>
 
                             {{ form.country }}
+                            {{ form.country.errors }}
 
                         </div>
 
@@ -267,6 +283,18 @@
 
                 </section>
 
+                <div class="flex-grid two-column-grid create-profile">
+
+                    <a href="{% url 'choose_pin' %}">
+                        <button class="buttons btn-large blue-bg white-text capitalize" type="button">Back</button>
+                    </a>
+                   
+                    <a href="{% url 'bank_confirmation' %}">
+                        <button type="submit" class="btn-large green-bg white-text capitalize">Continue</button>
+                    </a>
+                  
+                </div>
+               
             </form>
 
         </div>

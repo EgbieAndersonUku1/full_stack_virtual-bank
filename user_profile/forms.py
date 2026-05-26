@@ -113,16 +113,4 @@ class UserProfileForm(forms.ModelForm):
             "required": True,
         })
 
-
-    def clean_phone_number(self):
-
-        cleaned_phone = self.cleaned_data.get("phone_number")
-
-        if not cleaned_phone:
-            raise forms.ValidationError(_("Expected a phone number got None"))
-        
-        if not cleaned_phone.is_digit():
-             raise forms.ValidationError(_("The phone number must contain only digits"))
-
-        return cleaned_phone        
-
+   

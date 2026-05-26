@@ -82,6 +82,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+
 ]
 
 ROOT_URLCONF = 'src.urls'
@@ -96,6 +98,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'bank.context_processors.bank_details',
             ],
         },
     },
@@ -301,6 +304,8 @@ JAZZMIN_SETTINGS = {
 BANK_CACHE_KEY = "banks"
 BANK_CACHE_TTL = 300
 
+
+TEMP_PROFILE_IMAGE_SESSION_KEY = "temp_profile_image"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

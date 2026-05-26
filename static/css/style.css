@@ -348,6 +348,9 @@ img:hover {
     font-weight: 500;
 }
 
+.lighter-bold {
+    font-weight: 400;
+}
 
 /* fonts sizes */
 .font-lg {
@@ -709,6 +712,35 @@ header {
 
 .call-to-action__button {
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+
+
+/* button outline */
+
+.red-outline {
+    border: 1px solid var(--red);
+    color: var(--red);
+}
+
+
+.green-outline {
+  border: 1px solid var(--green-600);
+  color: var(--green-600);
+}
+
+.blue-outline {
+ border: 1px solid var(--blue-600);
+ color: var(--blue-600);
+}
+
+
+.green-outline,
+.blue-outline,
+.red-outline {
+    background: white;
+    font-weight: bold;
+ 
 }
 
 
@@ -1733,9 +1765,10 @@ take up 50 to left and 50 up
 
 }
 
+/* The bank card choices - controls the logo */
 .card-head--logo {
     position: relative;
-    height: 130px;
+    height: 200px;
     width: 200px;
 }
 
@@ -1743,8 +1776,13 @@ take up 50 to left and 50 up
     position: absolute;
     height: 100%;
     width: 100%;
-    transform: translate(-50%, 0)
+    transform: translate(-50%, 0);
+    object-fit: contain;
 }
+
+/* end of control */
+
+
 
 @media (prefers-reduced-motion: reduce) {
     .choose-bank__card {
@@ -2218,6 +2256,7 @@ time {
 .notification-dashboard-img,
 .virtual-bank-nav-profile-img {
     height: 30px;
+    border-radius: 50%;
 }
 
 .dashboard-notification-bell-img {
@@ -4163,6 +4202,8 @@ clicks the button
     display: none;
 }
 
+
+#create-profile-spinner.show,
 #add-pin__spinner.show,
 #add-recipient__spinner.show {
     display: block;
@@ -4367,9 +4408,6 @@ clicks the button
 }
 
 
-.profile-img {
-    height: 100px;
-}
 
 
 .account-settings__container {
@@ -4386,6 +4424,19 @@ clicks the button
     background: white;
 }
 
+
+.profile-img-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 
 .profile-stat-container  {
@@ -4836,6 +4887,10 @@ clicks the button
 
 
  /* profile creation */
+ 
+ #profile-pic-preview {
+    position: relative;
+ }
 
  #profile-details {
     width: 40%;
@@ -4889,4 +4944,153 @@ clicks the button
 
 #profile-preview-btn.show {
     display: block;
+}
+
+
+
+
+/* Setting bank account for settings.py */
+
+ .setting-account-card {
+    background: white;
+    padding: var(--space-24);
+    box-shadow: var(--box-shadow-primary);
+    border-radius: 16px;
+  
+ }
+
+ .setting-account-card__bank-logo {
+    position: relative;
+    height: 100px;
+    width: 100px;
+ }
+
+ .setting-account-card__bank-logo img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+   /* object-fit: contain; */
+ }
+
+ 
+ 
+ .bank-account-details .group__account-name,
+ .bank-account-details .group__account-status {
+    font-weight: 600;
+  
+ }
+
+ .bank-account-details .group__account-status {
+    font-size: 0.8rem;
+ }
+
+ .bank-account-details .group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) 0;
+}
+
+.bank-account-details .group__label {
+    display: flex;
+    align-items: center;
+    gap: 6px; 
+    opacity: 0.8;
+}
+
+.bank-account-details .group__value {
+    font-weight: 600;
+}
+
+
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* variants */
+.badge--primary {
+    background: #e6f4ea;
+    color: #1e7e34;
+}
+
+.badge--secondary {
+    background: #eef2ff;
+    color: #3730a3;
+}
+
+
+
+/* last card */
+.external-bank__container .card {
+   padding: var(--space-24);
+}
+
+.external-bank__container .card .head {
+    position: relative;
+    height: 150px;
+    width: 150px;
+    border: 2px solid lavender;
+}
+
+.external-bank__container .card .head img {
+   position: absolute;
+   height: 100%;
+   width: 100%;
+}
+
+
+
+.danger-outline {
+    border-radius: 0;
+    border: 4px solid lavender;
+    background: white;
+}
+
+
+.bank-info h1 {
+    font-size: 1rem;
+}
+
+
+
+/* On boarding step link */
+#on-boarding-step-link {
+    position: relative;
+    z-index: 100000;
+}
+
+.action-settings-btn {
+    padding: var(--space-8);
+    margin-right: var(--space-4);
+    border-radius: 0;
+}
+
+
+.bank-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+
+
+/* the profile spinner */
+
+#create-profile-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 100000000;
+    display: none;
 }

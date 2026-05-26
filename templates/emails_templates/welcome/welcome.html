@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Your Bank</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:30px 0;">
+    <tr>
+      <td align="center">
+
+        <!-- Container -->
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:8px; overflow:hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#0b1f3a; padding:20px; text-align:center;">
+              <h1 style="color:#ffffff; margin:0; font-size:20px;">Your Bank</h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:30px; color:#333333;">
+
+              <p style="font-size:16px; margin:0 0 20px 0;">
+                Dear {{ first_name }} {{ last_name }},
+              </p>
+
+              <p style="font-size:16px; margin:0 0 20px 0;">
+                Welcome to {{ bank_name | title }} bank. Your account has been successfully opened and is now active.
+              </p>
+
+              <p style="font-size:16px; margin:0 0 25px 0;">
+                You can now access your secure online banking dashboard to manage your account.
+              </p>
+
+              <!-- Account Summary Box -->
+              <table width="100%" cellpadding="10" cellspacing="0" style="border:1px solid #e0e0e0; border-radius:6px; margin-bottom:25px;">
+                <tr>
+                  <td style="font-size:14px; color:#555;">
+                    <strong>Account Summary</strong><br><br>
+                    Account Holder: {{ full_name }}<br>
+                    Account Number: {{ account_last_4 }}<br>
+                    Sort Code: {{ sort_code_masked }}<br>
+                    Status: Pending
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Next Steps -->
+              <p style="font-size:16px; margin:0 0 10px 0;"><strong>What you can do now:</strong></p>
+
+              <ul style="font-size:15px; color:#333333; margin:0 0 25px 20px; padding:0;">
+                <li>View your balance and transactions</li>
+                <li>Make and receive payments</li>
+                <li>Manage account settings</li>
+                <li>Add payees and beneficiaries</li>
+              </ul>
+
+              <!-- CTA Button -->
+              <div style="text-align:center; margin:30px 0;">
+                <a href="{{ dashboard_url }}"
+                   style="background-color:#0b1f3a; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:5px; font-size:16px; display:inline-block;">
+                  Go to Online Banking
+                </a>
+              </div>
+
+              <!-- Security Notice -->
+              <div style="background:#f1f3f5; padding:15px; border-radius:6px; font-size:13px; color:#555; margin-bottom:20px;">
+                <strong>Security Information</strong><br>
+                • We will never ask for your full account details or passwords via email.<br>
+                • Always ensure you are logging in through our official website.<br>
+                • If you did not create this account, please contact support immediately.
+              </div>
+
+              <p style="font-size:14px; color:#555;">
+                If you have any questions, our support team is available 24/7.
+              </p>
+
+              <p style="font-size:14px; margin-top:30px;">
+                Kind regards,<br>
+                <strong>Your Bank Customer Services</strong>
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f4f6f8; padding:15px; text-align:center; font-size:12px; color:#777;">
+              © {{ current_year }} Your Bank. All rights reserved.
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

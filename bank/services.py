@@ -1,7 +1,11 @@
 from __future__ import annotations
+
+import logging
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db.models.query import QuerySet
 
 from bank.models import (SortCodeRangePool,
                          SortCodeAllocationStateLog,
@@ -11,8 +15,15 @@ from bank.models import (SortCodeRangePool,
                           SortCodeAllocatorLastRecordLookup,
                           SortCode)
 from user_profile.models import UserProfile
+from user_profile.services import ProfileCacheService
+from utils.custom_errors import ProfileNotFoundError
+from utils.safe_cache import get_cache_with_retry, set_cache_with_retry, get_cache_or_set
 from utils.security.generator import generate_secure_code
 
+
+User = get_user_model()
+
+logger = logging.Logger(__name__)
 
 
 class BankProvisioningService:
@@ -76,39 +87,71 @@ class BankProvisioningService:
         consistency and integrity of the banking system.
     """
     @classmethod
-    def _create_bank_instance(cls, bank_data: dict) -> Bank:
-        name = bank_data.get("name")
+    def _create_bank_instance(cls, bank_data: dict, source: Bank.Source) -> Bank:
+        name          = bank_data.get("name")
+        interest_rate = bank_data.pop("interest_rate")
         bank = Bank(
                 **bank_data,
                  bank_code = name[0:2] + generate_secure_code(),
+                 interest_rate_bps=int(interest_rate * 1000),
+                 source=source
             )
+        
         bank.save()
         return bank
     
     @staticmethod
-    def create_bank(bank_data:dict) -> Bank:
+    def create_bank(bank_data:dict, source: Bank.Source = Bank.Source.ADMIN) -> Bank:
         """
         Creates and fully provisions a new Bank instance.
 
         This method performs the complete bank onboarding workflow:
 
-        1. Creates the Bank entity
+        1. Creates the Bank entity with a defined source type
+        - The `source` field determines whether the bank is system-seeded
+            (e.g. created via management command) or admin-created
 
-        And allocations a bunch of sort codes it can use
-       
+        2. Allocates or reuses a sort code block for the bank
+        3. Assigns a sort code range and ensures uniqueness
+        4. Logs allocation metadata for auditing and traceability
+
         The entire operation is executed within a database transaction to ensure
         atomicity. If any step fails, no partial bank provisioning is persisted.
 
+        Args:
+            bank_data (dict):
+                Dictionary containing validated bank configuration data.
+
+            source (Bank.Source):
+                Defines the origin of the bank instance.
+                Examples:
+                    - Bank.Source.SEED → system-defined seeded bank
+                    - Bank.Source.ADMIN → manually created via admin/add bank interface 
+
         Returns:
-            Bank: The fully provisioned bank instance ready for use.
+            Bank:
+                The fully provisioned Bank instance ready for use.
 
         Raises:
-            ValueError: If input validation fails or no sort code range can be allocated.
+            ValueError:
+                - If bank_data is not a dictionary.
+                - If no sort code range can be allocated or provisioning fails.
+
+        Important:
+            This service is the ONLY supported way to create Bank instances.
+
+            Direct creation via `Bank.objects.create()` is discouraged because it bypasses:
+            - sort code allocation logic
+            - reuse of available sort code pools
+            - allocation state tracking
+            - audit logging of provisioning decisions
+
+            The `source` field is the authoritative indicator of where a bank originated
+            and must be set at creation time.
         """
         if not isinstance(bank_data, dict):
             raise ValueError(_(f"The bank data must be a dictionary. Expected a dict got type {type(bank_data).__name__}"))
-        
-      
+         
         reassigned = False
         msg        = None
 
@@ -119,7 +162,7 @@ class BankProvisioningService:
                     defaults={"block_size": settings.SORT_CODE_ALLOCATION_BLOCK},
             )
 
-            bank = BankProvisioningService._create_bank_instance(bank_data)
+            bank = BankProvisioningService._create_bank_instance(bank_data, source)
 
             sortcode_block = SortCodeRangePool.get_available()
 
@@ -263,9 +306,89 @@ class AccountService:
                 account_number=allocation_sort_code_block.account_number,
                 account_type=account_type,
             )
-           
+
+          
             if user_profile:
                 bank_account.user_profile = user_profile
             
             bank_account.save()
             return bank_account   
+
+
+
+
+def get_banks_with_cache_fallback(key: str):
+    """
+    Retrieve all banks using a cache-first strategy.
+
+    This function implements a safe retrieval pattern for bank data:
+
+    1. Attempt to fetch banks from cache.
+    2. If cache is empty or unavailable, fallback to the database.
+    3. If no banks exist in either cache or database, raise an error.
+
+    This ensures that bank data is always served efficiently while
+    maintaining a reliable fallback mechanism for data integrity.
+
+    Returns:
+        list | QuerySet: Collection of Bank instances.
+
+    Raises:
+        PredifinedBanksCreationError: If no bank data is available
+        in both cache and database.
+    """
+    banks = get_cache_with_retry(key)
+   
+    if banks is None:
+        banks = Bank.get_all_banks()
+    
+    if banks is None:
+        return None
+        
+    set_cache_with_retry(key, value=banks)
+    return banks
+
+
+
+
+class BankAccountCacheService:
+
+    CACHE_TIMEOUT = 300
+
+    @classmethod
+    def get_accounts(cls, user: User) -> QuerySet["BankAccount"]:
+        
+        profile = ProfileCacheService.get_user_profile(user=user)
+
+        if not profile:
+
+            logger.debug("The user profile couldn't be located for the BankAccountCache service method ")
+            raise ProfileNotFoundError(_("The profile for the user wasn't found"))
+        
+        bank_account = get_cache_or_set(key=f"bank-account-{profile.user.id}",
+                         value_or_func=lambda:BankAccount.get_all_account_by_user_profile(profile),
+                         ttl=cls.CACHE_TIMEOUT
+                         )
+        return bank_account
+        
+    @classmethod
+    def get_saving_account(cls, user: User) -> BankAccount | None:
+        
+        bank_accounts = cls.get_accounts(user)
+
+        if bank_accounts is None:
+            return
+
+        return bank_accounts.filter(account_type=BankAccount.AccountType.SAVINGS).first()
+             
+    @classmethod
+    def get_current_account(cls, user: User) -> BankAccount | None:
+        
+        bank_accounts = cls.get_accounts(user)
+
+        if bank_accounts is None:
+            return
+
+        return bank_accounts.filter(account_type=BankAccount.AccountType.BASIC).first()
+
+

@@ -4,9 +4,8 @@ from decimal import Decimal
 
 from django.conf import settings
 
-from utils.safe_cache import set_cache_with_retry
+from utils.safe_cache import set_cache_with_retry, get_cache_with_retry
 from bank.models import Bank
-
 BANK_SEED_DATA = [
     {
         "name": "Atlas Aurora National Bank",
@@ -18,10 +17,11 @@ BANK_SEED_DATA = [
         "address_line_2": "Westminster",
         "post_code": "SW1A 1AA",
         "interest_period": "MONTHLY",
+        "interest_rate": Decimal("0.07"),
         "phone_number": "+44 20 7946 0123",
         "minimum_opening_deposit": Decimal("0.00"),
         "offer_overdraft": "Yes",
-         "offer_loans": "No",
+        "offer_loans": "No",
         "offer_saving_account": "Yes",
         "monthly_deposit": Decimal("0.00"),
     },
@@ -35,11 +35,12 @@ BANK_SEED_DATA = [
         "address_line_2": "City Centre",
         "post_code": "M3 2QG",
         "interest_period": "MONTHLY",
+        "interest_rate": Decimal("0.04"),
         "phone_number": "+44 161 555 0199",
         "minimum_opening_deposit": Decimal("0.00"),
         "offer_overdraft": "Yes",
         "offer_saving_account": "Yes",
-         "offer_loans": "No",
+        "offer_loans": "No",
         "monthly_deposit": Decimal("150.00"),
     },
     {
@@ -52,10 +53,12 @@ BANK_SEED_DATA = [
         "address_line_2": "Birmingham Business District",
         "post_code": "B3 2BS",
         "interest_period": "MONTHLY",
+        "interest_rate": Decimal("0.03"),
         "phone_number": "+44 121 496 7740",
         "minimum_opening_deposit": Decimal("250.00"),
         "offer_overdraft": "Yes",
         "offer_saving_account": "No",
+        "offer_loans": "Yes",
         "monthly_deposit": Decimal("500.00"),
     },
     {
@@ -68,10 +71,12 @@ BANK_SEED_DATA = [
         "address_line_2": "Leeds City Centre",
         "post_code": "LS1 2NE",
         "interest_period": "YEARLY",
+        "interest_rate": Decimal("0.09"),
         "phone_number": "+44 113 322 8890",
         "minimum_opening_deposit": Decimal("500.00"),
         "offer_overdraft": "No",
         "offer_saving_account": "Yes",
+        "offer_loans": "Yes",
         "monthly_deposit": Decimal("200.00"),
     },
     {
@@ -84,10 +89,12 @@ BANK_SEED_DATA = [
         "address_line_2": "Tech City",
         "post_code": "EC1Y 8SY",
         "interest_period": "MONTHLY",
+        "interest_rate": Decimal("0.05"),
         "phone_number": "+44 20 7000 9001",
         "minimum_opening_deposit": Decimal("1.00"),
         "offer_overdraft": "Yes",
         "offer_saving_account": "Yes",
+        "offer_loans": "Yes",
         "monthly_deposit": Decimal("50.00"),
     },
     {
@@ -100,10 +107,12 @@ BANK_SEED_DATA = [
         "address_line_2": "Oxford",
         "post_code": "OX1 4AH",
         "interest_period": "MONTHLY",
+        "interest_rate": Decimal("0.06"),
         "phone_number": "+44 1865 770 220",
         "minimum_opening_deposit": Decimal("0.00"),
         "offer_overdraft": "No",
         "offer_saving_account": "Yes",
+        "offer_loans": "Yes",
         "monthly_deposit": Decimal("0.00"),
     },
     {
@@ -116,13 +125,13 @@ BANK_SEED_DATA = [
         "address_line_2": "Canary Wharf",
         "post_code": "E14 5LQ",
         "interest_period": "YEARLY",
+        "interest_rate": Decimal("0.12"),
         "phone_number": "+44 20 7123 4567",
         "minimum_opening_deposit": Decimal("1000.00"),
         "offer_overdraft": "Yes",
-         "offer_loans": "No",
+        "offer_loans": "Yes",
         "offer_saving_account": "Yes",
         "monthly_deposit": Decimal("1000.00"),
-
     },
     {
         "name": "Steadfast Pioneer Mutual Bank",
@@ -134,10 +143,11 @@ BANK_SEED_DATA = [
         "address_line_2": "Liverpool",
         "post_code": "L2 0NE",
         "interest_period": "MONTHLY",
+        "interest_rate": Decimal("0.05"),
         "phone_number": "+44 151 233 4455",
         "minimum_opening_deposit": Decimal("0.00"),
         "offer_overdraft": "No",
-         "offer_loans": "No",
+        "offer_loans": "No",
         "offer_saving_account": "Yes",
         "monthly_deposit": Decimal("0.00"),
     },
@@ -151,23 +161,29 @@ BANK_SEED_DATA = [
         "address_line_2": "Brighton",
         "post_code": "BN2 1TA",
         "interest_period": "MONTHLY",
+        "interest_rate": Decimal("0.04"),
         "phone_number": "+44 1273 889 100",
         "minimum_opening_deposit": Decimal("20.00"),
         "offer_overdraft": "Yes",
-        "offer_loans": "No",
+        "offer_loans": "Yes",
         "offer_saving_account": "Yes",
         "monthly_deposit": Decimal("60.00"),
     },
 ]
-
 
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
         for bank_data in BANK_SEED_DATA:
-            BankProvisioningService.create_bank(bank_data)
+            BankProvisioningService.create_bank(bank_data, source=Bank.Source.SEEDED)
 
         banks = Bank.get_all_banks()
         set_cache_with_retry(key=settings.BANK_CACHE_KEY, value=banks, ttl=settings.BANK_CACHE_TTL, log_failures=True)
+
         self.stdout.write(self.style.SUCCESS("Banks seeded successfully"))
+        if get_cache_with_retry(key=settings.BANK_CACHE_KEY):
+            self.stdout.write(self.style.SUCCESS("Bank cache was successfully created"))
+        else:
+            self.stdout.write(self.style.ERROR("Failed to create bank cache"))
+      
