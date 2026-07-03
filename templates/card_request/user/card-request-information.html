@@ -1,0 +1,263 @@
+{% extends "partials/card_request/base.html" %}
+
+{% block title %} Basic Information {% endblock title %}
+
+
+{% block progress_content %}
+
+{% include "partials/card_request/progress_step.html" with current_step=1 %}
+
+{% endblock%}
+
+
+
+{% block page_content %}
+
+
+<!-- the section for the basic information of the card request form.
+  This section collects personal information, card details, and delivery address from the user. -->
+<section id="card-information" class="mt-16">
+
+    <form action="" method="post" id="card-request-form">
+
+        <!-- Section header -->
+        <div class="section-header">
+            <h1 class="header-7">Card Request Information</h1>
+
+            <p class="text-muted subtitle">
+                Please provide your card preferences and delivery details.
+            </p>
+        </div>
+
+
+        <hr class="dividor">
+
+        <div class="card-information__container mt-16">
+
+            <!-- Card request-->
+            <div class="card-request-personal-information">
+
+                <!-- Personal information -->
+                <h2 class="header-8">Personal information</h2>
+                <p class="text-muted subtitle">
+                    Enter the contact details associated with your account so we can process
+                    your card request.
+                </p>
+
+                <hr class="dividor">
+
+                <div class="form-group flex-grid">
+                    <label for="card-request-full-name">Full name*</label>
+                    <input type="text" name="card-request-full-name" maxlength="40" id="card-request-full-name" required
+                        placeholder="e.g Joke Thompson..">
+                </div>
+
+                <div class="form-group flex-grid">
+                    <label for="card-request-phone-number">Phone number*</label>
+                    <input type="tel" name="card-request-phone-number" id="card-request-phone-number" maxlength="20"
+                        required placeholder="+44 20 7946 0958">
+                </div>
+
+
+                <!-- card details  -->
+                <h2 class="header-8">Card details</h2>
+                <p class="text-muted subtitle">
+                    Select the type of card you would like us to issue, including the
+                    network
+                    and account type.
+                </p>
+
+                <hr class="dividor">
+
+
+                <!-- Card account type -->
+                <div class="form-group flex-grid">
+                    <label for="requested-card-account-type">
+                        Card account type*
+                    </label>
+
+                    <select name="requested-card-account-type" id="requested-card-account-type" required>
+
+                        <option value="" disabled selected>
+                            Please select account type
+                        </option>
+
+                        <option value="debit">
+                            Debit
+                        </option>
+
+                        <option value="credit">
+                            Credit
+                        </option>
+
+                    </select>
+                </div>
+
+                <!-- Card category and network -->
+                <div class="form-row flex-grid two-column-grid column-gap-8">
+
+                    <div class="form-group flex-grid">
+                        <label for="requested-card-category">Card*</label>
+
+                        <select name="requested-card-category" id="requested-card-category" required>
+
+                            <option value="" disabled selected>
+                                Please select a card
+                            </option>
+
+                            <option value="virtual">
+                                Virtual card
+                            </option>
+
+                            <option value="temporary">
+                                Temporary card
+                            </option>
+
+                            <option value="physical">
+                                Physical card
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-group flex-grid">
+                        <label for="requested-card-network">
+                            Card type*
+                        </label>
+
+                        <select name="requested-card-network" id="requested-card-network" required>
+
+                            <option value="" disabled selected>
+                                Please select a card type
+                            </option>
+
+                            <option value="visa">
+                                Visa
+                            </option>
+
+                            <option value="mastercard">
+                                Mastercard
+                            </option>
+
+                            <option value="discover">
+                                Discover
+                            </option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+
+                <!-- Delivery address -->
+                <h2 class="header-8">Delivery address</h2>
+                <p class="text-muted subtitle">
+                    Provide the address where your card should be delivered. Ensure all
+                    details
+                    are accurate to avoid delays.
+                </p>
+
+                <hr class="dividor">
+
+
+                <!-- Address line 1 -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-address1">
+                        Address 1*
+                    </label>
+
+                    <input type="text" name="card-request-address1" id="card-request-address1" required
+                        placeholder="221B Baker Street">
+                </div>
+
+                <!-- Address line 2 -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-address2">
+                        Address 2
+                    </label>
+
+                    <input type="text" name="card-request-address2" id="card-request-address2" placeholder="Marylebone">
+                </div>
+
+                <!-- County -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-county">
+                        County*
+                    </label>
+
+                    <input type="text" name="card-request-county" id="card-request-county" placeholder="London"
+                        required>
+                </div>
+
+                <!-- Country and postcode -->
+                <div class="flex-grid two-column-grid column-gap-8">
+
+                    <div class=" form-group country flex-grid">
+                        <label for="card-request-country">
+                            Country*
+                        </label>
+
+                        <select name="card-request-location" id="card-request-country" required>
+
+                            <option value="" selected disabled>
+                                Choose a country
+                            </option>
+
+                            <option value="gallifrey">
+                                Gallifrey
+                            </option>
+
+                            <option value="united-kingdom">
+                                United Kingdom
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-group flex-grid">
+                        <label for="card-request-postcode">
+                            Postcode*
+                        </label>
+
+                        <input type="text" name="card-request-postcode" id="card-request-postcode" maxlength="10"
+                            required placeholder="NW1 6XE">
+                    </div>
+
+                </div>
+
+
+                <!-- special instruction delivery-->
+                <div class="form-group flex-grid">
+
+                    <label for="card-request-special-request">
+                        Special request
+                    </label>
+
+                    <textarea name="card-request-special-request" id="card-request-special-request" rows="5" cols="3"
+                        placeholder="Please leave the card in a secure location if no one is home. Ring the doorbell twice and wait for 2 minutes. If delivery fails, reattempt the next working day between 9am–6pm."></textarea>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- application summary -->
+            {% include "components/card_request/card_request_summary.html" %}
+
+
+        </div>
+
+
+        <div class="buttons flex flex-end mt-8">
+            <button type="submit" class="blue-bg white-text capitalise" id="card-request-next-btn">Next
+                &gt;
+            </button>
+        </div>
+    </form>
+
+</section>
+
+
+
+{% endblock %}

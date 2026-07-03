@@ -1,0 +1,30 @@
+{% extends "partials/dashboard/base.html" %}
+
+Card Request - {% block title %}{% endblock title %}
+
+{% block body %}
+
+<!-- Main content -->
+<section class="dashboard__container__main" tabindex="-1">
+
+    {% include "partials/header/header.html" %}
+    {% include "partials/messages/messages.html" %}
+
+    <!-- main -->
+    <section id="card-request-progress" class="m-16" aria-label="Card request progress">
+
+        <div class="card-request-progress__container">
+
+            {% block progress_content %}{% endblock progress_content %}
+
+            <hr class="divider">
+
+            {% block page_content %}{% endblock page_content %}
+
+        </div>
+
+    </section>
+
+</section>
+
+{% endblock body %}

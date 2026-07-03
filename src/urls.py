@@ -29,6 +29,7 @@ urlpatterns = [
     path('', include("home.urls")),
     path('', include("authentication.urls")),
     path('employee/', include('platform_employee.urls')),
+    path('card-request/', include('card_request.urls')),
 ]
 
 

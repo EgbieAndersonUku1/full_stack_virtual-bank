@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'user_profile.apps.UserProfileConfig',
     'platform_employee.apps.PlatformEmployeeConfig',
+    'card_request.apps.CardRequestConfig',
 
 
     
