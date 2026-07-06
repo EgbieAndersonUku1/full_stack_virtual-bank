@@ -1,0 +1,81 @@
+{% extends "partials/card_request/base.html" %}
+{% load static %}
+
+{% block title %} Review and confirm {% endblock title %}
+
+
+{% block progress_content %}
+
+{% include "partials/card_request/progress_step.html" with current_step=3 %}
+
+{% endblock%}
+
+
+
+{% block page_content %}
+
+<section id="card-information" class="mt-16">
+
+
+    <!-- Section header -->
+    <div class="mt-24" id="greeting-section">
+
+
+        <p class="white-text green-bg p-24">
+            Your details look good. Please confirm that all the information is correct
+        </p>
+    </div>
+
+
+    <hr class="dividor">
+
+    <div class="card-information__container mt-16">
+
+        <!-- Review and confirmation -->
+        <div class="card-request-review-personal-information white-bg p-24">
+
+                     
+            <!-- Personal information -->
+            {% include "components/card_request/review_and_confirm/personal_information.html" %}
+            <hr class="dividor">
+
+            <!-- Delivery address -->
+            {% include "components/card_request/review_and_confirm/delivery_information.html" %}
+            <hr class="dividor">
+
+            <!-- Employment information -->
+            {% include "components/card_request/review_and_confirm/employment_information.html" %}
+            <hr class="dividor">
+
+
+        </div>
+
+
+        {% include "components/card_request/card_request_summary.html" %}
+
+
+    </div>
+
+
+    <div class="buttons flex flex-end mt-48">
+        <a href="{% url 'card_request_employment' %}" class="back-btn center white-bg capitalise mr-4">
+            &lt; Back
+
+        </a>
+
+        <button class="blue-bg white-text capitalise" id="card-request-next-btn" type="button">Next
+            &gt;</button>
+    </div>
+
+
+</section>
+
+{% endblock %}
+
+
+{% block script %}
+
+
+<script src="{% static 'js/risk_analysis/card-request.js' %}" type="module"></script>
+
+{% endblock script %}

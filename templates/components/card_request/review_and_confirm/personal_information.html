@@ -1,0 +1,100 @@
+<!-- the edit container -->
+<div class="flex flex-space-between">
+
+    <div class="header">
+        <h2 class="header-8">Card Request Information</h2>
+    </div>
+
+    <div class="edit">
+        <a href="{% url 'card_request_information' %}">
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit
+        </a>
+    </div>
+
+</div>
+
+<p class="text-muted subtitle">
+    Verify if this is the correct card request information.
+</p>
+
+
+<hr class="dividor mt-8">
+
+
+
+<!-- the basic/personal information container -->
+<div class="form-group flex-grid">
+
+    <dl class="card-request-review-confirm__list" id="personal-information-review">
+
+        <!-- full name -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-user"></i>
+                Full Name
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.first_name %}
+                {{ basic_information.first_name | title }} {{ basic_information.last_name | title }}
+                {% else %}
+                Not added
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!-- card type -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-credit-card"></i>
+                Card Type
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.card_type %}
+                {{ basic_information.card_type | title }}
+                {% else %}
+                Not added
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!-- card variant -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-layer-group"></i>
+                Card Variant
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.card_brand %}
+                {{ basic_information.card_brand | title }}
+                {% else %}
+                Not added
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!-- Phone number -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-phone"></i>
+                Phone Number
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.phone_number %}
+                {{ basic_information.phone_number }}
+                {% else %}
+                Not added
+                {% endif %}
+            </dd>
+        </div>
+
+    </dl>
+
+</div>

@@ -18,15 +18,32 @@ cardRequestEmploymentContainer?.addEventListener("click",  handleEmploymentOptio
 
 // listen when page is loaded
 document.addEventListener("DOMContentLoaded", () => {
-    // since the are you employed is on `no` by default
-    // the required fields must be set to false as well othewise
-    // clicking next will result in a focusable error
+    
+    // Since the backend loads the employment data for the user into the form if the user has entered
+    // This ensures that if the user has checked marked yes and has refreshed the page or navigated away
+    // from the page and then back the employment fields will be displayed and not hidden
+    if (getIsEmployedRadioValue() === "yes") {
+
+        toggleEmploymentFieldsAndMessage()
+        return
+    }
     toggleRequiredInput({elementsNodeList: requiredEmploymentInputFields, required: false});
    
     
 })
 
 
+/**
+ * Returns the selected employment status from the "is_employed" radio buttons.
+ *
+ * @returns {string|undefined} The selected value (`"yes"` or `"no"`), or
+ * `undefined` if no option is selected.
+ */
+function getIsEmployedRadioValue() {
+    return document
+        .querySelector("input[name='is_employed']:checked")
+        ?.value.toLowerCase();
+}
 
 
 
@@ -99,6 +116,31 @@ function handleFormSubmission({ e,
 
 
 
+/**
+ * Toggles the visibility of the employment form and its accompanying message.
+ *
+ * When `show` is `true`, the employment form is displayed, the message is
+ * hidden, and all required employment input fields are marked as required.
+ * When `show` is `false`, the employment form is hidden, the message is
+ * displayed, and the required attribute is removed from the employment
+ * input fields.
+ *
+ * @param {boolean} [show=true] - Determines whether the employment form
+ * should be displayed. Must be a boolean value.
+ *
+ * @throws {Error} If `show` is not a boolean.
+ */
+function toggleEmploymentFieldsAndMessage(show = true) {
+
+    if ( typeof show !== "boolean") {
+        throw new Error(`The parameter show must be a boolean. Expected a boolean but got ${typeof show} with value ${show}`)
+    }
+
+    toggleElementHelper(employmentContainerElement, show);
+    toggleElementHelper(employmentMessageElement, !show);
+    toggleRequiredInput({elementsNodeList: requiredEmploymentInputFields, required: show});
+}
+
 
 
 
@@ -131,15 +173,11 @@ function handleEmploymentOptions(e) {
     switch(radioInputElement.value.toLowerCase()) {
 
         case "yes":
-           toggleElementHelper(employmentContainerElement);
-           toggleElementHelper(employmentMessageElement, false);
-           toggleRequiredInput({elementsNodeList: requiredEmploymentInputFields, required: true});
+           toggleEmploymentFieldsAndMessage();
            break;
         
         case "no":
-           toggleElementHelper(employmentContainerElement, false);
-           toggleElementHelper(employmentMessageElement, true);
-           toggleRequiredInput({elementsNodeList: requiredEmploymentInputFields, required: false}); 
+           toggleEmploymentFieldsAndMessage(false)
            break;
 
     }

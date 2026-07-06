@@ -100,6 +100,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'bank.context_processors.bank_details',
+                'card_request.context_processors.display_bank_details_on_card',
             ],
         },
     },
