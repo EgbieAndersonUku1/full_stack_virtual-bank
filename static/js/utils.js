@@ -822,3 +822,122 @@ export function toggleElement({ element, cSSSelector = "show", show = true }) {
 
     element.classList.remove(cSSSelector);
 }
+
+
+
+
+/**
+ * Checks whether a form field is empty.
+ *
+ * A field is considered empty if its value is missing or contains only
+ * whitespace.
+ *
+ * @param {Object} options - Configuration object.
+ * @param {HTMLFormElement} options.form - The form containing the field.
+ * @param {string} options.fieldName - The name attribute of the field to check.
+ *
+ * @returns {boolean} Returns true if the field is empty; otherwise, false.
+ *
+ * @throws {Error} Throws an error if the provided form is not an HTMLFormElement
+ * or if the field name is not a string.
+ *
+ * @example
+ * const isEmpty = isFormFieldEmpty({
+ *     form,
+ *     fieldName: "card-request-address2"
+ * });
+ */
+export function isFormFieldEmpty({ form, fieldName }) {
+    if (!(form instanceof HTMLFormElement)) {
+        throw new Error("The form value provided is not a form element");
+    }
+
+    if (typeof fieldName !== "string") {
+        throw new Error("The value to check must be a string");
+    }
+
+    const formData = new FormData(form);
+    const formFieldValue = formData.get(fieldName);
+
+    return typeof formFieldValue === "string" && formFieldValue.trim() === "";
+}
+
+
+
+
+
+/**
+ * Checks whether an element supports the required attribute.
+ *
+ * @param {HTMLElement} element - The element to check.
+ *
+ * @returns {boolean} True if the element can have the required attribute.
+ */
+function isRequiredInputElement(element) {
+    return (
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLSelectElement ||
+        element instanceof HTMLTextAreaElement
+    );
+}
+
+
+
+/**
+ * Toggles the required attribute for a collection of HTML elements.
+ *
+ * Converts the provided NodeList into an array, validates the required value,
+ * checks that each item is an HTML element, and updates the required attribute.
+ *
+ * @param {Object} options - Configuration object.
+ * @param {NodeList} options.elementsNode - A NodeList containing HTML elements to update.
+ * @param {boolean} options.required - Whether the elements should be required.
+ *
+ * @returns {void}
+ *
+ * @example
+ * const inputs = document.querySelectorAll("input");
+ *
+ * toggleRequiredInput({
+ *    elementsNodeList,: inputs,
+ *     required: true
+ * });
+ */
+export function toggleRequiredInput({elementsNodeList, required }) {
+    const elementsArray = Array.from(elementsNodeList);
+    const invalidElements = [];
+
+    if (typeof required !== "boolean") {
+        warnError("toggleRequiredInput", {
+            error: "The required value must be a boolean",
+            received: typeof required
+        });
+
+        return;
+    }
+
+    if (elementsArray.length === 0) {
+        warnError("toggleRequiredInput", {
+            error: "The elements list is empty"
+        });
+
+        return;
+    }
+
+    elementsArray.forEach((element) => {
+        if (!isRequiredInputElement(element)) {
+            invalidElements.push(element);
+        } else {
+            element.required = required;
+        }
+    });
+
+    if (invalidElements.length > 0) {
+        warnError("toggleRequiredInput", {
+            error: "The elements list contains invalid HTML elements",
+            invalidElements
+        });
+    }
+}
+
+

@@ -18,7 +18,9 @@
   This section collects personal information, card details, and delivery address from the user. -->
 <section id="card-information" class="mt-16">
 
-    <form action="" method="post" id="card-request-form">
+    <form action="{% url 'card_request_information' %}" method="post" id="card-request-form">
+
+        {% csrf_token %}
 
         <!-- Section header -->
         <div class="section-header">
@@ -46,18 +48,26 @@
 
                 <hr class="dividor">
 
+                <!-- first name -->
                 <div class="form-group flex-grid">
-                    <label for="card-request-full-name">Full name*</label>
-                    <input type="text" name="card-request-full-name" maxlength="40" id="card-request-full-name" required
-                        placeholder="e.g Joke Thompson..">
+                    <label for="card-request-full-name">{{ form.first_name.label }}</label>
+                     {{ form.first_name }}
+                     {{ form.first_name.errors }}
                 </div>
 
+                <!-- surname -->
                 <div class="form-group flex-grid">
-                    <label for="card-request-phone-number">Phone number*</label>
-                    <input type="tel" name="card-request-phone-number" id="card-request-phone-number" maxlength="20"
-                        required placeholder="+44 20 7946 0958">
+                    <label for="card-request-full-name">{{ form.last_name.label }}</label>
+                     {{ form.last_name }}
+                     {{ form.last_name.errors }}
                 </div>
-
+                
+                 <!-- phone number -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-phone-number">{{ form.phone_number.label }}</label>
+                     {{ form.phone_number }}
+                     {{ form.phone_number.errors }}
+                </div>
 
                 <!-- card details  -->
                 <h2 class="header-8">Card details</h2>
@@ -73,77 +83,30 @@
                 <!-- Card account type -->
                 <div class="form-group flex-grid">
                     <label for="requested-card-account-type">
-                        Card account type*
+                        {{ form.card_type.label }}
                     </label>
 
-                    <select name="requested-card-account-type" id="requested-card-account-type" required>
-
-                        <option value="" disabled selected>
-                            Please select account type
-                        </option>
-
-                        <option value="debit">
-                            Debit
-                        </option>
-
-                        <option value="credit">
-                            Credit
-                        </option>
-
-                    </select>
+                    {{ form.card_type }}
+                    {{ form.card_type.errors }}
                 </div>
 
                 <!-- Card category and network -->
                 <div class="form-row flex-grid two-column-grid column-gap-8">
 
                     <div class="form-group flex-grid">
-                        <label for="requested-card-category">Card*</label>
+                        <label for="requested-card-category">{{ form.card.label }}</label>
 
-                        <select name="requested-card-category" id="requested-card-category" required>
-
-                            <option value="" disabled selected>
-                                Please select a card
-                            </option>
-
-                            <option value="virtual">
-                                Virtual card
-                            </option>
-
-                            <option value="temporary">
-                                Temporary card
-                            </option>
-
-                            <option value="physical">
-                                Physical card
-                            </option>
-
-                        </select>
+                        {{ form.card }}
+                        {{ form.card.errors }}
                     </div>
 
                     <div class="form-group flex-grid">
-                        <label for="requested-card-network">
-                            Card type*
+                        <label for="requested-card-brand">
+                            {{ form.card_brand.label }}
                         </label>
 
-                        <select name="requested-card-network" id="requested-card-network" required>
-
-                            <option value="" disabled selected>
-                                Please select a card type
-                            </option>
-
-                            <option value="visa">
-                                Visa
-                            </option>
-
-                            <option value="mastercard">
-                                Mastercard
-                            </option>
-
-                            <option value="discover">
-                                Discover
-                            </option>
-
-                        </select>
+                        {{ form.card_brand }}
+                        {{ form.card_brand.errors }}
                     </div>
 
                 </div>
@@ -163,30 +126,41 @@
                 <!-- Address line 1 -->
                 <div class="form-group flex-grid">
                     <label for="card-request-address1">
-                        Address 1*
+                        {{ form.address1.label }}
                     </label>
 
-                    <input type="text" name="card-request-address1" id="card-request-address1" required
-                        placeholder="221B Baker Street">
+                    {{ form.address1 }}
+                    {{ form.address1.errors }}
                 </div>
 
                 <!-- Address line 2 -->
                 <div class="form-group flex-grid">
                     <label for="card-request-address2">
-                        Address 2
+                         {{ form.address2.label }}
                     </label>
 
-                    <input type="text" name="card-request-address2" id="card-request-address2" placeholder="Marylebone">
+                    {{ form.address2 }}
+                    {{ form.address2.errors }}
+                </div>
+
+                <!-- City -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-county">
+                        {{ form.city.label }}
+                    </label>
+
+                    {{ form.city }}
+                    {{ form.city.errors }}
                 </div>
 
                 <!-- County -->
                 <div class="form-group flex-grid">
                     <label for="card-request-county">
-                        County*
+                        {{ form.state.label }}
                     </label>
 
-                    <input type="text" name="card-request-county" id="card-request-county" placeholder="London"
-                        required>
+                    {{ form.state }}
+                    {{ form.state.errors }}
                 </div>
 
                 <!-- Country and postcode -->
@@ -194,48 +168,32 @@
 
                     <div class=" form-group country flex-grid">
                         <label for="card-request-country">
-                            Country*
+                            {{ form.country.label }}
                         </label>
 
-                        <select name="card-request-location" id="card-request-country" required>
-
-                            <option value="" selected disabled>
-                                Choose a country
-                            </option>
-
-                            <option value="gallifrey">
-                                Gallifrey
-                            </option>
-
-                            <option value="united-kingdom">
-                                United Kingdom
-                            </option>
-
-                        </select>
+                        {{ form.country }}
+                        {{ form.country.errors }}
                     </div>
 
                     <div class="form-group flex-grid">
                         <label for="card-request-postcode">
-                            Postcode*
+                            {{ form.postal_code.label }}
                         </label>
-
-                        <input type="text" name="card-request-postcode" id="card-request-postcode" maxlength="10"
-                            required placeholder="NW1 6XE">
+                            
+                           {{ form.postal_code }}
+                           {{ form.postal_code.errors }}
                     </div>
 
                 </div>
-
 
                 <!-- special instruction delivery-->
                 <div class="form-group flex-grid">
 
                     <label for="card-request-special-request">
-                        Special request
+                        {{ form.special_requests.label }}
                     </label>
 
-                    <textarea name="card-request-special-request" id="card-request-special-request" rows="5" cols="3"
-                        placeholder="Please leave the card in a secure location if no one is home. Ring the doorbell twice and wait for 2 minutes. If delivery fails, reattempt the next working day between 9am–6pm."></textarea>
-
+                     {{ form.special_requests }}
 
                 </div>
 

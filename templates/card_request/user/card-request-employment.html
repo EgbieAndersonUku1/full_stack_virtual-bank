@@ -1,0 +1,284 @@
+{% extends "partials/card_request/base.html" %}
+{% load static %}
+
+{% block title %} Employment Information {% endblock title %}
+
+
+{% block progress_content %}
+
+{% include "partials/card_request/progress_step.html" with current_step=2 %}
+
+{% endblock%}
+
+
+
+{% block page_content %}
+
+<section id="card-information" class="mt-16">
+
+    <form action="{% url 'card_request_employment' %}" method="post" id="card-request-employment-form">
+
+        {% csrf_token %}
+
+        <!-- Section header -->
+        <div class="section-header">
+            <h1 class="header-7">Employment Details</h1>
+
+            <p class="text-muted subtitle">
+                Tell us about your employment and income.
+            </p>
+        </div>
+
+
+        <hr class="dividor">
+
+        <div class="card-information__container">
+
+            <!-- Card request-->
+            <div id="card-request-employment-information">
+
+                <!-- Employment information -->
+
+
+
+                <fieldset class="form-group flex-grid section-header">
+                    <legend class="light-bold mt-4 mb-4">Are you currently employed?*</legend>
+
+                    <div class="card-request-employment-options flex-grid two-column-grid column-gap-8">
+
+                        {% for radio in form.is_employed %}
+                        <div class="card-request-employment-option">
+
+                            {{ radio.tag }}
+
+                            <label for="{{ radio.id_for_label }}">
+                                {{ radio.choice_label }}
+                            </label>
+
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </fieldset>
+
+                <!-- Employment details hidden message -->
+                <div id="card-request-employment-details-message" class="card-request-information-message mt-24">
+
+                    <h2 class="header-9">
+                        Employment information unavailable
+                    </h2>
+
+                    <p class="text-muted">
+                        Employment and income fields will become available once you select
+                        <strong>Yes</strong> for your employment status.
+                    </p>
+
+                </div>
+
+                <!-- the employment spinner -->
+                <div class="spinner center" id="employment-details-spinner"></div>
+
+                <!-- the employment container -->
+                <div id="employment-container" class="mt-48">
+
+                    <div class="section-header">
+
+                        <h2 class="header-8">
+                            Employment and Income Details
+                        </h2>
+
+                        <p class="text-muted subtitle">
+                            This information helps us assess your application and determine
+                            eligibility.
+                        </p>
+
+                    </div>
+
+                    <hr class="dividor">
+
+                    <!-- Employer name -->
+                    <div id="card-request-employer-name-group" class="form-group flex-grid">
+
+                        <label for="card-request-employer-name">
+                            {{form.employer_name.label }}
+                        </label>
+
+                        {{ form.employer_name }}
+                       
+
+                    </div>
+
+                    <!-- Employment type -->
+                    <div class="form-group flex-grid">
+
+                        <label for="card-request-employment-type">
+                            {{ form.employment_type.label }}
+                        </label>
+
+                             {{ form.employment_type }}
+
+                    </div>
+
+                    <!-- Years employed -->
+                    <div id="card-request-years-employed-group" class="form-group flex-grid">
+
+                        <label for="card-request-years-employed">
+                            {{ form.years_of_employment.label }}
+                        </label>
+
+                            {{ form.years_of_employment }}
+
+                    </div>
+
+                    <!-- Annual salary -->
+                    <div id="card-request-annual-salary-group" class="form-group flex-grid">
+
+                        <label for="card-request-annual-salary">
+                            {{ form.annual_income_range.label }}
+                        </label>
+
+                            {{ form.annual_income_range }}
+
+                    </div>
+
+                    <!-- Pay frequency -->
+                    <div id="card-request-pay-frequency-group" class="form-group flex-grid">
+
+                        <label for="card-request-pay-frequency">
+                            {{ form.pay_frequency.label }}
+                        </label>
+
+                             {{ form.pay_frequency }}
+                       
+                    </div>
+
+
+                    <!-- Contract type -->
+                    <div id="card-request-contract-type-group" class="form-group flex-grid">
+
+                        <label for="card-request-contract-type">
+                             {{ form.contract_type.label }}
+                        </label>
+
+                           {{ form.contract_type }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- application summary -->
+            <div class="card-request-summary">
+
+                <div class="card-request-summary__container">
+                    <h2 class="mb-4 header-8">Application summary</h2>
+
+                    <p class="text-muted mb-24">
+                        Preview your card details and application information before
+                        continuing.
+                    </p>
+
+                    <div class="bank-card credit-discover-card" role="region"
+                        aria-label="Atlas Bank Discover Debit Card, balance £0.00">
+                        <div class="card-head">
+                            <div class="card-head-info">
+                                <h3>Atlas Bank</h3>
+                                <p class="bank-card-amount">£0.00</p>
+                            </div>
+
+                            <div class="card-type-logo flex flex-end">
+                                <img src="/static/images/icons/discover.svg" alt="Discover logo">
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="chip">
+                                <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
+                            </div>
+
+                            <div class="credit-transaction-type flex flex-end">
+                                <span class="card-type">Credit</span>
+                            </div>
+
+                            <div class="card-number flex flex-end">
+                                <span class="card-number">***********</span>
+
+                            </div>
+                        </div>
+
+                        <div class="card-footer flex flex-space-between">
+                            <div class="card-name">Joke Thompson</div>
+                            <div class="card-expiry-date">
+                                <p>Expiry date: TBD</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="card-request-summary__info mt-24">
+
+                    <dl>
+                        <div class="group">
+                            <dd>Card Type</dd>
+                            <dt>Visa</dt>
+                        </div>
+
+                        <div class="group">
+                            <dd>Card Variant</dd>
+                            <dt>Virtual card</dt>
+                        </div>
+
+                        <div class="group">
+                            <dd>Delivery</dd>
+                            <dt>Online</dt>
+                        </div>
+
+                        <div class="group">
+                            <dd>Ext delivery</dd>
+                            <dt>Instant</dt>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="chat-info flex-grid two-column-20_80_grid mt-24">
+                    <div class="chat-icon center" aria-hidden="true">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+
+                    <div class="chat">
+                        <h3 class="header-9">Need help</h3>
+                        <p class="text-muted">Chat with our support team</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="buttons flex flex-end mt-48">
+            <a href="{% url 'card_request_information' %}" class="back-btn center white-bg capitalise mr-4">
+                &lt; Back
+            </a>
+
+            <button class="blue-bg white-text capitalise" id="card-request-next-btn" type="submit">Next
+                &gt;</button>
+        </div>
+    </form>
+
+</section>
+
+
+{% block script %}
+
+<script src="{% static 'js/riskAnalysis/card-request.js' %}" type="module"></script>
+<script src="{% static 'js/risk_analysis/card-request.js' %}" type="module"></script>
+
+{% endblock script %}
+
+{% endblock %}
