@@ -30,6 +30,7 @@ urlpatterns = [
     path('', include("authentication.urls")),
     path('employee/', include('platform_employee.urls')),
     path('card-request/', include('card_request.urls')),
+    path("ckeditor5/", include("django_ckeditor_5.urls")),
 ]
 
 

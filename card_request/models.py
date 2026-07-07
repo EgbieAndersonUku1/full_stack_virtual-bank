@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from django.db import models
 from django_countries.fields import CountryField
+from django_ckeditor_5.fields import CKEditor5Field
 from phonenumber_field.modelfields import PhoneNumberField
 from user_profile.models import UserProfile
 from django.utils.translation import gettext_lazy as _
@@ -152,17 +153,28 @@ class CardRequestEmploymentInformation(QueryProfile):
         AGENCY_WORKER = "agency_worker", _("Agency Worker")
             
     card_request = models.OneToOneField(CardRequestBasicInformation, on_delete=models.CASCADE, related_name="employment_information")
-    employer_name     = models.CharField(max_length=20, verbose_name="Employer name *")
+    employer_name     = models.CharField(max_length=20, verbose_name="Employer name *", blank=True, null=True)
     employment_status = models.CharField(max_length=20, choices=EmploymentStatus.choices, verbose_name="Employer status*")
     employment_type = models.CharField(max_length=20, choices=EmploymentType.choices)
     years_of_employment = models.CharField(max_length=20, choices=YearsOfEmployment.choices)
     annual_income_range = models.CharField(max_length=20, choices=AnnualIncomeRange.choices)
     pay_frequency = models.CharField(max_length=20, choices=PayFrequency.choices)
     contract_type = models.CharField(max_length=20, choices=ContractType.choices)
-    uaer_profile  = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="card_request_employments")
+    uaer_profile  = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="card_request_employments", blank=True, null=True)
     created_on    = models.DateTimeField(auto_now_add=True)
     last_modified_on = models.DateTimeField(auto_now=True)
     
 
     def __str__(self):
         return f"Employment Information for {self.card_request.full_name}"
+    
+    
+
+
+class CardRequestAgreement(models.Model):
+    
+    title = models.CharField(max_length=80, blank=True, null=True)
+    terms_of_condition = CKEditor5Field("Terms of conditions", config_name="default")
+    created_on    = models.DateTimeField(auto_now_add=True)
+    last_modified_on = models.DateTimeField(auto_now=True)
+   

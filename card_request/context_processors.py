@@ -17,9 +17,27 @@ def display_bank_details_on_card(request):
 
         # print(bank_account)
         
-        # context.update(get_account_context(bank_account))
         context.update(get_account_context(bank_account))
         return context
     
     except ProfileNotFoundError:
+        return {}
+    
+
+
+
+def display_application_summary_details(request):
+    
+    if not request.user.is_authenticated:
+        return {}
+
+    try:
+        
+        context = {
+            "basic_information" : request.session.get("basic_request")
+        }
+       
+        return context
+    
+    except:
         return {}

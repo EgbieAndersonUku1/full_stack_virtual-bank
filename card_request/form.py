@@ -161,3 +161,7 @@ class CardRequestEmploymentForm(forms.ModelForm):
         return cleaned_data
    
    
+
+
+class CardAgreementForm(forms.Form):
+  agreed = forms.BooleanField(label="I have read and agree to the Card Request Agreement.")

@@ -1,0 +1,199 @@
+{% extends "partials/card_request/base.html" %}
+{% load static %}
+
+{% block title %} Card Agreement {% endblock title %}
+
+
+{% block progress_content %}
+
+{% include "partials/card_request/progress_step.html" with current_step=4 %}
+
+{% endblock%}
+
+
+{% include "partials/messages/messages.html" %}
+{% block page_content %}
+
+
+
+                            <section id="card-information" class="mt-16">
+
+
+
+                                    <!-- Section header -->
+                                    <div class="p-24 mt-24 white-bg" id="greeting-section">
+
+                                        <h3>Agreement</h3>
+                                        <p>
+                                            Please read and agree to complete your card request
+                                        </p>
+                                    </div>
+
+
+                                    <hr class="dividor">
+
+                                    <div class="card-information__container mt-16">
+
+                                        <!-- Card request-->
+                                        <div class="card-request-review-agreement white-bg p-24">
+
+
+                                            <section id="card-request-agreement">
+
+                                                {% block page_agreement %}{% endblock page_agreement %}
+
+                                                <form action="{% url "card_request_agreement" %}" id="review-agreement-form" class="flex-grid mt-24" method="post">
+                                                     {% csrf_token %}
+
+                                                     <label class="agreement-checkbox">
+                                                         {{ form.agreed }}
+                                                        <span>
+                                                            {{ form.agreed.label }}
+                                                        </span>
+                                                       
+                                                    </label>
+
+                                                    <div class="flex flex-end">
+                                                         <button class="blue-bg white-text capitalise mt-24" id="card-request-next-btn"
+                                                            type="submit">I agree & submit
+                                                        </button>
+                                                    </div>
+                                                   
+                                                </form>
+                                               
+                                            </section>
+
+
+
+                                          <div class="review-info flex-grid two-column-20_80_grid mt-24 section-header">
+                                                <div class="badge">
+                                                      <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                                                </div>
+
+                                                <div class="text-info">
+                                                    <h3 class="mt-8 mb-8">You are almost done</h3>
+                                                    <p>Once you agree we will submit your application and you receive a confirmation shortly.</p>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+
+
+                                        <!-- application summary -->
+                                        <div class="card-request-summary">
+
+                                            <div class="card-request-summary__container">
+                                                <h2 class="mb-4 header-8">Application summary</h2>
+
+                                                <p class="text-muted mb-24">
+                                                    Preview your card details and application information before
+                                                    continuing.
+                                                </p>
+
+                                                <div class="bank-card credit-discover-card" role="region"
+                                                    aria-label="Atlas Bank Discover Debit Card, balance £0.00">
+                                                    <div class="card-head">
+                                                        <div class="card-head-info">
+                                                            <h3>Atlas Bank</h3>
+                                                            <p class="bank-card-amount">£0.00</p>
+                                                        </div>
+
+                                                        <div class="card-type-logo flex flex-end">
+                                                            <img src="/static/images/icons/discover.svg"
+                                                                alt="Discover logo">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="card-body">
+                                                        <div class="chip">
+                                                            <img src="/static/images/icons/sim-card-chip.svg"
+                                                                alt="Card chip">
+                                                        </div>
+
+                                                        <div class="credit-transaction-type flex flex-end">
+                                                            <span class="card-type">Credit</span>
+                                                        </div>
+
+                                                        <div class="card-number flex flex-end">
+                                                            <span class="card-number">***********</span>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="card-footer flex flex-space-between">
+                                                        <div class="card-name">Joke Thompson</div>
+                                                        <div class="card-expiry-date">
+                                                            <p>Expiry date: TBD</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+
+                                            <div class="card-request-summary__info mt-24">
+
+                                                <dl>
+                                                    <div class="group">
+                                                        <dd>Card Type</dd>
+                                                        <dt>Visa</dt>
+                                                    </div>
+
+                                                    <div class="group">
+                                                        <dd>Card Variant</dd>
+                                                        <dt>Virtual card</dt>
+                                                    </div>
+
+                                                    <div class="group">
+                                                        <dd>Delivery</dd>
+                                                        <dt>Online</dt>
+                                                    </div>
+
+                                                    <div class="group">
+                                                        <dd>Ext delivery</dd>
+                                                        <dt>Instant</dt>
+                                                    </div>
+                                                </dl>
+                                            </div>
+
+                                            <div class="chat-info flex-grid two-column-20_80_grid mt-24">
+                                                <div class="chat-icon center" aria-hidden="true">
+                                                    <i class="fa-solid fa-headset"></i>
+                                                </div>
+
+                                                <div class="chat">
+                                                    <h3 class="header-9">Need help</h3>
+                                                    <p class="text-muted">Chat with our support team</p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="buttons flex flex-end mt-48">
+                                        <a href="review-and-confirm.html"
+                                            class="back-btn center white-bg capitalise mr-4">
+                                            &lt; Back
+
+                                        </a>
+
+                                        
+                                    </div>
+                                
+
+                            </section>
+
+
+{% endblock page_content %}
+
+
+{% block script %}
+
+
+<script src="{% static 'js/risk_analysis/card-request.js' %}" type="module"></script>
+
+{% endblock script %}
