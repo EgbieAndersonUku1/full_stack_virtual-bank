@@ -9,6 +9,6 @@ urlpatterns = [
     path('card-request-employment/', view=views.card_request_employment, name="card_request_employment"),
     path('review-and-confirm/', view=views.card_request_review_and_confirm, name="card_request_review_and_confirm" ),
     path('agreement/', view=views.card_request_agreement, name="card_request_agreement" ),
-    
+    path('is_all_stages_complete/', view=views.get_card_request_completion_status, name="get_card_request_completion_status"),
    
 ]

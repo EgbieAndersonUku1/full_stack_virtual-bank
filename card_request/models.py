@@ -2,14 +2,100 @@
 from __future__ import annotations
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from django_countries.fields import CountryField
 from django_ckeditor_5.fields import CKEditor5Field
 from phonenumber_field.modelfields import PhoneNumberField
-from user_profile.models import UserProfile
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MaxLengthValidator
+from django.contrib.auth import get_user_model
+
+from user_profile.models import UserProfile
+
+
+User = get_user_model()
+
 
 # Create your models here.
 
+class CardRequestApplication(models.Model):
+    
+    class Status(models.TextChoices):
+        PENDING  = "Pending", _("Pending")
+        ACCEPTED = "Accepted", _("Accepted")
+        REJECTED =  "Rejected", _("Rejected")
+        
+    user             = models.ForeignKey(User, on_delete=models.CASCADE)
+    status           = models.CharField(choices=Status.choices, max_length=15, default=Status.PENDING)
+    created_on       = models.DateTimeField(auto_now_add=True)
+    last_modified_on = models.DateTimeField(auto_now_add=True)
+    review_on        = models.DateTimeField(blank=True, null=True)
+    notes            = models.TextField(validators=[MaxLengthValidator(2000)], blank=True, null=True)
+    reviewed_by      = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reviewed_card_applications")
+    submitted_on     = models.DateTimeField(blank=True, null=True)
+    
+    def can_submit_application(self):
+        return not self.has_pending_application()
+    
+    @classmethod
+    def has_pending_application(cls, user: User) -> bool:
+        cls._check_if_user_instance(user)
+        return cls.objects.filter(user=user, status=cls.Status.PENDING).exists()
+        
+    @classmethod
+    def number_of_applications(cls, user: User) -> int:
+        cls._check_if_user_instance(user)
+        return cls.objects.filter(user=user).count()
+    
+    @classmethod
+    def get_user_applications(cls, user: User, status=None):
+        """
+        Retrieve card request applications submitted by a specific user.
+
+        Optionally filters the results by application status (for example,
+        pending, accepted, or rejected). Related objects are eagerly loaded
+        to minimise additional database queries when accessing the associated
+        user, basic information, or employment information.
+
+        Args:
+            user (User):
+                The user whose card request applications should be retrieved.
+
+            status (str, optional):
+                An application status from ``CardRequestApplication.Status``.
+                If omitted, all applications for the user are returned.
+
+        Raises:
+            TypeError:
+                If ``user`` is not an instance of ``User``.
+
+        Returns:
+            QuerySet[CardRequestApplication]:
+                A queryset containing the user's card request applications.
+        """
+
+        cls._check_if_user_instance(user)
+        queryset = (
+            cls.objects
+            .select_related("user", "basic_information", "employment_information")
+            .filter(user=user)
+        )
+
+        if status is not None:
+            queryset = queryset.filter(status=status)
+
+        return queryset
+    
+    @classmethod
+    def _check_if_user_instance(cls, user, User) -> None:
+        if not isinstance(user, User):
+            raise TypeError(
+                f"Expected a User instance, got {type(user).__name__}."
+            )
+    
+    def __str__(self):
+        return self.user
+    
 
 class QueryProfile(models.Model):
     """
@@ -62,25 +148,29 @@ class CardRequestBasicInformation(QueryProfile):
         MASTERCARD = "mastercard", _("Mastercard")
         DISCOVER   = "discover", _("Discover")
 
-    first_name         = models.CharField(max_length=100, verbose_name="First name*")
-    last_name          = models.CharField(max_length=100, verbose_name="Last name*")
-    email              = models.EmailField(max_length=100, unique=True, verbose_name="Email*")
-    phone_number       = PhoneNumberField(max_length=20, verbose_name="Phone number*")
-    address1           = models.CharField(max_length=255, verbose_name="Addess line 1*")
-    address2           = models.CharField(max_length=255, blank=True, null=True, verbose_name="Address line 2")
-    country            = CountryField(blank_label="(select country)", null=True, verbose_name="Bank Country*")
-    city               = models.CharField(max_length=100, verbose_name="City*")
-    state              = models.CharField(max_length=100, verbose_name="State*")
-    postal_code        = models.CharField(max_length=20, verbose_name="Post code*")
-    special_requests   = models.TextField(blank=True, null=True, max_length=500, verbose_name="Special instructions")
-    user_profile       = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="card_requests")
-    card_type          = models.CharField(max_length=20, choices=CardType.choices, default=CardType.VIRTUAL, verbose_name="Card type*")
-    card               = models.CharField(max_length=20, choices=Card.choices, default=Card.DEBIT, verbose_name="Card*")
-    card_brand         = models.CharField(max_length=20, choices=CardBrand.choices, default=CardBrand.VISA, verbose_name="Card brand*")
-    user_profile       = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="card_request_basic_information")
-    created_on         = models.DateTimeField(auto_now_add=True)
-    last_modified_on   = models.DateTimeField(auto_now=True)
+    card_request_application = models.ForeignKey(CardRequestApplication, 
+                                               on_delete=models.CASCADE, 
+                                               related_name="basic_information", 
+                                               null=True,
+                                               blank=True)
+    first_name             = models.CharField(max_length=100, verbose_name="First name*")
+    last_name              = models.CharField(max_length=100, verbose_name="Last name*")
+    email                  = models.EmailField(max_length=100, unique=True, verbose_name="Email*")
+    phone_number           = PhoneNumberField(max_length=20, verbose_name="Phone number*")
+    address1               = models.CharField(max_length=255, verbose_name="Addess line 1*")
+    address2               = models.CharField(max_length=255, blank=True, null=True, verbose_name="Address line 2")
+    country                = CountryField(blank_label="(select country)", null=True, verbose_name="Bank Country*")
+    city                   = models.CharField(max_length=100, verbose_name="City*")
+    state                  = models.CharField(max_length=100, verbose_name="State*")
+    postal_code            = models.CharField(max_length=20, verbose_name="Post code*")
+    special_requests       = models.TextField(blank=True, null=True, max_length=500, verbose_name="Special instructions")
+    card_type              = models.CharField(max_length=20, choices=CardType.choices, default=CardType.VIRTUAL, verbose_name="Card type*")
+    card                   = models.CharField(max_length=20, choices=Card.choices, default=Card.DEBIT, verbose_name="Card*")
+    card_brand             = models.CharField(max_length=20, choices=CardBrand.choices, default=CardBrand.VISA, verbose_name="Card brand*")
+    created_on             = models.DateTimeField(auto_now_add=True)
+    last_modified_on       = models.DateTimeField(auto_now=True)
     
+  
     @property
     def full_name(self):
         if self.first_name and self.last_name:
@@ -152,17 +242,16 @@ class CardRequestEmploymentInformation(QueryProfile):
         INTERN    = "intern", _("Intern")
         AGENCY_WORKER = "agency_worker", _("Agency Worker")
             
-    card_request = models.OneToOneField(CardRequestBasicInformation, on_delete=models.CASCADE, related_name="employment_information")
-    employer_name     = models.CharField(max_length=20, verbose_name="Employer name *", blank=True, null=True)
-    employment_status = models.CharField(max_length=20, choices=EmploymentStatus.choices, verbose_name="Employer status*")
-    employment_type = models.CharField(max_length=20, choices=EmploymentType.choices)
+    card_request        = models.OneToOneField(CardRequestApplication, on_delete=models.CASCADE, related_name="employment_information")
+    employer_name       = models.CharField(max_length=20, verbose_name="Employer name *", blank=True, null=True)
+    employment_status   = models.CharField(max_length=20, choices=EmploymentStatus.choices, verbose_name="Employer status*")
+    employment_type     = models.CharField(max_length=20, choices=EmploymentType.choices)
     years_of_employment = models.CharField(max_length=20, choices=YearsOfEmployment.choices)
     annual_income_range = models.CharField(max_length=20, choices=AnnualIncomeRange.choices)
-    pay_frequency = models.CharField(max_length=20, choices=PayFrequency.choices)
-    contract_type = models.CharField(max_length=20, choices=ContractType.choices)
-    uaer_profile  = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="card_request_employments", blank=True, null=True)
-    created_on    = models.DateTimeField(auto_now_add=True)
-    last_modified_on = models.DateTimeField(auto_now=True)
+    pay_frequency       = models.CharField(max_length=20, choices=PayFrequency.choices)
+    contract_type       = models.CharField(max_length=20, choices=ContractType.choices)
+    created_on          = models.DateTimeField(auto_now_add=True)
+    last_modified_on    = models.DateTimeField(auto_now=True)
     
 
     def __str__(self):
@@ -173,8 +262,8 @@ class CardRequestEmploymentInformation(QueryProfile):
 
 class CardRequestAgreement(models.Model):
     
-    title = models.CharField(max_length=80, blank=True, null=True)
+    title              = models.CharField(max_length=80, blank=True, null=True)
     terms_of_condition = CKEditor5Field("Terms of conditions", config_name="default")
-    created_on    = models.DateTimeField(auto_now_add=True)
-    last_modified_on = models.DateTimeField(auto_now=True)
+    created_on         = models.DateTimeField(auto_now_add=True)
+    last_modified_on   = models.DateTimeField(auto_now=True)
    

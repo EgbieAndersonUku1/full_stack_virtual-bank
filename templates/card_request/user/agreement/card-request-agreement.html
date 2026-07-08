@@ -12,6 +12,12 @@
 
 
 
+<!--Add the csrf token to this page-->
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
 {% block page_agreement %}
  
       {% if card_request_agreement %}
@@ -31,7 +37,6 @@
 
 {% block script %}
 
-
-<script src="{% static 'js/risk_analysis/card-request.js' %}" type="module"></script>
+<script src="{% static 'js/risk_analysis/card-request-agreement.js' %}" type="module"></script>
 
 {% endblock script %}

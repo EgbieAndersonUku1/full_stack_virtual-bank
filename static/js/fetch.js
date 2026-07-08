@@ -1,6 +1,3 @@
-import { getCsrfToken } from "./security/csrf.js";
-
-
 /**
  * Asynchronously sends an HTTP request to the specified URL and returns the parsed JSON response.
  * 

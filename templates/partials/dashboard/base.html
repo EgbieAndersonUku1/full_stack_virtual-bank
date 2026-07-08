@@ -10,6 +10,8 @@
     <link rel="shortcut icon" href="{% static '/images/virtual-bank-logo.png' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static '/vendor/fontawesome/css/all.min.css' %}">
     <title>Virtual bank Dashboard - {% block title %}{% endblock title %}</title>
+    {% block csrfToken %}{% endblock csrfToken %}
+    
 </head>
 
 <body>
