@@ -1,0 +1,19 @@
+{% comment %}
+    Custom Card Request Agreement.
+
+    This agreement is managed by administrators through the
+    CardRequestAgreement model in the admin panel.
+
+    When configured, this content replaces the default static
+    agreement provided by the application.
+
+    The title and terms are rendered dynamically from the database.
+{% endcomment %}
+
+
+
+<h1 class="header-8 mb-24">{{ card_request_agreement.title }}</h1>
+
+
+<!--The body text rendered from the admin panel -->
+{{ card_request_agreement.terms_of_condition|safe }}

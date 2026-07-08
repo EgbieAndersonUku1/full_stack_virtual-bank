@@ -1,0 +1,146 @@
+<!-- edit -->
+<div class="flex flex-space-between mt-48">
+
+    <div class="header">
+        <h2 class="header-8">Delivery Information</h2>
+    </div>
+
+    <div class="edit">
+        <a href="{% url 'card_request_information' %}">
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit
+        </a>
+    </div>
+
+</div>
+
+<p class="text-muted subtitle">
+    Verify if this is the correct delivery address information.
+</p>
+
+<hr class="dividor">
+
+
+<!-- the delivery address information -->
+<div class="flex-grid ">
+
+
+    <!-- Address -->
+    <dl class="card-requeset-confirm__list" id="delivery-address-review">
+        <div class="flex-grid two-column-grid">
+
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-house"></i>
+                Delivery Address
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.address1 %}
+                {{ basic_information.address1 | title }}
+
+                {% if basic_information.address2 %}
+                {{ basic_information.address2 | title }}
+                {% endif %}
+                {% else %}
+                Not added
+                {% endif %}
+            </dd>
+        </div>
+
+        <!-- Town / City -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-city"></i>
+                Town / City
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.city %}
+                {{ basic_information.city | title }}
+
+
+                {% else %}
+                Not added
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!--State -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-map"></i>
+                State
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.state %}
+                {{ basic_information.state | title }}
+
+
+                {% else %}
+                Not added
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!--Country -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-globe"></i>
+                Country
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.state %}
+                {{ basic_information.state | title }}
+
+
+                {% else %}
+                Not added
+                {% endif %}
+            </dd>
+        </div>
+
+        <!-- Postcode -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-envelopes-bulk"></i>
+                Postcode
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.postal_code %}
+                {{ basic_information.postal_code | title }}
+
+
+                {% else %}
+                Not added
+                {% endif %}
+            </dd>
+        </div>
+
+        <!-- Special Instructions -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-note-sticky"></i>
+                Special Instructions
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if basic_information.special_requests %}
+                {{ basic_information.special_requests |truncatechars:255 }}
+
+
+                {% else %}
+                Not special instructions given
+                {% endif %}
+            </dd>
+        </div>
+
+    </dl>
+
+
+
+</div>

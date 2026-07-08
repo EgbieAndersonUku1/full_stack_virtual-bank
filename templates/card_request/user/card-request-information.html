@@ -1,0 +1,221 @@
+{% extends "partials/card_request/base.html" %}
+
+{% block title %} Basic Information {% endblock title %}
+
+
+{% block progress_content %}
+
+{% include "partials/card_request/progress_step.html" with current_step=1 %}
+
+{% endblock%}
+
+
+
+{% block page_content %}
+
+
+<!-- the section for the basic information of the card request form.
+  This section collects personal information, card details, and delivery address from the user. -->
+<section id="card-information" class="mt-16">
+
+    <form action="{% url 'card_request_information' %}" method="post" id="card-request-form">
+
+        {% csrf_token %}
+
+        <!-- Section header -->
+        <div class="section-header">
+            <h1 class="header-7">Card Request Information</h1>
+
+            <p class="text-muted subtitle">
+                Please provide your card preferences and delivery details.
+            </p>
+        </div>
+
+
+        <hr class="dividor">
+
+        <div class="card-information__container mt-16">
+
+            <!-- Card request-->
+            <div class="card-request-personal-information">
+
+                <!-- Personal information -->
+                <h2 class="header-8">Personal information</h2>
+                <p class="text-muted subtitle">
+                    Enter the contact details associated with your account so we can process
+                    your card request.
+                </p>
+
+                <hr class="dividor">
+
+                <!-- first name -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-full-name">{{ form.first_name.label }}</label>
+                     {{ form.first_name }}
+                     {{ form.first_name.errors }}
+                </div>
+
+                <!-- surname -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-full-name">{{ form.last_name.label }}</label>
+                     {{ form.last_name }}
+                     {{ form.last_name.errors }}
+                </div>
+                
+                 <!-- phone number -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-phone-number">{{ form.phone_number.label }}</label>
+                     {{ form.phone_number }}
+                     {{ form.phone_number.errors }}
+                </div>
+
+                <!-- card details  -->
+                <h2 class="header-8">Card details</h2>
+                <p class="text-muted subtitle">
+                    Select the type of card you would like us to issue, including the
+                    network
+                    and account type.
+                </p>
+
+                <hr class="dividor">
+
+
+                <!-- Card account type -->
+                <div class="form-group flex-grid">
+                    <label for="requested-card-account-type">
+                        {{ form.card_type.label }}
+                    </label>
+
+                    {{ form.card_type }}
+                    {{ form.card_type.errors }}
+                </div>
+
+                <!-- Card category and network -->
+                <div class="form-row flex-grid two-column-grid column-gap-8">
+
+                    <div class="form-group flex-grid">
+                        <label for="requested-card-category">{{ form.card.label }}</label>
+
+                        {{ form.card }}
+                        {{ form.card.errors }}
+                    </div>
+
+                    <div class="form-group flex-grid">
+                        <label for="requested-card-brand">
+                            {{ form.card_brand.label }}
+                        </label>
+
+                        {{ form.card_brand }}
+                        {{ form.card_brand.errors }}
+                    </div>
+
+                </div>
+
+
+                <!-- Delivery address -->
+                <h2 class="header-8">Delivery address</h2>
+                <p class="text-muted subtitle">
+                    Provide the address where your card should be delivered. Ensure all
+                    details
+                    are accurate to avoid delays.
+                </p>
+
+                <hr class="dividor">
+
+
+                <!-- Address line 1 -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-address1">
+                        {{ form.address1.label }}
+                    </label>
+
+                    {{ form.address1 }}
+                    {{ form.address1.errors }}
+                </div>
+
+                <!-- Address line 2 -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-address2">
+                         {{ form.address2.label }}
+                    </label>
+
+                    {{ form.address2 }}
+                    {{ form.address2.errors }}
+                </div>
+
+                <!-- City -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-county">
+                        {{ form.city.label }}
+                    </label>
+
+                    {{ form.city }}
+                    {{ form.city.errors }}
+                </div>
+
+                <!-- County -->
+                <div class="form-group flex-grid">
+                    <label for="card-request-county">
+                        {{ form.state.label }}
+                    </label>
+
+                    {{ form.state }}
+                    {{ form.state.errors }}
+                </div>
+
+                <!-- Country and postcode -->
+                <div class="flex-grid two-column-grid column-gap-8">
+
+                    <div class=" form-group country flex-grid">
+                        <label for="card-request-country">
+                            {{ form.country.label }}
+                        </label>
+
+                        {{ form.country }}
+                        {{ form.country.errors }}
+                    </div>
+
+                    <div class="form-group flex-grid">
+                        <label for="card-request-postcode">
+                            {{ form.postal_code.label }}
+                        </label>
+                            
+                           {{ form.postal_code }}
+                           {{ form.postal_code.errors }}
+                    </div>
+
+                </div>
+
+                <!-- special instruction delivery-->
+                <div class="form-group flex-grid">
+
+                    <label for="card-request-special-request">
+                        {{ form.special_requests.label }}
+                    </label>
+
+                     {{ form.special_requests }}
+
+                </div>
+
+            </div>
+
+
+            <!-- application summary -->
+            {% include "components/card_request/card_request_summary.html" %}
+
+
+        </div>
+
+
+        <div class="buttons flex flex-end mt-8">
+            <button type="submit" class="blue-bg white-text capitalise" id="card-request-next-btn">Next
+                &gt;
+            </button>
+        </div>
+    </form>
+
+</section>
+
+
+
+{% endblock %}

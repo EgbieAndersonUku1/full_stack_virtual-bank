@@ -1,0 +1,158 @@
+{% load custom_filters %}
+
+<!-- the edit  -->
+<div class="flex flex-space-between mt-48">
+
+    <div class="header">
+        <h2 class="header-8">
+            <i class="fa-solid fa-briefcase"></i>
+            Employment
+        </h2>
+
+        <p class="text-muted subtitle">Verify if the employment details are
+            correct</p>
+    </div>
+
+    <div class="edit">
+        <a href="{% url 'card_request_employment' %}">
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit
+        </a>
+
+
+    </div>
+
+</div>
+
+
+<hr class="dividor mt-24">
+
+
+<!-- employer information container -->
+<div class="flex-grid">
+
+    <dl class="card-request-review-confirm__list" id="employment-review">
+
+
+        <!-- Employment status -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-user-tie"></i>
+                Employment Status
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if employment_information.is_employed == "yes" %}
+                    Employed
+                {% else %}
+                    Unemployed
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!-- Employment type -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-briefcase"></i>
+                Employment Type
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                {% if employment_information.is_employed == "yes" %}
+                   {{ employment_information.employment_type |remove_under_score|title }}
+                {% else %}
+                    No data added, the user is unemployed
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!-- Employer name -->
+        <div class="flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-building"></i>
+                Employer Name
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                 {% if employment_information.is_employed == "yes" %}
+                   {{ employment_information.employer_name | title }}
+                {% else %}
+                    No data added, the user is unemployed
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!-- Years employed -->
+        <div class=" flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-clock"></i>
+                Years Employed
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                 {% if employment_information.is_employed == "yes" %}
+                   {{ employment_information.years_of_employment|remove_under_score|title }}
+                {% else %}
+                    No data added, the user is unemployed
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!-- Annual salary -->
+        <div class=" flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-sterling-sign"></i>
+                Annual Salary
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                 {% if employment_information.is_employed == "yes" %}
+                   {{ employment_information.annual_income_range|remove_under_score| title }}
+                {% else %}
+                    No data added, the user is unemployed
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!-- Payment frequency -->
+        <div class=" flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                Payment Frequency
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                 {% if employment_information.is_employed == "yes" %}
+                   {{ employment_information.pay_frequency |remove_under_score| title }}
+                {% else %}
+                    No data added, the user is unemployed
+                {% endif %}
+            </dd>
+        </div>
+
+
+        <!-- Contract type -->
+        <div class=" flex-grid two-column-grid">
+            <dt class="card-request-review-confirm__label">
+                <i class="fa-solid fa-file-contract"></i>
+                Contract Type
+            </dt>
+
+            <dd class="card-request-review-confirm__value">
+                 {% if employment_information.is_employed == "yes" %}
+                   {{ employment_information.contract_type |remove_under_score | title }}
+                {% else %}
+                    No data added, the user is unemployed
+                {% endif %}
+            </dd>
+        </div>
+
+
+    </dl>
+
+</div>

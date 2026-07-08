@@ -48,9 +48,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Application definition
 
 INSTALLED_APPS = [
+    
+    # pip installed django apps
     'jazzmin',
     'django_q',
     'django_countries',
+    'django_ckeditor_5',
+    
 
     # third party django apps
     'django.contrib.admin',
@@ -69,6 +73,7 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'user_profile.apps.UserProfileConfig',
     'platform_employee.apps.PlatformEmployeeConfig',
+    'card_request.apps.CardRequestConfig',
 
 
     
@@ -99,6 +104,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'bank.context_processors.bank_details',
+                'card_request.context_processors.display_bank_details_on_card',
+                'card_request.context_processors.display_application_summary_details',
             ],
         },
     },
@@ -289,7 +296,11 @@ DEFAULT_CODE_EXPIRY_IN_MINUTES  = 5
 SORT_CODE_ALLOCATION_BLOCK = 200_000
 
 
+# session key for card agreement cache key
+CARD_AGREEMENT_SESSION_KEY = "card_request_agreement"
 
+
+# jazzmin configurations
 JAZZMIN_SETTINGS = {
     "site_title": "Bank Admin",
     "site_header": "Bank Core System",
@@ -301,6 +312,8 @@ JAZZMIN_SETTINGS = {
 }
 
 
+
+
 BANK_CACHE_KEY = "banks"
 BANK_CACHE_TTL = 300
 
@@ -309,3 +322,25 @@ TEMP_PROFILE_IMAGE_SESSION_KEY = "temp_profile_image"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+
+# ckeditor configurations
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "blockQuote",
+            "insertTable",
+            "undo",
+            "redo",
+        ],
+    },
+}

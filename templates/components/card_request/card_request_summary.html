@@ -1,0 +1,130 @@
+{% load static %}
+
+<div class="card-request-summary">
+
+    <div class="card-request-summary__container">
+        <h2 class="header-8">Application summary</h2>
+
+        <hr class="dividor mb-16">
+
+        <p class="text-muted mt-16 mb-24">
+            Preview a sample of the card along with your card details and application information before continuing.
+        </p>
+
+        <p class="text-muted mb-24">
+            Your card number and expiry date will be generated once your card has been confirmed.
+        </p>
+
+        <div class="bank-card credit-discover-card" role="region"
+            aria-label="Atlas Bank Discover Debit Card, balance £0.00">
+
+            <div class="card-head">
+                <div class="card-head-info">
+                    <h3>{{ current_account.bank_name|title }}</h3>
+                    <p class="bank-card-amount">0.00</p>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div class="chip">
+                    <img src="{% static 'images/icons/sim-card-chip.svg' %}" alt="Card chip">
+                </div>
+
+                <div class="credit-transaction-type flex flex-end">
+                    <span class="card-type">{{ basic_information.card_type|title }}</span>
+                </div>
+
+                <div class="card-number flex flex-end">
+                    <span class="card-number">***********</span>
+                </div>
+
+            </div>
+
+            <div class="card-footer flex flex-space-between">
+                <div class="card-name">
+                    {{ basic_information.first_name|title }} {{ basic_information.last_name|title }}
+                </div>
+
+                <div class="card-expiry-date">
+                    <p>Expiry date: TBD</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card-request-summary__info mt-24">
+
+        <dl>
+
+            <div class="group">
+                <dt class="card-request-review-confirm__label">Card Brand</dt>
+                <dd class="card-request-review-confirm__value">
+                    {% if basic_information.card_brand %}
+                        {{ basic_information.card_brand|title }}
+                    {% else %}
+                        Not Selected
+                    {% endif %}
+                </dd>
+            </div>
+
+            <div class="group">
+                <dt class="card-request-review-confirm__label">Card Variant</dt>
+                <dd class="card-request-review-confirm__value">
+                    {% if basic_information.card_type %}
+                        {{ basic_information.card_type|title }}
+                    {% else %}
+                        Not Selected
+                    {% endif %}
+                </dd>
+            </div>
+
+            <div class="group">
+                <dt class="card-request-review-confirm__label">Delivery</dt>
+                <dd class="card-request-review-confirm__value">
+                    {% if basic_information.card_type == "virtual" %}
+                        Instant
+                    {% elif basic_information.card_type == "physical" %}
+                        3-5 working days
+                    {% elif basic_information.card_type == "temporary" %}
+                        Instant
+                    {% else %}
+                        Not selected yet
+                    {% endif %}
+                </dd>
+            </div>
+
+            <div class="group">
+                <dt class="card-request-review-confirm__label">Ext delivery</dt>
+                <dd class="card-request-review-confirm__value">
+                    {% if basic_information.card_type == "virtual" %}
+                        Instant
+                    {% elif basic_information.card_type == "physical" %}
+                        3-5 working days
+                    {% elif basic_information.card_type == "temporary" %}
+                        Instant
+                    {% else %}
+                        Not selected yet
+                    {% endif %}
+                </dd>
+            </div>
+
+        </dl>
+
+    </div>
+
+    <div class="chat-info flex-grid two-column-20_80_grid mt-24">
+
+        <div class="chat-icon center" aria-hidden="true">
+            <i class="fa-solid fa-headset"></i>
+        </div>
+
+        <div class="chat">
+            <h3 class="header-9">Need help</h3>
+            <p class="text-muted">Chat with our support team</p>
+        </div>
+
+    </div>
+
+</div>

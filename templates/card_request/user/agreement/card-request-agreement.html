@@ -1,0 +1,42 @@
+{% extends "partials/card_request/agreement/base.html" %}
+{% load static %}
+
+{% block title %} Card agreement {% endblock title %}
+
+
+{% block progress_content %}
+
+{% include "partials/card_request/progress_step.html" with current_step=4 %}
+
+{% endblock%}
+
+
+
+<!--Add the csrf token to this page-->
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
+{% block page_agreement %}
+ 
+      {% if card_request_agreement %}
+            {% include "components/card_request/card_agreement/custom_agreement.html" %}
+      {% else %}
+             
+            {% include "components/card_request/card_agreement/default_agreement.html" %}
+      {% endif %}
+
+
+     
+
+
+
+{% endblock page_agreement %}
+
+
+{% block script %}
+
+<script src="{% static 'js/risk_analysis/card-request-agreement.js' %}" type="module"></script>
+
+{% endblock script %}

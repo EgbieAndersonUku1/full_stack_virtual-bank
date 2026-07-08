@@ -93,7 +93,7 @@ class AccountOnboardingService:
             user_profile = cls._create_profile(user=user, profile_data=profile_data)
             bank_account = AccountService.open_bank_account(bank=bank, user_profile=user_profile)
 
-            if bank.offer_saving_account:
+            if bank.offer_saving_account == Bank.OfferSavingAccountOptions.YES:
                  AccountService.open_bank_account(bank=bank, user_profile=user_profile, account_type=BankAccount.AccountType.SAVINGS)
 
             cls._create_pin(pin=pin, user=user, user_profile=user_profile)    

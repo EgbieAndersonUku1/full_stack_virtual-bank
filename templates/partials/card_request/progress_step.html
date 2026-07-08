@@ -1,0 +1,72 @@
+<!-- templates for card_request_progress.html -->
+
+<ol class="card-request-progress__steps flex-grid four-column-grid">
+
+    <li class="card-request-progress__step
+        {% if current_step > 1 %}card-request-progress__step--complete{% elif current_step == 1 %}card-request-progress__step--active{% endif %}"
+        {% if current_step == 1 %}aria-current="step"{% endif %}>
+
+        <span class="card-request-progress__number" aria-hidden="true">1</span>
+
+        <span class="card-request-progress__label">
+            Card Request
+        </span>
+
+        {% if current_step == 1 %}
+            <span class="sr-only">Current step</span>
+        {% endif %}
+
+    </li>
+
+
+    <li class="card-request-progress__step
+        {% if current_step > 2 %}card-request-progress__step--complete{% elif current_step == 2 %}card-request-progress__step--active{% endif %}"
+        {% if current_step == 2 %}aria-current="step"{% endif %}>
+
+        <span class="card-request-progress__number" aria-hidden="true">2</span>
+
+        <span class="card-request-progress__label">
+            Employment Details
+        </span>
+
+        {% if current_step == 2 %}
+            <span class="sr-only">Current step</span>
+        {% endif %}
+
+    </li>
+
+
+    <li class="card-request-progress__step
+        {% if current_step > 3 %}card-request-progress__step--complete{% elif current_step == 3 %}card-request-progress__step--active{% endif %}"
+        {% if current_step == 3 %}aria-current="step"{% endif %}>
+
+        <span class="card-request-progress__number" aria-hidden="true">3</span>
+
+        <span class="card-request-progress__label">
+            Review and Confirm
+        </span>
+
+        {% if current_step == 3 %}
+            <span class="sr-only">Current step</span>
+        {% endif %}
+
+    </li>
+
+
+    <li class="card-request-progress__step
+        {% if current_step == 4 %}card-request-progress__step--active{% endif %}"
+        {% if current_step == 4 %}aria-current="step"{% endif %}>
+
+        <span class="card-request-progress__number" aria-hidden="true">4</span>
+
+        <span class="card-request-progress__label">
+            Agreement
+        </span>
+
+        {% if current_step == 4 %}
+            <span class="sr-only">Current step</span>
+        {% endif %}
+
+    </li>
+
+</ol>

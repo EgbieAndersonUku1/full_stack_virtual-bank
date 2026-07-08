@@ -1,0 +1,112 @@
+{% extends "partials/card_request/base.html" %}
+{% load static %}
+
+{% block title %} Card Agreement {% endblock title %}
+
+
+{% block progress_content %}
+
+{% include "partials/card_request/progress_step.html" with current_step=4 %}
+
+{% endblock%}
+
+
+{% include "partials/messages/messages.html" %}
+{% block page_content %}
+
+
+
+<section id="card-information" class="mt-16">
+
+    <!-- Section header -->
+    <div class="p-24 mt-24 white-bg" id="greeting-section">
+
+        <h3>Agreement</h3>
+        <p>
+            Please read and agree to complete your card request
+        </p>
+    </div>
+
+
+    <hr class="dividor">
+
+    <div class="card-information__container mt-16">
+
+        <!-- Card request-->
+        <div class="card-request-review-agreement white-bg p-24">
+
+
+            <section id="card-request-agreement">
+
+                {% block page_agreement %}{% endblock page_agreement %}
+
+                <form action="{% url "card_request_agreement" %}" id="review-agreement-form" class="flex-grid mt-24"
+                    method="post">
+                    {% csrf_token %}
+
+                    <label class="agreement-checkbox">
+                        {{ form.agreed }}
+                        <span>
+                            {{ form.agreed.label }}
+                        </span>
+
+                    </label>
+
+                    <div class="flex flex-end">
+                        <button class="blue-bg white-text capitalise mt-24" id="card-request-next-btn" type="submit">I
+                            agree & submit
+                        </button>
+                    </div>
+
+                </form>
+
+            </section>
+
+
+
+            <div class="review-info flex-grid two-column-20_80_grid mt-24 section-header">
+                <div class="badge">
+                    <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                </div>
+
+                <div class="text-info">
+                    <h3 class="mt-8 mb-8">You are almost done</h3>
+                    <p>Once you agree we will submit your application and you receive a confirmation shortly.</p>
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+        <!-- application summary -->
+        {% include "components/card_request/card_request_summary.html" %}
+
+
+
+    </div>
+
+
+    <div class="buttons flex flex-end mt-48">
+        <a href="{% url "card_request_review_and_confirm" %}" class="back-btn center white-bg capitalise mr-4">
+            &lt; Back
+
+        </a>
+
+
+    </div>
+
+
+</section>
+
+
+{% endblock page_content %}
+
+
+{% block script %}
+
+
+<script src="{% static 'js/risk_analysis/card-request.js' %}" type="module"></script>
+
+{% endblock script %}
