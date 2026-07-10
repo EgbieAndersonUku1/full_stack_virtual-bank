@@ -1,9 +1,17 @@
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
+from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from django.conf import settings
 
-from .models import CardRequestAgreement
+from .errors import PendingCardRequestApplicationAlreadyExistsError
+from .models import (CardRequestAgreement, 
+                     CardRequestApplication, 
+                     CardRequestBasicInformation, 
+                     CardRequestEmploymentInformation
+                     )
 from utils.safe_cache import set_cache_with_retry, delete_cache_with_retry
+from card_request.services import construct_card_application_session_key
+
 
 
 @receiver(post_save, sender=CardRequestAgreement)
@@ -50,3 +58,55 @@ def delete_card_request_cache(sender, instance, **kwargs):
     delete_cache_with_retry(key=settings.CARD_AGREEMENT_SESSION_KEY)
     
   
+  
+@receiver(pre_save, sender=CardRequestApplication)
+def does_user_have_an_existing_pending_application(sender, instance, **kwargs):
+    """
+    Prevents a user from creating multiple pending card request applications.
+
+    Before saving a card request application, this checks whether the user
+    already has an existing pending application. If one exists, a
+    PendingCardRequestApplicationAlreadyExistsError is raised.
+
+    When an existing application changes from a pending state to another
+    state (for example, accepted or rejected), the cached pending application
+    status is removed. This ensures the user's application status page
+    reflects the latest state without requiring stale cached data.
+
+    Cache invalidation is used to prevent unnecessary database lookups when
+    displaying the user's pending application status.
+    """
+    
+    if instance._state.adding and CardRequestApplication.has_pending_application(instance.user):
+        error_msg = _(
+            "Cannot create a new card request application because user '{username}' already has a pending application."
+        ).format(username=instance.user.username)
+
+        raise PendingCardRequestApplicationAlreadyExistsError(error_msg)
+
+    if not instance.pk:
+        return
+    
+    previous = sender.objects.get(pk=instance.pk)
+    
+    if previous.status != instance.status and previous.status != CardRequestApplication.Status.PENDING:
+        cache_key = construct_card_application_session_key(instance.user.username)
+        set_cache_with_retry(key=cache_key, value=CardRequestApplication.Status.PENDING)
+
+
+@receiver(post_delete, sender=CardRequestApplication)
+def delete_user_card_request_status_from_cache(sender, instance, **kwargs):
+    """
+    Removes the cached card request status after a card request application
+    is deleted.
+
+    This prevents deleted applications from continuing to appear as pending
+    in cached user status checks.
+    """
+    if not instance._state.adding and instance.status != CardRequestApplication.Status.PENDING:
+        session_key = construct_card_application_session_key(instance.user.username)
+        delete_cache_with_retry(key=session_key)
+  
+  
+
+       

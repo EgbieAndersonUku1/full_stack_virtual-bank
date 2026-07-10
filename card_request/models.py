@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from django.db import models
+from django.db.models import QuerySet
 from django.core.exceptions import ValidationError
 from django_countries.fields import CountryField
 from django_ckeditor_5.fields import CKEditor5Field
@@ -24,12 +25,14 @@ class CardRequestApplication(models.Model):
         PENDING  = "Pending", _("Pending")
         ACCEPTED = "Accepted", _("Accepted")
         REJECTED =  "Rejected", _("Rejected")
+        WITHDRAWN = "withdrawn", _("Withdrawn")
+        CANCELLED = "cancelled", _("Cancelled")
         
     user             = models.ForeignKey(User, on_delete=models.CASCADE)
     status           = models.CharField(choices=Status.choices, max_length=15, default=Status.PENDING)
     created_on       = models.DateTimeField(auto_now_add=True)
     last_modified_on = models.DateTimeField(auto_now_add=True)
-    review_on        = models.DateTimeField(blank=True, null=True)
+    reviewed_on      = models.DateTimeField(blank=True, null=True)
     notes            = models.TextField(validators=[MaxLengthValidator(2000)], blank=True, null=True)
     reviewed_by      = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reviewed_card_applications")
     submitted_on     = models.DateTimeField(blank=True, null=True)
@@ -87,14 +90,18 @@ class CardRequestApplication(models.Model):
         return queryset
     
     @classmethod
-    def _check_if_user_instance(cls, user, User) -> None:
+    def _check_if_user_instance(cls, user: User) -> None:
         if not isinstance(user, User):
             raise TypeError(
                 f"Expected a User instance, got {type(user).__name__}."
             )
     
+    @property
+    def applicant_full_name(self):
+        return self.user.profile.full_name
+    
     def __str__(self):
-        return self.user
+        return str(self.user)
     
 
 class QueryProfile(models.Model):
@@ -107,7 +114,7 @@ class QueryProfile(models.Model):
         abstract = True
 
     @classmethod
-    def get_by_user_profile(cls, user_profile) -> UserProfile | None:
+    def get_by_user(cls, user) -> UserProfile | None:
         """
         Return the first record matching the given UserProfile.
 
@@ -120,14 +127,14 @@ class QueryProfile(models.Model):
         Raises:
             ValueError: If user_profile is not a UserProfile instance.
         """
-        if not isinstance(user_profile, UserProfile):
+        if not isinstance(user, User):
             raise ValueError(
-                f"user_profile must be an instance of UserProfile. "
-                f"Expected UserProfile, got {type(user_profile).__name__}"
+                f"user must be an instance of User. "
+                f"Expected User, got {type(user).__name__}"
             )
 
         try:
-            return cls.objects.get(user_profile=user_profile)
+            return cls.objects.get(user=user)
         except cls.DoesNotExist:
             return None
     
@@ -148,14 +155,14 @@ class CardRequestBasicInformation(QueryProfile):
         MASTERCARD = "mastercard", _("Mastercard")
         DISCOVER   = "discover", _("Discover")
 
-    card_request_application = models.ForeignKey(CardRequestApplication, 
+    application = models.ForeignKey(CardRequestApplication, 
                                                on_delete=models.CASCADE, 
                                                related_name="basic_information", 
                                                null=True,
                                                blank=True)
     first_name             = models.CharField(max_length=100, verbose_name="First name*")
     last_name              = models.CharField(max_length=100, verbose_name="Last name*")
-    email                  = models.EmailField(max_length=100, unique=True, verbose_name="Email*")
+    email                  = models.EmailField(max_length=100, verbose_name="Email*")
     phone_number           = PhoneNumberField(max_length=20, verbose_name="Phone number*")
     address1               = models.CharField(max_length=255, verbose_name="Addess line 1*")
     address2               = models.CharField(max_length=255, blank=True, null=True, verbose_name="Address line 2")
@@ -242,7 +249,7 @@ class CardRequestEmploymentInformation(QueryProfile):
         INTERN    = "intern", _("Intern")
         AGENCY_WORKER = "agency_worker", _("Agency Worker")
             
-    card_request        = models.OneToOneField(CardRequestApplication, on_delete=models.CASCADE, related_name="employment_information")
+    application         = models.OneToOneField(CardRequestApplication, on_delete=models.CASCADE, related_name="employment_information")
     employer_name       = models.CharField(max_length=20, verbose_name="Employer name *", blank=True, null=True)
     employment_status   = models.CharField(max_length=20, choices=EmploymentStatus.choices, verbose_name="Employer status*")
     employment_type     = models.CharField(max_length=20, choices=EmploymentType.choices)
@@ -255,7 +262,7 @@ class CardRequestEmploymentInformation(QueryProfile):
     
 
     def __str__(self):
-        return f"Employment Information for {self.card_request.full_name}"
+        return f"Employment Information for {self.application.applicant_full_name}"
     
     
 
@@ -267,3 +274,39 @@ class CardRequestAgreement(models.Model):
     created_on         = models.DateTimeField(auto_now_add=True)
     last_modified_on   = models.DateTimeField(auto_now=True)
    
+
+class CardRequestApplicationLog(models.Model):
+    
+    class Action(models.TextChoices):
+        APPLICATION_SUBMITTED = "application_submitted", _("Application Submitted")
+        STATUS_CHANGED        = "status_changed", _("Status Changed")
+        REVIEW_COMPLETED      = "review_completed", _("Review Completed")
+        NOTES_ADDED           = "notes_added", _("Notes Added")
+    
+    action           = models.CharField(choices=Action.choices, max_length=25)
+    user             = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    username         = models.CharField(max_length=60)
+    email            = models.EmailField(max_length=100)
+    full_name        = models.CharField(max_length=100)
+    notes            = models.TextField(blank=True)
+    created_on       = models.DateTimeField(auto_now_add=True)
+    last_modified_on = models.DateTimeField(auto_now=True)
+    
+    
+    @classmethod
+    def get_all_user_logs(cls, user: User, action = None) -> QuerySet[CardRequestApplicationLog] :
+        cls._validate_user_instance(user)
+        
+        if action == None:
+            return cls.objects.filter(user=user)
+        
+        if not isinstance(action, str):
+            raise TypeError(f"Expected a string for action. Got type {type(action).__name__}")
+    
+        return cls.objects.filter(user=user, action=action)
+    
+    @classmethod
+    def _validate_user_instance(cls, user: User):
+        if not isinstance(user, User):
+            raise TypeError(f"Expected a user instance. Got object with type {type(user).__name__}")
+        

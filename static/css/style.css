@@ -5881,7 +5881,7 @@ clicks the button
 .card-request-personal-information {
 
     border: 2px solid lavender;
-    background: white;
+    background: #ffff;
     padding: var(--space-24);
 }
 

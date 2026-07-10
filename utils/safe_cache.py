@@ -76,7 +76,8 @@ def get_cache_or_set(key: str,
     value = cache.get(key)
 
     if value is not None:
-        logger.info(f"Retrieving value from the cache using the key: {key}")
+        
+        logger.debug("Retrieving value from the cache using the key: %s", key)
         return value
 
     with cache_lock(key) as locked:

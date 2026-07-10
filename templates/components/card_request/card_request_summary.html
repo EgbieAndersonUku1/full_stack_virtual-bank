@@ -7,12 +7,20 @@
 
         <hr class="dividor mb-16">
 
+        {% if show_card_preview_msg %}
         <p class="text-muted mt-16 mb-24">
             Preview a sample of the card along with your card details and application information before continuing.
         </p>
+        {% else %} 
+            <p class="text-muted mt-16 mb-24">
+                Your card is currently under review. 
+            </p>
+
+            
+        {% endif %}
 
         <p class="text-muted mb-24">
-            Your card number and expiry date will be generated once your card has been confirmed.
+            Your card number and expiry date will be generated once your card has been reviewed and approved.
         </p>
 
         <div class="bank-card credit-discover-card" role="region"
@@ -54,65 +62,68 @@
         </div>
     </div>
 
-    <div class="card-request-summary__info mt-24">
+    {% if show_card_request_table %}
+        <div class="card-request-summary__info mt-24">
 
-        <dl>
+            <dl>
 
-            <div class="group">
-                <dt class="card-request-review-confirm__label">Card Brand</dt>
-                <dd class="card-request-review-confirm__value">
-                    {% if basic_information.card_brand %}
-                        {{ basic_information.card_brand|title }}
-                    {% else %}
-                        Not Selected
-                    {% endif %}
-                </dd>
-            </div>
+                <div class="group">
+                    <dt class="card-request-review-confirm__label">Card Brand</dt>
+                    <dd class="card-request-review-confirm__value">
+                        {% if basic_information.card_brand %}
+                            {{ basic_information.card_brand|title }}
+                        {% else %}
+                            Not Selected
+                        {% endif %}
+                    </dd>
+                </div>
 
-            <div class="group">
-                <dt class="card-request-review-confirm__label">Card Variant</dt>
-                <dd class="card-request-review-confirm__value">
-                    {% if basic_information.card_type %}
-                        {{ basic_information.card_type|title }}
-                    {% else %}
-                        Not Selected
-                    {% endif %}
-                </dd>
-            </div>
+                <div class="group">
+                    <dt class="card-request-review-confirm__label">Card Variant</dt>
+                    <dd class="card-request-review-confirm__value">
+                        {% if basic_information.card_type %}
+                            {{ basic_information.card_type|title }}
+                        {% else %}
+                            Not Selected
+                        {% endif %}
+                    </dd>
+                </div>
 
-            <div class="group">
-                <dt class="card-request-review-confirm__label">Delivery</dt>
-                <dd class="card-request-review-confirm__value">
-                    {% if basic_information.card_type == "virtual" %}
-                        Instant
-                    {% elif basic_information.card_type == "physical" %}
-                        3-5 working days
-                    {% elif basic_information.card_type == "temporary" %}
-                        Instant
-                    {% else %}
-                        Not selected yet
-                    {% endif %}
-                </dd>
-            </div>
+                <div class="group">
+                    <dt class="card-request-review-confirm__label">Delivery</dt>
+                    <dd class="card-request-review-confirm__value">
+                        {% if basic_information.card_type == "virtual" %}
+                            Instant
+                        {% elif basic_information.card_type == "physical" %}
+                            3-5 working days
+                        {% elif basic_information.card_type == "temporary" %}
+                            Instant
+                        {% else %}
+                            Not selected yet
+                        {% endif %}
+                    </dd>
+                </div>
 
-            <div class="group">
-                <dt class="card-request-review-confirm__label">Ext delivery</dt>
-                <dd class="card-request-review-confirm__value">
-                    {% if basic_information.card_type == "virtual" %}
-                        Instant
-                    {% elif basic_information.card_type == "physical" %}
-                        3-5 working days
-                    {% elif basic_information.card_type == "temporary" %}
-                        Instant
-                    {% else %}
-                        Not selected yet
-                    {% endif %}
-                </dd>
-            </div>
+                <div class="group">
+                    <dt class="card-request-review-confirm__label">Ext delivery</dt>
+                    <dd class="card-request-review-confirm__value">
+                        {% if basic_information.card_type == "virtual" %}
+                            Instant
+                        {% elif basic_information.card_type == "physical" %}
+                            3-5 working days
+                        {% elif basic_information.card_type == "temporary" %}
+                            Instant
+                        {% else %}
+                            Not selected yet
+                        {% endif %}
+                    </dd>
+                </div>
 
-        </dl>
+            </dl>
 
-    </div>
+        </div>
+
+    {% endif %}
 
     <div class="chat-info flex-grid two-column-20_80_grid mt-24">
 
@@ -122,7 +133,7 @@
 
         <div class="chat">
             <h3 class="header-9">Need help</h3>
-            <p class="text-muted">Chat with our support team</p>
+            <p class="text-muted">Chat with our support team about your card application</p>
         </div>
 
     </div>
