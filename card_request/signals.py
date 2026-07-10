@@ -89,9 +89,13 @@ def does_user_have_an_existing_pending_application(sender, instance, **kwargs):
     
     previous = sender.objects.get(pk=instance.pk)
     
+    cache_key = construct_card_application_session_key(instance.user.username)
+    
     if previous.status != instance.status and previous.status != CardRequestApplication.Status.PENDING:
-        cache_key = construct_card_application_session_key(instance.user.username)
         set_cache_with_retry(key=cache_key, value=CardRequestApplication.Status.PENDING)
+        return
+    
+    delete_cache_with_retry(cache_key)
 
 
 @receiver(post_delete, sender=CardRequestApplication)
