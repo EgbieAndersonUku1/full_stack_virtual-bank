@@ -46,7 +46,7 @@
 
                     <div class="card-request-employment-options flex-grid two-column-grid column-gap-8">
 
-                        {% for radio in form.is_employed %}
+                        {% for radio in form.employment_status %}
                         <div class="card-request-employment-option">
 
                             {{ radio.tag }}
@@ -170,8 +170,7 @@
 
 
             <!-- application summary -->
-            {% include "components/card_request/card_request_summary.html" %}
-
+            {% include "components/card_request/card_request_summary.html" with show_card_request_table=True show_card_preview_msg=True %}
         </div>
 
 

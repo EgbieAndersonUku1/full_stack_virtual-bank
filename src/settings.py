@@ -264,6 +264,14 @@ LOGGING = {
             "propagate": False,
         },
     },
+    
+    "loggers": {
+    "application": {
+        "handlers": ["app_file"],
+        "level": "INFO",
+        "propagate": False,
+    },
+    },
 
     # -------------------------
     # Root logger

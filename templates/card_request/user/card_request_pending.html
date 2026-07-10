@@ -1,0 +1,57 @@
+{% extends "partials/card_request/base.html" %}
+{% load static %}
+
+{% block title %} Application submitted {% endblock title %}
+
+
+
+{% block page_content %}
+
+<section id="card-information" class="mt-16">
+
+    <!-- Section header -->
+    <div class="mt-24" id="greeting-section">
+
+        <p class="white-text green-bg p-24">
+            Card Request Submitted – Pending Review
+        </p>
+
+    </div>
+
+    <hr class="dividor">
+
+    <div class="card-information__container mt-16">
+
+        <!-- Pending application -->
+        <div class="card-request-pending-status white-bg p-24">
+
+            <div class="section-header">
+
+                <h1 class="header-5">Application Submitted</h1>
+
+                <p class="mb-4 mt-24">
+                    Thank you for submitting your card request.
+                </p>
+
+                <p>
+                    Your application has been received and is currently being reviewed by our team.
+                </p>
+
+                <p class="mt-16">
+                    There is nothing further you need to do at this time. We will notify you once a decision has been made.
+                </p>
+
+            </div>
+
+        </div>
+
+        {% include "components/card_request/card_request_summary.html"  %}
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+=

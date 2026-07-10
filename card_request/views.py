@@ -9,8 +9,8 @@ from setup.decorators import onboarding_required
 from utils.decorators import go_to_staff_page, is_email_verified
 from .form import CardRequestForm, CardRequestEmploymentForm, CardAgreementForm
 from .views_helper import get_card_request_agreement
-
-
+from .services import CardRequestService
+from utils.decorators import is_card_request_application_status_pending
 
 
 # Create your views here.
@@ -21,6 +21,7 @@ employment_information_session_key =  "employment_request"
 
 
 
+@is_card_request_application_status_pending
 @onboarding_required
 @go_to_staff_page
 @is_email_verified
@@ -51,6 +52,7 @@ def card_request_information(request):
 
 
 
+@is_card_request_application_status_pending
 @onboarding_required
 @go_to_staff_page
 @is_email_verified
@@ -76,6 +78,7 @@ def card_request_employment(request):
 
 
 
+@is_card_request_application_status_pending
 @onboarding_required
 @go_to_staff_page
 @is_email_verified
@@ -91,7 +94,7 @@ def card_request_review_and_confirm(request):
 
 
 
-
+@is_card_request_application_status_pending
 @onboarding_required
 @go_to_staff_page
 @is_email_verified
@@ -105,8 +108,13 @@ def card_request_agreement(request):
         
         if form.is_valid():
            
-            request.session.pop(basic_information_session_key, None)
-            request.session.pop(employment_information_session_key, None)
+            basic_information = request.session.pop(basic_information_session_key, {})
+            employment_information = request.session.pop(employment_information_session_key, {})
+            
+            CardRequestService.add_card_request_to_database(basic_information=basic_information,
+                                                            employment_information=employment_information,
+                                                            user=request.user
+                                                            )
            
             messages.success(
                 request,
@@ -156,10 +164,7 @@ def get_card_request_completion_status(request):
                 is_personal_information_complete
                 and is_employment_information_complete
             ),
-           "SUCCESS_MSG": (
-                    f"Your card request has been submitted successfully. "
-                    f"We will review your application and notify you of the outcome shortly."
-                )
+           "SUCCESS_MSG": ""
         }
 
         if not is_personal_information_complete:
@@ -167,7 +172,23 @@ def get_card_request_completion_status(request):
 
         if not is_employment_information_complete:
             data["STAGE_2_ERROR_MSG"] = construct_missing_stage_message("employment information")
+        
+        if is_personal_information_complete and is_employment_information_complete:
+            data["SUCCESS_MSG"] = (
+                    f"Your card request has been submitted successfully. "
+                    f"We will review your application and notify you of the outcome shortly."
+                )
 
         return data
 
     return handle_json_post_request(request, func=build_card_request_completion_status)
+
+
+
+@is_card_request_application_status_pending
+@onboarding_required
+@go_to_staff_page
+@is_email_verified
+@login_required
+def is_application_pending(request):
+    return render(request, "card_request/user/card_request_pending.html")

@@ -53,13 +53,13 @@ class CardRequestForm(forms.ModelForm):
 
 class CardRequestEmploymentForm(forms.ModelForm):
 
-    IS_EMPLOYED_CHOICES = [
+    employment_status_CHOICES = [
         ("yes", "Yes"),
         ("no", "No"),
     ]
 
-    is_employed = forms.ChoiceField(
-        choices=IS_EMPLOYED_CHOICES,
+    employment_status = forms.ChoiceField(
+        choices=employment_status_CHOICES,
         widget=forms.RadioSelect,
         label="Are you currently employed?",
         required=True,
@@ -80,7 +80,7 @@ class CardRequestEmploymentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        is_employed = self.data.get("is_employed")
+        employment_status = self.data.get("employment_status")
 
         # JS handles UI behaviour (show/hide + required toggling),
         # but frontend validation is not secure because it can be bypassed
@@ -92,7 +92,7 @@ class CardRequestEmploymentForm(forms.ModelForm):
         #
         # If user selects "no", employment fields are not required.
         #
-        if is_employed == "no":
+        if employment_status == "no":
             
             for field in [
                 "employment_type",
@@ -134,14 +134,14 @@ class CardRequestEmploymentForm(forms.ModelForm):
         
         cleaned_data = super().clean()
 
-        is_employed = cleaned_data.get("is_employed")
+        employment_status = cleaned_data.get("employment_status")
 
         # Backend validation is the source of truth.
         # Even though JS hides/controls fields on the frontend,
         # users can bypass it, so we enforce conditional validation here.
         #
         # If employed = "yes", employment fields become required.
-        if is_employed == "yes":
+        if employment_status == "yes":
             
             required_fields = [
                 "employment_type",

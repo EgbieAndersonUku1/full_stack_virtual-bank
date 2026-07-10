@@ -40,6 +40,10 @@ class UserProfile(models.Model):
     created_on     = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     last_updated   = models.DateTimeField(auto_now=True)
 
+    @property
+    def full_name(self):
+        name_parts = [self.first_name, self.middle_name, self.last_name]
+        return ' '.join(filter(None, name_parts))
 
     @classmethod
     def get_profile_by_user(cls, user: User) -> UserProfile | None:

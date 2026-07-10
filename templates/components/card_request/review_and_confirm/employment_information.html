@@ -42,7 +42,7 @@
             </dt>
 
             <dd class="card-request-review-confirm__value">
-                {% if employment_information.is_employed == "yes" %}
+                {% if employment_information.employment_status == "yes" %}
                     Employed
                 {% else %}
                     Unemployed
@@ -59,7 +59,7 @@
             </dt>
 
             <dd class="card-request-review-confirm__value">
-                {% if employment_information.is_employed == "yes" %}
+                {% if employment_information.employment_status == "yes" %}
                    {{ employment_information.employment_type |remove_under_score|title }}
                 {% else %}
                     No data added, the user is unemployed
@@ -76,7 +76,7 @@
             </dt>
 
             <dd class="card-request-review-confirm__value">
-                 {% if employment_information.is_employed == "yes" %}
+                 {% if employment_information.employment_status == "yes" %}
                    {{ employment_information.employer_name | title }}
                 {% else %}
                     No data added, the user is unemployed
@@ -93,7 +93,7 @@
             </dt>
 
             <dd class="card-request-review-confirm__value">
-                 {% if employment_information.is_employed == "yes" %}
+                 {% if employment_information.employment_status == "yes" %}
                    {{ employment_information.years_of_employment|remove_under_score|title }}
                 {% else %}
                     No data added, the user is unemployed
@@ -110,7 +110,7 @@
             </dt>
 
             <dd class="card-request-review-confirm__value">
-                 {% if employment_information.is_employed == "yes" %}
+                 {% if employment_information.employment_status == "yes" %}
                    {{ employment_information.annual_income_range|remove_under_score| title }}
                 {% else %}
                     No data added, the user is unemployed
@@ -127,7 +127,7 @@
             </dt>
 
             <dd class="card-request-review-confirm__value">
-                 {% if employment_information.is_employed == "yes" %}
+                 {% if employment_information.employment_status == "yes" %}
                    {{ employment_information.pay_frequency |remove_under_score| title }}
                 {% else %}
                     No data added, the user is unemployed
@@ -144,7 +144,7 @@
             </dt>
 
             <dd class="card-request-review-confirm__value">
-                 {% if employment_information.is_employed == "yes" %}
+                 {% if employment_information.employment_status == "yes" %}
                    {{ employment_information.contract_type |remove_under_score | title }}
                 {% else %}
                     No data added, the user is unemployed
