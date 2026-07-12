@@ -158,7 +158,7 @@ class CardRequestBasicInformation(QueryProfile):
         MASTERCARD = "mastercard", _("Mastercard")
         DISCOVER   = "discover", _("Discover")
 
-    application = models.ForeignKey(CardRequestApplication, 
+    application = models.OneToOneField(CardRequestApplication, 
                                                on_delete=models.CASCADE, 
                                                related_name="basic_information", 
                                                null=True,
