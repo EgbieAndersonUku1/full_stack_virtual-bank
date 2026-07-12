@@ -1,7 +1,18 @@
 from django.contrib import admin
 
-
-from .models import CardRequestAgreement, CardRequestApplication, CardRequestApplicationLog, CardRequestBasicInformation, CardRequestEmploymentInformation
+from utils.admin.filter import StatusFilteredAdmin
+from .models import (CardRequestAgreement, 
+                     CardRequestApplication, 
+                     CardRequestApplicationLog, 
+                     CardRequestBasicInformation, 
+                     CardRequestEmploymentInformation,
+                     CardRequestApplicationPending,
+                     CardRequestApplicationAccepted,
+                     CardRequestApplicationWithdrawn,
+                     CardRequestApplicationRejected,
+                     CardRequestApplicationCancelled
+                     
+                     )
 
 
 # Register your models here.
@@ -37,12 +48,12 @@ class CardRequestAgreementAdmin(admin.ModelAdmin):
     ]
 
     
-
-class CardRequestApplicationAdmin(admin.ModelAdmin):
-
+class CardRequestApplicationBaseAdmin(admin.ModelAdmin):
+    """"""
+    
     list_display       = ["id", "user", "status", "submitted_on", "reviewed_by", "created_on", "last_modified_on"]
     list_display_links = ["id", "user"]
-    list_filter        = ["status", "created_on", "submitted_on"]
+    list_filter        = ["created_on", "submitted_on"]
     search_fields      = ["user__username", "user__email", "reviewed_by"]
     readonly_fields    = ["created_on", "last_modified_on", "user", "reviewed_by", "submitted_on", "reviewed_on"]
 
@@ -83,9 +94,12 @@ class CardRequestApplicationAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     
-  
     
-
+class CardRequestApplicationAdmin(CardRequestApplicationBaseAdmin):
+    list_filter  = ["status", "created_on", "submitted_on"]
+   
+    
+    
 class CardRequestBasicInformationAdmin(admin.ModelAdmin):
 
     list_display       = ["id", "full_name", "email", "card_type", "card", "card_brand", "created_on"]
@@ -287,9 +301,68 @@ class CardRequestApplicationLogAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
      
-    
+
+
+
+class CardRequestApplicationPendingAdmin(CardRequestApplicationBaseAdmin, StatusFilteredAdmin):
+    """
+    Admin configuration for the pending card request application proxy.
+
+    Filters records to display only applications with a pending status.
+    """
+
+    required_status = CardRequestApplication.Status.PENDING
+
+
+class CardRequestApplicationAcceptedAdmin(CardRequestApplicationBaseAdmin, StatusFilteredAdmin):
+    """
+    Admin configuration for the accepted card request application proxy.
+
+    Filters records to display only applications with an accepted status.
+    """
+
+    required_status = CardRequestApplication.Status.ACCEPTED
+
+
+class CardRequestApplicationWithdrawnAdmin(CardRequestApplicationBaseAdmin, StatusFilteredAdmin):
+    """
+    Admin configuration for the withdrawn card request application proxy.
+
+    Filters records to display only applications with a withdrawn status.
+    """
+
+    required_status = CardRequestApplication.Status.WITHDRAWN
+
+
+class CardRequestApplicationRejectedAdmin(CardRequestApplicationBaseAdmin, StatusFilteredAdmin):
+    """
+    Admin configuration for the rejected card request application proxy.
+
+    Filters records to display only applications with a rejected status.
+    """
+
+    required_status = CardRequestApplication.Status.REJECTED
+
+
+class CardRequestApplicationCancelledAdmin(CardRequestApplicationBaseAdmin, StatusFilteredAdmin):
+    """
+    Admin configuration for the cancelled card request application proxy.
+
+    Filters records to display only applications with a cancelled status.
+    """
+
+    required_status = CardRequestApplication.Status.CANCELLED
+                     
+                     
+                     
+                     
 admin.site.register(CardRequestAgreement, CardRequestAgreementAdmin)
 admin.site.register(CardRequestApplication, CardRequestApplicationAdmin)
 admin.site.register(CardRequestBasicInformation, CardRequestBasicInformationAdmin)
 admin.site.register(CardRequestEmploymentInformation, CardRequestEmploymentInformationAdmin)
+admin.site.register(CardRequestApplicationPending, CardRequestApplicationPendingAdmin)
+admin.site.register(CardRequestApplicationAccepted, CardRequestApplicationAcceptedAdmin)
+admin.site.register(CardRequestApplicationWithdrawn,CardRequestApplicationWithdrawnAdmin)
+admin.site.register(CardRequestApplicationRejected, CardRequestApplicationRejectedAdmin)
+admin.site.register(CardRequestApplicationCancelled, CardRequestApplicationCancelledAdmin)
 admin.site.register(CardRequestApplicationLog, CardRequestApplicationLogAdmin)

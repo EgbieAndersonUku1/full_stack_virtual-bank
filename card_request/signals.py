@@ -98,19 +98,4 @@ def does_user_have_an_existing_pending_application(sender, instance, **kwargs):
     delete_cache_with_retry(cache_key)
 
 
-@receiver(post_delete, sender=CardRequestApplication)
-def delete_user_card_request_status_from_cache(sender, instance, **kwargs):
-    """
-    Removes the cached card request status after a card request application
-    is deleted.
-
-    This prevents deleted applications from continuing to appear as pending
-    in cached user status checks.
-    """
-    if not instance._state.adding and instance.status != CardRequestApplication.Status.PENDING:
-        session_key = construct_card_application_session_key(instance.user.username)
-        delete_cache_with_retry(key=session_key)
-  
-  
-
        
