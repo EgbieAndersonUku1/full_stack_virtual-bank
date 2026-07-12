@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from django.db import models
 from django.db.models import QuerySet
-from django.core.exceptions import ValidationError
 from django_countries.fields import CountryField
 from django_ckeditor_5.fields import CKEditor5Field
 from phonenumber_field.modelfields import PhoneNumberField
@@ -141,6 +140,10 @@ class QueryProfile(models.Model):
 
 class CardRequestBasicInformation(QueryProfile):
     
+    class Meta:
+        verbose_name        = "Card request basic information"
+        verbose_name_plural = "Card request basic information"
+     
     class CardType(models.TextChoices):
         VIRTUAL   = "virtual", _("Virtual")
         PHYSICAL  = "physical", _("Physical")
@@ -202,6 +205,10 @@ class CardRequestBasicInformation(QueryProfile):
 
 class CardRequestEmploymentInformation(QueryProfile):
     
+    class Meta:
+        verbose_name        = "Card request employment detail"
+        verbose_name_plural = "Card request employment details"
+        
     class EmploymentStatus(models.TextChoices):
         EMPLOYED = "employed", _("Employed")
         UNEMPLOYED = "unemployed", _("Unemployed")
@@ -309,4 +316,63 @@ class CardRequestApplicationLog(models.Model):
     def _validate_user_instance(cls, user: User):
         if not isinstance(user, User):
             raise TypeError(f"Expected a user instance. Got object with type {type(user).__name__}")
+        
+        
+        
+
+class CardRequestApplicationPending(CardRequestApplication):
+    """
+    Proxy model representing card request applications that are pending
+    """
+    class Meta:
+        proxy = True
+        verbose_name = "Pending application"
+        verbose_name_plural = "Pending applications"
+
+
+class CardRequestApplicationAccepted(CardRequestApplication):
+    """
+    Proxy model representing card request applications that have been accepted.
+    """
+
+    class Meta:
+        proxy = True
+        verbose_name = "Accepted application"
+        verbose_name_plural = "Accepted applications"
+
+
+class CardRequestApplicationRejected(CardRequestApplication):
+    """
+    Proxy model representing card request applications that have been rejected.
+    """
+
+    class Meta:
+        proxy = True
+        verbose_name = "Rejected application"
+        verbose_name_plural = "Rejected applications"
+
+
+class CardRequestApplicationWithdrawn(CardRequestApplication):
+    """
+    Proxy model representing card request applications that have been withdrawn
+    by the applicant.
+    """
+
+    class Meta:
+        proxy = True
+        verbose_name = "Withdrawn application"
+        verbose_name_plural = "Withdrawn applications"
+
+
+class CardRequestApplicationCancelled(CardRequestApplication):
+    """
+    Proxy model representing card request applications that have been cancelled.
+    """
+
+    class Meta:
+        proxy = True
+        verbose_name = "Cancelled application"
+        verbose_name_plural = "Cancelled applications"
+
+
         

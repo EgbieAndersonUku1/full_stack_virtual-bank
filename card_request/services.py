@@ -21,6 +21,12 @@ logger = logging.getLogger("application")
 User   = get_user_model()
 
 
+EMPLOYMENT_STATUS_FORM_MAPPING = {
+    "yes": CardRequestEmploymentInformation.EmploymentStatus.EMPLOYED,
+    "no": CardRequestEmploymentInformation.EmploymentStatus.UNEMPLOYED,
+}
+
+
 def construct_card_application_session_key(username: str) -> str:
     """
     Constructs the session cache key for a user's card application.
@@ -116,7 +122,11 @@ class CardRequestService:
                 basic_information_obj.save()
                 
                 # add employment information
-                employment_information_obj = CardRequestEmploymentInformation(**employment_information)
+                employment_information_copy = employment_information.copy()
+                
+                employment_information_copy["employment_status"] = EMPLOYMENT_STATUS_FORM_MAPPING[employment_information_copy["employment_status"].lower()]
+                
+                employment_information_obj             = CardRequestEmploymentInformation(**employment_information_copy)
                 employment_information_obj.application = application
                 employment_information_obj.save()
             

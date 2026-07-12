@@ -1,6 +1,7 @@
 from django.contrib import admin
-from django.contrib.auth.models import Group
 
+
+from utils.admin.filter import StatusFilteredAdmin
 
 from django.utils.translation import gettext_lazy as _
 
@@ -61,22 +62,6 @@ class BaseVerificationAdmin(admin.ModelAdmin):
         return False
 
 
-class VerificationStatusAdmin(BaseVerificationAdmin):
-    """
-    Base admin for status-specific verification views.
-
-    Filters the queryset by a predefined status, allowing proxy admins
-    to display a focused subset of verification records.
-    """
-    status_filter = None
-
-    def get_queryset(self, request):
-        if self.status_filter is None:
-            raise ValueError(_("status_filter must be defined"))
-
-        return super().get_queryset(request).filter(status=self.status_filter)
-    
-
 
 class UserAdminModel(admin.ModelAdmin):
     readonly_fields = ["created_on", "last_updated", "last_login", "username", "email", "username", "password"]
@@ -102,24 +87,24 @@ class VerificationAdminModel(BaseVerificationAdmin):
     list_filter = ["status", "is_used"]
 
 
-class VerificationBlockAdmin(VerificationStatusAdmin):
+class VerificationBlockAdmin(StatusFilteredAdmin, BaseVerificationAdmin):
     """Admin view for verification records with BLOCKED status."""
-    status_filter = Verification.Status.BLOCKED
+    required_status = Verification.Status.BLOCKED
 
 
-class VerificationPendingAdmin(VerificationStatusAdmin):
+class VerificationPendingAdmin(StatusFilteredAdmin, BaseVerificationAdmin):
     """Admin view for verification records with PENDING status."""
-    status_filter = Verification.Status.PENDING
+    required_status = Verification.Status.PENDING
 
 
-class VerificationExpiredAdmin(VerificationStatusAdmin):
+class VerificationExpiredAdmin(StatusFilteredAdmin, BaseVerificationAdmin):
     """Admin view for verification records with EXPIRED status."""
-    status_filter = Verification.Status.EXPIRED
+    required_status = Verification.Status.EXPIRED
 
 
-class VerificationUsedAdmin(VerificationStatusAdmin):
+class VerificationUsedAdmin(StatusFilteredAdmin, BaseVerificationAdmin):
     """Admin view for verification records with SUCCESS status."""
-    status_filter = Verification.Status.VERIFIED
+    required_status = Verification.Status.VERIFIED
 
    
 class EmailLogAdminModel(admin.ModelAdmin):
