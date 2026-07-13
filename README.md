@@ -6,14 +6,13 @@ Features, architecture, database structure, admin workflows, and internal bankin
 
 The project is active development with the goal of simulatating a real-world banking platform, with a strong focus on:
 
-* secure financial workflows
-* deterministic account provisioning
-* role-based access control (RBAC)
-* transaction safety
-* concurrency protection
-* scalable banking architecture
-* clean domain-driven design principles
-
+- secure financial workflows
+- deterministic account provisioning
+- role-based access control (RBAC)
+- transaction safety
+- concurrency protection
+- scalable banking architecture
+- clean domain-driven design principles
 
 ---
 
@@ -23,12 +22,12 @@ This project is a **virtual banking simulation system** built with Django and Po
 
 It includes:
 
-* wallet functionality
-* user management
-* banking operations
-* role-based administration
-* sequential account provisioning
-* internal access control workflows
+- wallet functionality
+- user management
+- banking operations
+- role-based administration
+- sequential account provisioning
+- internal access control workflows
 
 The system is designed to simulate banking-style infrastructure and operational workflows in a controlled development environment.
 
@@ -48,6 +47,7 @@ The system is designed to simulate banking-style infrastructure and operational 
 - [Static Logo Files](#static-logo-files)
 - [Why Static Assets Are Used for Logos](#why-static-assets-are-used-for-logos)
 - [Create Superuser](#-create-superuser)
+- [Development Email Storage](#-development-email-storage)
 - [Available Routes](#some-available-routes)
 - [Troubleshooting](#-troubleshooting)
 - [Role-Based Access Control (RBAC)](#role-based-access-control-rbac)
@@ -68,8 +68,8 @@ The system is designed to simulate banking-style infrastructure and operational 
 
 This project is tested and recommended with:
 
-* Python **3.11 – 3.13.x**
-* Python **3.14+ is not recommended yet** due to partial ecosystem support across Django dependencies and third-party packages
+- Python **3.11 – 3.13.x**
+- Python **3.14+ is not recommended yet** due to partial ecosystem support across Django dependencies and third-party packages
 
 See the official Python downloads page:
 
@@ -151,10 +151,10 @@ pip install -r requirements.txt
 
 ## Requirements
 
-* Python 3.11–3.13
-* PostgreSQL
-* pgAdmin 4
-* pip / virtualenv
+- Python 3.11–3.13
+- PostgreSQL
+- pgAdmin 4
+- pip / virtualenv
 
 ---
 
@@ -176,11 +176,11 @@ pip install -r requirements.txt
 
 Inside pgAdmin:
 
-* Servers → PostgreSQL
-* Right-click `Databases`
-* Create → Database
-* Name: `virtual_bank`
-* Owner: `postgres`
+- Servers → PostgreSQL
+- Right-click `Databases`
+- Create → Database
+- Name: `virtual_bank`
+- Owner: `postgres`
 
 ---
 
@@ -199,7 +199,6 @@ PORT=5432
 ⚠️ Never commit `.env` files to GitHub.
 
 ---
-
 
 ## PostgreSQL Must Be Running
 
@@ -232,9 +231,9 @@ services.msc
 
 3. Locate **PostgreSQL**
 4. Ensure the service is **Running**
+   - If not, click **Start**
+   - Or right-click → **Restart**
 
-   * If not, click **Start**
-   * Or right-click → **Restart**
 5. (Recommended) Set Startup Type to:
 
 ```
@@ -256,13 +255,11 @@ netstat -ano | findstr :5432
 Django connects to PostgreSQL during startup.
 If the database is not running:
 
-* migrations cannot be checked
-* connection times out
-* server startup halts
+- migrations cannot be checked
+- connection times out
+- server startup halts
 
 ---
-
-
 
 # Django Database Configuration
 
@@ -292,7 +289,6 @@ python manage.py migrate
 
 ---
 
-
 ---
 
 # Seed Demo Banking Data
@@ -303,10 +299,10 @@ The seed command provisions demo banks using the internal banking allocation sys
 
 This includes:
 
-* banks
-* sort code allocation ranges
-* allocation state records
-* provisioning metadata
+- banks
+- sort code allocation ranges
+- allocation state records
+- provisioning metadata
 
 ⚠️ These commands are intended for development environments or testing simulations only.
 
@@ -324,10 +320,10 @@ This will create the predefined demo banks included with the project.
 
 Example seeded data includes:
 
-* digital banks
-* investment banks
-* mutual banks
-* high-street banking simulations
+- digital banks
+- investment banks
+- mutual banks
+- high-street banking simulations
 
 The command uses the internal:
 
@@ -351,10 +347,10 @@ This command removes simulation allocation records and seeded banking data so th
 
 Example cleanup includes:
 
-* bank accounts
-* sort codes
-* allocation state records
-* seeded banks
+- bank accounts
+- sort codes
+- allocation state records
+- seeded banks
 
 ⚠️ This command should only be used in development or for running the simulation.
 
@@ -399,15 +395,14 @@ The project intentionally stores demo bank logos inside static assets instead of
 
 This ensures:
 
-* cloned repositories work immediately
-* seeded banks always have logo references
-* contributors do not need manual media setup
-* demo environments remain reproducible
+- cloned repositories work immediately
+- seeded banks always have logo references
+- contributors do not need manual media setup
+- demo environments remain reproducible
 
 This approach is intended for simulation and development workflows.
 
 ---
-
 
 # 👤 Create Superuser
 
@@ -427,6 +422,42 @@ python manage.py runserver
 
 ---
 
+# 📧 Development Email Storage
+
+Since this project is a **banking simulation environment**, emails are handled locally during development instead of being sent through an external email provider. This keeps the project self-contained and avoids requiring developers to configure an external email service while testing workflows.
+
+This allows registration emails and other notifications generated by the application to be tested without requiring email service configuration.
+
+After performing actions such as user registration or account-related workflows, generated emails can be found inside:
+
+```text
+send_emails/dev/
+```
+
+Example:
+
+```text
+send_emails/
+└── dev/
+    ├── welcome_email.log
+    ├── verification_email.log
+    └── account_notification.log
+```
+
+This approach keeps the development setup simple by:
+
+- avoiding the need to configure external email services
+- allowing developers to view generated emails locally
+- making email workflows easier to test during development
+
+In a production environment, emails would typically be delivered through a configured email service provider. This local email storage workflow is intended only for the simulated banking environment.
+
+**Note:**
+
+- The filenames shown above in the examples are simplified examples for readability. In the actual application, the backend controls email file naming and generates a unique random filename with a `.log` extension. To locate your email, check the latest generated file.
+
+---
+
 ## Terminal Two — Run Django-Q
 
 This allows background tasks such as email processing.
@@ -439,16 +470,16 @@ python manage.py qcluster
 
 # Some Available Routes
 
-* App:
+- App:
   http://127.0.0.1:8000/
 
-* Dashboard:
+- Dashboard:
   http://127.0.0.1:8000/dashboard
 
-* Terms:
+- Terms:
   http://127.0.0.1:8000/terms-and-conditions
 
-* Admin:
+- Admin:
   http://127.0.0.1:8000/admin/
 
 ---
@@ -457,15 +488,15 @@ python manage.py qcluster
 
 ## ❌ Dependency or Import Errors
 
-* Ensure the correct Python version is installed (3.11–3.13)
-* Recreate the virtual environment
+- Ensure the correct Python version is installed (3.11–3.13)
+- Recreate the virtual environment
 
 ---
 
 ## ❌ Database Connection Failed
 
-* Ensure PostgreSQL service is running
-* Verify `.env` values
+- Ensure PostgreSQL service is running
+- Verify `.env` values
 
 ---
 
@@ -479,11 +510,11 @@ python manage.py migrate --run-syncdb
 
 # 📌 Notes
 
-* Django connects directly to PostgreSQL
-* pgAdmin is only a graphical database management tool
-* Always use environment variables for secrets
-* Keep dependencies pinned for stability
-* Recreate the virtual environment if the Python version changes
+- Django connects directly to PostgreSQL
+- pgAdmin is only a graphical database management tool
+- Always use environment variables for secrets
+- Keep dependencies pinned for stability
+- Recreate the virtual environment if the Python version changes
 
 ---
 
@@ -497,11 +528,11 @@ This transforms the Django admin into a:
 
 with:
 
-* role assignment
-* permission mapping
-* secure admin workflows
-* user visibility restrictions
-* internal administrative controls
+- role assignment
+- permission mapping
+- secure admin workflows
+- user visibility restrictions
+- internal administrative controls
 
 ---
 
@@ -517,10 +548,10 @@ Then:
 
 1. Click `Add group`
 2. Enter a role name such as:
-   * Admin
-   * Teller
-   * Support
-   * Customer
+   - Admin
+   - Teller
+   - Support
+   - Customer
 3. Assign permissions to the role
 4. Click save
 
@@ -532,23 +563,23 @@ The group now acts as a reusable system role.
 
 Inside the group:
 
-* Add permissions for relevant models
-* Define what actions the role can perform
+- Add permissions for relevant models
+- Define what actions the role can perform
 
 Example:
 
-| Role | Example Permissions |
-|---|---|
-| Teller | View accounts, change accounts |
-| Support | View customers |
-| Admin | Full permissions |
+| Role    | Example Permissions            |
+| ------- | ------------------------------ |
+| Teller  | View accounts, change accounts |
+| Support | View customers                 |
+| Admin   | Full permissions               |
 
 Django permissions include:
 
-* view
-* add
-* change
-* delete
+- view
+- add
+- change
+- delete
 
 ---
 
@@ -604,9 +635,9 @@ You are authenticated as <email>, but are not authorised to access this page.
 
 Admin user selection is automatically filtered to:
 
-* active users only
-* unlocked users only
-* staff-aware visibility restrictions
+- active users only
+- unlocked users only
+- staff-aware visibility restrictions
 
 This prevents inactive or locked accounts from being assigned within sensitive workflows.
 
@@ -616,17 +647,17 @@ This prevents inactive or locked accounts from being assigned within sensitive w
 
 Once a user has been assigned:
 
-* a role (group permissions)
-* `is_staff=True`
+- a role (group permissions)
+- `is_staff=True`
 
 they can successfully login and access the Django admin interface.
 
 However, users will only see:
 
-* models
-* admin pages
-* actions
-* workflows
+- models
+- admin pages
+- actions
+- workflows
 
 that their assigned permissions allow them to access.
 
@@ -634,11 +665,11 @@ This means the admin interface dynamically changes depending on the user's assig
 
 Example:
 
-| Role | Example Admin Visibility |
-|---|---|
-| Teller | Accounts and transaction-related models only |
-| Support | Customer support related models only |
-| Admin | Full administrative access |
+| Role    | Example Admin Visibility                     |
+| ------- | -------------------------------------------- |
+| Teller  | Accounts and transaction-related models only |
+| Support | Customer support related models only         |
+| Admin   | Full administrative access                   |
 
 This ensures that internal users only interact with the parts of the system required for their operational responsibilities set to
 them by the superuser.
@@ -646,8 +677,6 @@ them by the superuser.
 The design is to ensure a secure and banking-style internal administration system built around the principle of:
 
 > least privilege access control
-
-
 
 # Create Banks and Bank Accounts
 
@@ -661,12 +690,12 @@ The system intentionally avoids random number generation for financial identifie
 
 Sequential generation provides several guarantees required in banking and financial systems:
 
-* predictable allocation boundaries
-* collision prevention
-* deterministic identifier issuance
-* easier auditing and traceability
-* efficient concurrency handling
-* allocation integrity across banks
+- predictable allocation boundaries
+- collision prevention
+- deterministic identifier issuance
+- easier auditing and traceability
+- efficient concurrency handling
+- allocation integrity across banks
 
 In this system, each bank receives an isolated allocation block.
 
@@ -709,10 +738,10 @@ This guarantees that identifier spaces never overlap between banks.
 
 The system intentionally avoids random generation because banking systems require strong guarantees around:
 
-* uniqueness
-* traceability
-* allocation safety
-* deterministic provisioning
+- uniqueness
+- traceability
+- allocation safety
+- deterministic provisioning
 
 Example of avoided approach:
 
@@ -722,11 +751,11 @@ random.randint(0, 9999999)
 
 Random generation introduces risks such as:
 
-* collision handling complexity
-* retry logic during concurrency
-* fragmented identifier spaces
-* reduced auditability
-* non-deterministic allocation behaviour
+- collision handling complexity
+- retry logic during concurrency
+- fragmented identifier spaces
+- reduced auditability
+- non-deterministic allocation behaviour
 
 Sequential allocation provides a safer and more predictable approach.
 
@@ -736,16 +765,16 @@ Sequential allocation provides a safer and more predictable approach.
 
 Identifier generation is protected using:
 
-* database transactions
-* row-level locking (`select_for_update`)
+- database transactions
+- row-level locking (`select_for_update`)
 
 This prevents race conditions during concurrent account creation.
 
 Guarantees include:
 
-* no duplicate identifiers
-* consistent allocation state
-* atomic account creation workflows
+- no duplicate identifiers
+- consistent allocation state
+- atomic account creation workflows
 
 ---
 
@@ -753,12 +782,12 @@ Guarantees include:
 
 The allocation system is composed of several domain components:
 
-| Component | Responsibility |
-|---|---|
-| `SortCodeAllocationState` | Tracks global allocation progress |
-| `SortCodeRangePool` | Stores reusable allocation ranges |
-| `SortCode` | Tracks per-bank issued identifiers |
-| `BankProvisioningService` | Creates and provisions banks |
-| `AccountService` | Safely provisions bank accounts |
+| Component                 | Responsibility                     |
+| ------------------------- | ---------------------------------- |
+| `SortCodeAllocationState` | Tracks global allocation progress  |
+| `SortCodeRangePool`       | Stores reusable allocation ranges  |
+| `SortCode`                | Tracks per-bank issued identifiers |
+| `BankProvisioningService` | Creates and provisions banks       |
+| `AccountService`          | Safely provisions bank accounts    |
 
 This architecture helps maintain strict allocation integrity while supporting scalability and concurrency safety.
