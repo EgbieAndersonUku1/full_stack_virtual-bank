@@ -7,7 +7,7 @@
 
     <ul class="sidebar-nav">
 
-        {% if not request.user.is_superuser and not request.user.is_staff %}
+        {% if not request.user.is_superuser and not request.user.is_staff and not request.user.is_admin %}
 
             {% include 'components/staff/_non-staff-side-bar.html' %}
         {% else %}

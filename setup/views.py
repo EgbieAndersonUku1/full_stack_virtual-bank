@@ -18,9 +18,10 @@ from user_profile.forms import UserProfileForm
 from utils.decorators import is_email_verified
 from utils.safe_cache import get_cache_or_set
 from setup.decorators import onboarding_blocked
+from utils.decorators import go_to_staff_page
 from utils.services.image_processor import  TempImageStorageService
-from utils.custom_errors import (MissingUploadedImageFile, 
-                                 PredifinedBanksCreationError, 
+from utils.custom_errors import (MissingUploadedImageFile,
+                                 PredifinedBanksCreationError,
                                  MissingBankInformationError
                                  )
 
@@ -66,7 +67,7 @@ def upload_profile_picture(request):
     return JsonResponse(context)
 
 
-
+@go_to_staff_page
 @onboarding_blocked
 @is_email_verified
 @login_required
@@ -74,31 +75,32 @@ def bank_setup_welecome(request):
     return render(request, "bank/setup/welcome.html")
 
 
+@go_to_staff_page
 @onboarding_blocked
 @is_email_verified
 @login_required
 def bank_setup_bank_choices(request):
 
-    banks = banks = get_cache_or_set(key=settings.BANK_CACHE_KEY, 
-                                    value_or_func=lambda: Bank.objects.seeded(), 
+    banks = banks = get_cache_or_set(key=settings.BANK_CACHE_KEY,
+                                    value_or_func=lambda: Bank.objects.seeded(),
                                     ttl=settings.BANK_CACHE_TTL
                                     )
-    
-    
+
+
     bank_id = request.POST.get("chosen_bank")
 
     if bank_id:
         request.session["bank_id"]    = bank_id
         request.session["next_step"]  = "choose_pin"
         return redirect("choose_pin")
-    
+
     context = {
         "banks": banks
     }
     return render(request, "bank/setup/bank-choices.html", context=context)
 
 
-
+@go_to_staff_page
 @onboarding_blocked
 @is_email_verified
 @login_required
@@ -112,7 +114,7 @@ def bank_setup_pin(request):
             request.session["pin"] = form.cleaned_data.get("pin")
             request.session["next_step"]  = "create_profile"
             return redirect("create_profile")
-      
+
     context = {
         "form": form,
     }
@@ -123,9 +125,9 @@ def bank_setup_pin(request):
 @is_email_verified
 @login_required
 def bank_setup_create_profile(request):
-    
+
     profile_data = request.session.get("profile_draft", {})
-  
+
     form = UserProfileForm(initial=profile_data)
 
     if request.method == "POST":
@@ -155,13 +157,13 @@ def bank_setup_create_profile(request):
             # The profile model already handles missing values
             if cleaned_middle_name:
                 request.session["profile_draft"]["middle_name"] = cleaned_middle_name
-            
+
             if cleaned_address_line_2:
                 request.session["profile_draft"]["address_line_2"] = cleaned_address_line_2
-            
+
             if profile_pic is not None:
-                request.session["profile_draft"]["profile_pic"] = profile_pic   
-            
+                request.session["profile_draft"]["profile_pic"] = profile_pic
+
             request.session["next_step"]  = "bank_confirmation"
             return redirect("bank_confirmation")
 
@@ -172,29 +174,32 @@ def bank_setup_create_profile(request):
     return  render(request, "bank/setup/bank-create_profile.html", context=context)
 
 
+
+@go_to_staff_page
 @onboarding_blocked
 @is_email_verified
 @login_required
 def bank_setup_final_confirmation(request):
 
     bank_id = request.session.get("bank_id")
- 
+
     context  = {}
 
     if not bank_id:
         messages.info(request, "You haven't chosen a bank. Please select a bank")
         return redirect("choose_bank")
-    
-    
+
+
     banks = get_banks_with_cache_fallback(key=settings.BANK_CACHE_KEY)
-   
+
     if banks is None:
         raise PredifinedBanksCreationError(_("The predefined banks is missing"))
-    
+
     context["chosen_bank"] = banks.filter(pk=int(bank_id)).first()
     return  render(request, "bank/setup/bank-completion.html", context=context)
 
 
+@go_to_staff_page
 @onboarding_blocked
 @is_onboarding_steps_completed
 @is_email_verified
@@ -204,10 +209,10 @@ def create_bank_account(request):
     bank_id      = request.session.get("bank_id", None)
     profile_data = request.session.get("profile_draft", {})
     banks        = get_banks_with_cache_fallback(key=settings.BANK_CACHE_KEY)
-  
+
     if banks is None:
         raise PredifinedBanksCreationError(_("The predefined banks is missing"))
-    
+
     bank = banks.filter(pk=bank_id).first()
 
     if bank is None:
@@ -218,7 +223,7 @@ def create_bank_account(request):
                                                  profile_data=profile_data,
                                                  pin=request.session.get("pin", None),
                                                  )
-    
+
     request.session.pop("bank_id")
     request.session.pop("profile_draft")
 
@@ -229,9 +234,9 @@ def create_bank_account(request):
         messages.success(request,
                 "Your account has been successfully created. We've sent a welcome email with your account details."
                 )
-    
+
         return redirect("dashboard")
-    
+
     messages.error(request, "Something went wrong and the profile wasn't created. Please try again.")
     return redirect("setup-welcome")
 

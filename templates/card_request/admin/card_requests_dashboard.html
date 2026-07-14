@@ -1,0 +1,273 @@
+{% extends "partials/dashboard/base.html" %}
+{% load static %}
+{% block title%}Main page{% endblock title %} {% block body %}
+
+<section id="dashboard-admin" aria-label="Dashboard admin">
+  <div class="dashboard__container">
+    <!-- Main content -->
+    <section class="dashboard__container__main" tabindex="-1">
+      {% include "partials/header/header.html" %}
+
+      <!-- admin panel -->
+      <section id="admin-panel" class="mt-48">
+        
+        <div class="admin-panel__container">
+          <!-- Card Request Review Queue -->
+          <h1 class="capitalise">Card Request Review Queue</h1>
+          <p class="section-subtitle">
+            Review, assess, and manage customer card request applications
+            throughout the approval workflow.
+          </p>
+
+          <div class="cards flex-grid three-column-grid admin-cards">
+            <!-- View all card request applications regardless of current status -->
+            <a
+              href="#"
+              class="card admin-card"
+              aria-label="Open All Applications"
+            >
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/all_applications.png' %}"
+                  alt="All Applications"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">All Applications</h1>
+                <p>
+                  Review all submitted card request applications regardless of
+                  their current status.
+                </p>
+              </div>
+            </a>
+
+            <!-- Review newly submitted applications waiting for administrator action -->
+            <a
+              href="#"
+              class="card admin-card"
+              aria-label="Open Pending Applications"
+            >
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/pending_applications.png' %}"
+                  alt="Pending Applications"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">Pending Applications</h1>
+                <p>
+                  Review newly submitted applications awaiting administrative
+                  review and decision.
+                </p>
+              </div>
+            </a>
+
+            <!-- View applications that have passed review and been approved -->
+            <a
+              href="#"
+              class="card admin-card"
+              aria-label="Open Approved Applications"
+            >
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/approved_applications.png' %}"
+                  alt="Approved Applications"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">Approved Applications</h1>
+                <p>
+                  View applications that have successfully completed the review
+                  process and been approved.
+                </p>
+              </div>
+            </a>
+
+            <!-- Review applications that were declined during the approval process -->
+            <a
+              href="#"
+              class="card admin-card"
+              aria-label="Open Rejected Applications"
+            >
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/rejected_applications.png' %}"
+                  alt="Rejected Applications"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">Rejected Applications</h1>
+                <p>
+                  Review declined applications and view recorded review notes or
+                  rejection reasons.
+                </p>
+              </div>
+            </a>
+
+            <!-- Review applications that require additional investigation before a decision -->
+            <a
+              href="#"
+              class="card admin-card"
+              aria-label="Open On Hold Applications"
+            >
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/placed_on_hold_applications.png' %}"
+                  alt="On Hold Applications"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">On Hold Applications</h1>
+                <p>
+                  View applications temporarily placed on hold for further
+                  investigation or additional checks.
+                </p>
+              </div>
+            </a>
+
+            <!-- Review applications currently undergoing assessment -->
+            <a
+              href="#"
+              class="card admin-card"
+              aria-label="Open Under Review Applications"
+            >
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/under_review_applications.png' %}"
+                  alt="Under Review Applications"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">Under Review Applications</h1>
+                <p>
+                  View applications currently being assessed before a final
+                  approval decision is made.
+                </p>
+              </div>
+            </a>
+          </div>
+
+          <!-- Application Management -->
+          <h1 class="capitalise">Application Management</h1>
+          <p class="section-subtitle">
+            Access applications that were cancelled or withdrawn during the card
+            request review process.
+          </p>
+
+          <div class="cards flex-grid three-column-grid admin-cards">
+            <!-- View applications cancelled before completing the review workflow -->
+            <a
+              href="#"
+              class="card admin-card"
+              aria-label="Open Cancelled Applications"
+            >
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/cancelled_applications.png' %}"
+                  alt="Cancelled Applications"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">Cancelled Applications</h1>
+                <p>
+                  View applications that were cancelled before completion of the
+                  review process.
+                </p>
+              </div>
+            </a>
+
+            <!-- View applications withdrawn by customers before approval -->
+            <a
+              href="#"
+              class="card admin-card"
+              aria-label="Open Withdrawn Applications"
+            >
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/withdrawn_applications.png' %}"
+                  alt="Withdrawn Applications"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">Withdrawn Applications</h1>
+                <p>
+                  View applications voluntarily withdrawn by customers before
+                  completing the card request process.
+                </p>
+              </div>
+            </a>
+          </div>
+
+          <!-- Risk & Audit -->
+          <h1 class="capitalise">Risk & Audit</h1>
+          <p class="section-subtitle">
+            Assess application risk and review the history of actions performed
+            throughout the card request workflow.
+          </p>
+
+          <div class="cards flex-grid three-column-grid admin-cards">
+            <!-- Review risk analysis results before making approval decisions -->
+            <a
+              href="#"
+              class="card admin-card"
+              aria-label="Open Risk Assessments"
+            >
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/risk_assessments.png' %}"
+                  alt="Risk Assessments"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">Risk Assessments</h1>
+                <p>
+                  Review customer risk analysis results and identify potential
+                  issues before approving or rejecting applications.
+                </p>
+              </div>
+            </a>
+
+            <!-- Review historical records of application events and administrator actions -->
+            <a href="#" class="card admin-card" aria-label="Open Audit Logs">
+              <div class="head center">
+                <img
+                  src="{% static '/images/card-icons/audit_logs.png' %}"
+                  alt="Audit Logs"
+                  class="admin-card-icon"
+                />
+              </div>
+
+              <div class="body">
+                <h1 class="capitalize mb-4">Audit Logs</h1>
+                <p>
+                  View the complete history of application events and
+                  administrative actions performed during the workflow.
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+</section>
+
+{% endblock body %}

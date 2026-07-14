@@ -38,8 +38,8 @@ def onboarding_required(func):
         if not request.user.is_authenticated:
             return redirect("login_user")
 
-        if request.user.is_staff or request.user.is_superuser:
-            return redirect("dashboard")
+        if request.user.is_staff or request.user.is_superuser or request.user.is_admin:
+            return redirect("employee_services")
 
         try:
             request.user.profile
