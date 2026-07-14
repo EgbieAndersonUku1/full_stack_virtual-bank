@@ -1,0 +1,80 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Card requests overview {% endblock title %}
+
+
+{% block body %}
+
+
+<section id="dashboard-admin" aria-label="Dashboard admin">
+
+    <div class="dashboard__container">
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/header/header.html" %}
+
+
+            <!-- admin panel -->
+            <section id="admin-panel" class="mt-48">
+                <div class="admin-panel__container">
+
+                    <!-- Card requests -->
+                    <!-- employee self-service -->
+                    <h1 class="capitalise">Card Request Queue</h1>
+                    <p class="section-subtitle">
+                       Browse every card request application regardless of its current review status.
+                    </p>
+
+                    <div class="cards flex-grid two-column-grid admin-cards">
+
+                          <a href="#" class="card admin-card" aria-label="Open HR Messages">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/hr_messages.png' %}" alt="Card Messages"
+                                    class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">Card Request messages</h1>
+                                <p>View important messages about card requeests</p>
+                            </div>
+                        </a>
+
+                        <a href="{% url 'card_requests_dashboard' %}" class="card admin-card" aria-label="Open Leave Requests">
+                            <div class="head center">
+                                <img src="{% static '/images/card-icons/leave_requests.png' %}" alt="Leave Requests"
+                                    class="admin-card-icon">
+                            </div>
+                            <div class="body">
+                                <h1 class="capitalize">All Card Requests</h1>
+                                <p>View the complete history of submitted card request applications.</p>
+                            </div>
+                        </a>
+
+
+
+
+                    </div>
+
+
+
+
+
+                </div>
+            </section>
+
+
+
+        </section>
+
+
+
+    </div>
+
+</section>
+
+
+
+{% endblock body %}

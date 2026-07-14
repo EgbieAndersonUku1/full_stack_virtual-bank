@@ -10,7 +10,7 @@ from utils.decorators import go_to_staff_page, is_email_verified
 from .form import CardRequestForm, CardRequestEmploymentForm, CardAgreementForm
 from .views_helper import get_card_request_agreement
 from .services import CardRequestService
-from utils.decorators import is_card_request_application_status_pending
+from utils.decorators import is_card_request_application_status_pending, has_permissions_to_view_page, go_to_staff_page
 
 
 # Create your views here.
@@ -27,28 +27,28 @@ employment_information_session_key =  "employment_request"
 @is_email_verified
 @login_required
 def card_request_information(request):
-    
+
     form    = CardRequestForm(initial=request.session.get(basic_information_session_key, {}))
     context = {}
-    
+
     if request.method == "POST":
         form = CardRequestForm(request.POST or None)
-        
+
         if form.is_valid():
-            
+
             cleaned_data = form.cleaned_data.copy()
-            
+
             phone_number                 = cleaned_data["phone_number"]
             cleaned_data["phone_number"] = str(phone_number)
-            
+
             request.session[basic_information_session_key] = cleaned_data
             return redirect("card_request_employment")
         else:
             print("not submitted")
             print(form.errors)
-     
+
     context["form"] = form
-    return render(request, "card_request/user/card-request-information.html", context) 
+    return render(request, "card_request/user/card-request-information.html", context)
 
 
 
@@ -58,17 +58,17 @@ def card_request_information(request):
 @is_email_verified
 @login_required
 def card_request_employment(request):
-    
+
     form  = CardRequestEmploymentForm(initial=request.session.get(employment_information_session_key, {}))
-    
+
     if request.method == "POST":
         form = CardRequestEmploymentForm(request.POST or None)
-            
+
         if form.is_valid():
-           
+
             request.session[employment_information_session_key] = form.cleaned_data.copy()
             return redirect("card_request_review_and_confirm")
-            
+
 
     context = {
         "form": form
@@ -84,12 +84,12 @@ def card_request_employment(request):
 @is_email_verified
 @login_required
 def card_request_review_and_confirm(request):
-    
+
     context = {
         "basic_information": request.session.get(basic_information_session_key),
         "employment_information": request.session.get(employment_information_session_key),
     }
-    
+
     return render(request, "card_request/user/review-and-confirm.html", context)
 
 
@@ -100,22 +100,22 @@ def card_request_review_and_confirm(request):
 @is_email_verified
 @login_required
 def card_request_agreement(request):
-     
+
     form = CardAgreementForm()
-    
+
     if request.method == "POST":
         form = CardAgreementForm(request.POST or None)
-        
+
         if form.is_valid():
-           
+
             basic_information = request.session.pop(basic_information_session_key, {})
             employment_information = request.session.pop(employment_information_session_key, {})
-            
+
             CardRequestService.add_card_request_to_database(basic_information=basic_information,
                                                             employment_information=employment_information,
                                                             user=request.user
                                                             )
-           
+
             messages.success(
                 request,
                 message=(
@@ -125,8 +125,8 @@ def card_request_agreement(request):
                 )
             )
             return redirect("card_request_information")
-          
-        
+
+
     context = {
         "card_request_agreement": get_card_request_agreement(),
         "form": form,
@@ -148,7 +148,7 @@ def get_card_request_completion_status(request):
         )
 
     def build_card_request_completion_status(data):
-        
+
         basic_information      = request.session.get(basic_information_session_key)
         employment_information = request.session.get(employment_information_session_key)
 
@@ -172,7 +172,7 @@ def get_card_request_completion_status(request):
 
         if not is_employment_information_complete:
             data["STAGE_2_ERROR_MSG"] = construct_missing_stage_message("employment information")
-        
+
         if is_personal_information_complete and is_employment_information_complete:
             data["SUCCESS_MSG"] = (
                     f"Your card request has been submitted successfully. "
@@ -192,3 +192,15 @@ def get_card_request_completion_status(request):
 @login_required
 def is_application_pending(request):
     return render(request, "card_request/user/card_request_pending.html")
+
+
+@has_permissions_to_view_page
+@login_required
+def card_request_review_queue(request):
+    return render(request, "card_request/admin/card_requests_overview.html")
+
+
+@has_permissions_to_view_page
+@login_required
+def all_card_requests_overview(request):
+    return render(request, "card_request/admin/card_requests_dashboard.html")
