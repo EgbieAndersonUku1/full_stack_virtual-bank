@@ -1,0 +1,344 @@
+<div id="request-first-tab" class="request-first-tab request-tab-content">
+
+
+   <!-- request info -->
+  <section
+    class="account-information-cards flex-grid four-column-grid"
+    role="list"
+    aria-label="Account information"
+  >
+    <!-- Account number -->
+    <div class="account-information-card" role="listitem">
+      <div class="account-information-card__head">
+        <small class="text-muted" id="account-number-label">
+          Account No.
+        </small>
+      </div>
+
+      <div class="account-information-card__head">
+        <small aria-labelledby="account-number-label" class="light-bold">
+          <span>Ending in </span>
+          <span id="request-sortcode"></span>
+        </small>
+      </div>
+    </div>
+
+    <!-- Sort code -->
+    <div class="account-information-card" role="listitem">
+      <div class="account-information-card__head">
+        <small class="text-muted" id="sort-code-label"> Sort code </small>
+      </div>
+
+      <div class="account-information-card__head">
+        <small aria-labelledby="sort-code-label" class="light-bold">
+          <span>Ending in </span>
+          <span id="request-accountNumber"></span>
+        </small>
+      </div>
+    </div>
+
+    <!-- Account type -->
+    <div class="account-information-card" role="listitem">
+      <div class="account-information-card__head">
+        <small class="text-muted" id="account-type-label"> Account type </small>
+      </div>
+
+      <div class="account-information-card__head">
+        <small
+          aria-labelledby="account-type-label"
+          class="light-bold"
+          id="request__account-type"
+        >
+        </small>
+      </div>
+    </div>
+
+    <!-- Balance -->
+    <div class="account-information-card" role="listitem">
+      <div class="account-information-card__head">
+        <small class="text-muted" id="balance-label" class="light-bold">
+          Balance
+        </small>
+      </div>
+
+      <div class="account-information-card__head">
+        <small
+          aria-labelledby="balance-label"
+          class="light-bold"
+          id="card-balance"
+        >
+        </small>
+      </div>
+    </div>
+  </section>
+
+  <!-- request informations visual tab -->
+  <section id="request-informations" class="mt-8">
+    <!-- Content request information tab -->
+    <div class="flex-grid two-column-grid" id="request-group-information">
+      <div class="card-request-details">
+        <h3>Request information details</h3>
+
+        <!-- Card Type -->
+        <div
+          class="group-info flex-grid two-column-grid"
+          role="group"
+          aria-label="Card Type"
+        >
+          <div class="label" aria-hidden="true">
+            <p class="text-muted">Card Type</p>
+          </div>
+
+          <div class="value">
+            <p id="card-request-details__card-type" class="capitalise"></p>
+          </div>
+        </div>
+
+        <!-- Card Variant -->
+        <div
+          class="group-info flex-grid two-column-grid"
+          role="group"
+          aria-label="Card Variant"
+        >
+          <div class="label" aria-hidden="true">
+            <p class="text-muted">Card Variant</p>
+          </div>
+
+          <div class="value">
+            <p class="capitalise" id="card-request-details__card-variant"></p>
+          </div>
+        </div>
+
+        <!-- Delivery Address -->
+        <div
+          class="group-info flex-grid two-column-grid"
+          role="group"
+          aria-label="Delivery Address"
+        >
+          <div class="label" aria-hidden="true">
+            <p class="text-muted">Delivery Address</p>
+          </div>
+
+          <div class="value">
+            <div class="address flex-grid">
+              <span id="request-card__address1"></span>
+              <span id="request-card__address2"></span>
+              <span id="request-card__city"></span>
+              <span id="request-card__county"></span>
+              <span id="request-card__postcode"></span>
+              <span id="request-card__country"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div
+          class="group-info flex-grid two-column-grid"
+          role="group"
+          aria-label="Phone number"
+        >
+          <div class="label" aria-hidden="true">
+            <p class="text-muted">Phone number</p>
+          </div>
+
+          <div class="value">
+            <p id="request-phoneNumber"></p>
+          </div>
+        </div>
+
+        <!-- Special Instructions -->
+        <div
+          class="group-info flex-grid two-column-grid"
+          role="group"
+          aria-label="Special Instructions"
+        >
+          <div class="label" aria-hidden="true">
+            <p class="text-muted">Special Instructions</p>
+          </div>
+
+          <div class="value">
+            <p id="special-instructions"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-benefits">
+        <h3>Card benefits</h3>
+
+        <div class="group-info">
+          <ul class="benefits-list" aria-label="Card benefits list">
+            <li>
+              <i
+                class="fa-solid fa-check active-text bold"
+                aria-hidden="true"
+              ></i>
+              Worldwide acceptance
+            </li>
+
+            <li>
+              <i
+                class="fa-solid fa-check active-text bold"
+                aria-hidden="true"
+              ></i>
+              Chip and pin
+            </li>
+
+            <li>
+              <i
+                class="fa-solid fa-check active-text bold"
+                aria-hidden="true"
+              ></i>
+              Contactless payment
+            </li>
+
+            <li>
+              <i
+                class="fa-solid fa-check active-text bold"
+                aria-hidden="true"
+              ></i>
+              ATM Withdrawal
+            </li>
+
+            <li>
+              <i
+                class="fa-solid fa-check active-text bold"
+                aria-hidden="true"
+              ></i>
+              Online banking access
+            </li>
+
+            <li>
+              <i
+                class="fa-solid fa-check active-text bold"
+                aria-hidden="true"
+              ></i>
+              Fraud protection
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- the admin control section -->
+  <section id="admin-control" aria-labelledby="admin-actions-title">
+    <div class="admin-control__container mt-24">
+      <!-- Section heading -->
+      <h6 id="admin-actions-title" class="text-muted mt-8 mb-2">
+        Admin actions
+      </h6>
+
+      <!-- Section description -->
+      <p id="admin-actions-desc" class="text-muted mb-8">
+        Review and update the status of this request
+      </p>
+
+      <!-- Action buttons group -->
+      <div
+        class="admin-buttons flex-grid two-column-grid"
+        aria-describedby="admin-actions-desc"
+      >
+        <!-- Approve request action -->
+        <button
+          class="btn-large btn-approve"
+          type="button"
+          id="approve-request-btn"
+        >
+          <i class="fa-solid fa-check" aria-hidden="true"></i>
+          Approve request
+        </button>
+
+        <!-- Reject request action -->
+        <button
+          class="btn-large btn-reject"
+          type="button"
+          id="reject-request-btn"
+        >
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          Reject request
+        </button>
+
+        <!-- Request additional verification -->
+        <button
+          class="btn-large btn-verify center"
+          type="button"
+          id="request-verification-btn"
+        >
+          <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+          Request verification
+        </button>
+
+        <!-- Put request on hold -->
+        <button
+          class="btn-large btn-hold center"
+          type="button"
+          id="request-place-on-hold"
+        >
+          <i class="fa-solid fa-pause" aria-hidden="true"></i>
+          Place on hold
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Admin information  -->
+  <section
+    id="admin-additonal-inforamtion"
+    class="mt-16"
+    aria-labelledby="admin-additional-title"
+  >
+    <h6 id="admin-additional-title" class="text-muted mt-8 mb-2">
+      Additional Information
+    </h6>
+
+    <p class="text-muted mb-8" id="admin-additional-desc">
+      Add internal notes or context to support this request review
+    </p>
+
+    <!-- Administrative notes form -->
+    <form
+      action=""
+      method="post"
+      class="flex-grid"
+      aria-describedby="admin-additional-desc"
+    >
+      <!-- Notes field -->
+      <label for="notes">
+        Notes <span class="text-muted">Optional</span>
+      </label>
+
+      <textarea
+        name="notes"
+        id="notes"
+        rows="5"
+        cols="3"
+        aria-describedby="notes-help notes-counter"
+      ></textarea>
+
+      <button
+        class="center green-bg white-text mt-4 mb-4"
+        type="submit"
+        id="admin-note-save"
+      >
+        Save
+      </button>
+
+      <!-- Minimum character guidance -->
+      <p
+        id="notes-help"
+        class="num-of-characters-remaining text-align-right character-usage-message text-muted"
+      >
+        Minimum characters to use: 50
+      </p>
+
+      <!-- Live character counter -->
+      <p
+        id="notes-counter"
+        class="num-of-characters-to-use text-align-right character-usage-message text-muted"
+        aria-live="polite"
+      >
+        Number of characters remaining: 150
+      </p>
+    </form>
+  </section>
+</div>

@@ -204,3 +204,147 @@ def card_request_review_queue(request):
 @login_required
 def all_card_requests_overview(request):
     return render(request, "card_request/admin/card_requests_dashboard.html")
+
+
+
+@has_permissions_to_view_page
+@login_required
+def all_cards_applications(request):
+    context =  {
+        "page_title": "All applications",
+        "page_heading": "Card Request Status - All Applications",
+        "page_subtitle": """View a real-time summary of every card request, including pending,
+                            under review, approved, rejected, cancelled, withdrawn, and on-hold
+                            applications to help prioritise administrative review.
+                        """,
+
+    }
+    return render(request, "card_request/admin/risk_analysis/card_request_applications.html", context=context)
+
+
+@has_permissions_to_view_page
+@login_required
+def pending_applications(request):
+    context =  {
+            "page_title": "Pending applications",
+            "page_heading": "Card Request Status - Pending Applications",
+            "page_subtitle": """View a real-time summary of pending applications to help
+                                prioritise administrative review.
+                            """,
+
+        }
+    return render(request, "card_request/admin/risk_analysis/card_request_applications.html", context=context)
+
+
+@has_permissions_to_view_page
+@login_required
+def under_review_applications(request):
+    context = {
+        "page_title": "Under review applications",
+        "page_heading": "Card Request Status - Under Review Applications",
+        "page_subtitle": """View applications currently undergoing assessment,
+                            including risk checks, additional verification,
+                            and administrative review.
+                        """,
+    }
+
+    return render(
+        request,
+        "card_request/admin/risk_analysis/card_request_applications.html",
+        context=context
+    )
+
+
+@has_permissions_to_view_page
+@login_required
+def approved_applications(request):
+    context = {
+        "page_title": "Approved applications",
+        "page_heading": "Card Request Status - Approved Applications",
+        "page_subtitle": """View applications that have successfully completed
+                            the review process and have been approved for
+                            card issuance.
+                        """,
+    }
+
+    return render(
+        request,
+        "card_request/admin/risk_analysis/card_request_applications.html",
+        context=context
+    )
+
+
+@has_permissions_to_view_page
+@login_required
+def rejected_applications(request):
+    context = {
+        "page_title": "Rejected applications",
+        "page_heading": "Card Request Status - Rejected Applications",
+        "page_subtitle": """Review applications that were declined during the
+                            assessment process, including previous decisions
+                            and recorded review information.
+                        """,
+    }
+
+    return render(
+        request,
+        "card_request/admin/risk_analysis/card_request_applications.html",
+        context=context
+    )
+
+
+@has_permissions_to_view_page
+@login_required
+def on_hold_applications(request):
+    context = {
+        "page_title": "On hold applications",
+        "page_heading": "Card Request Status - On Hold Applications",
+        "page_subtitle": """View applications temporarily placed on hold while
+                            awaiting further investigation, additional
+                            information, or administrative action.
+                        """,
+    }
+
+    return render(
+        request,
+        "card_request/admin/risk_analysis/card_request_applications.html",
+        context=context
+    )
+
+
+@has_permissions_to_view_page
+@login_required
+def cancelled_applications(request):
+    context = {
+        "page_title": "Cancelled applications",
+        "page_heading": "Card Request Status - Cancelled Applications",
+        "page_subtitle": """View applications that were cancelled before the
+                            review process was completed and track their
+                            cancellation history.
+                        """,
+    }
+
+    return render(
+        request,
+        "card_request/admin/risk_analysis/card_request_applications.html",
+        context=context
+    )
+
+
+@has_permissions_to_view_page
+@login_required
+def withdrawn_applications(request):
+    context = {
+        "page_title": "Withdrawn applications",
+        "page_heading": "Card Request Status - Withdrawn Applications",
+        "page_subtitle": """View applications voluntarily withdrawn by the
+                            applicant before completing the approval process.
+                        """,
+    }
+
+    return render(
+        request,
+        "card_request/admin/risk_analysis/card_request_applications.html",
+        context=context
+    )
+

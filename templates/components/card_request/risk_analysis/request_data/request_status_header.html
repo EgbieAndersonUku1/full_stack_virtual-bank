@@ -1,0 +1,45 @@
+<section
+  class="request-status flex flex-space-between"
+  aria-labelledby="request-status-title"
+>
+  <h6 id="request-status-title" class="sr-only">Request status overview</h6>
+
+  <div class="profile-details flex">
+    <div class="profile-pic mr-4">
+      <img
+        src="/static/images/icons/profile.png"
+        alt="Profile placeholder image"
+        id="request-status-profile-pic"
+      />
+    </div>
+
+    <div class="profile-information mt-12">
+      <p class="bold capitalise">
+        <small id="profile-name"></small>
+      </p>
+
+      <p>
+        <small>
+          <a href="#" id="profile-email"> </a>
+        </small>
+      </p>
+    </div>
+  </div>
+
+  <div
+    class="rquest-current-status flex-grid"
+    aria-label="Request status details"
+  >
+    <span
+      class="status status--pending capitalise center"
+      id="current-status"
+      aria-label="Current status: pending"
+    >
+      pending
+    </span>
+
+    <span><small>Requested: 27 May 2026</small> </span>
+
+    <span><small>10:30pm</small></span>
+  </div>
+</section>

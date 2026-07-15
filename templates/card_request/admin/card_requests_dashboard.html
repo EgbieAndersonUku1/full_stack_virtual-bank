@@ -1,6 +1,10 @@
 {% extends "partials/dashboard/base.html" %}
 {% load static %}
-{% block title%}Main page{% endblock title %} {% block body %}
+{% block title%}Main page{% endblock title %}
+
+
+
+{% block body %}
 
 <section id="dashboard-admin" aria-label="Dashboard admin">
   <div class="dashboard__container">
@@ -10,7 +14,7 @@
 
       <!-- admin panel -->
       <section id="admin-panel" class="mt-48">
-        
+
         <div class="admin-panel__container">
           <!-- Card Request Review Queue -->
           <h1 class="capitalise">Card Request Review Queue</h1>
@@ -22,7 +26,7 @@
           <div class="cards flex-grid three-column-grid admin-cards">
             <!-- View all card request applications regardless of current status -->
             <a
-              href="#"
+              href="{% url 'all_applications' %}"
               class="card admin-card"
               aria-label="Open All Applications"
             >
@@ -45,7 +49,7 @@
 
             <!-- Review newly submitted applications waiting for administrator action -->
             <a
-              href="#"
+              href="{% url "pending_applications" %}"
               class="card admin-card"
               aria-label="Open Pending Applications"
             >
@@ -68,7 +72,7 @@
 
             <!-- View applications that have passed review and been approved -->
             <a
-              href="#"
+              href="{% url "approved_applications" %}"
               class="card admin-card"
               aria-label="Open Approved Applications"
             >
@@ -91,7 +95,7 @@
 
             <!-- Review applications that were declined during the approval process -->
             <a
-              href="#"
+              href="{% url "rejected_applications" %}"
               class="card admin-card"
               aria-label="Open Rejected Applications"
             >
@@ -114,7 +118,7 @@
 
             <!-- Review applications that require additional investigation before a decision -->
             <a
-              href="#"
+              href="{% url "on_hold_applications" %}"
               class="card admin-card"
               aria-label="Open On Hold Applications"
             >
@@ -137,7 +141,7 @@
 
             <!-- Review applications currently undergoing assessment -->
             <a
-              href="#"
+              href="{% url "under_review_applications" %}"
               class="card admin-card"
               aria-label="Open Under Review Applications"
             >
@@ -169,7 +173,7 @@
           <div class="cards flex-grid three-column-grid admin-cards">
             <!-- View applications cancelled before completing the review workflow -->
             <a
-              href="#"
+              href="{% url "cancelled_applications" %}"
               class="card admin-card"
               aria-label="Open Cancelled Applications"
             >
@@ -192,7 +196,7 @@
 
             <!-- View applications withdrawn by customers before approval -->
             <a
-              href="#"
+              href="{% url "withdrawn_applications" %}"
               class="card admin-card"
               aria-label="Open Withdrawn Applications"
             >

@@ -1,0 +1,83 @@
+{% extends "partials/dashboard/base.html" %} {% load static %}
+{% block title%}  {% endblock title %}
+
+
+{% block body %}
+
+<section id="dashboard-admin" aria-label="Dashboard admin">
+
+  <div class="dashboard__container">
+
+    <!-- Main content -->
+    <section class="dashboard__container__main" tabindex="-1">
+
+      {% include "partials/header/header.html" %}
+
+      <!-- admin panel -->
+      <section id="admin-panel" class="mt-48">
+
+        <div class="admin-panel__container">
+
+          {% include "components/card_request/risk_analysis/card_status_overview.html" %}
+
+          <section id="card-request-overview" class="m-16">
+
+            <div class="card-request-status mb-24 mt-24">
+              <h2 class="header-8">Card Request Review Centre</h2>
+
+              <small class="card-request-status-subtitle">
+                Review incoming card applications, track their status, and
+                manage approvals in real time.
+              </small>
+
+            </div>
+
+
+            <div class="card-request-overview__container flex">
+
+                <!--search-->
+              {% include "components/card_request/risk_analysis/search.html" %}
+
+              <!-- The card request details tab -->
+
+              <section id="card-request-details">
+
+                <div class="card-request-details__container">
+                  <div class="card-request-header flex">
+                    <h2 class="header-8">Request details</h2>
+                    <span class="text-muted ml-4">{{ application_id }}</span>
+                  </div>
+
+                  <hr class="dividor" />
+                </div>
+
+                <!-- The request page status header -->
+                {% include "components/card_request/risk_analysis/request_data/request_status_header.html" %}
+
+                <hr class="dividor" />
+
+                <!-- Tabs container  -->
+                {% include "components/card_request/risk_analysis/request_data/tabs.html" %}
+
+                <!-- the first tab : request information -->
+                {% include "components/card_request/risk_analysis/request_data/request_info.html" %}
+
+                <!-- second tab : User information -->
+                {% include "components/card_request/risk_analysis/request_data/user_information.html" %}
+
+                <!-- Third Tab: Account details -->
+                {% include "components/card_request/risk_analysis/request_data/account_details.html" %}
+
+                <!-- fourth tab: Audit trail -->
+                {% include "components/card_request/risk_analysis/request_data/audit_trail.html" %}
+
+              </section>
+            </div>
+          </section>
+        </div>
+      </section>
+    </section>
+  </div>
+</section>
+
+{% endblock body %}
