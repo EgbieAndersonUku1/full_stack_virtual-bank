@@ -1,0 +1,55 @@
+<section id="num-of-card-requests">
+  <div class="num-of-card-requests__container">
+    <div class="num-of-card-request__header flex-grid two-column-30_70_grid">
+      <div class="header">
+        <h3 id="card-requests-header">
+          Card Requests (<small id="table-row-counter">10</small>)
+        </h3>
+      </div>
+
+      <div class="search-cards-requests">
+        <form action="" method="post" class="flex">
+          <input
+            type="search"
+            name="search-cards-requests"
+            id="search-request-search-field"
+          />
+        </form>
+      </div>
+    </div>
+
+    <!-- the table of cards -->
+    <div class="card-table mt-24">
+      <table id="card-requests-table">
+        <thead>
+          <tr>
+            <th scope="col">User</th>
+            <th scope="col">Account</th>
+            <th scope="col">Card type</th>
+            <th scope="col">Status</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+
+        <tbody id="card-requests-tbody">
+          <!-- loaded dynamically using js -->
+        </tbody>
+      </table>
+
+      <div class="pagination flex flex-space-between mt-16">
+        <div class="num-of-pages">
+          <p class="text-muted">Showing 1 of 24 pages</p>
+        </div>
+
+        <div class="pagination-numbers">
+          <a href="#">1</a>
+          <a href="#">2</a>
+          <a href="#">3</a>
+          <a href="#">4</a>
+          <a href="#">....</a>
+          <a href="#">10</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

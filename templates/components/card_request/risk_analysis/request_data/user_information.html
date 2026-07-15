@@ -1,0 +1,309 @@
+<div id="request-second-tab" class="request-second-tab request-tab-content">
+
+  <!-- User profile summary -->
+  <section class="user-profile-header mb-8">
+    <!-- Profile summary cards -->
+    <div class="user-profile-header__cards flex-grid four-column-grid">
+      <!-- Customer Identifier -->
+      <div class="user-profile-header__card flex-grid">
+        <span class="text-muted">Customer ID</span>
+        <small>CUST-12598-999</small>
+      </div>
+
+      <!-- Membership Date -->
+      <div class="user-profile-header__card flex-grid">
+        <span class="text-muted">Member Since</span>
+        <small id="creation-date"></small>
+      </div>
+
+      <!-- (KYC) Status -->
+      <div class="user-profile-header__card flex-grid">
+        <span class="text-muted">KYC Status</span>
+        <small class="capitalise" id="KYC-status-value">Verified</small>
+      </div>
+
+      <!-- Risk Assessment Score -->
+      <div class="user-profile-header__card flex-grid">
+        <span class="text-muted">Risk Score</span>
+        <small class="capitalise" id="risk-score">
+          <span class="dot">&dot;</span>
+          Not calculated
+        </small>
+      </div>
+    </div>
+  </section>
+
+  <!-- user profile -->
+  <!-- Displays customer identity and contact information    -->
+  <section
+    id="user-information"
+    aria-labelledby="profile-information-heading"
+    class="mt-16"
+  >
+    <div class="user-information__container">
+      <h2 id="profile-information-heading">Profile information</h2>
+
+      <p class="text-muted">Personal details and contact information.</p>
+
+      <hr class="dividor" aria-hidden="true" />
+
+      <!-- Profile information list -->
+      <dl class="profile-information-list flex-grid">
+        <!-- Full Name -->
+        <div class="group-row flex-grid two-column-30_70_grid">
+          <dt class="user-label">
+            <i class="fa-solid fa-user" aria-hidden="true"></i>
+            <span class="text-muted">Full name</span>
+          </dt>
+
+          <dd class="user-value">
+            <span id="fullName" class="capitalise">Jake Thompson</span>
+          </dd>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="group-row flex-grid two-column-30_70_grid">
+          <dt class="user-label">
+            <i class="fa-solid fa-phone" aria-hidden="true"></i>
+            <span class="text-muted">Phone number</span>
+          </dt>
+
+          <dd class="user-value flex flex-space-between">
+            <span id="phoneNum">+44 7700 900123</span>
+
+            <span
+              class="status status--approved capitalise"
+              id="is-phone-num-verified"
+              >Verified</span
+            >
+          </dd>
+        </div>
+
+        <!-- Residential Address -->
+        <div class="group-row flex-grid two-column-30_70_grid">
+          <dt class="user-label">
+            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+            <span class="text-muted">Address</span>
+          </dt>
+
+          <dd class="user-value flex flex-space-between">
+            <!-- Address details -->
+            <div class="address flex-grid">
+              <span id="address1"></span>
+              <span id="address2"></span>
+              <span id="city"></span>
+              <span id="county"></span>
+              <span id="postcode"></span>
+              <span id="country"></span>
+            </div>
+
+            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+          </dd>
+        </div>
+
+        <!-- Email Address -->
+        <div class="group-row flex-grid two-column-30_70_grid">
+          <dt class="user-label">
+            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+            <span class="text-muted">Email address</span>
+          </dt>
+
+          <dd class="user-value flex flex-space-between">
+            <span id="email-address">jakeThompson@gmail.com</span>
+            <span class="status status--approved" id="is-email-verified"
+              >Verified</span
+            >
+          </dd>
+        </div>
+
+        <!-- Passport Information -->
+        <div class="group-row flex-grid two-column-30_70_grid">
+          <dt class="user-label">
+            <i class="fa-solid fa-passport" aria-hidden="true"></i>
+            <span class="text-muted">Passport</span>
+          </dt>
+
+          <dd class="user-value flex flex-space-between">
+            <span id="passport"></span>
+            <span class="status status--approved" id="is-passport-verified"
+              >Verified</span
+            >
+          </dd>
+        </div>
+
+        <!-- Nationality -->
+        <div class="group-row flex-grid two-column-30_70_grid">
+          <dt class="user-label">
+            <i class="fa-solid fa-flag" aria-hidden="true"></i>
+            <span class="text-muted">Nationality</span>
+          </dt>
+
+          <dd class="user-value" id="nationality"></dd>
+        </div>
+
+        <!-- Preferred Language -->
+        <div class="group-row flex-grid two-column-30_70_grid">
+          <dt class="user-label">
+            <i class="fa-solid fa-language" aria-hidden="true"></i>
+            <span class="text-muted">Pref language</span>
+          </dt>
+
+          <dd class="user-value" id="preferred-language"></dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- user stats -->
+  <!-- Displays a summary of the customer's banking activity -->
+  <section id="user-stats" class="mt-24">
+    <div class="user-stats__container">
+      <h2 class="header-9">User stats</h2>
+      <p class="text-muted">
+        Overview of accounts, cards, balances, and activity.
+      </p>
+
+      <hr class="dividor" />
+
+      <!-- Statistics card collection -->
+      <div
+        class="user-stats__cards flex-grid two-column-grid"
+        role="list"
+        aria-label="User account statistics"
+      >
+        <!-- Total Accounts Card -->
+        <div
+          class="user-stats__card flex-grid two-column-30_70_grid"
+          role="listitem"
+          aria-labelledby="total-accounts-label"
+          aria-describedby="total-accounts-value"
+        >
+          <div class="user-stats__card-head">
+            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+          </div>
+
+          <div class="user-stats__card-body center">
+            <p class="text-muted" id="total-accounts-label">Total Accounts</p>
+
+            <p id="total-accounts-value">0</p>
+          </div>
+        </div>
+
+        <!-- Total Cards Card -->
+        <div
+          class="user-stats__card flex-grid two-column-30_70_grid"
+          role="listitem"
+          aria-labelledby="total-cards-label"
+          aria-describedby="total-cards-value"
+        >
+          <div class="user-stats__card-head">
+            <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+          </div>
+
+          <div class="user-stats__card-body center">
+            <p class="text-muted" id="total-cards-label">Total Cards</p>
+
+            <p id="total-cards-value"></p>
+          </div>
+        </div>
+
+        <!-- Transaction Count Card -->
+        <div
+          class="user-stats__card flex-grid two-column-30_70_grid"
+          role="listitem"
+          aria-labelledby="transactions-label"
+          aria-describedby="transactions-value"
+        >
+          <div class="user-stats__card-head">
+            <i
+              class="fa-solid fa-arrow-right-arrow-left"
+              aria-hidden="true"
+            ></i>
+          </div>
+
+          <div class="user-stats__card-body center">
+            <p class="text-muted" id="transactions-label">Transactions</p>
+
+            <p id="transactions-value"></p>
+          </div>
+        </div>
+
+        <!-- Account Balance Card -->
+        <div
+          class="user-stats__card flex-grid two-column-30_70_grid"
+          role="listitem"
+          aria-labelledby="balance-label"
+          aria-describedby="balance-value"
+        >
+          <div class="user-stats__card-head">
+            <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+          </div>
+
+          <div class="user-stats__card-body center">
+            <p class="text-muted" id="balance-label">Account Balance</p>
+
+            <p id="balance-value">£2.00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- run risk analysis -->
+  <section id="risk-analysis" class="mt-24">
+    <div class="risk-analysis__container">
+      <h2 class="header-8">Risk Analysis</h2>
+      <p class="text-muted mb-16">
+        Assess customer risk indicators and compliance status.
+      </p>
+
+      <div class="risk-factors-overview mt-24">
+        <div id="risk-analysis-checklist" class="mb-16">
+          <!-- Generate by JS -->
+        </div>
+
+        <div id="rules" class="mt-8 mb-16">
+          <!-- generated by JavaScript -->
+        </div>
+
+        <!-- Decision panel -->
+        <div id="decision" class="mt-16 decision-panel">
+          <h2 class="header-8">Decision outcome</h2>
+
+          <p class="text-muted decision-subtitle">
+            Final risk score based on completed verification checks.
+          </p>
+
+          <div id="decisions" class="mt-8 decision-panel">
+            <span class="bold">Our Recommendation: </span>
+            <span id="our-recommendation"></span>
+
+            <div class="decision-circle">
+              <div class="decision-circle-inner">
+                <span class="decision-score" id="decision-score">0</span>
+                <span class="decision-max" id="decision-max">/ 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-24 mb-24" id="see-full-report-container">
+          <a href="#" id="full-report-link">See full report</a>
+        </div>
+
+        <div id="full-report">
+          <div class="spinner center" id="full-report-spinner"></div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="btn-large blue-bg white-text"
+        id="risk-button-analyser"
+      >
+        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+        Risk Analysis
+      </button>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,232 @@
+<section
+  id="card-request-status"
+  class="m-16 mt-24"
+  aria-labelledby="card-request-status-heading"
+>
+  <div class="card-request-status white-bg p-24">
+
+
+    <h2 id="card-request-status-heading" class="header-8 mb-12">
+       {{ page_heading }}
+    </h2>
+
+
+    <small class="card-request-status-subtitle">
+       {{ page_subtitle }}
+    </small>
+
+
+  </div>
+
+  <div class="card-request-status__container mt-24">
+    <div class="card-request-cards flex-grid four-column-grid">
+
+      <!-- All applications -->
+      <article
+        class="card-request-card flex-grid"
+        aria-labelledby="all-applications-title"
+      >
+        <div class="card-request-card__title">
+          <p id="all-applications-title" class="text-muted">
+            All applications
+          </p>
+        </div>
+
+        <div class="card-request-card__body flex flex-space-between">
+          <div
+            class="card-request-pending card-request-stats"
+            aria-label="12 total applications"
+          >
+            12
+          </div>
+        </div>
+
+        <div class="card-request-card__footer">
+          <small>Total applications received</small>
+        </div>
+      </article>
+
+      <!-- Pending requests -->
+      <article
+        class="card-request-card flex-grid"
+        aria-labelledby="pending-requests-title"
+      >
+        <div class="card-request-card__title">
+          <p id="pending-requests-title" class="text-muted">
+            Pending requests
+          </p>
+        </div>
+
+        <div class="card-request-card__body flex flex-space-between">
+          <div
+            class="card-request-pending card-request-stats"
+            aria-label="12 pending requests"
+          >
+            12
+          </div>
+        </div>
+
+        <div class="card-request-card__footer">
+          <small>Awaiting review</small>
+        </div>
+      </article>
+
+      <!-- Under review -->
+      <article
+        class="card-request-card flex-grid"
+        aria-labelledby="under-review-title"
+      >
+        <div class="card-request-card__title">
+          <p id="under-review-title" class="text-muted">
+            Under review
+          </p>
+        </div>
+
+        <div class="card-request-card__body flex flex-space-between">
+          <div
+            id="card-request-under-review"
+            class="card-request-under-review card-request-stats"
+            aria-label="5 applications under review"
+          >
+            5
+          </div>
+        </div>
+
+        <div class="card-request-card__footer">
+          <small>Currently being assessed</small>
+        </div>
+      </article>
+
+      <!-- Approved today -->
+      <article
+        class="card-request-card flex-grid"
+        aria-labelledby="approved-today-title"
+      >
+        <div class="card-request-card__title">
+          <p id="approved-today-title" class="text-muted">
+            Approved today
+          </p>
+        </div>
+
+        <div class="card-request-card__body flex flex-space-between">
+          <div
+            id="card-request-approved-card"
+            class="card-request-under-review card-request-stats"
+            aria-label="4 approved applications today"
+          >
+            4
+          </div>
+        </div>
+
+        <div class="card-request-card__footer">
+          <small>Approved today</small>
+        </div>
+      </article>
+
+      <!-- Rejected today -->
+      <article
+        class="card-request-card flex-grid"
+        aria-labelledby="rejected-today-title"
+      >
+        <div class="card-request-card__title">
+          <p id="rejected-today-title" class="text-muted">
+            Rejected today
+          </p>
+        </div>
+
+        <div class="card-request-card__body flex flex-space-between">
+          <div
+            id="card-request-rejected-card"
+            class="card-request-under-review card-request-stats"
+            aria-label="2 rejected applications today"
+          >
+            2
+          </div>
+        </div>
+
+        <div class="card-request-card__footer">
+          <small>Rejected today</small>
+        </div>
+      </article>
+
+      <!-- On hold -->
+      <article
+        class="card-request-card flex-grid"
+        aria-labelledby="on-hold-title"
+      >
+        <div class="card-request-card__title">
+          <p id="on-hold-title" class="text-muted">
+            On hold
+          </p>
+        </div>
+
+        <div class="card-request-card__body flex flex-space-between">
+          <div
+            id="card-request-on-hold-card"
+            class="card-request-under-review card-request-stats"
+            aria-label="2 applications on hold"
+          >
+            2
+          </div>
+        </div>
+
+        <div class="card-request-card__footer">
+          <small>Awaiting further investigation</small>
+        </div>
+      </article>
+
+      <!-- Cancelled applications -->
+      <article
+        class="card-request-card flex-grid"
+        aria-labelledby="cancelled-applications-title"
+      >
+        <div class="card-request-card__title">
+          <p id="cancelled-applications-title" class="text-muted">
+            Cancelled applications
+          </p>
+        </div>
+
+        <div class="card-request-card__body flex flex-space-between">
+          <div
+            id="card-request-cancelled-card"
+            class="card-request-under-review card-request-stats"
+            aria-label="2 cancelled applications"
+          >
+            2
+          </div>
+        </div>
+
+        <div class="card-request-card__footer">
+          <small>Cancelled before completion</small>
+        </div>
+      </article>
+
+      <!-- Withdrawn applications -->
+      <article
+        class="card-request-card flex-grid"
+        aria-labelledby="withdrawn-applications-title"
+      >
+        <div class="card-request-card__title">
+          <p id="withdrawn-applications-title" class="text-muted">
+            Withdrawn applications
+          </p>
+        </div>
+
+        <div class="card-request-card__body flex flex-space-between">
+          <div
+            id="card-request-withdrawn-card"
+            class="card-request-under-review card-request-stats"
+            aria-label="2 withdrawn applications"
+          >
+            2
+          </div>
+        </div>
+
+        <div class="card-request-card__footer">
+          <small>Withdrawn by the applicant</small>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
