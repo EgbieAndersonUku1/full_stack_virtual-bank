@@ -37,7 +37,7 @@
             class="card-request-pending card-request-stats"
             aria-label="12 total applications"
           >
-            12
+            {{ application_status.all }}
           </div>
         </div>
 
@@ -62,7 +62,7 @@
             class="card-request-pending card-request-stats"
             aria-label="12 pending requests"
           >
-            12
+             {{ application_status.pending }}
           </div>
         </div>
 
@@ -88,7 +88,7 @@
             class="card-request-under-review card-request-stats"
             aria-label="5 applications under review"
           >
-            5
+            {{ application_status.under_review }}
           </div>
         </div>
 
@@ -104,7 +104,7 @@
       >
         <div class="card-request-card__title">
           <p id="approved-today-title" class="text-muted">
-            Approved today
+            Approved
           </p>
         </div>
 
@@ -114,12 +114,12 @@
             class="card-request-under-review card-request-stats"
             aria-label="4 approved applications today"
           >
-            4
+            {{ application_status.approved }}
           </div>
         </div>
 
         <div class="card-request-card__footer">
-          <small>Approved today</small>
+          <small>Approved applications</small>
         </div>
       </article>
 
@@ -140,12 +140,12 @@
             class="card-request-under-review card-request-stats"
             aria-label="2 rejected applications today"
           >
-            2
+              {{ application_status.rejected }}
           </div>
         </div>
 
         <div class="card-request-card__footer">
-          <small>Rejected today</small>
+          <small>Rejected applications</small>
         </div>
       </article>
 
@@ -166,7 +166,7 @@
             class="card-request-under-review card-request-stats"
             aria-label="2 applications on hold"
           >
-            2
+              {{ application_status.on_hold }}
           </div>
         </div>
 
@@ -192,7 +192,7 @@
             class="card-request-under-review card-request-stats"
             aria-label="2 cancelled applications"
           >
-            2
+              {{ application_status.cancelled }}
           </div>
         </div>
 
@@ -218,7 +218,7 @@
             class="card-request-under-review card-request-stats"
             aria-label="2 withdrawn applications"
           >
-            2
+              {{ application_status.withdrawn }}
           </div>
         </div>
 

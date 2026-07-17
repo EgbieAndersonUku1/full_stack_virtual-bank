@@ -9,6 +9,8 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MaxLengthValidator
 from django.contrib.auth import get_user_model
+from django.db.models import Q
+from django.core.exceptions import ValidationError
 
 from user_profile.models import UserProfile
 
@@ -19,14 +21,24 @@ User = get_user_model()
 # Create your models here.
 
 class CardRequestApplication(models.Model):
-    
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user"],
+                condition=Q(status="pending"),
+                name="unique_pending_application_per_user",
+            )
+        ]
     class Status(models.TextChoices):
-        PENDING  = "Pending", _("Pending")
-        ACCEPTED = "Accepted", _("Accepted")
-        REJECTED =  "Rejected", _("Rejected")
-        WITHDRAWN = "withdrawn", _("Withdrawn")
-        CANCELLED = "cancelled", _("Cancelled")
-        
+        PENDING      = "pending", _("Pending")
+        ON_HOLD      = "on_holding", _("On Hold")
+        ACCEPTED     = "accepted", _("Accepted")
+        REJECTED     = "rejected", _("Rejected")
+        WITHDRAWN    = "withdrawn", _("Withdrawn")
+        CANCELLED    = "cancelled", _("Cancelled")
+        UNDER_REVIEW = "under_review", _("Under Review")
+
     user             = models.ForeignKey(User, on_delete=models.CASCADE)
     status           = models.CharField(choices=Status.choices, max_length=15, default=Status.PENDING)
     created_on       = models.DateTimeField(auto_now_add=True)
@@ -35,20 +47,20 @@ class CardRequestApplication(models.Model):
     notes            = models.TextField(validators=[MaxLengthValidator(2000)], blank=True, null=True)
     reviewed_by      = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="reviewed_card_applications")
     submitted_on     = models.DateTimeField(blank=True, null=True)
-    
+
     def can_submit_application(self):
         return not self.has_pending_application()
-    
+
     @classmethod
     def has_pending_application(cls, user: User) -> bool:
         cls._check_if_user_instance(user)
         return cls.objects.filter(user=user, status=cls.Status.PENDING).exists()
-        
+
     @classmethod
     def number_of_applications(cls, user: User) -> int:
         cls._check_if_user_instance(user)
         return cls.objects.filter(user=user).count()
-    
+
     @classmethod
     def get_user_applications(cls, user: User, status=None):
         """
@@ -77,31 +89,59 @@ class CardRequestApplication(models.Model):
         """
 
         cls._check_if_user_instance(user)
+        queryset = cls.get_all_applications(status=status)
+        return queryset.filter(user=user)
+
+
+    @classmethod
+    def get_all_applications(cls, status: str | None = None):
+
         queryset = (
-            cls.objects
-            .select_related("user", "basic_information", "employment_information")
-            .filter(user=user)
-        )
+                    cls.objects
+                    .select_related("user", "basic_information", "employment_information")
+                )
 
         if status is not None:
             queryset = queryset.filter(status=status)
 
         return queryset
-    
+
     @classmethod
     def _check_if_user_instance(cls, user: User) -> None:
         if not isinstance(user, User):
             raise TypeError(
                 f"Expected a User instance, got {type(user).__name__}."
             )
-    
+
     @property
     def applicant_full_name(self):
         return self.user.profile.full_name
-    
+
+    def clean(self):
+
+        super().clean()
+
+        if self.status == self.Status.PENDING:
+            exists = ( CardRequestApplication.objects
+                .filter(user=self.user, status=self.Status.PENDING)
+                .exclude(pk=self.pk)
+                .exists()
+            )
+
+            if exists:
+                raise ValidationError(
+                    {
+                        "status": (
+                            "This user already has a pending card request application."
+                        )
+                    }
+                )
+
+
     def __str__(self):
         return str(self.user)
-    
+
+
 
 class QueryProfile(models.Model):
     """
@@ -136,14 +176,14 @@ class QueryProfile(models.Model):
             return cls.objects.get(user=user)
         except cls.DoesNotExist:
             return None
-    
+
 
 class CardRequestBasicInformation(QueryProfile):
-    
+
     class Meta:
         verbose_name        = "Card request basic information"
         verbose_name_plural = "Card request basic information"
-     
+
     class CardType(models.TextChoices):
         VIRTUAL   = "virtual", _("Virtual")
         PHYSICAL  = "physical", _("Physical")
@@ -158,9 +198,9 @@ class CardRequestBasicInformation(QueryProfile):
         MASTERCARD = "mastercard", _("Mastercard")
         DISCOVER   = "discover", _("Discover")
 
-    application = models.OneToOneField(CardRequestApplication, 
-                                               on_delete=models.CASCADE, 
-                                               related_name="basic_information", 
+    application = models.OneToOneField(CardRequestApplication,
+                                               on_delete=models.CASCADE,
+                                               related_name="basic_information",
                                                null=True,
                                                blank=True)
     first_name             = models.CharField(max_length=100, verbose_name="First name*")
@@ -179,8 +219,8 @@ class CardRequestBasicInformation(QueryProfile):
     card_brand             = models.CharField(max_length=20, choices=CardBrand.choices, default=CardBrand.VISA, verbose_name="Card brand*")
     created_on             = models.DateTimeField(auto_now_add=True)
     last_modified_on       = models.DateTimeField(auto_now=True)
-    
-  
+
+
     @property
     def full_name(self):
         if self.first_name and self.last_name:
@@ -192,23 +232,23 @@ class CardRequestBasicInformation(QueryProfile):
         if not isinstance(user_profile, UserProfile):
             raise ValueError("user_profile must be an instance of UserProfile. Expected UserProfile, got {}".format(type(user_profile).__name__)    )
         return cls.objects.filter(user_profile=user_profile).first()
-    
+
     @property
     def get_full_address(self):
         address_parts = [self.address1, self.address2, self.city, self.state, self.postal_code, self.country.name]
         return ', '.join(filter(None, address_parts))
-    
+
     def __str__(self):
         return self.full_name
-    
-    
+
+
 
 class CardRequestEmploymentInformation(QueryProfile):
-    
+
     class Meta:
         verbose_name        = "Card request employment detail"
         verbose_name_plural = "Card request employment details"
-        
+
     class EmploymentStatus(models.TextChoices):
         EMPLOYED = "employed", _("Employed")
         UNEMPLOYED = "unemployed", _("Unemployed")
@@ -255,7 +295,7 @@ class CardRequestEmploymentInformation(QueryProfile):
         FREELANCE = "freelance", _("Freelance")
         INTERN    = "intern", _("Intern")
         AGENCY_WORKER = "agency_worker", _("Agency Worker")
-            
+
     application         = models.OneToOneField(CardRequestApplication, on_delete=models.CASCADE, related_name="employment_information")
     employer_name       = models.CharField(max_length=20, verbose_name="Employer name *", blank=True, null=True)
     employment_status   = models.CharField(max_length=20, choices=EmploymentStatus.choices, verbose_name="Employer status*")
@@ -266,30 +306,30 @@ class CardRequestEmploymentInformation(QueryProfile):
     contract_type       = models.CharField(max_length=20, choices=ContractType.choices)
     created_on          = models.DateTimeField(auto_now_add=True)
     last_modified_on    = models.DateTimeField(auto_now=True)
-    
+
 
     def __str__(self):
         return f"Employment Information for {self.application.applicant_full_name}"
-    
-    
+
+
 
 
 class CardRequestAgreement(models.Model):
-    
+
     title              = models.CharField(max_length=80, blank=True, null=True)
     terms_of_condition = CKEditor5Field("Terms of conditions", config_name="default")
     created_on         = models.DateTimeField(auto_now_add=True)
     last_modified_on   = models.DateTimeField(auto_now=True)
-   
+
 
 class CardRequestApplicationLog(models.Model):
-    
+
     class Action(models.TextChoices):
         APPLICATION_SUBMITTED = "application_submitted", _("Application Submitted")
         STATUS_CHANGED        = "status_changed", _("Status Changed")
         REVIEW_COMPLETED      = "review_completed", _("Review Completed")
         NOTES_ADDED           = "notes_added", _("Notes Added")
-    
+
     action           = models.CharField(choices=Action.choices, max_length=25)
     user             = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     username         = models.CharField(max_length=60)
@@ -298,27 +338,27 @@ class CardRequestApplicationLog(models.Model):
     notes            = models.TextField(blank=True)
     created_on       = models.DateTimeField(auto_now_add=True)
     last_modified_on = models.DateTimeField(auto_now=True)
-    
-    
+
+
     @classmethod
     def get_all_user_logs(cls, user: User, action = None) -> QuerySet[CardRequestApplicationLog] :
         cls._validate_user_instance(user)
-        
+
         if action == None:
             return cls.objects.filter(user=user)
-        
+
         if not isinstance(action, str):
             raise TypeError(f"Expected a string for action. Got type {type(action).__name__}")
-    
+
         return cls.objects.filter(user=user, action=action)
-    
+
     @classmethod
     def _validate_user_instance(cls, user: User):
         if not isinstance(user, User):
             raise TypeError(f"Expected a user instance. Got object with type {type(user).__name__}")
-        
-        
-        
+
+
+
 
 class CardRequestApplicationPending(CardRequestApplication):
     """
@@ -375,4 +415,3 @@ class CardRequestApplicationCancelled(CardRequestApplication):
         verbose_name_plural = "Cancelled applications"
 
 
-        

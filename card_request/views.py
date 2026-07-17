@@ -5,12 +5,16 @@ from django.contrib import messages
 
 
 from authentication.view_helper import handle_json_post_request
+from .models import CardRequestApplication
 from setup.decorators import onboarding_required
 from utils.decorators import go_to_staff_page, is_email_verified
 from .form import CardRequestForm, CardRequestEmploymentForm, CardAgreementForm
 from .views_helper import get_card_request_agreement
 from .services import CardRequestService
-from utils.decorators import is_card_request_application_status_pending, has_permissions_to_view_page, go_to_staff_page
+from utils.decorators import (is_card_request_application_status_pending,
+                              has_permissions_to_view_page, go_to_staff_page
+                              )
+
 
 
 # Create your views here.

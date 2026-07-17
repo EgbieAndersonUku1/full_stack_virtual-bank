@@ -3,17 +3,17 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from utils.admin.filter import StatusFilteredAdmin
-from .models import (CardRequestAgreement, 
-                     CardRequestApplication, 
-                     CardRequestApplicationLog, 
-                     CardRequestBasicInformation, 
+from .models import (CardRequestAgreement,
+                     CardRequestApplication,
+                     CardRequestApplicationLog,
+                     CardRequestBasicInformation,
                      CardRequestEmploymentInformation,
                      CardRequestApplicationPending,
                      CardRequestApplicationAccepted,
                      CardRequestApplicationWithdrawn,
                      CardRequestApplicationRejected,
                      CardRequestApplicationCancelled
-                     
+
                      )
 
 
@@ -57,11 +57,11 @@ class CardRequestAgreementAdmin(admin.ModelAdmin):
         ),
     ]
 
-    
+
 class CardRequestApplicationBaseAdmin(admin.ModelAdmin):
     """"""
-    
-    list_display       = ["id", "user", "status", "submitted_on", 
+
+    list_display       = ["id", "user", "status", "submitted_on",
                           "reviewed_by", "created_on", "last_modified_on",
                             "view_basic_information",
                             "view_employment_information"
@@ -106,7 +106,7 @@ class CardRequestApplicationBaseAdmin(admin.ModelAdmin):
                 "fields": ["created_on", "last_modified_on"],
             },
         ),
-        
+
          (
             "Full Application",
             {
@@ -121,10 +121,10 @@ class CardRequestApplicationBaseAdmin(admin.ModelAdmin):
             },
         ),
     ]
-    
+
     def has_add_permission(self, request):
         return False
-    
+
     def view_basic_information(self, obj):
         if hasattr(obj, "basic_information"):
             url = reverse(
@@ -138,7 +138,7 @@ class CardRequestApplicationBaseAdmin(admin.ModelAdmin):
 
         return "No information available"
 
-    
+
     def view_employment_information(self, obj):
         if hasattr(obj, "employment_information"):
             url = reverse(
@@ -157,13 +157,13 @@ class CardRequestApplicationBaseAdmin(admin.ModelAdmin):
     view_basic_information.short_description = "Basic Information"
 
 
-    
-    
+
+
 class CardRequestApplicationAdmin(CardRequestApplicationBaseAdmin):
     list_filter  = ["status", "created_on", "submitted_on"]
-   
-    
-    
+
+
+
 class CardRequestBasicInformationAdmin(admin.ModelAdmin):
 
     list_display       = ["id", "full_name", "email", "card_type", "card", "card_brand", "created_on", "view_application"]
@@ -229,7 +229,7 @@ class CardRequestBasicInformationAdmin(admin.ModelAdmin):
                 "fields": ["created_on", "last_modified_on"],
             },
         ),
-        
+
         (
         "Application",
         {
@@ -242,20 +242,20 @@ class CardRequestBasicInformationAdmin(admin.ModelAdmin):
         },
     ),
     ]
-    
+
     def has_add_permission(self, request):
         return False
-    
+
     def has_delete_permission(self, request, obj=None):
         return False
-    
+
     def view_application(self, obj):
         return view_application_heler(obj)
 
 
 class CardRequestEmploymentInformationAdmin(admin.ModelAdmin):
 
-    list_display = ["id", "application", "employment_status", 
+    list_display = ["id", "application", "employment_status",
                     "employment_type", "annual_income_range", "created_on", "view_application"]
     list_display_links = ["id", "application"]
     list_filter        = ["employment_status", "employment_type", "years_of_employment", "annual_income_range",
@@ -310,7 +310,7 @@ class CardRequestEmploymentInformationAdmin(admin.ModelAdmin):
                 "fields": ["created_on", "last_modified_on"],
             },
         ),
-        
+
         (
             "Application",
             {
@@ -322,14 +322,14 @@ class CardRequestEmploymentInformationAdmin(admin.ModelAdmin):
                 "fields": ["view_application"],
             },
         ),
-    ]   
-    
+    ]
+
     def has_add_permission(self, request):
         return False
-    
+
     def has_delete_permission(self, request, obj=None):
         return False
-    
+
     def view_application(self, obj):
         return view_application_heler(obj)
 
@@ -340,7 +340,7 @@ class CardRequestApplicationLogAdmin(admin.ModelAdmin):
     list_display_links = ["id", "username"]
     list_filter        = ["action", "created_on"]
     search_fields      = ["username", "email", "full_name", "notes"]
-    readonly_fields    = ["user", "username", "email", "full_name", 
+    readonly_fields    = ["user", "username", "email", "full_name",
                           "action", "notes", "created_on", "last_modified_on",
                           ]
 
@@ -395,7 +395,7 @@ class CardRequestApplicationLogAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-     
+
 
 
 
@@ -447,10 +447,10 @@ class CardRequestApplicationCancelledAdmin(CardRequestApplicationBaseAdmin, Stat
     """
 
     required_status = CardRequestApplication.Status.CANCELLED
-                     
-                     
-                     
-                     
+
+
+
+
 admin.site.register(CardRequestAgreement, CardRequestAgreementAdmin)
 admin.site.register(CardRequestApplication, CardRequestApplicationAdmin)
 admin.site.register(CardRequestBasicInformation, CardRequestBasicInformationAdmin)
