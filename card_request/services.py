@@ -121,7 +121,8 @@ class CardRequestService:
             with transaction.atomic():
 
                 application = CardRequestApplication.objects.create(
-                    user=user, submitted_on=timezone.now()
+                    user=user,
+                    submitted_on=timezone.now()
                 )
 
                 # add basic information
@@ -352,6 +353,70 @@ class CardRequestsApplicationCacheService:
             )
         except AttributeError as e:
             raise AttributeError(_(str(e)))
+
+    @classmethod
+    def update_cache(cls):
+        """
+        Refresh the card request application cache.
+
+        Retrieves the latest card request applications from the database and
+        repopulates the cache to ensure cached data remains consistent with the
+        current database state.
+
+        This method should be called after creating, updating, or deleting a
+        card request application.
+        """
+        set_cache_with_retry(key=ALL_CARD_APPLICATION_CACHE_KEY,
+                             value=lambda: CardRequestApplication.get_all_applications()
+                             )
+
+    @classmethod
+    def get_by_status(cls, status: str) -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve card request applications matching the provided workflow status.
+
+        This method retrieves applications through the existing cache-backed
+        application retrieval layer and filters the results by the supplied
+        application status.
+
+        The status value should match one of the available
+        CardRequestApplication.Status choices, such as:
+        - pending
+        - under_review
+        - accepted
+        - rejected
+        - cancelled
+        - withdrawn
+        - on_hold
+
+        Args:
+            status (str): The workflow status used to filter applications.
+
+        Returns:
+            QuerySet[CardRequestApplication]: A queryset containing applications
+            matching the requested status.
+
+        Raises:
+            TypeError: If the provided status is not a string.
+        """
+
+        if not isinstance(status, str):
+            logger.info(_("The status value for the CardRequestApplicationCacheService.get_by_status(...) class is not a string"))
+            raise TypeError(
+                _("Expected a string but got object with type {object_type}".format(object_type=type(status).__name__)
+                  ))
+
+        if status.lower() not in CardRequestApplication.Status.values:
+
+            logger.info(_("The status value enter doesn't match the expected value. " \
+                         "Expected values ['pending', 'on_holding', 'accepted', " \
+                         "'rejected', 'withdrawn', 'cancelled', 'under_review']")
+                         )
+            raise  ValueError(
+                        _("Invalid card request application status: {status}")
+                        .format(status=status)
+                        )
+        return cls.get_all_applications().filter(status=status)
 
     @classmethod
     def get_all_applications_status_count(cls) -> dict[str, int]:

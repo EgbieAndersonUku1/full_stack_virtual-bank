@@ -32,7 +32,7 @@ class CardRequestApplication(models.Model):
         ]
     class Status(models.TextChoices):
         PENDING      = "pending", _("Pending")
-        ON_HOLD      = "on_holding", _("On Hold")
+        ON_HOLD      = "on_hold", _("On Hold")
         ACCEPTED     = "accepted", _("Accepted")
         REJECTED     = "rejected", _("Rejected")
         WITHDRAWN    = "withdrawn", _("Withdrawn")
@@ -98,7 +98,10 @@ class CardRequestApplication(models.Model):
 
         queryset = (
                     cls.objects
-                    .select_related("user", "basic_information", "employment_information")
+                    .select_related("user__profile",
+                                    "basic_information",
+                                    "employment_information",
+                                    )
                 )
 
         if status is not None:

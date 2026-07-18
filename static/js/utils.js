@@ -28,9 +28,9 @@ export function generateRandomID(maxDigit = 10000000) {
 
 /**
  * Toggles the visibility of the spinner.
- * 
+ *
  * This function shows or hides the spinner by setting its display property to either 'block' or 'none'.
- * 
+ *
  * @param {boolean} [show=true] - A boolean indicating whether to show or hide the spinner.
  *                               If `true`, the spinner is shown; if `false`, it is hidden.
  */
@@ -49,10 +49,10 @@ export function toggleSpinner(spinnerElement, show = true, hideScroller = false)
 
 /**
  * Shows the spinner for a specified duration and then hides it.
- * 
+ *
  * This function uses the `toggleSpinner` function to show the spinner immediately,
  * and then hides it after the specified amount of time (default is 500ms).
- * 
+ *
  * @param {HTMLElement} spinnerElement - The spinner element to display.
  * @param {number} [timeToDisplay=500] - The duration (in milliseconds) to display the spinner. Defaults to 500ms.
  */
@@ -100,7 +100,7 @@ export function findByIndex(id, items) {
  *
  * @example
  * // Only numbers will remain (non-numeric characters removed)
- * sanitizeText('abc123', true); 
+ * sanitizeText('abc123', true);
  * // Output: '123'
  *
  * @example
@@ -162,16 +162,16 @@ export function sanitizeText(text, onlyNumbers = false, onlyChars = false, inclu
 
 /**
  * Formats a UK mobile number into the international format: `+44 (prefix) exchangeNumber`.
- * 
+ *
  * @param {string} number - The UK mobile number to format.
- * 
+ *
  * @throws {Error} If the number is invalid for any of the following reasons:
  *      - The number is not a UK mobile number (i.e., length is not exactly 11 digits after cleaning).
  *      - The number does not start with a `0`.
  *      - The number starts with `08` since valid UK mobile numbers always start with `07`.
- * 
+ *
  * @returns {string} A formatted, valid UK mobile number in the form: `+44 (prefix) exchangeNumber`.
- * 
+ *
  * @example
  * formatUKMobileNumber("+44 7947 106 747")    // Returns: "+44 (7947) 106747"
  * formatUKMobileNumber("0044 7947 106 747")   // Returns: "+44 (7947) 106747"
@@ -179,7 +179,7 @@ export function sanitizeText(text, onlyNumbers = false, onlyChars = false, inclu
  * formatUKMobileNumber("+44 (0)7947-106-747") // Returns: "+44 (7947) 106747"
  * formatUKMobileNumber("07947106747")         // Returns: "+44 (7947) 106747"
  * formatUKMobileNumber("447947106747")        // Returns: "+44 (7947) 106747"
- * 
+ *
  * @example
  * // Errors:
  * formatUKMobileNumber("0797106747");      // Throws Error: Number must be exactly 11 digits long.
@@ -201,7 +201,7 @@ export function formatUKMobileNumber(number) {
 /**
  * Takes a UK mobile number and cleans the number to ensure it follows the correct format.
  * It handles various UK number prefixes and sanitizes the input to return a valid 11-digit number.
- * 
+ *
  * @param {string} mobileNumber - The mobile number to clean. Can be in formats like:
  *    - `+44 7947 106 747`
  *    - `0044 7947 106 747`
@@ -209,16 +209,16 @@ export function formatUKMobileNumber(number) {
  *    - `+44 (0)7947-106-747`
  *    - `0044(0)7947106747`
  *    - `07947106747`
- * 
+ *
  * @error Throws errors if:
  *    - The number does not start with a `0`.
  *    - The number length is not 11 digits.
  *    - The number starts with 08 since UK mobile numbers always start with `07`
- * 
+ *
  * @returns {string} A valid 11-digit UK mobile number.
- * 
+ *
  * Example usage:
- * 
+ *
  * // valid numbers
  * cleanUKMobileNumber("+44 7947 106 747")   // returns: 07947106747  // valid
  * cleanUKMobileNumber("0044 7947 106 747")  // returns: 07947106747  // valid
@@ -226,10 +226,10 @@ export function formatUKMobileNumber(number) {
  * cleanUKMobileNumber("+44 (0)7947-106-747") // returns: 07947106747  // valid
  * cleanUKMobileNumber("07947106747")         // returns 07947106747  // valid
  * cleanUKMobileNumber("447947106747")       // teturns 07947106747  // valid
- * 
- * 
+ *
+ *
  * throws errors:
- * 
+ *
  * cleanUKMobileNumber("0797106747")     -> throws Error because the length is less than 11
  * cleanUKMobileNumber("07971067479255") -> throws Error because the length is greater than 11
  * cleanUKMobileNumber("08971067479255") -> throws Error Valid length but starts with `08` UK mobile numbers start with "07"
@@ -323,7 +323,7 @@ export function compareTwoObjects(object1, object2) {
  * @param {String|Number} key - The key (for objects) or index (for arrays) to exclude.
  *
  * @returns {Object|Array} - A new object or array excluding the specified key or index.
- * 
+ *
  * @throws {TypeError} - If `obj` is not an object or array.
  * @throws {RangeError} - If the provided index is out of range for arrays.
  *
@@ -332,13 +332,13 @@ export function compareTwoObjects(object1, object2) {
  * const user = { id: 1, name: 'Marcus', group: 'admin' };
  * console.log(excludeKey(user, 'group'));
  * // Expected Output: { id: 1, name: 'Marcus' }
- * 
+ *
  * @example
  * // Usage with an array
  * const numbers = [10, 20, 30, 40];
  * console.log(excludeKey(numbers, 2));
  * // Expected Output: [10, 20, 40]
- * 
+ *
  * @example
  * // Handling invalid index for array
  * const numbers = [10, 20, 30, 40];
@@ -347,7 +347,7 @@ export function compareTwoObjects(object1, object2) {
  * } catch (error) {
  *     console.log(error.message);  // Expected Output: Invalid array index
  * }
- * 
+ *
  * @example
  * // Handling invalid object
  * try {
@@ -408,11 +408,11 @@ export function dimBackground(dimBackgroundElement, dim = false) {
 
 /**
  * Formats input text by inserting a dash ('-') at specified intervals.
- * 
- * This function listens for input changes and automatically adds dashes 
+ *
+ * This function listens for input changes and automatically adds dashes
  * after every specified number of characters. It also provides an option
  * to keep only digits by removing all non-numeric characters.
- * 
+ *
  * @param {Event} e - The input event containing the target value.
  * @param {number} lengthPerDash - The number of characters between dashes (default: 5).
  * @param {boolean} digitsOnly - If true, removes all non-numeric characters (default: false).
@@ -463,20 +463,20 @@ export function concatenateWithDelimiter(first, second, delimiter = "") {
 
 /**
  * Restricts the length of a given  input field to a maximum of 10 characters which is default.
- * 
+ *
  * This function ensures that the user cannot enter more than the allowed number of characters
  * in the input field. It also performs safety checks to prevent errors
  * when accessing `e.target.value`.
- * 
+ *
  * @errors {Error}  - Raises two errors:
  *                      - If the maximum length value is not a valid number
  *                      - If an attempt is made to convert the value returned from input field to an integer or a float,
  *                        however the value is a text and not a digit.
- * 
+ *
  * @param {Event} e         - The input event triggered when the user types in the field.
  * @param {maximumLength}   - The maximum lenght to a given character. Default is 10
- * @param {convertToFloat } - An optional value that allows the given value to be converted to a float. 
- *                            If true converts to a float else leaves the value as it is. 
+ * @param {convertToFloat } - An optional value that allows the given value to be converted to a float.
+ *                            If true converts to a float else leaves the value as it is.
  *                            Note - To convert to a float the digit must be an integer or a float otherwise
  *                            an error is raised
  * @param {number} - Returns the input value
@@ -565,21 +565,21 @@ export function maskCreditCardNo(creditCardNo) {
 
 /**
  * Formats a given amount into a currency string with the specified currency symbol and locale.
- * 
+ *
  * @param {number|string} amount - The amount to format. This can be a number or a string representation of a number.
  * @param {string} [locale='en-GB'] - The locale string (e.g., 'en-GB' for UK, 'en-US' for the US). Defaults to 'en-GB'.
  * @param {string} [currency='GBP'] - The ISO 4217 currency code (default is 'GBP' for British Pounds).
- * 
+ *
  * @returns {string} - A string formatted as a currency value with two decimal places and a currency symbol (e.g., '£12,345.60' or '$12,345.60').
- * 
+ *
  * @throws {Error} - Throws an error if the amount is not a valid number or string that can be parsed into a number.
- * 
+ *
  * @example
  * formatCurrency("12345.6"); // returns '£12,345.60' (default locale 'en-GB')
  * formatCurrency(50); // returns '£50.00' (default locale 'en-GB')
  * formatCurrency(5000, 'en-US', 'USD'); // returns '$5,000.00'
  * formatCurrency(5000, 'de-DE', 'EUR'); // returns '5.000,00 €' (German locale)
- * 
+ *
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString
  */
 export function formatCurrency(amount, locale = 'en-GB', currency = 'GBP') {
@@ -659,8 +659,8 @@ export function deselectAllElements(elements, cssClass) {
  *
  * @param {string} [cssSelectorElement="active"]
  * The CSS class to add to the element. Defaults to "active".
- * 
- * Note: 
+ *
+ * Note:
  * There must a CSS rule that determines how the element should be highlighted
  * and that name should be passed to the function.
  *
@@ -683,7 +683,7 @@ export function selectElement(elementToSelect, cssSelectorElement = "active") {
  *
  * @param {string} value - The currency string to parse (e.g. "£1,234.56").
  * @returns {number} The numeric representation of the currency value.
- *                   Returns NaN if the value cannot be parsed. 
+ *                   Returns NaN if the value cannot be parsed.
  *                   Doesn't return 0 because 0 hides the errors
  *
  * @example
@@ -940,4 +940,23 @@ export function toggleRequiredInput({elementsNodeList, required }) {
     }
 }
 
+
+
+/**
+ * Smoothly scrolls a DOM element into the viewport.
+ *
+ * This is a helper wrapper around `Element.scrollIntoView` that standardises
+ * scrolling behaviour across the application.
+ *
+ * @param {HTMLElement} divElement
+ * The DOM element to scroll into view.
+ *
+ * @returns {void}
+ */
+export function scrollToView(divElement) {
+    divElement.scrollIntoView({
+        behavior: "smooth",
+        block: "end"
+    });
+}
 
