@@ -14,6 +14,7 @@
     --main-page-width: 75%;
     --green-600: #16A34A;
     --blue-600: #2563EB;
+    --orange-600: #d97706;
     --red: #b00020;
     --space-0: 0;
     --space-4: 4px;
@@ -5231,11 +5232,18 @@ clicks the button
 }
 
 #card-requests-table tr:hover {
-    transform: scale(1.01);
+    transform: scale(1);
+
 }
 
 #card-requests-table tbody tr td:first-child {
     text-align: left;
+}
+
+
+
+#card-requests-table tbody tr td:first-child:hover {
+    text-decoration: underline;
 }
 
 
@@ -5269,12 +5277,15 @@ clicks the button
     color: #065f46;
 }
 
+
+.status--cancelled,
 .status--disabled,
 .status--rejected {
     background: #fee2e2;
     color: #991b1b;
 }
 
+.status--on_hold,
 .status--review {
     background: #e0e7ff;
     color: #3730a3;
@@ -5434,6 +5445,12 @@ clicks the button
     display: none;
 }
 
+#request-first-tab p,
+#request-second-tab p,
+#request-third-tab p
+#request-fourth-tab p{
+    margin-left: 0;
+}
 
 .user-profile-header__cards {
     column-gap: var(--space-4);
@@ -6254,4 +6271,11 @@ textarea::placeholder {
 /* card status overview requests page */
 .card-request-card__title p {
     margin-left: 0;
+}
+
+
+
+/* breadcrumb */
+.breadcrumb {
+    font-size: 0.9rem;
 }

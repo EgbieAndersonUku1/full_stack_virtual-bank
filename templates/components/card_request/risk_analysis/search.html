@@ -1,9 +1,14 @@
+{% load custom_filters %}
+
+
 <section id="num-of-card-requests">
   <div class="num-of-card-requests__container">
+
+
     <div class="num-of-card-request__header flex-grid two-column-30_70_grid">
       <div class="header">
         <h3 id="card-requests-header">
-          Card Requests (<small id="table-row-counter">10</small>)
+          Card Requests (<small id="table-row-counter">{{ application_count }}</small>)
         </h3>
       </div>
 
@@ -24,7 +29,6 @@
         <thead>
           <tr>
             <th scope="col">User</th>
-            <th scope="col">Account</th>
             <th scope="col">Card type</th>
             <th scope="col">Status</th>
             <th scope="col">Date</th>
@@ -32,11 +36,29 @@
         </thead>
 
         <tbody id="card-requests-tbody">
-          <!-- loaded dynamically using js -->
+          {% for application in applications %}
+            <tr data-id="table-row-{{ application.id }}">
+                  <td>{{ application.user.profile.full_name | title }}</td>
+                  <td>
+                    <span>{{ application.basic_information.card_brand | title }}</span>
+                    <small class="text-muted">(Virtual)</small>
+                  </td>
+
+                  <td class="capitalise">
+                      <span class="status status--{{ application.status }}">{{ application.status|remove_under_score|title }}</span>
+                  </td>
+
+                  <td>
+                    <span>{{ application.submitted_on }}</span>
+
+                  </td>
+
+            </tr>
+           {% endfor %}
         </tbody>
       </table>
 
-      <div class="pagination flex flex-space-between mt-16">
+      <!-- <div class="pagination flex flex-space-between mt-16">
         <div class="num-of-pages">
           <p class="text-muted">Showing 1 of 24 pages</p>
         </div>
@@ -49,7 +71,9 @@
           <a href="#">....</a>
           <a href="#">10</a>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </section>
+
+

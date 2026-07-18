@@ -9,8 +9,8 @@ urlpatterns = [
     path('agreement/', view=views.card_request_agreement, name="card_request_agreement" ),
     path('is_all_stages_complete/', view=views.get_card_request_completion_status, name="get_card_request_completion_status"),
     path("application_status/", view=views.is_application_pending, name="application_status"),
-    path("all_card_requests/", view=views.card_request_review_queue, name="card_requests_queue"),
-    path("all_card_request_dashboard", view=views.all_card_requests_overview, name="card_requests_dashboard"),
+    path("all_card_requests/", view=views.card_request_admin_portal, name="card_request_admin_portal"),
+    path("all_card_request_dashboard", view=views.card_request_admin_dashboard, name="card_requests_dashboard"),
 
     # card applications
     path("all_applications", view=views.all_cards_applications, name="all_applications"),
@@ -22,6 +22,8 @@ urlpatterns = [
     path("under_review_applications", view=views.under_review_applications, name="under_review_applications"),
     path("withdrawn_applications", view=views.withdrawn_applications, name="withdrawn_applications"),
 
+    # json
+    path("applications/<str:status>/json/", view=views.get_card_requests_by_status_json, name="card_requests_by_status_json")
 
 
 ]

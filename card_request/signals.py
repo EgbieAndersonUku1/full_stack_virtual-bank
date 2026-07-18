@@ -83,7 +83,7 @@ def does_user_have_an_existing_pending_application(sender, instance, **kwargs):
 
         raise PendingCardRequestApplicationAlreadyExistsError(error_msg)
 
-    
+
     if not instance.pk:
         return
 
@@ -96,6 +96,9 @@ def does_user_have_an_existing_pending_application(sender, instance, **kwargs):
         previous.status != CardRequestApplication.Status.PENDING
         and instance.status == CardRequestApplication.Status.PENDING
     )
+
+    CardRequestsApplicationCacheService.update_cache()
+    
     if status_changed_to_pending:
         set_cache_with_retry(key=cache_key, value=CardRequestApplication.Status.PENDING)
         return

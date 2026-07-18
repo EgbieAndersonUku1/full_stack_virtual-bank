@@ -7,7 +7,6 @@ import { renderTable, populateCardHistoryTable } from "./table.js";
 import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js";
 
 
-
 const tabs                = document.querySelectorAll(".tabs .tab")
 const mainSectionContainer = document.querySelector(".dashboard__container__main");
 const requestTabContents  = document.querySelectorAll(".request-tab-content");
@@ -19,6 +18,7 @@ const auditSpinner        = document.getElementById("load-audit-spinner");
 
 
 
+
 mainSectionContainer.addEventListener("click", handleDelegation);
 
 
@@ -27,6 +27,7 @@ mainSectionContainer.addEventListener("click", handleDelegation);
 document.addEventListener("DOMContentLoaded", () => {
 
         showFirstTab();
+
 
 });
 
