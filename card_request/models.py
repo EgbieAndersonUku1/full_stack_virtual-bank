@@ -1,5 +1,6 @@
 
 from __future__ import annotations
+from typing import Iterable
 
 from django.db import models
 from django.db.models import QuerySet
@@ -13,6 +14,7 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 
 from user_profile.models import UserProfile
+from utils.security.generator import generate_secure_code
 
 
 User = get_user_model()
@@ -40,6 +42,7 @@ class CardRequestApplication(models.Model):
         UNDER_REVIEW = "under_review", _("Under Review")
 
     user             = models.ForeignKey(User, on_delete=models.CASCADE)
+    application_id   = models.CharField(max_length=32, unique=True, blank=True, null=True, editable=False)
     status           = models.CharField(choices=Status.choices, max_length=15, default=Status.PENDING)
     created_on       = models.DateTimeField(auto_now_add=True)
     last_modified_on = models.DateTimeField(auto_now_add=True)
@@ -143,6 +146,12 @@ class CardRequestApplication(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+    def save(self, *args, **kwargs) -> None:
+
+        if self.application_id is None:
+            self.application_id = generate_secure_code(code_length=32)
+        return super().save(*args, **kwargs)
 
 
 
@@ -332,6 +341,7 @@ class CardRequestApplicationLog(models.Model):
         STATUS_CHANGED        = "status_changed", _("Status Changed")
         REVIEW_COMPLETED      = "review_completed", _("Review Completed")
         NOTES_ADDED           = "notes_added", _("Notes Added")
+        APPLICATION_DELETED   = "application_deleted", _("Application Deleted")
 
     action           = models.CharField(choices=Action.choices, max_length=25)
     user             = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)

@@ -448,32 +448,16 @@ def withdrawn_applications(request):
 
 @login_required
 @csrf_protect
-def get_card_requests_by_status_json(request, status):
+def get_application_status_json(request, application_id: str):
     """
-    Return card request applications filtered by their workflow status.
+    Takes an application id and returns the application belonging
+    to that id.
 
-    This endpoint provides JSON data for administrative interfaces that
-    need to dynamically load card request applications without rendering
-    a full page refresh.
-
-    The requested status is used to retrieve matching applications through
-    the card request service layer, ensuring application retrieval follows
-    the same workflow rules and caching strategy used throughout the
-    administration dashboard.
-
-    Example statuses include:
-    - pending
-    - under_review
-    - accepted
-    - rejected
-    - cancelled
-    - withdrawn
-    - on_hold
-
-    Access is restricted to users with administrative permissions.
+    Args:
+        application_id (int): The application internal id
     """
 
-    def handle_card_by_request_status(status):
+    def handle_application_status(application_id):
         pass
 
-    return handle_json_post_request(request, func=handle_card_by_request_status)
+    return handle_json_post_request(request, func=handle_application_status)
