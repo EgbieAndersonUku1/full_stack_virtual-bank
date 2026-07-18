@@ -29,7 +29,8 @@
         <thead>
           <tr>
             <th scope="col">User</th>
-            <th scope="col">Card type</th>
+            <th scope="col">Card Brand</th>
+             <th scope="col">Card type</th>
             <th scope="col">Status</th>
             <th scope="col">Date</th>
           </tr>
@@ -41,7 +42,12 @@
                   <td>{{ application.user.profile.full_name | title }}</td>
                   <td>
                     <span>{{ application.basic_information.card_brand | title }}</span>
-                    <small class="text-muted">(Virtual)</small>
+
+                  </td>
+
+                    <td>
+
+                    <span class="text-muted">{{ application.basic_information.card_type | title }}</span>
                   </td>
 
                   <td class="capitalise">

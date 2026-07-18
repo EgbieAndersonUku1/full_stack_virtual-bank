@@ -2,14 +2,21 @@ from django.db.models.signals import post_save, post_delete, pre_save, pre_delet
 from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 from .errors import PendingCardRequestApplicationAlreadyExistsError
 from .models import (CardRequestAgreement,
                      CardRequestApplication,
+                     CardRequestBasicInformation,
+                     CardRequestEmploymentInformation,
+                     CardRequestApplicationLog
 
                      )
+
+
 from utils.safe_cache import set_cache_with_retry, delete_cache_with_retry
 from card_request.services import construct_card_application_session_key, CardRequestsApplicationCacheService
+
 
 
 
@@ -98,7 +105,7 @@ def does_user_have_an_existing_pending_application(sender, instance, **kwargs):
     )
 
     CardRequestsApplicationCacheService.update_cache()
-    
+
     if status_changed_to_pending:
         set_cache_with_retry(key=cache_key, value=CardRequestApplication.Status.PENDING)
         return
@@ -106,3 +113,13 @@ def does_user_have_an_existing_pending_application(sender, instance, **kwargs):
     delete_cache_with_retry(cache_key)
 
 
+@receiver(post_delete, sender=CardRequestApplication)
+def delete_card_request_application(sender, instance, **kwargs):
+    CardRequestApplicationLog.objects.create(
+        action=CardRequestApplicationLog.Action.APPLICATION_DELETED,
+        user=instance.user,
+        username=instance.user.username,
+        email=instance.user.email,
+        full_name=instance.user.profile.full_name,
+        notes="The application was deleted from the system"
+    )

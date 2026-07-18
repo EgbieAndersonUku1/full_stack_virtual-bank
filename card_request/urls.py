@@ -23,7 +23,7 @@ urlpatterns = [
     path("withdrawn_applications", view=views.withdrawn_applications, name="withdrawn_applications"),
 
     # json
-    path("applications/<str:status>/json/", view=views.get_card_requests_by_status_json, name="card_requests_by_status_json")
+    path("applications/<str:status>/json/", view=views.get_application_status_json, name="get_application_status_json")
 
 
 ]
