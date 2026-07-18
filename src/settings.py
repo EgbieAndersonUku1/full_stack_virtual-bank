@@ -48,13 +48,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Application definition
 
 INSTALLED_APPS = [
-    
+
     # pip installed django apps
     'jazzmin',
     'django_q',
     'django_countries',
     'django_ckeditor_5',
-    
+
 
     # third party django apps
     'django.contrib.admin',
@@ -76,7 +76,7 @@ INSTALLED_APPS = [
     'card_request.apps.CardRequestConfig',
 
 
-    
+
 ]
 
 MIDDLEWARE = [
@@ -106,6 +106,7 @@ TEMPLATES = [
                 'bank.context_processors.bank_details',
                 'card_request.context_processors.display_bank_details_on_card',
                 'card_request.context_processors.display_application_summary_details',
+                'card_request.context_processors.get_application_status_count',
             ],
         },
     },
@@ -196,7 +197,7 @@ Q_CLUSTER = {
 EMAIL_HOST   = "test@example.com"
 
 if DEBUG:
- 
+
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     DEFAULT_FROM_EMAIL = "Virtual Bank <no-reply@virtualbank.local>"
 
@@ -264,7 +265,7 @@ LOGGING = {
             "propagate": False,
         },
     },
-    
+
     "loggers": {
     "application": {
         "handlers": ["app_file"],
@@ -284,7 +285,7 @@ LOGGING = {
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL           = "login_user"
-LOGOUT_REDIRECT_URL = "login_user" 
+LOGOUT_REDIRECT_URL = "login_user"
 
 
 

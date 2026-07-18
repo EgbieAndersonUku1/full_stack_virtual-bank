@@ -18,21 +18,59 @@
 
         <div class="admin-panel__container">
 
+          <div class="flex flex-end m-16 white-bg p-16">
+              <nav aria-label="Breadcrumb" class="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb__item">
+                    <a href="{% url 'dashboard' %}">
+                      Dashboard
+                    </a>
+                  </li>
+
+                  <li class="breadcrumb__item">
+                    <a href="{% url 'card_requests_dashboard' %}">
+                      Card Request Review Centre
+                    </a>
+                  </li>
+
+                  <li class="breadcrumb__item breadcrumb__item--active" aria-current="page">
+                    {{ page_title }}
+                  </li>
+                </ol>
+            </nav>
+          </div>
+
+
           {% include "components/card_request/risk_analysis/card_status_overview.html" %}
 
           <section id="card-request-overview" class="m-16">
 
-            <div class="card-request-status mb-24 mt-24">
+            <div class="card-request-status mb-24 mt-24 {% if not applications %} white-bg p-24 {% endif %}">
+
+
+              {% if applications %}
               <h2 class="header-8">Card Request Review Centre</h2>
+
+
 
               <small class="card-request-status-subtitle">
                 Review incoming card applications, track their status, and
                 manage approvals in real time.
               </small>
 
+              {% else %}
+                <h2 class="header-8">You have no {{ empty_heading }}  </h2>
+
+                 <span class="card-request-status-subtitle">
+                     {{ empty_message }}
+                 </span>
+
+
+              {% endif %}
+
             </div>
 
-
+            {% if applications %}
             <div class="card-request-overview__container flex">
 
                 <!--search-->
@@ -56,6 +94,7 @@
 
                 <hr class="dividor" />
 
+
                 <!-- Tabs container  -->
                 {% include "components/card_request/risk_analysis/request_data/tabs.html" %}
 
@@ -71,8 +110,15 @@
                 <!-- fourth tab: Audit trail -->
                 {% include "components/card_request/risk_analysis/request_data/audit_trail.html" %}
 
+
+
               </section>
             </div>
+
+            {% endif %}
+
+
+
           </section>
         </div>
       </section>
@@ -81,3 +127,11 @@
 </section>
 
 {% endblock body %}
+
+
+{% block script %}
+
+    <script type="module" src="{% static 'js\risk_analysis\load-info-to-ui.js' %}"></script>
+
+
+{% endblock script %}

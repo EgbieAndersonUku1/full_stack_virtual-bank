@@ -3,22 +3,28 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from django.db import transaction
-from django.db import DatabaseError
 from django.contrib.auth import get_user_model
+from django.db.models import QuerySet
+from django.db import DatabaseError, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
-from utils.safe_cache import set_cache_with_retry
-from .models import (CardRequestApplication, 
-                     CardRequestApplicationLog, 
-                     CardRequestBasicInformation, 
-                     CardRequestEmploymentInformation
-                     )
 
+from utils.safe_cache import get_cache_or_set, set_cache_with_retry
+
+from .models import (
+    CardRequestApplication,
+    CardRequestApplicationLog,
+    CardRequestBasicInformation,
+    CardRequestEmploymentInformation,
+)
 
 logger = logging.getLogger("application")
-User   = get_user_model()
+User = get_user_model()
+
+
+ALL_CARD_APPLICATION_CACHE_KEY = "card_request_user_applications"
 
 
 EMPLOYMENT_STATUS_FORM_MAPPING = {
@@ -71,10 +77,11 @@ class CardRequestService:
     allowing views and other components to interact with the card request
     process without directly managing model relationships.
     """
-    
+
     @classmethod
-    def add_card_request_to_database(cls, basic_information: dict, 
-                                     employment_information: dict, user: User) -> CardRequestApplication:
+    def add_card_request_to_database(
+        cls, basic_information: dict, employment_information: dict, user: User
+    ) -> CardRequestApplication:
         """
         Creates and stores a complete card request application.
 
@@ -107,81 +114,330 @@ class CardRequestService:
         Returns:
             CardRequestApplication: The newly created card request application.
         """
-       
-        cls._validate(basic_information, employment_information,  user)
-               
+
+        cls._validate(basic_information, employment_information, user)
+
         try:
             with transaction.atomic():
-                  
-                application = CardRequestApplication.objects.create(user=user, submitted_on=timezone.now())
-            
+
+                application = CardRequestApplication.objects.create(
+                    user=user,
+                    submitted_on=timezone.now()
+                )
+
                 # add basic information
                 basic_information_obj = CardRequestBasicInformation(**basic_information)
                 basic_information_obj.application = application
                 basic_information_obj.email = user.email
                 basic_information_obj.save()
-                
+
                 # add employment information
                 employment_information_copy = employment_information.copy()
-                
-                employment_information_copy["employment_status"] = EMPLOYMENT_STATUS_FORM_MAPPING[employment_information_copy["employment_status"].lower()]
-                
-                employment_information_obj             = CardRequestEmploymentInformation(**employment_information_copy)
+
+                employment_information_copy["employment_status"] = (
+                    EMPLOYMENT_STATUS_FORM_MAPPING[
+                        employment_information_copy["employment_status"].lower()
+                    ]
+                )
+
+                employment_information_obj = CardRequestEmploymentInformation(
+                    **employment_information_copy
+                )
                 employment_information_obj.application = application
                 employment_information_obj.save()
-            
-                logger.info("Storing basic information and employment information for user {}".format(user))  
-                
-            
+
+                logger.info(
+                    "Storing basic information and employment information for user {}".format(
+                        user
+                    )
+                )
+
                 # create audit log entry
                 CardRequestApplicationLog.objects.create(
                     action=CardRequestApplicationLog.Action.APPLICATION_SUBMITTED,
                     user=user,
                     username=user.username,
                     email=user.email,
-                    full_name=user.profile.full_name
+                    full_name=user.profile.full_name,
                 )
-            
+
                 # only save the cache if transaction.atomic is saved
                 transaction.on_commit(
-                        lambda: cls._cache_application_state(
-                            user.username,
-                            application.status
-                        )
+                    lambda: cls._cache_application_state(
+                        user.username, application.status
                     )
-                
+                )
+
         except DatabaseError:
-            logger.exception("Failed to create card request application for user %s", user.username)
+            logger.exception(
+                "Failed to create card request application for user %s", user.username
+            )
             raise
 
-        logger.info("Successfully created card request application %s for user %s", application.id, user.username)
+        logger.info(
+            "Successfully created card request application %s for user %s",
+            application.id,
+            user.username,
+        )
 
         return application
-    
+
     @classmethod
     def _cache_application_state(cls, username: str, application_status: str) -> None:
-        
+
         cache_key = construct_card_application_session_key(username)
         set_cache_with_retry(key=cache_key, value=application_status, ttl=None)
-        
-    
+
+        # update the overall cache
+        set_cache_with_retry(key=ALL_CARD_APPLICATION_CACHE_KEY, value=CardRequestApplication.get_all_applications())
+
+        logger.info("Added to information to cache")
+
+
     @classmethod
-    def _validate(cls, basic_information: dict, employment_information: dict, user: User) -> None:
+    def _validate(
+        cls, basic_information: dict, employment_information: dict, user: User
+    ) -> None:
         if not isinstance(basic_information, dict):
             error_msg = "Expected basic_information to be a dict. Got type {}"
             raise TypeError(cls._build_error_message(error_msg, basic_information))
-        
+
         if not isinstance(employment_information, dict):
             error_msg = "Expected employment_information to be a dict. Got type {}"
             raise TypeError(cls._build_error_message(error_msg, employment_information))
-        
-        
-        if not isinstance(user, User) :
+
+        if not isinstance(user, User):
             error_msg = "Expected user to be a User instance. Got type {}"
             raise TypeError(cls._build_error_message(error_msg, user))
-        
+
     @classmethod
     def _build_error_message(cls, msg: str, error_value: Any) -> str:
         return _(msg.format(type(error_value).__name__))
-        
-    
+
+
+class CardRequestsApplicationCacheService:
+    """
+    Provides cached access to card request applications.
+
+    This service retrieves card request applications from a shared cache,
+    falling back to the database when the cache is unavailable. It also
+    provides convenience methods for filtering applications by status and
+    retrieving application statistics.
+
+    Using this service helps reduce repeated database queries when displaying
+    administrative dashboards and card request workflow information.
+    """
+
+    @classmethod
+    def get_all_applications(cls) -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve all card request applications.
+
+        Returns:
+            QuerySet[CardRequestApplication]: A queryset containing every
+            card request application.
+        """
+        return cls._get_from_cache()
+
+    @classmethod
+    def get_under_review_applications(cls) -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve applications currently under review.
+
+        Returns:
+            QuerySet[CardRequestApplication]: Applications whose status is
+            UNDER_REVIEW.
+        """
+        return cls._get_from_cache().filter(
+            status=CardRequestApplication.Status.UNDER_REVIEW
+        )
+
+    @classmethod
+    def get_pending_applications(cls) -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve applications awaiting administrative review.
+
+        Returns:
+            QuerySet[CardRequestApplication]: Applications whose status is
+            PENDING.
+        """
+        return cls._get_from_cache().filter(
+            status=CardRequestApplication.Status.PENDING
+        )
+
+    @classmethod
+    def get_on_hold_applications(cls) -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve applications that have been placed on hold.
+
+        Returns:
+            QuerySet[CardRequestApplication]: Applications whose status is
+            ON_HOLD.
+        """
+        return cls._get_from_cache().filter(
+            status=CardRequestApplication.Status.ON_HOLD
+        )
+
+    @classmethod
+    def get_rejected_applications(cls)  -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve rejected card request applications.
+
+        Returns:
+            QuerySet[CardRequestApplication]: Applications whose status is
+            REJECTED.
+        """
+        return cls._get_from_cache().filter(
+            status=CardRequestApplication.Status.REJECTED
+        )
+
+    @classmethod
+    def get_approved_applications(cls)  -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve approved card request applications.
+
+        Returns:
+            QuerySet[CardRequestApplication]: Applications whose status is
+            ACCEPTED.
+        """
+        return cls._get_from_cache().filter(
+            status=CardRequestApplication.Status.ACCEPTED
+        )
+
+    @classmethod
+    def get_cancelled_applications(cls) -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve cancelled card request applications.
+
+        Returns:
+            QuerySet[CardRequestApplication]: Applications whose status is
+            CANCELLED.
+        """
+        return cls._get_from_cache().filter(
+            status=CardRequestApplication.Status.CANCELLED
+        )
+
+    @classmethod
+    def get_withdrawn_applications(cls) -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve withdrawn card request applications.
+
+        Returns:
+            QuerySet[CardRequestApplication]: Applications whose status is
+            WITHDRAWN.
+        """
+        return cls._get_from_cache().filter(
+            status=CardRequestApplication.Status.WITHDRAWN
+        )
+
+    @classmethod
+    def _get_from_cache(cls)  -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve all card request applications from the cache.
+
+        If the cache is empty, the applications are loaded from the database,
+        cached, and then returned.
+
+        Raises:
+            AttributeError: Raised if the cached object or queryset cannot be
+                retrieved correctly.
+
+        Returns:
+            QuerySet[CardRequestApplication]: Cached queryset containing all
+            card request applications.
+        """
+        try:
+            return get_cache_or_set(
+                key=ALL_CARD_APPLICATION_CACHE_KEY,
+                value_or_func=lambda: CardRequestApplication.get_all_applications(),
+            )
+        except AttributeError as e:
+            raise AttributeError(_(str(e)))
+
+    @classmethod
+    def update_cache(cls):
+        """
+        Refresh the card request application cache.
+
+        Retrieves the latest card request applications from the database and
+        repopulates the cache to ensure cached data remains consistent with the
+        current database state.
+
+        This method should be called after creating, updating, or deleting a
+        card request application.
+        """
+        set_cache_with_retry(key=ALL_CARD_APPLICATION_CACHE_KEY,
+                             value=lambda: CardRequestApplication.get_all_applications()
+                             )
+
+    @classmethod
+    def get_by_status(cls, status: str) -> QuerySet[CardRequestApplication]:
+        """
+        Retrieve card request applications matching the provided workflow status.
+
+        This method retrieves applications through the existing cache-backed
+        application retrieval layer and filters the results by the supplied
+        application status.
+
+        The status value should match one of the available
+        CardRequestApplication.Status choices, such as:
+        - pending
+        - under_review
+        - accepted
+        - rejected
+        - cancelled
+        - withdrawn
+        - on_hold
+
+        Args:
+            status (str): The workflow status used to filter applications.
+
+        Returns:
+            QuerySet[CardRequestApplication]: A queryset containing applications
+            matching the requested status.
+
+        Raises:
+            TypeError: If the provided status is not a string.
+        """
+
+        if not isinstance(status, str):
+            logger.info(_("The status value for the CardRequestApplicationCacheService.get_by_status(...) class is not a string"))
+            raise TypeError(
+                _("Expected a string but got object with type {object_type}".format(object_type=type(status).__name__)
+                  ))
+
+        if status.lower() not in CardRequestApplication.Status.values:
+
+            logger.info(_("The status value enter doesn't match the expected value. " \
+                         "Expected values ['pending', 'on_holding', 'accepted', " \
+                         "'rejected', 'withdrawn', 'cancelled', 'under_review']")
+                         )
+            raise  ValueError(
+                        _("Invalid card request application status: {status}")
+                        .format(status=status)
+                        )
+        return cls.get_all_applications().filter(status=status)
+
+    @classmethod
+    def get_all_applications_status_count(cls) -> dict[str, int]:
+        """
+        Return application counts grouped by workflow status.
+
+        This method is primarily intended for dashboard summary cards where
+        administrators need a quick overview of application volumes across
+        each stage of the review workflow.
+
+        Returns:
+            dict[str, int]: A dictionary containing the number of applications
+            for each status and the total application count.
+        """
+        return {
+            "pending": cls.get_pending_applications().count(),
+            "rejected": cls.get_rejected_applications().count(),
+            "cancelled": cls.get_cancelled_applications().count(),
+            "withdrawn": cls.get_withdrawn_applications().count(),
+            "on_hold": cls.get_on_hold_applications().count(),
+            "all": cls.get_all_applications().count(),
+            "under_review": cls.get_under_review_applications().count(),
+            "approved": cls.get_approved_applications().count(),
+        }
