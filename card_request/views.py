@@ -1,20 +1,21 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 
 from authentication.view_helper import handle_json_post_request
 from setup.decorators import onboarding_required
-from utils.decorators import (
-    go_to_staff_page,
-    has_permissions_to_view_page,
-    is_card_request_application_status_pending,
-    is_email_verified,
-)
+from utils.decorators import (go_to_staff_page, has_permissions_to_view_page,
+                              is_card_request_application_status_pending,
+                              is_email_verified)
 
 from .form import CardAgreementForm, CardRequestEmploymentForm, CardRequestForm
-from .models import CardRequestApplication
-from .services import CardRequestsApplicationCacheService, CardRequestService
+from .services import (CardRequestsApplicationCacheService, CardRequestService,
+                       build_application_response_data)
 from .views_helper import get_card_request_agreement
 
 # Create your views here.
@@ -225,7 +226,7 @@ def card_request_admin_portal(request):
 
     Access is restricted to users with administrative permissions.
     """
-    return render(request, "card_request/admin/card_requests_overview.html")
+    return render(request, "card_request/admin/card_request_admin_portal.html")
 
 
 @has_permissions_to_view_page
@@ -256,8 +257,8 @@ def all_cards_applications(request):
                         """,
         "empty_heading": "No applications",
         "empty_message": "There are currently no applications awaiting review",
-        "applications": CardRequestsApplicationCacheService.get_all_applications(),
-        "application_count": CardRequestsApplicationCacheService.get_all_applications_status_count()[
+        "applications": CardRequestsApplicationCacheService.get_applications(),
+        "application_count": CardRequestsApplicationCacheService.get_applications_status_count()[
             "all"
         ],
     }
@@ -280,7 +281,7 @@ def pending_applications(request):
         "empty_heading": "No Pending Applications Available",
         "empty_message": "There are currently no pending applications awaiting administrative review.",
         "applications": CardRequestsApplicationCacheService.get_pending_applications(),
-        "application_count": CardRequestsApplicationCacheService.get_all_applications_status_count()[
+        "application_count": CardRequestsApplicationCacheService.get_applications_status_count()[
             "pending"
         ],
     }
@@ -304,7 +305,7 @@ def under_review_applications(request):
         "empty_heading": "No Applications Under Review",
         "empty_message": "There are currently no applications being reviewed by the administration team.",
         "applications": CardRequestsApplicationCacheService.get_under_review_applications(),
-        "application_count": CardRequestsApplicationCacheService.get_all_applications_status_count()[
+        "application_count": CardRequestsApplicationCacheService.get_applications_status_count()[
             "under_review"
         ],
     }
@@ -329,7 +330,7 @@ def approved_applications(request):
         "empty_heading": "No Approved Applications",
         "empty_message": "No applications have been approved yet.",
         "applications": CardRequestsApplicationCacheService.get_approved_applications(),
-        "application_count": CardRequestsApplicationCacheService.get_all_applications_status_count()[
+        "application_count": CardRequestsApplicationCacheService.get_applications_status_count()[
             "approved"
         ],
     }
@@ -354,7 +355,7 @@ def rejected_applications(request):
         "empty_heading": "No Rejected Applications",
         "empty_message": "No applications have been rejected at this time.",
         "applications": CardRequestsApplicationCacheService.get_rejected_applications(),
-        "application_count": CardRequestsApplicationCacheService.get_all_applications_status_count()[
+        "application_count": CardRequestsApplicationCacheService.get_applications_status_count()[
             "rejected"
         ],
     }
@@ -379,7 +380,7 @@ def on_hold_applications(request):
         "empty_heading": "No Applications On Hold",
         "empty_message": "There are currently no applications requiring further investigation.",
         "applications": CardRequestsApplicationCacheService.get_on_hold_applications(),
-        "application_count": CardRequestsApplicationCacheService.get_all_applications_status_count()[
+        "application_count": CardRequestsApplicationCacheService.get_applications_status_count()[
             "on_hold"
         ],
     }
@@ -407,7 +408,7 @@ def cancelled_applications(request):
             "completion of the review process."
         ),
         "applications": CardRequestsApplicationCacheService.get_cancelled_applications(),
-        "application_count": CardRequestsApplicationCacheService.get_all_applications_status_count()[
+        "application_count": CardRequestsApplicationCacheService.get_applications_status_count()[
             "cancelled"
         ],
     }
@@ -434,7 +435,7 @@ def withdrawn_applications(request):
             "customers."
         ),
         "applications": CardRequestsApplicationCacheService.get_withdrawn_applications(),
-        "application_count": CardRequestsApplicationCacheService.get_all_applications_status_count()[
+        "application_count": CardRequestsApplicationCacheService.get_applications_status_count()[
             "withdrawn"
         ],
     }
@@ -448,16 +449,43 @@ def withdrawn_applications(request):
 
 @login_required
 @csrf_protect
-def get_application_status_json(request, application_id: str):
+def get_application_status_json(request) ->  JsonResponse:
     """
-    Takes an application id and returns the application belonging
-    to that id.
+    Retrieve a card request application and return its details as JSON.
+
+    This endpoint accepts an application ID and returns the information
+    required by the card request review interface.
 
     Args:
-        application_id (int): The application internal id
+        application_id (str):
+            The unique identifier assigned to the card request application.
+
+    Returns:
+        JsonResponse:
+            A JSON response containing either the requested application data
+            or an error message if the application cannot be found.
     """
 
-    def handle_application_status(application_id):
-        pass
+
+    def handle_application_status(request_body):
+
+        context = {
+            "ERROR_MSG": "",
+            "SUCCESS_MSG": "",
+            "APPLICATION_DATA": {},
+            "SUCCESS": False,
+        }
+
+        application_id = request_body.get("application_id")
+        application    = CardRequestsApplicationCacheService.get_by_application_id(application_id)
+
+        if application is None:
+            context["ERROR_MSG"] = (_("Couldn't find the application with " \
+            "id {application_id}".format(application_id=application_id)))
+            return context
+
+        context["APPLICATION_DATA"] = build_application_response_data(application)
+        context["SUCCESS"]          = True
+        return context
 
     return handle_json_post_request(request, func=handle_application_status)

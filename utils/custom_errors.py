@@ -34,3 +34,11 @@ class OnBoardingFailureError(Exception):
 
 class ProfileNotFoundError(Exception):
     pass
+
+
+class IncorrectAddressPartTypeError(Exception):
+    pass
+
+
+class CardRequestApplicationTypeError(Exception):
+    pass

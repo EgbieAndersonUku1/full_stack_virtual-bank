@@ -4,14 +4,16 @@ import logging
 from typing import Any
 
 from django.contrib.auth import get_user_model
-from django.db.models import QuerySet
+from django.core.exceptions import ValidationError
 from django.db import DatabaseError, transaction
+from django.db.models import QuerySet
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
 
-
+from bank.services import BankAccountCacheService
+from utils.custom_errors import CardRequestApplicationTypeError
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
+from utils.utils import format_boolean_as_text
 
 from .models import (
     CardRequestApplication,
@@ -21,6 +23,7 @@ from .models import (
 )
 
 logger = logging.getLogger("application")
+
 User = get_user_model()
 
 
@@ -121,8 +124,7 @@ class CardRequestService:
             with transaction.atomic():
 
                 application = CardRequestApplication.objects.create(
-                    user=user,
-                    submitted_on=timezone.now()
+                    user=user, submitted_on=timezone.now()
                 )
 
                 # add basic information
@@ -189,10 +191,12 @@ class CardRequestService:
         set_cache_with_retry(key=cache_key, value=application_status, ttl=None)
 
         # update the overall cache
-        set_cache_with_retry(key=ALL_CARD_APPLICATION_CACHE_KEY, value=CardRequestApplication.get_all_applications())
+        set_cache_with_retry(
+            key=ALL_CARD_APPLICATION_CACHE_KEY,
+            value=CardRequestApplication.get_applications(),
+        )
 
         logger.info("Added to information to cache")
-
 
     @classmethod
     def _validate(
@@ -229,7 +233,7 @@ class CardRequestsApplicationCacheService:
     """
 
     @classmethod
-    def get_all_applications(cls) -> QuerySet[CardRequestApplication]:
+    def get_applications(cls) -> QuerySet[CardRequestApplication]:
         """
         Retrieve all card request applications.
 
@@ -279,7 +283,7 @@ class CardRequestsApplicationCacheService:
         )
 
     @classmethod
-    def get_rejected_applications(cls)  -> QuerySet[CardRequestApplication]:
+    def get_rejected_applications(cls) -> QuerySet[CardRequestApplication]:
         """
         Retrieve rejected card request applications.
 
@@ -292,7 +296,7 @@ class CardRequestsApplicationCacheService:
         )
 
     @classmethod
-    def get_approved_applications(cls)  -> QuerySet[CardRequestApplication]:
+    def get_approved_applications(cls) -> QuerySet[CardRequestApplication]:
         """
         Retrieve approved card request applications.
 
@@ -331,7 +335,7 @@ class CardRequestsApplicationCacheService:
         )
 
     @classmethod
-    def _get_from_cache(cls)  -> QuerySet[CardRequestApplication]:
+    def _get_from_cache(cls) -> QuerySet[CardRequestApplication]:
         """
         Retrieve all card request applications from the cache.
 
@@ -349,7 +353,7 @@ class CardRequestsApplicationCacheService:
         try:
             return get_cache_or_set(
                 key=ALL_CARD_APPLICATION_CACHE_KEY,
-                value_or_func=lambda: CardRequestApplication.get_all_applications(),
+                value_or_func=lambda: CardRequestApplication.get_applications(),
             )
         except AttributeError as e:
             raise AttributeError(_(str(e)))
@@ -366,9 +370,10 @@ class CardRequestsApplicationCacheService:
         This method should be called after creating, updating, or deleting a
         card request application.
         """
-        set_cache_with_retry(key=ALL_CARD_APPLICATION_CACHE_KEY,
-                             value=lambda: CardRequestApplication.get_all_applications()
-                             )
+        set_cache_with_retry(
+            key=ALL_CARD_APPLICATION_CACHE_KEY,
+            value=lambda: CardRequestApplication.get_applications(),
+        )
 
     @classmethod
     def get_by_status(cls, status: str) -> QuerySet[CardRequestApplication]:
@@ -401,25 +406,37 @@ class CardRequestsApplicationCacheService:
         """
 
         if not isinstance(status, str):
-            logger.info(_("The status value for the CardRequestApplicationCacheService.get_by_status(...) class is not a string"))
+            logger.info(
+                _(
+                    "The status value for the CardRequestApplicationCacheService.get_by_status(...) class is not a string"
+                )
+            )
             raise TypeError(
-                _("Expected a string but got object with type {object_type}".format(object_type=type(status).__name__)
-                  ))
+                _(
+                    "Expected a string but got object with type {object_type}".format(
+                        object_type=type(status).__name__
+                    )
+                )
+            )
 
         if status.lower() not in CardRequestApplication.Status.values:
 
-            logger.info(_("The status value enter doesn't match the expected value. " \
-                         "Expected values ['pending', 'on_holding', 'accepted', " \
-                         "'rejected', 'withdrawn', 'cancelled', 'under_review']")
-                         )
-            raise  ValueError(
-                        _("Invalid card request application status: {status}")
-                        .format(status=status)
-                        )
-        return cls.get_all_applications().filter(status=status)
+            logger.info(
+                _(
+                    "The status value enter doesn't match the expected value. "
+                    "Expected values ['pending', 'on_holding', 'accepted', "
+                    "'rejected', 'withdrawn', 'cancelled', 'under_review']"
+                )
+            )
+            raise ValueError(
+                _("Invalid card request application status: {status}").format(
+                    status=status
+                )
+            )
+        return cls.get_applications().filter(status=status)
 
     @classmethod
-    def get_all_applications_status_count(cls) -> dict[str, int]:
+    def get_applications_status_count(cls) -> dict[str, int]:
         """
         Return application counts grouped by workflow status.
 
@@ -437,7 +454,129 @@ class CardRequestsApplicationCacheService:
             "cancelled": cls.get_cancelled_applications().count(),
             "withdrawn": cls.get_withdrawn_applications().count(),
             "on_hold": cls.get_on_hold_applications().count(),
-            "all": cls.get_all_applications().count(),
+            "all": cls.get_applications().count(),
             "under_review": cls.get_under_review_applications().count(),
             "approved": cls.get_approved_applications().count(),
         }
+
+    @classmethod
+    def get_by_application_id(
+        cls, application_id: str
+    ) -> CardRequestApplication | None:
+        """
+        Retrieve a cached card request application by its application ID.
+
+        Args:
+            application_id (str):
+                The unique identifier assigned to a card request application.
+
+        Returns:
+            CardRequestApplication | None:
+                The cached card request application if found; otherwise, None.
+
+        Raises:
+            TypeError:
+                Raised if ``application_id`` is not a string.
+        """
+        if not isinstance(application_id, str):
+            raise TypeError(
+                _(
+                    "Expected a string got application"
+                    " id with {application_type}".format(
+                        application_type=type(application_id).__name__
+                    )
+                )
+            )
+
+        return cls.get_applications().filter(application_id=application_id).first()
+
+    @classmethod
+    def get_number_of_applications_for_user(cls, user: User) -> int:
+        return cls.get_applications().filter()
+
+
+def build_application_response_data(application: CardRequestApplication) -> dict[str]:
+    """
+    Build the response data required by the card request review endpoint.
+
+        Extracts and organises application, customer, account, and bank
+        information into a structured dictionary that is returned as part
+        of the JSON response.
+
+        Args:
+            application (CardRequestApplication):
+                The card request application being reviewed.
+
+        Returns:
+            dict:
+                A dictionary containing the application information required
+                by the card request review interface.
+    """
+
+    if not isinstance(application, CardRequestApplication):
+        raise CardRequestApplicationTypeError(
+            _(
+                "Expected a card request application instance. Got application with type {}"
+            ).format(type(application).__name__)
+        )
+
+    basic_information = application.basic_information
+    bank_accounts = BankAccountCacheService.get_accounts(application.user)
+    current_account = bank_accounts.first()
+
+    context = {
+        "APPLICATION_ID": application.application_id,
+        "REQUEST_INFO": {
+            "CARD": application.basic_information.full_card,
+            "CARD_VARIANT": application.basic_information.card_type,
+            "RECIPIENT_ADDRESS": application.basic_information.full_address,
+            "PHONE_NUMBER": str(application.basic_information.phone_number),
+            "SPECIAL_REQUESTS": application.basic_information.special_requests,
+        },
+        "USER_INFORMATION": {
+            "FULL_NAME": basic_information.full_name,
+            "PHONE_NUMBER": str(basic_information.phone_number),
+            "ADDRESS": basic_information.full_address,
+            "EMAIL_ADDRESS": basic_information.email,
+            "PROFILE_PIC": application.user.profile.profile_img,
+            "PASSPORT": "",
+            "NATIONALITY": "",
+            "PREFFERED_LANGUAGE": "",
+        },
+        "USER_STATS": {
+            "TOTAL_ACCOUNTS": bank_accounts.count(),
+            "TOTAL_CARDS": 0,  # keep as 0 since it hasn't been built yet
+            "TRANSACTIONS": 0,  #  keep as 0 since it hasn't been built yet,
+            "ACCOUNT_BALANCE": current_account.balance,
+            "TOTAL_APPLICATIONS": application.get_user_applications(
+                application.user
+            ).count(),
+        },
+        "ACCOUNT_DETAILS": {
+            "SORT_CODE": current_account.sortcode_last_two_digits,
+            "ACCOUNT_NUMBER": current_account.account_last_four_digits,
+            "BALANCE": current_account.balance,
+            "STATUS": current_account.status,
+            "CAN__REQUEST_OVERDRAFT": format_boolean_as_text(
+                current_account.sort_code.bank.offer_overdraft
+            ),
+            "HAS_SAVING_ACCOUNTS": format_boolean_as_text(
+                current_account.sort_code.bank.offer_saving_account
+            ),
+            "CAN_REQUEST_LOAN": format_boolean_as_text(
+                current_account.sort_code.bank.offer_loans
+            ),
+            "CURRENCY": "",  # to be added later
+            "CURRENCY_CODE": "",  # to be added later
+        },
+        "BANK_DETAILS": {
+            "BRANCH_NAME": current_account.sort_code.bank.branch_name,
+            "PHYSICAL_LOCATION": current_account.sort_code.bank.full_address,
+            "ADDRESS_LINE_1": current_account.sort_code.bank.address_line_1,
+            "ADDRESS_LINE_2": current_account.sort_code.bank.address_line_2,
+            "POSTCODE": current_account.sort_code.bank.post_code,
+            "COUNTRY": current_account.sort_code.bank.country.name,
+            "PHONE_NUMBER": str(current_account.sort_code.bank.phone_number),
+        },
+    }
+    return context
