@@ -12,8 +12,7 @@ from django.db.models.query import QuerySet
 from django.conf import settings
 from django.templatetags.static import static
 
-
-
+from utils.utils import format_full_address
 from user_profile.models import UserProfile
 from bank.errors import SortCodeRangeExhaustedError
 
@@ -33,7 +32,7 @@ class BankQuerySet(models.QuerySet):
         if source:
             return self.filter(source=source)
         return self
-    
+
 
 class BankManager(models.Manager):
 
@@ -48,15 +47,15 @@ class BankManager(models.Manager):
 
     def by_source(self, source=None):
         return self.get_queryset().by_source(source)
-                                             
+
 
 
 class Bank(models.Model):
     """
     Represents a financial institution within the banking platform.
 
-    Banks are expected to be created through the BankProvisioningService class, 
-    this ensures that the required operational resources such as sort code allocation ranges 
+    Banks are expected to be created through the BankProvisioningService class,
+    this ensures that the required operational resources such as sort code allocation ranges
     and initialization state are also created.
 
     Direct creation of Bank instances bypasses provisioning workflows
@@ -74,7 +73,7 @@ class Bank(models.Model):
         BI_WEEKLY = "BI_WEEKLY", _("Bi-Weekly")
         MONTHLY = "MONTHLY", _("Monthly")
         YEARLY = "YEARLY", _("Yearly")
-    
+
     class OverDraftOptions(models.TextChoices):
         YES = "Yes", _("Yes")
         NO  = "No", _("No")
@@ -82,13 +81,13 @@ class Bank(models.Model):
     class OfferSavingAccountOptions(models.TextChoices):
         YES = "Yes", _("Yes")
         NO  = "No", _("No")
-    
+
     class OfferLoans(models.TextChoices):
         YES = "Yes", _("Yes")
         NO  = "No", _("No")
 
     name                     = models.CharField(max_length=50, unique=True, verbose_name="Bank name*")
-    description              = models.TextField(max_length=600, verbose_name="Bank description*") 
+    description              = models.TextField(max_length=600, verbose_name="Bank description*")
     branch_name              = models.CharField(max_length=50, verbose_name="Bank Branch name*")
     address_line_1           = models.CharField(max_length=255, verbose_name="Address line 1*")
     address_line_2           = models.CharField(max_length=255, blank=True, verbose_name="Address line 2")
@@ -103,11 +102,11 @@ class Bank(models.Model):
     created_on               = models.DateTimeField(auto_now_add=True)
     last_updated             = models.DateTimeField(auto_now=True)
     offer_overdraft          = models.CharField(max_length=3, choices=OverDraftOptions.choices, default=OverDraftOptions.NO, verbose_name="Offer overdraft*")
-    offer_saving_account     = models.CharField(max_length=3,  choices=OfferSavingAccountOptions.choices, default=OfferSavingAccountOptions.NO,  
+    offer_saving_account     = models.CharField(max_length=3,  choices=OfferSavingAccountOptions.choices, default=OfferSavingAccountOptions.NO,
                                                 verbose_name="Offer saving accounts*")
-    
+
     offer_loans              = models.CharField(max_length=3, choices=OfferLoans.choices, default=OfferLoans.NO, verbose_name="Offer loans*")
-    
+
     logo = models.FileField(upload_to="bank/logo/", null=True, verbose_name="Bank logo",
                             validators=[FileExtensionValidator(["png", "jpg", "jpeg", "svg"])]
                            )
@@ -133,11 +132,11 @@ class Bank(models.Model):
     @property
     def logo_image(self):
         return self.logo.url
-    
+
     @property
     def interest_rate_percent(self):
         return self.interest_rate_bps / 100
- 
+
     @property
     def bank_accounts_count(self):
         """
@@ -151,23 +150,23 @@ class Bank(models.Model):
             or self.sort_codes.aggregate(
                 total=Count("bank_accounts")
             )["total"]
-        
+
     @classmethod
     def get_by_id(cls, bank_id: int):
         return cls.objects.filter(pk=bank_id).first()
 
     @classmethod
     def get_all_banks(cls, order_by="name") -> QuerySet["Bank"]:
-       return cls.objects.all().order_by(order_by)  
-      
+       return cls.objects.all().order_by(order_by)
+
     @classmethod
     def get_by_bank_name(cls, bank_name: str):
-        
+
         try:
             return cls.objects.get(name=bank_name.title())
         except cls.DoesNotExist:
             return None
-    
+
     @property
     def get_static_logo(self):
         """
@@ -182,7 +181,7 @@ class Bank(models.Model):
         this any predefined banks created in the seed won't show
         up
         """
-       
+
         if self.logo:
             name = self.logo_image.split("/")[-1]
             url  = f"banks/logo/{name}"
@@ -195,12 +194,25 @@ class Bank(models.Model):
 
         if self.branch_name:
             self.branch_name = self.branch_name.title()
-        
+
         return super().save(*args, **kwargs)
-    
+
+    @property
+    def full_address(self):
+        address = format_full_address(
+            self.address_line_1,
+            "",
+            self.post_code,
+            self.country.name,
+
+        )
+
+        return address
+
+
     def __str__(self):
         return self.name
-    
+
 
 class SortCodeAllocationStateLog(models.Model):
     """
@@ -215,7 +227,7 @@ class SortCodeAllocationStateLog(models.Model):
     the assigned bank, allocation range boundaries, and descriptive
     context about the operation performed.
     """
-    
+
     assigned_to = models.ForeignKey(Bank, on_delete=models.DO_NOTHING, related_name="sortcode_allocation_logs")
     description  = models.CharField(max_length=255)
     start_range  = models.PositiveBigIntegerField(blank=True, null=True)
@@ -244,7 +256,7 @@ class SortCodeRangePool(models.Model):
     is_claimed    = models.BooleanField(default=False)
     claimed_on    = models.DateTimeField(auto_now=True)
     claimed_by    = models.ForeignKey(Bank, null=True, blank=True, on_delete=models.SET_NULL, related_name="range_pools")
-    
+
     class Meta:
         verbose_name_plural = "Sortcode range pool"
     @classmethod
@@ -310,9 +322,9 @@ class SortCodeAllocatorLastRecordLookup(models.Model):
         )
 
         return obj
-           
 
-    
+
+
 
 
 class SortCodeAllocationState(models.Model):
@@ -326,13 +338,13 @@ class SortCodeAllocationState(models.Model):
 
     When no reusable ranges are available in the SortCodeRangePool, this state
     is used to calculate and allocate a new sequential block of sort codes, this
-    ensures that global uniqueness, sequential accounts and preventing 
+    ensures that global uniqueness, sequential accounts and preventing
     range collisions across banks.
 
     It effectively acts as the "cursor" for the next available sort code range
     in the system.
     """
-    bank                        = models.OneToOneField(Bank, on_delete=models.CASCADE, 
+    bank                        = models.OneToOneField(Bank, on_delete=models.CASCADE,
                                                        related_name="sortcode_allocator",
                                                        blank=True, null=True)
     block_size                  = models.PositiveBigIntegerField(blank=True, null=True)
@@ -349,7 +361,7 @@ class SortCodeAllocationState(models.Model):
         start_range = last_block_record.start_range
         end_range   = start_range + block_size
         return start_range, end_range
-    
+
     @classmethod
     def _update_global_range_records(cls, sortcode_record, end_range):
         sortcode_record.start_range = end_range
@@ -392,30 +404,30 @@ class SortCodeAllocationState(models.Model):
             else:
 
                 sortcode_record = SortCodeAllocatorLastRecordLookup.get_instance()
-               
+
                 # create new block size from the the record
                 start_range, end_range = cls._calculate_next_range_from_last_record(sortcode_record)
-             
-                sortcode_allocator = cls( 
+
+                sortcode_allocator = cls(
                     block_size=sortcode_record.block_size,
                     start_range=start_range,
                     end_range=end_range,
                     bank=bank,
                 )
-                
-                # update the last block size with the new a block size 
+
+                # update the last block size with the new a block size
                 cls._update_global_range_records(sortcode_record, end_range)
-             
-            
+
+
                 # Initialise allocation counters to the beginning of the assigned
                 # block range so all issued sort codes are
                 # generated within the bank's allocated identifier namespace.
                 sortcode_allocator.last_issued_sortcode_number = start_range
-            
+
                 sortcode_allocator.save()
 
         return sortcode_allocator
-    
+
     def generate_sort_code(self, commit: bool = True):
         """
         Generates the next sequential sort code within the allocated range for this bank.
@@ -445,14 +457,14 @@ class SortCodeAllocationState(models.Model):
 
                 error_msg = "No additional sort codes are available for this allocation block."
                 raise SortCodeRangeExhaustedError(_(f"{error_msg}"))
-            
+
             self.last_issued_sortcode_number += 1
             self._issue_next_account_number()
-   
+
             if commit:
                 self.save()
             return self
-    
+
     def _has_exhausted_block(self) -> bool:
         """
         Returns True if issuing another sort code would exceed
@@ -462,18 +474,18 @@ class SortCodeAllocationState(models.Model):
             self.last_issued_sortcode_number
             and self.last_issued_sortcode_number + 1 > self.end_range
         )
-    
+
     def _issue_next_account_number(self):
         self.last_issued_account_number += 1
-    
+
     def _total_capacity(self):
         return self.end_range - self.start_range
- 
+
     @property
     def account_number(self):
         """Returns an eight dight in the form of an account number"""
         return str(self.last_issued_account_number).zfill(8)
-    
+
     @property
     def external_sortcode(self):
         """Returns an eight dight in the form of an account number"""
@@ -497,7 +509,7 @@ class SortCodeAllocationState(models.Model):
 
     @property
     def allocation_utilisation_percent(self):
-        """The number of sortcodes used as a percentage. Returns the 
+        """The number of sortcodes used as a percentage. Returns the
            percentage to three decimal places
         """
         issued = self.last_issued_sortcode_number
@@ -505,7 +517,7 @@ class SortCodeAllocationState(models.Model):
 
         if total == 0:
             return "0.00"
-        
+
         issued = Decimal(self.last_issued_sortcode_number or 0)
         percentage = (issued / Decimal(total)) * Decimal("100")
 
@@ -523,8 +535,8 @@ class SortCodeAllocationState(models.Model):
 
         super().save(*args, **kwargs)
 
-            
-     
+
+
 class SortCode(models.Model):
     """
     Represents a bank-specific sort code allocation block and issuance tracker.
@@ -557,10 +569,10 @@ class SortCode(models.Model):
         if not self.external_sort_code:
             return None
         return f"{self.external_sort_code[:2]}-{self.external_sort_code[2:4]}-{self.external_sort_code[4:]}"
-  
+
     def __str__(self):
         return f"{self.external_sort_code}"
-   
+
 
 
 class BankAccount(models.Model):
@@ -603,7 +615,7 @@ class BankAccount(models.Model):
         BASIC   = "basic", "Basic"
         PREMIUM = "premium", "Premium"
         SAVINGS = "savings", "Savings"
-    
+
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"
         ACTIVE = "active", "Active"
@@ -620,7 +632,7 @@ class BankAccount(models.Model):
     interest_enabled  = models.BooleanField(default=False)
     created_on        = models.DateTimeField(auto_now_add=True)
     last_updated      = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -628,11 +640,11 @@ class BankAccount(models.Model):
                 name="unique_account_per_sortcode"
             )
         ]
-    
-   
+
+
     def __str__(self):
         return str(self.account_number)
-    
+
     @property
     def bank_name(self):
         return self.sort_code.bank.name
@@ -643,8 +655,14 @@ class BankAccount(models.Model):
         if not isinstance(user_profile, UserProfile):
             raise TypeError(_("User profile is not an instance of User profile. " \
             "Expected an instance but got type {}".format(type(user_profile).__name__)))
-        
-        return cls.objects.filter(user_profile=user_profile).order_by(
+
+        query_set = (
+            cls.objects.select_related("sort_code",
+                                       "sort_code__bank",
+                                       "user_profile"
+                                       )
+        )
+        return query_set.filter(user_profile=user_profile).order_by(
             Case(
                 When(account_type=cls.AccountType.BASIC, then=Value(1)),
                 When(account_type=cls.AccountType.SAVINGS, then=Value(2)),
@@ -653,37 +671,37 @@ class BankAccount(models.Model):
                 output_field=IntegerField(),
             )
         )
-              
+
     def clean(self):
         if self.pk is None and not self.sort_code:
             raise ValidationError({
                 "sort_code": "BankAccount must be created via AccountService"
             })
-    
+
     @property
     def has_met_minimum_deposit_conditions(self):
         return self.balance >= self.sort_code.bank.minimum_opening_deposit
-    
+
     @property
     def supports_overdraft(self):
         return self.sort_code.bank.offer_overdraft == Bank.OverDraftOptions.YES
-    
+
     @property
     def supports_loans(self):
         return self.sort_code.bank.offer_loans == Bank.OfferLoans.YES
-    
+
     @property
     def account_last_four_digits(self):
         if self.account_number:
             return f"********{self.account_number[-4:]}"
-    
+
     @property
     def sortcode_last_two_digits(self):
 
         sortcode = self.sort_code.external_sort_code
         if sortcode:
             return f"********{sortcode}"
-        
+
     def save(self, *args, **kwargs):
         self.full_clean()
 

@@ -15,7 +15,7 @@ from setup.decorators import onboarding_required
 def bank_home(request):
 
     uncompleted_on_boarding_step = request.session.get("next_step")
-    
+
     context = {
         "on_boarding_step": uncompleted_on_boarding_step
     }
@@ -36,9 +36,9 @@ def dashboard(request):
     }
 
     if bank_account:
-      
+
         context.update(get_account_context(bank_account))
-              
+
         bank                           = context["current_account"].sort_code.bank
         context["minimum_deposit"]     = bank.minimum_opening_deposit
         context["monthly_deposit"]     = bank.monthly_deposit
@@ -82,11 +82,11 @@ def manage_settings(request):
     user         = request.user
     profile      = ProfileCacheService.get_user_profile(user=user)
     bank_account = BankAccountCacheService.get_accounts(user = request.user)
-   
+
     context = {
         "profile": profile,
 
     }
     context.update(get_account_context(bank_account))
-   
+
     return render(request,  "home/dashboard/settings.html", context=context)

@@ -5,17 +5,13 @@ from bank.utils import get_account_context
 from card_request.services import CardRequestsApplicationCacheService
 from utils.custom_errors import ProfileNotFoundError
 
-
 logger = logging.getLogger(__name__)
-
 
 
 def display_bank_details_on_card(request):
 
     if not request.user.is_authenticated:
-        return {
-             "current_account": None
-        }
+        return {"current_account": None}
 
     try:
 
@@ -26,7 +22,6 @@ def display_bank_details_on_card(request):
 
     except ProfileNotFoundError:
         return {}
-
 
 
 def safe_context_processor(request, context_builder):
@@ -53,9 +48,7 @@ def safe_context_processor(request, context_builder):
         return context_builder()
 
     except Exception:
-        logger.exception(
-            "Failed to build context processor data."
-        )
+        logger.exception("Failed to build context processor data.")
         return {}
 
 
@@ -73,8 +66,7 @@ def get_application_status_count(request):
         request,
         lambda: {
             "application_status": (
-                CardRequestsApplicationCacheService
-                .get_all_applications_status_count()
+                CardRequestsApplicationCacheService.get_applications_status_count()
             ),
         },
     )

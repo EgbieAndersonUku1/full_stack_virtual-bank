@@ -7,8 +7,6 @@ from django.core.exceptions import ValidationError
 from .errors import PendingCardRequestApplicationAlreadyExistsError
 from .models import (CardRequestAgreement,
                      CardRequestApplication,
-                     CardRequestBasicInformation,
-                     CardRequestEmploymentInformation,
                      CardRequestApplicationLog
 
                      )

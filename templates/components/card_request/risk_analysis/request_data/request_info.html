@@ -1,4 +1,21 @@
+<!--
+==============================================================================
+Request Details Component
 
+Displays the details of a customer's card request and provides the controls
+required for an administrator to review and manage the request.
+
+The component includes:
+- Account summary (account number, sort code, account type, balance)
+- Card request details and delivery information
+- Card benefits overview
+- Administrative actions (approve, reject, verify, hold)
+- Internal notes for the request review process
+
+Most request data is populated dynamically via JavaScript.
+
+==============================================================================
+-->
 
 <div id="request-first-tab" class="request-first-tab request-tab-content">
 
@@ -81,6 +98,22 @@
       <div class="card-request-details">
         <h3>Request information details</h3>
 
+         <!-- Card Type -->
+        <div
+          class="group-info flex-grid two-column-grid"
+          role="group"
+          aria-label="Card Type"
+        >
+          <div class="label" aria-hidden="true">
+            <p class="text-muted">Recipient name</p>
+          </div>
+
+          <div class="value">
+            <p id="card-request-details__card-type" class="capitalise"></p>
+          </div>
+        </div>
+
+
         <!-- Card Type -->
         <div
           class="group-info flex-grid two-column-grid"
@@ -118,7 +151,7 @@
           aria-label="Delivery Address"
         >
           <div class="label" aria-hidden="true">
-            <p class="text-muted">Delivery Address</p>
+            <p class="text-muted">Recipient Address</p>
           </div>
 
           <div class="value">

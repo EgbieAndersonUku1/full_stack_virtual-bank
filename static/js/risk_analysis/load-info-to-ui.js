@@ -2,8 +2,6 @@ import { deselectAllTabs, highlightTab } from "../utils/tab-utils.js";
 import { formatCurrency, sanitizeText, toggleSpinner } from "../utils.js";
 import { badgeConfig } from "./badge.config.js";
 import { warnError } from "../logger.js";
-import { updateTable } from "./table.js";
-import { renderTable, populateCardHistoryTable } from "./table.js";
 import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js";
 
 
@@ -64,18 +62,6 @@ function handleDelegation(e) {
     }
 }
 
-
-
-
-
-/**
- * Sets the text content of an element by ID.
- * Falls back to an empty string if no value is provided.
- */
-function setText(id, value) {
-    const element = document.getElementById(id);
-    if (element) element.textContent = value || "";
-}
 
 
 
