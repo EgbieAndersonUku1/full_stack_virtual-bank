@@ -1,3 +1,22 @@
+<!--
+==============================================================================
+Component: Request Status
+
+Purpose:
+Displays a summary of the selected card request, including the requester's
+profile information and the current application status.
+
+Dynamic Content:
+- Full name
+- Email address
+- Current request status
+- Application submission date
+- Profile image
+
+JavaScript populates the placeholder elements using their respective IDs.
+==============================================================================
+-->
+
 <section
   class="request-status flex flex-space-between"
   aria-labelledby="request-status-title"
@@ -5,6 +24,8 @@
   <h6 id="request-status-title" class="sr-only">Request status overview</h6>
 
   <div class="profile-details flex">
+
+    <!-- the profile image -->
     <div class="profile-pic mr-4">
       <img
         src="/static/images/icons/profile.png"
@@ -13,11 +34,15 @@
       />
     </div>
 
+
     <div class="profile-information mt-12">
+
+      <!-- the full name -->
       <p class="bold capitalise">
-        <small id="profile-name"></small>
+        <small id="full-name"></small>
       </p>
 
+      <!-- The email -->
       <p>
         <small>
           <a href="#" id="profile-email"> </a>
@@ -30,16 +55,18 @@
     class="rquest-current-status flex-grid"
     aria-label="Request status details"
   >
+
+    <!-- status -->
     <span
-      class="status status--pending capitalise center"
+      class=""
       id="current-status"
-      aria-label="Current status: pending"
+
     >
-      pending
+
     </span>
 
-    <span><small>Requested: 27 May 2026</small> </span>
+    <span><small id="application-submission-date" class="text-muted"></small> </span>
 
-    <span><small>10:30pm</small></span>
+
   </div>
 </section>
