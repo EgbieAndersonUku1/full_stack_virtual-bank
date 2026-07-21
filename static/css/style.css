@@ -5237,12 +5237,12 @@ clicks the button
 }
 
 #card-requests-table tbody tr td:first-child {
-    text-align: left;
+    text-align: center;
 }
 
 
 
-#card-requests-table tbody tr td:first-child:hover {
+#card-requests-table tbody tr td:hover {
     text-decoration: underline;
 }
 
@@ -5272,7 +5272,8 @@ clicks the button
 
 
 .status--active,
-.status--approved {
+.status--approved,
+.status--accepted {
     background: #d1fae5;
     color: #065f46;
 }
@@ -6278,4 +6279,13 @@ textarea::placeholder {
 /* breadcrumb */
 .breadcrumb {
     font-size: 0.9rem;
+}
+
+
+/* The image for the application */
+#request-status-profile-pic {
+    border-radius: 50%;
+    object-fit: cover;
+    height: 60px;
+    width: 60px;
 }

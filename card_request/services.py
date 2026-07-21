@@ -526,6 +526,8 @@ def build_application_response_data(application: CardRequestApplication) -> dict
 
     context = {
         "APPLICATION_ID": application.application_id,
+        "STATUS": application.status,
+        "SUBMISSION_DATE": application.submitted_on,
         "REQUEST_INFO": {
             "CARD": application.basic_information.full_card,
             "CARD_VARIANT": application.basic_information.card_type,
@@ -556,7 +558,6 @@ def build_application_response_data(application: CardRequestApplication) -> dict
             "SORT_CODE": current_account.sortcode_last_two_digits,
             "ACCOUNT_NUMBER": current_account.account_last_four_digits,
             "BALANCE": current_account.balance,
-            "STATUS": current_account.status,
             "CAN__REQUEST_OVERDRAFT": format_boolean_as_text(
                 current_account.sort_code.bank.offer_overdraft
             ),

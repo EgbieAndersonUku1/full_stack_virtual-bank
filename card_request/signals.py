@@ -102,8 +102,6 @@ def does_user_have_an_existing_pending_application(sender, instance, **kwargs):
         and instance.status == CardRequestApplication.Status.PENDING
     )
 
-    CardRequestsApplicationCacheService.update_cache()
-
     if status_changed_to_pending:
         set_cache_with_retry(key=cache_key, value=CardRequestApplication.Status.PENDING)
         return
@@ -111,8 +109,23 @@ def does_user_have_an_existing_pending_application(sender, instance, **kwargs):
     delete_cache_with_retry(cache_key)
 
 
+@receiver(post_save, sender=CardRequestApplication)
+def handle_card_request_post_save(sender, instance, **kwargs):
+    """
+    Refresh the card request cache after the application has been saved.
+
+    Running on ``post_save`` ensures all model changes have been persisted
+    before the cache is updated.
+    """
+    if instance.pk:
+        CardRequestsApplicationCacheService.update_cache()
+
+
 @receiver(post_delete, sender=CardRequestApplication)
 def delete_card_request_application(sender, instance, **kwargs):
+
+    CardRequestsApplicationCacheService.update_cache()
+
     CardRequestApplicationLog.objects.create(
         action=CardRequestApplicationLog.Action.APPLICATION_DELETED,
         user=instance.user,

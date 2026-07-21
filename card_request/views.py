@@ -486,6 +486,7 @@ def get_application_status_json(request) ->  JsonResponse:
 
         context["APPLICATION_DATA"] = build_application_response_data(application)
         context["SUCCESS"]          = True
+        context["SUCCESS_MSG"]      = _("Application data successfully retrieved")
         return context
 
     return handle_json_post_request(request, func=handle_application_status)
