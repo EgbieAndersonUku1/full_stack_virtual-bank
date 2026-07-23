@@ -128,6 +128,7 @@ def format_full_address(address_1: str,
         return
 
     return ', '.join(cleaned_address_parts)
+    
 
 
 

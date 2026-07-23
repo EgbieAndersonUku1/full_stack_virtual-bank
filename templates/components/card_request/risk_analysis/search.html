@@ -29,11 +29,11 @@
         <thead>
           <tr>
              <th scope="col">table Id</th>
-            <th scope="col">User</th>
+            <th scope="col">Recipient name</th>
             <th scope="col">Card Brand</th>
              <th scope="col">Card type</th>
 
-            <th scope="col">Date</th>
+            <th scope="col">Submission date</th>
           </tr>
         </thead>
 
@@ -46,7 +46,7 @@
                       <span>{{ application.id }}</span>
                   </td>
                   <td>{{ application.basic_information.full_name | title }}</td>
-                  
+
                   <td>
                     <span>{{ application.basic_information.card_brand | title }}</span>
 

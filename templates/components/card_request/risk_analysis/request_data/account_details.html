@@ -13,23 +13,28 @@
       <div class="bank-details__bank-logo">
 
         <!-- Decorative image -->
-        <img src="/static/images/icons/checking-account.png" alt="" />
+        <img src="/static/images/icons/checking-account.png" alt="bank logo" id="bank-details__bank-logo">
       </div>
 
       <div id="bank-details__overview">
 
-        <h2 id="bank-account-heading" class="header-9 capitalise">
-          Chase checking account
+        <div class="header flex">
+            <h2 id="bank-account-heading" class="header-9 capitalise">
+
+        </h2>
           <span
             class="status status--approved ml-4"
             aria-live="polite"
-            id="bank-details__is-verified"
+            id="bank-details__status"
           >
-            Active
+
           </span>
-        </h2>
+
+        </div>
 
         <dl class="flex-grid three-column-grid mt-4 mb-8 account-summary">
+
+
           <div class="sortcode flex-grid" id="bank-details__bank-sortcode">
             <dt class="text-muted">Sort code</dt>
             <dd
@@ -54,7 +59,7 @@
           <div class="bank-balance flex-grid" id="bank-details__bank-balance">
             <dt class="text-muted">Bank balance</dt>
             <dd>
-              <span class="bold" id="bank-details__balance-value"></span>
+              <span class="bold" id="bank-details__balance-value">jjjjjjjjjjjjjjjjjjj</span>
             </dd>
           </div>
         </dl>
@@ -70,7 +75,7 @@
   >
     <div class="account-information__container">
       <address class="pl-12 mt-24" id="branch-location">
-        <p class="section-label">Our physical location</p>
+        <p class="section-label" id="physical-location-p-label">Our physical location</p>
 
         <p id="branch-address-line1"></p>
         <p id="branch-address-line2"></p>
@@ -80,7 +85,7 @@
       </address>
 
       <div class="pl-12 mt-24" id="branch-phone-number">
-        <p class="section-label">Our number</p>
+        <p class="section-label" id="our-number-p-label">Our number</p>
 
         <p id="branch-phone"></p>
       </div>
@@ -94,27 +99,27 @@
           <dl>
             <div class="account-information-group flex-grid two-column-grid">
               <dt>Account Type</dt>
-              <dd id="account-type" class="capitalise"></dd>
+              <dd id="account-information__type" class="capitalise"></dd>
             </div>
 
             <div class="account-information-group flex-grid two-column-grid">
               <dt>Currency</dt>
-              <dd id="account-currency-symbol">(£)</dd>
+              <dd id="account-information__currency"></dd>
             </div>
 
             <div class="account-information-group flex-grid two-column-grid">
               <dt>Currency code</dt>
-              <dd id="account-currency-code"></dd>
+              <dd id="account-information__currency-symbol"></dd>
             </div>
 
             <div class="account-information-group flex-grid two-column-grid">
               <dt>Status</dt>
-              <dd id="account-status" class="center">Active</dd>
+              <dd id="account-information__status"></dd>
             </div>
 
             <div class="account-information-group flex-grid two-column-grid">
-              <dt>Overdraft</dt>
-              <dd id="account-overdraft"></dd>
+              <dt>Has Overdraft</dt>
+              <dd id="account-information__overdraft"></dd>
             </div>
           </dl>
         </div>
@@ -123,18 +128,21 @@
           <dl>
             <div class="account-information-group flex-grid two-column-grid">
               <dt>Bank Name</dt>
-              <dd id="bank-name"></dd>
+              <dd id="account-information__bank-name"></dd>
             </div>
 
             <div class="account-information-group flex-grid two-column-grid">
               <dt>Branch</dt>
-              <dd id="bank-branch">Central London Branch</dd>
+              <dd id="account-information__bank-branch"></dd>
             </div>
 
-            <div class="account-information-group flex-grid two-column-grid">
-              <dt>Balance</dt>
-              <dd id="available-balance"></dd>
+
+             <div class="account-information-group flex-grid two-column-grid">
+              <dt>Can Request loan</dt>
+              <dd id="can-request-loan"></dd>
             </div>
+
+
           </dl>
         </div>
       </div>
@@ -163,15 +171,9 @@
       </div>
 
       <!-- recent transactions -->
-      <div id="recent-transaction" class="mt-48">
-        <h4 class="mt-24 pl-12 capitalise" id="recent-transaction-heading">
-          Recent transaction (<span id="num-of-transactions"></span>)
-        </h4>
+      {% include "components/card_request/risk_analysis/request_data/transactions.html" %}
 
-        <div class="recent-transaction__cards">
-          <!-- generated dynmaically by js -->
-        </div>
-      </div>
+
     </div>
   </section>
 </div>

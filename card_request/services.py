@@ -521,8 +521,11 @@ def build_application_response_data(application: CardRequestApplication) -> dict
         )
 
     basic_information = application.basic_information
-    bank_accounts = BankAccountCacheService.get_accounts(application.user)
-    current_account = bank_accounts.first()
+    bank_accounts     = BankAccountCacheService.get_accounts(application.user)
+    current_account   = bank_accounts.first()
+    account_number    = current_account.account_last_four_digits
+    sort_number       = current_account.sortcode_last_four_digits
+    phone_number      = current_account.sort_code.bank.phone_number
 
     context = {
         "APPLICATION_ID": application.application_id,
@@ -555,10 +558,10 @@ def build_application_response_data(application: CardRequestApplication) -> dict
             ).count(),
         },
         "ACCOUNT_DETAILS": {
-            "SORT_CODE": current_account.sortcode_last_two_digits,
-            "ACCOUNT_NUMBER": current_account.account_last_four_digits,
+            "SORT_CODE": sort_number,
+            "ACCOUNT_NUMBER": account_number,
             "BALANCE": current_account.balance,
-            "CAN__REQUEST_OVERDRAFT": format_boolean_as_text(
+            "CAN_REQUEST_OVERDRAFT": format_boolean_as_text(
                 current_account.sort_code.bank.offer_overdraft
             ),
             "HAS_SAVING_ACCOUNTS": format_boolean_as_text(
@@ -567,8 +570,12 @@ def build_application_response_data(application: CardRequestApplication) -> dict
             "CAN_REQUEST_LOAN": format_boolean_as_text(
                 current_account.sort_code.bank.offer_loans
             ),
-            "CURRENCY": "",  # to be added later
-            "CURRENCY_CODE": "",  # to be added later
+            "CURRENCY": "£",  # to be added later for now use £
+            "CURRENCY_CODE": "GBP", # to be added later for now use GBP
+            "TYPE": current_account.account_type,
+            "STATUS": current_account.status,
+            "ACCOUNT_LAST_FOUR_DIGITS": account_number.split("*")[-1],
+            "SORT_CODE_LAST_FOUR_DIGITS": sort_number.split("*")[-1]
         },
         "BANK_DETAILS": {
             "BRANCH_NAME": current_account.sort_code.bank.branch_name,
@@ -577,7 +584,21 @@ def build_application_response_data(application: CardRequestApplication) -> dict
             "ADDRESS_LINE_2": current_account.sort_code.bank.address_line_2,
             "POSTCODE": current_account.sort_code.bank.post_code,
             "COUNTRY": current_account.sort_code.bank.country.name,
-            "PHONE_NUMBER": str(current_account.sort_code.bank.phone_number),
+            "FULL_PHONE_NUMBER": str(phone_number),
+            "COUNTRY_PHONE_NUMBER_CODE": phone_number.country_code,
+            "EXT": phone_number.extension,
+            "NATIONAL_NUMBER": phone_number.national_number,
+            "LOGO": current_account.sort_code.bank.get_static_logo,
+            "NAME": current_account.sort_code.bank.name.title(),
+            "STATUS": "Active" if current_account.sort_code.bank else "Deactivated",
+
         },
+
+        "CARD_HISTORY" : {
+            "ACTIVE_CARDS": 0,
+            "REPLACEMENT_CARDS": 0,
+            "LOST_CARDS": 0,
+            "STOLEN_CARDS": 0
+        }
     }
     return context

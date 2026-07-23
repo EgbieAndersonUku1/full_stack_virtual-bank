@@ -199,15 +199,28 @@ class Bank(models.Model):
 
     @property
     def full_address(self):
+        address_parts = []
+
         address = format_full_address(
             self.address_line_1,
             "",
             self.post_code,
             self.country.name,
+            address_2=self.address_line_2
 
         )
+        if address:
+            return address
 
-        return address
+        address_parts.append(self.address_line_1)
+
+        if self.address_line_2:
+            address_parts.append(self.address_line_2)
+
+        address_parts.append(self.post_code)
+        address_parts.append(self.country.name)
+
+        return ", ".join(address_parts)
 
 
     def __str__(self):
@@ -693,14 +706,15 @@ class BankAccount(models.Model):
     @property
     def account_last_four_digits(self):
         if self.account_number:
-            return f"********{self.account_number[-4:]}"
+            return f"*********{self.account_number[-4:]}"
+
 
     @property
-    def sortcode_last_two_digits(self):
+    def sortcode_last_four_digits(self):
 
         sortcode = self.sort_code.external_sort_code
         if sortcode:
-            return f"********{sortcode}"
+            return f"********{sortcode[-4:]}"
 
     def save(self, *args, **kwargs):
         self.full_clean()
