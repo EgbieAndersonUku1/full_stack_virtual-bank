@@ -65,11 +65,15 @@
  * requestHeader.render();
  *
  */
-export class RequestHeader {
+
+import { ApplicationValidators } from "./validator.js";
+
+export class RequestHeader extends ApplicationValidators {
 
     constructor(applicationData) {
-
-        this.#validateResponse(applicationData);
+        super(applicationData);
+        
+        this.validateResponse(applicationData);
 
         this.data = applicationData;
 
@@ -82,27 +86,9 @@ export class RequestHeader {
             submissionDate: document.getElementById("application-submission-date"),
         };
 
-        this.#validateElements();
+        this.validateElements();
     }
 
-    #validateResponse(data) {
-        if (
-            typeof data !== "object" || data === null || !data.APPLICATION_ID || !data.STATUS || !data.USER_INFORMATION) {
-
-                throw new TypeError(
-                "Invalid request header data structure."
-            );
-        }
-    }
-
-
-    #validateElements() {
-        for (const [name, element] of Object.entries(this.elements)) {
-            if (!element) {
-                throw new Error(`Missing required DOM element: ${name}`);
-            }
-        }
-    }
 
     #setApplicationId() {
         this.elements.applicationId.textContent = `Application ID  (${this.data.APPLICATION_ID})`
@@ -113,7 +99,6 @@ export class RequestHeader {
         const submissionDate = new Date(this.data.SUBMISSION_DATE).toLocaleDateString();
         this.elements.submissionDate.textContent = `Submission date: ${submissionDate}`;
     }
-
 
     #setProfileName() {
         this.elements.profileName.textContent = this.data.USER_INFORMATION.FULL_NAME;

@@ -5737,6 +5737,7 @@ clicks the button
     border-bottom: 1px solid lavender;
     font-style: normal;
     text-transform: capitalize;
+
 }
 
 #recent-transaction-heading,
@@ -6288,4 +6289,12 @@ textarea::placeholder {
     object-fit: cover;
     height: 60px;
     width: 60px;
+}
+
+
+
+/* The tab for account details inside the application page */
+#physical-location-p-label,
+#our-number-p-label {
+    margin-left: 0;
 }

@@ -6,6 +6,7 @@ import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js
 import fetchData from "../fetch.js";
 import { getCsrfToken } from "../security/csrf.js";
 import { RequestHeader } from "./request-details-tabs/request-.tab-header.js";
+import { RequestBankAccountDetails } from "./request-details-tabs/request-account-info.js";
 
 
 const tabs                = document.querySelectorAll(".tabs .tab")
@@ -196,6 +197,9 @@ function renderRequestInHeader(applicationData) {
 
     const header = new RequestHeader(applicationData);
     header.render();
+
+    const bankAccountDetails = new RequestBankAccountDetails(applicationData);
+    bankAccountDetails.render();
 
 }
 
