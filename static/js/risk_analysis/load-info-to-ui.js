@@ -2,9 +2,11 @@ import { deselectAllTabs, highlightTab } from "../utils/tab-utils.js";
 import { formatCurrency, sanitizeText, toggleSpinner } from "../utils.js";
 import { badgeConfig } from "./badge.config.js";
 import { warnError } from "../logger.js";
-import { updateTable } from "./table.js";
-import { renderTable, populateCardHistoryTable } from "./table.js";
 import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js";
+import fetchData from "../fetch.js";
+import { getCsrfToken } from "../security/csrf.js";
+import { RequestHeader } from "./request-details-tabs/request-.tab-header.js";
+import { RequestBankAccountDetails } from "./request-details-tabs/request-account-info.js";
 
 
 const tabs                = document.querySelectorAll(".tabs .tab")
@@ -27,6 +29,7 @@ mainSectionContainer.addEventListener("click", handleDelegation);
 document.addEventListener("DOMContentLoaded", () => {
 
         showFirstTab();
+        showFirstTableRowData();
 
 
 });
@@ -35,10 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
 /**
  * Handles tab click delegation and activates the corresponding tab content.
  */
-function handleDelegation(e) {
+async function handleDelegation(e) {
 
     const id = e.target.dataset.tab || e.target.id;
     const tab = e.target;
+
+
+    const applicationId = e.target.closest("tr")?.dataset;
 
     switch (id) {
         case "request-first-tab":
@@ -62,20 +68,15 @@ function handleDelegation(e) {
             handleRendererAuditClick(e.target);
             break;
     }
+
+    if (applicationId) {
+       const response = await getApplicationInfoRequest(applicationId.id);
+       renderApplicationDetailsToUI(response.data.APPLICATION_DATA)
+       console.log(response)
+
+    }
 }
 
-
-
-
-
-/**
- * Sets the text content of an element by ID.
- * Falls back to an empty string if no value is provided.
- */
-function setText(id, value) {
-    const element = document.getElementById(id);
-    if (element) element.textContent = value || "";
-}
 
 
 
@@ -122,9 +123,6 @@ function showFirstTab() {
 
 
 
-
-
-
 function showNumOfCharsRemaining() {
    const requestTextArea = document.getElementById("notes");
 
@@ -147,4 +145,101 @@ function showNumOfCharsRemaining() {
     })
 
 
+}
+
+
+
+async function getApplicationInfoRequest(applicationID) {
+
+    const resp = await fetchData({
+        url: "/card-request/application/details/",
+        csrfToken: getCsrfToken(),
+        body: {
+            application_id: applicationID,
+        },
+
+        method: "POST",
+
+    })
+
+    return resp;
+
+}
+
+
+
+/**
+ * Renders all the parts that make up the application
+ * request info, user information, account details
+ * and the audit trail
+ *
+ * @param {*} data: The application data containing the necessary
+ * fields for the rendering
+ * @returns
+ */
+function renderApplicationDetailsToUI(data) {
+    if (!data) return;
+    renderRequestInHeader(data)
+
+    // The rest of tab rendering to go here
+}
+
+
+
+/**
+ * Takes the application data and renders it to the application
+ * page. The function renders the profile pic, full name, email
+ * address, submission data and the status of the application
+ * @param {*} applicationData - The application data
+ */
+function renderRequestInHeader(applicationData) {
+
+
+    const header = new RequestHeader(applicationData);
+    header.render();
+
+    const bankAccountDetails = new RequestBankAccountDetails(applicationData);
+    bankAccountDetails.render();
+
+}
+
+
+
+
+
+/**
+ * showFirstTableRowData
+ *
+ * Retrieves and displays the application details for the first card request
+ * displayed in the applications table when the page first loads.
+ *
+ * This function acts as an orchestration layer between the application table,
+ * the API request, and the UI rendering components. It retrieves the first
+ * application's ID from the table row, requests the corresponding application
+ * data, and passes the returned data to the UI rendering layer.
+ *
+ * Expected HTML structure:
+ *
+ * <tbody id="card-requests-tbody">
+ *     <tr data-id="application-id">
+ *         ...
+ *     </tr>
+ * </tbody>
+ *
+ * Example:
+ *
+ * await showFirstTableRowData();
+ *
+ * @async
+ * @returns {Promise<void>}
+ */
+async function showFirstTableRowData() {
+    const tableBody = document.getElementById("card-requests-tbody")
+
+    if (!tableBody) return;
+
+    const firstRowApplicationId = tableBody.querySelector("tr").dataset.id;
+    const response = await getApplicationInfoRequest(firstRowApplicationId);
+    console.log(response)
+    renderApplicationDetailsToUI(response.data.APPLICATION_DATA)
 }

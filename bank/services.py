@@ -9,9 +9,9 @@ from django.db.models.query import QuerySet
 
 from bank.models import (SortCodeRangePool,
                          SortCodeAllocationStateLog,
-                         Bank, 
+                         Bank,
                          BankAccount,
-                          SortCodeAllocationState, 
+                          SortCodeAllocationState,
                           SortCodeAllocatorLastRecordLookup,
                           SortCode)
 from user_profile.models import UserProfile
@@ -96,10 +96,10 @@ class BankProvisioningService:
                  interest_rate_bps=int(interest_rate * 1000),
                  source=source
             )
-        
+
         bank.save()
         return bank
-    
+
     @staticmethod
     def create_bank(bank_data:dict, source: Bank.Source = Bank.Source.ADMIN) -> Bank:
         """
@@ -126,7 +126,7 @@ class BankProvisioningService:
                 Defines the origin of the bank instance.
                 Examples:
                     - Bank.Source.SEED → system-defined seeded bank
-                    - Bank.Source.ADMIN → manually created via admin/add bank interface 
+                    - Bank.Source.ADMIN → manually created via admin/add bank interface
 
         Returns:
             Bank:
@@ -151,7 +151,7 @@ class BankProvisioningService:
         """
         if not isinstance(bank_data, dict):
             raise ValueError(_(f"The bank data must be a dictionary. Expected a dict got type {type(bank_data).__name__}"))
-         
+
         reassigned = False
         msg        = None
 
@@ -175,15 +175,15 @@ class BankProvisioningService:
                 sortcode_block.save()
             else:
                 sortcode_block = SortCodeAllocationState.create_allocate_sortcode_range(bank=bank)
-              
+
             if not (sortcode_block):
                 raise ValueError(_("Expected a sortcode range but got nothing"))
-        
+
             SortCode.objects.create(bank=bank)
-            
+
             if not reassigned:
                 msg = "Assigned a new sortcode block"
-            
+
             SortCodeAllocationStateLog.objects.create(
                 assigned_to=bank,
                 description=msg,
@@ -191,7 +191,7 @@ class BankProvisioningService:
                 end_range=sortcode_block.end_range,
 
             )
-      
+
         return bank
 
 
@@ -236,7 +236,7 @@ class AccountService:
         including validation, sort code assignment, and account number generation.
 
         Workflow:
-           
+
             1. Generates the next sequential sort code  and account number within the bank's allocated range.
             2. Creates and persists a new BankAccount instance.
             3. Optionally associates the account with a UserProfile.
@@ -272,18 +272,18 @@ class AccountService:
 
         if user_profile is not None and not isinstance(user_profile, UserProfile):
             raise TypeError(_(f"Expected the user_profile instance to be type UserProfile. Got profile with type {type(UserProfile.__name__)}"))
-        
+
         if not isinstance(bank, Bank):
             raise TypeError(_(f"Expected the bank instance to be type Bank. Got bank with type {type(Bank.__name__)}"))
-        
-        EXPECTED_CHOICES = [BankAccount.AccountType.BASIC.value, 
-                                 BankAccount.AccountType.PREMIUM.value, 
+
+        EXPECTED_CHOICES = [BankAccount.AccountType.BASIC.value,
+                                 BankAccount.AccountType.PREMIUM.value,
                                  BankAccount.AccountType.SAVINGS.value]
-        
+
         if not (account_type in EXPECTED_CHOICES):
             raise ValueError(_(f"The account_type must be one of the following options {EXPECTED_CHOICES}. Got {account_type}"))
-    
-        
+
+
         with transaction.atomic():
             try:
                 sort_code_obj = (
@@ -307,12 +307,12 @@ class AccountService:
                 account_type=account_type,
             )
 
-          
+
             if user_profile:
                 bank_account.user_profile = user_profile
-            
+
             bank_account.save()
-            return bank_account   
+            return bank_account
 
 
 
@@ -338,13 +338,13 @@ def get_banks_with_cache_fallback(key: str):
         in both cache and database.
     """
     banks = get_cache_with_retry(key)
-   
+
     if banks is None:
         banks = Bank.get_all_banks()
-    
+
     if banks is None:
         return None
-        
+
     set_cache_with_retry(key, value=banks)
     return banks
 
@@ -357,33 +357,33 @@ class BankAccountCacheService:
 
     @classmethod
     def get_accounts(cls, user: User) -> QuerySet["BankAccount"]:
-        
+
         profile = ProfileCacheService.get_user_profile(user=user)
 
         if not profile:
 
             logger.debug("The user profile couldn't be located for the BankAccountCache service method ")
             raise ProfileNotFoundError(_("The profile for the user wasn't found"))
-        
+
         bank_account = get_cache_or_set(key=f"bank-account-{profile.user.id}",
                          value_or_func=lambda:BankAccount.get_all_account_by_user_profile(profile),
                          ttl=cls.CACHE_TIMEOUT
                          )
         return bank_account
-        
+
     @classmethod
     def get_saving_account(cls, user: User) -> BankAccount | None:
-        
+
         bank_accounts = cls.get_accounts(user)
 
         if bank_accounts is None:
             return
 
         return bank_accounts.filter(account_type=BankAccount.AccountType.SAVINGS).first()
-             
+
     @classmethod
     def get_current_account(cls, user: User) -> BankAccount | None:
-        
+
         bank_accounts = cls.get_accounts(user)
 
         if bank_accounts is None:

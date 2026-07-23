@@ -5,9 +5,9 @@ from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import FileExtensionValidator
-
 from django.contrib.auth import get_user_model
 
+from utils.utils import format_full_address
 
 
 User = get_user_model()
@@ -15,7 +15,7 @@ User = get_user_model()
 # Create your models here.
 
 class UserProfile(models.Model):
-    
+
     class Gender(models.TextChoices):
         MALE              = "Male", _("Male")
         FEMALE            = "Female", _("Female")
@@ -58,12 +58,19 @@ class UserProfile(models.Model):
     @property
     def profile_img(self):
         return self.profile_pic.url
-    
+
     @property
-    def get_full_address(self):
-        address_parts = [self.address_line_1, self.address_line_2, self.city, self.postcode, self.country.name]
-        return ', '.join(filter(None, address_parts))
-    
+    def full_address(self):
+
+        address = format_full_address(
+                    self.address_line_1,
+                    self.city,
+                    self.postcode,
+                    self.country.name,
+                    address_2=self.address_line_2,
+
+        )
+        return address
+
     def __str__(self):
         return f"{self.first_name} {self.last_name} is from {self.country}"
-    

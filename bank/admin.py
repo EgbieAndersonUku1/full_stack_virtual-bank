@@ -3,12 +3,12 @@ from django.db.models import Count
 
 
 
-from .models import (Bank, 
-                     BankAccount, 
-                     SortCode, 
-                     SortCodeAllocationState, 
+from .models import (Bank,
+                     BankAccount,
+                     SortCode,
+                     SortCodeAllocationState,
                      SortCodeAllocatorLastRecordLookup,
-                     SortCodeRangePool, 
+                     SortCodeRangePool,
                      SortCodeAllocationStateLog
                      )
 
@@ -18,13 +18,13 @@ from .models import (Bank,
 
 class BankAdmin(admin.ModelAdmin):
 
-    readonly_fields     = ["last_activity_at", "bank_code", "created_on", "last_updated", 
+    readonly_fields     = ["last_activity_at", "bank_code", "created_on", "last_updated",
                             "bank_accounts_count", "interest_rate_bps", "id"]
     list_display        = ["name", "bank_code", "bank_accounts_count", "branch_name", "country", "phone_number", "created_on"]
     list_display_links  = ["bank_code", "name"]
     list_filter         = ["branch_name", "country", "bank_code", "name"]
     ordering            = [ "-created_on"]
-   
+
     fieldsets = [(
              "Bank Identity",
                 {
@@ -94,7 +94,6 @@ class BankAdmin(admin.ModelAdmin):
                 ),
                 "fields": [
                     "interest_period",
-                    "interest_rate",
                     "interest_rate_bps",
                     "minimum_opening_deposit",
                     "monthly_deposit",
@@ -141,7 +140,7 @@ class BankAdmin(admin.ModelAdmin):
 class BankAccountAdmin(admin.ModelAdmin):
     readonly_fields   = ["sort_code", "account_number",  "user_profile", "bank_name",
                          "balance", "last_interest_run", "account_type", "status", "interest_enabled", "created_on", "last_updated"]
-    list_display       = ["id", "bank_name", "user_profile", "sort_code", "account_number", 
+    list_display       = ["id", "bank_name", "user_profile", "sort_code", "account_number",
                          "balance", "last_interest_run", "account_type", "status", "created_on"]
     list_display_links = ["id", "sort_code", "bank_name", "account_number"]
     list_filter        = ["status", "account_type", "interest_enabled", "sort_code__bank",]
@@ -151,7 +150,7 @@ class BankAccountAdmin(admin.ModelAdmin):
                         )
     list_per_page      =  20
     ordering           = [ "-created_on"]
-    
+
 
     fieldsets = [(
             "Bank Details",
@@ -201,18 +200,18 @@ class BankAccountAdmin(admin.ModelAdmin):
     @admin.display(ordering="sort_code__bank__name", description="Bank")
     def bank_name(self, obj):
         return obj.sort_code.bank.name
-    
+
     def has_add_permission(self, request):
         return False
 
     def has_change_permission(self, request, obj=None):
         return False
-    
+
 
 class SortCodeAllocationStateAdmin(admin.ModelAdmin):
     readonly_fields = ["id",
-                       "formatted_block_start", 
-                       "formatted_block_end", 
+                       "formatted_block_start",
+                       "formatted_block_end",
                        "total_sortcode_capacity",
                         "total_sortcode_issued",
                         "remaining_sortcodes",
@@ -221,14 +220,14 @@ class SortCodeAllocationStateAdmin(admin.ModelAdmin):
                         "block_size",
                         "start_range",
                         "end_range",
-                         "last_issued_sortcode_number", 
+                         "last_issued_sortcode_number",
                         "external_sortcode",
                          "last_created_account",
                          "number_of_sortcode_used",
                          "created_on"
                         ]
     list_per_page       = 25
-    list_display        = [ "id", "bank",  "block_size", "start_range", "end_range", 
+    list_display        = [ "id", "bank",  "block_size", "start_range", "end_range",
                           "external_sortcode","last_created_account", "created_on"
                           ]
     search_fields      = ["bank__name", "bank__bank_code"]
@@ -273,7 +272,7 @@ class SortCodeAllocationStateAdmin(admin.ModelAdmin):
                         },
                     ),
 
-                    
+
                 ]
 
     def has_add_permission(self, request):
@@ -281,7 +280,7 @@ class SortCodeAllocationStateAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
-    
+
     @admin.display(description="Total Capacity")
     def total_sortcode_capacity(self, obj):
         return obj.total_sortcode_capacity
@@ -305,19 +304,19 @@ class SortCodeAllocationStateAdmin(admin.ModelAdmin):
     @admin.display(description="Block End")
     def formatted_block_end(self, obj):
         return f"{obj.end_range:,}"
-    
+
     @admin.display(description="Sortcodes used so far")
     def number_of_sortcode_used(self, obj):
         return obj.issued_sortcodes_count
-    
+
     @admin.display(description="Last issued external sortcode")
     def external_sortcode(self, obj):
         return obj.external_sortcode
-    
+
     @admin.display(description="Last issued account number")
     def last_created_account(self, obj):
         return obj.account_number
-    
+
 
 
 class SortCodeAllocatorRecordLookupAdmin(admin.ModelAdmin):
@@ -407,7 +406,7 @@ class SortCodeAdmin(admin.ModelAdmin):
             },
         ),
     ]
-    
+
     def has_add_permission(self, request):
         return False
 

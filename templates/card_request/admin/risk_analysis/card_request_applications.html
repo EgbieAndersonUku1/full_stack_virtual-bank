@@ -2,6 +2,12 @@
 {% block title%}  {% endblock title %}
 
 
+<!--Add the csrf token to this page-->
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
 {% block body %}
 
 <section id="dashboard-admin" aria-label="Dashboard admin">
@@ -81,9 +87,9 @@
               <section id="card-request-details">
 
                 <div class="card-request-details__container">
-                  <div class="card-request-header flex">
+                  <div class="card-request-header flex-grid">
                     <h2 class="header-8">Request details</h2>
-                    <span class="text-muted ml-4">{{ application_id }}</span>
+                    <span class="text-muted ml-4" id="application-id">{{ application_id }}</span>
                   </div>
 
                   <hr class="dividor" />

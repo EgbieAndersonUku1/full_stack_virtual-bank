@@ -28,18 +28,25 @@
       <table id="card-requests-table">
         <thead>
           <tr>
-            <th scope="col">User</th>
+             <th scope="col">table Id</th>
+            <th scope="col">Recipient name</th>
             <th scope="col">Card Brand</th>
              <th scope="col">Card type</th>
-            <th scope="col">Status</th>
-            <th scope="col">Date</th>
+
+            <th scope="col">Submission date</th>
           </tr>
         </thead>
 
         <tbody id="card-requests-tbody">
           {% for application in applications %}
-            <tr data-id="table-row-{{ application.id }}">
-                  <td>{{ application.user.profile.full_name | title }}</td>
+
+           {% if application.application_id %}
+            <tr data-id="{{ application.application_id }}">
+                  <td class="capitalise">
+                      <span>{{ application.id }}</span>
+                  </td>
+                  <td>{{ application.basic_information.full_name | title }}</td>
+
                   <td>
                     <span>{{ application.basic_information.card_brand | title }}</span>
 
@@ -50,9 +57,7 @@
                     <span class="text-muted">{{ application.basic_information.card_type | title }}</span>
                   </td>
 
-                  <td class="capitalise">
-                      <span class="status status--{{ application.status }}">{{ application.status|remove_under_score|title }}</span>
-                  </td>
+
 
                   <td>
                     <span>{{ application.submitted_on }}</span>
@@ -60,6 +65,7 @@
                   </td>
 
             </tr>
+            {% endif %}
            {% endfor %}
         </tbody>
       </table>

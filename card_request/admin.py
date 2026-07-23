@@ -3,19 +3,15 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from utils.admin.filter import StatusFilteredAdmin
-from .models import (CardRequestAgreement,
-                     CardRequestApplication,
-                     CardRequestApplicationLog,
-                     CardRequestBasicInformation,
-                     CardRequestEmploymentInformation,
-                     CardRequestApplicationPending,
+
+from .models import (CardRequestAgreement, CardRequestApplication,
                      CardRequestApplicationAccepted,
-                     CardRequestApplicationWithdrawn,
+                     CardRequestApplicationCancelled,
+                     CardRequestApplicationLog, CardRequestApplicationPending,
                      CardRequestApplicationRejected,
-                     CardRequestApplicationCancelled
-
-                     )
-
+                     CardRequestApplicationWithdrawn,
+                     CardRequestBasicInformation,
+                     CardRequestEmploymentInformation)
 
 # Register your models here.
 
@@ -37,7 +33,7 @@ class CardRequestBasicInformationInline(admin.StackedInline):
         "state",
         "country",
         "postal_code",
-        "get_full_address",
+        "full_address",
         "card_type",
         "card",
         "card_brand",
