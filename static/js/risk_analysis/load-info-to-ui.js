@@ -1,22 +1,21 @@
-import { deselectAllTabs, highlightTab } from "../utils/tab-utils.js";
-import { formatCurrency, sanitizeText, toggleSpinner } from "../utils.js";
-import { badgeConfig } from "./badge.config.js";
-import { warnError } from "../logger.js";
-import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js";
 import fetchData from "../fetch.js";
+import { warnError } from "../logger.js";
 import { getCsrfToken } from "../security/csrf.js";
+import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js";
+import { deselectAllTabs, highlightTab } from "../utils/tab-utils.js";
 import { RequestHeader } from "./request-details-tabs/request-.tab-header.js";
 import { RequestBankAccountDetails } from "./request-details-tabs/request-account-info.js";
+import { RecipientCardApplicationInformation } from "./request-details-tabs/request-information.js";
 
 
-const tabs                = document.querySelectorAll(".tabs .tab")
+const tabs = document.querySelectorAll(".tabs .tab")
 const mainSectionContainer = document.querySelector(".dashboard__container__main");
-const requestTabContents  = document.querySelectorAll(".request-tab-content");
-const firstTabContent     = document.getElementById("request-first-tab");
-const secondTabContent    = document.getElementById("request-second-tab");
-const thirdTabContent     = document.getElementById("request-third-tab");
-const fourthTabContent    = document.getElementById("request-fourth-tab");
-const auditSpinner        = document.getElementById("load-audit-spinner");
+const requestTabContents = document.querySelectorAll(".request-tab-content");
+const firstTabContent = document.getElementById("request-first-tab");
+const secondTabContent = document.getElementById("request-second-tab");
+const thirdTabContent = document.getElementById("request-third-tab");
+const fourthTabContent = document.getElementById("request-fourth-tab");
+const auditSpinner = document.getElementById("load-audit-spinner");
 
 
 
@@ -28,8 +27,8 @@ mainSectionContainer.addEventListener("click", handleDelegation);
 
 document.addEventListener("DOMContentLoaded", () => {
 
-        showFirstTab();
-        showFirstTableRowData();
+    showFirstTab();
+    showFirstTableRowData();
 
 
 });
@@ -70,9 +69,9 @@ async function handleDelegation(e) {
     }
 
     if (applicationId) {
-       const response = await getApplicationInfoRequest(applicationId.id);
-       renderApplicationDetailsToUI(response.data.APPLICATION_DATA)
-       console.log(response)
+        const response = await getApplicationInfoRequest(applicationId.id);
+        renderApplicationDetailsToUI(response.data.APPLICATION_DATA)
+        console.log(response)
 
     }
 }
@@ -124,14 +123,14 @@ function showFirstTab() {
 
 
 function showNumOfCharsRemaining() {
-   const requestTextArea = document.getElementById("notes");
+    const requestTextArea = document.getElementById("notes");
 
-   if (!requestTextArea) {
-     warnError("showNumOfCharsRemaining", {
-        error: "The id for the notes text area is invalid"
-     });
-     return;
-   }
+    if (!requestTextArea) {
+        warnError("showNumOfCharsRemaining", {
+            error: "The id for the notes text area is invalid"
+        });
+        return;
+    }
 
 
     minimumCharactersToUse(notes, {
@@ -200,6 +199,9 @@ function renderRequestInHeader(applicationData) {
 
     const bankAccountDetails = new RequestBankAccountDetails(applicationData);
     bankAccountDetails.render();
+
+    const cardRecipientApplicationInformation = new RecipientCardApplicationInformation(applicationData);
+    cardRecipientApplicationInformation.render();
 
 }
 

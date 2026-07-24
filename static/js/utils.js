@@ -960,3 +960,53 @@ export function scrollToView(divElement) {
     });
 }
 
+
+
+/**
+ * capitaliseEveryFirstWord
+ *
+ * Converts each word within a string to title case and joins the words using
+ * the supplied separator.
+ *
+ * This utility is primarily intended for formatting display text before it is
+ * rendered to the user interface.
+ *
+ * Example:
+ *
+ * ```javascript
+ * capitaliseEveryFirstWord("john smith");
+ * // "John, Smith"
+ *
+ * capitaliseEveryFirstWord("john smith", " ");
+ * // "John Smith"
+ * ```
+ *
+ * @param {string} text
+ *     The string whose words should be converted to title case.
+ *
+ * @param {string} [separator=" "]
+ *     The separator used when joining the capitalised words.
+ *
+ * @returns {string|undefined}
+ *     A title-cased string joined using the supplied separator. Returns
+ *     `undefined` when `text` is empty or not provided.
+ *
+ * @throws {TypeError}
+ *     Thrown when `text` is not a string.
+ */
+export function capitaliseEveryFirstWord(text, separator =" ") {
+    if (!text) return;
+
+    if (typeof text !== "string") {
+        throw new TypeError(`Expected a string got value with type ${typeof text}`)
+    }
+
+   const phrases = text.split(" ");
+
+    const capitalisedPhrases = phrases.map((phrase) => {
+        return toTitle(phrase);
+    });
+
+    return capitalisedPhrases.join(separator);
+
+}

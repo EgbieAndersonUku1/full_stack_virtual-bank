@@ -531,7 +531,7 @@ def build_application_response_data(application: CardRequestApplication) -> dict
         "APPLICATION_ID": application.application_id,
         "STATUS": application.status,
         "SUBMISSION_DATE": application.submitted_on,
-        "REQUEST_INFO": {
+        "REQUEST_CARD_INFO": {
             "CARD": application.basic_information.full_card,
             "CARD_VARIANT": application.basic_information.card_type,
             "RECIPIENT_ADDRESS": application.basic_information.full_address,
@@ -575,7 +575,8 @@ def build_application_response_data(application: CardRequestApplication) -> dict
             "TYPE": current_account.account_type,
             "STATUS": current_account.status,
             "ACCOUNT_LAST_FOUR_DIGITS": account_number.split("*")[-1],
-            "SORT_CODE_LAST_FOUR_DIGITS": sort_number.split("*")[-1]
+            "SORT_CODE_LAST_FOUR_DIGITS": sort_number.split("*")[-1],
+            "MEMBER_SINCE": current_account.user_profile.user.created_on,
         },
         "BANK_DETAILS": {
             "BRANCH_NAME": current_account.sort_code.bank.branch_name,
