@@ -39,6 +39,7 @@ export class RequestBankAccountDetails extends ApplicationValidators {
            overdraft: document.getElementById("account-information__overdraft"),
            bankName: document.getElementById("account-information__bank-name"),
            branch: document.getElementById("account-information__bank-branch"),
+           memberJoinedDate: document.getElementById("member-joined-date")
 
         };
 
@@ -126,8 +127,13 @@ export class RequestBankAccountDetails extends ApplicationValidators {
         this.elements.bankName.textContent        = toTitle(this.data.BANK_DETAILS.NAME);
         this.elements.branch.textContent          = toTitle(this.data.BANK_DETAILS.BRANCH_NAME)
 
+
     }
 
+    #setMemberSince() {
+        this.elements.memberJoinedDate.textContent = new Date(this.data.ACCOUNT_DETAILS.MEMBER_SINCE).toLocaleDateString();
+        console.log("here")
+    }
 
     render() {
         this.#setSortNumberLastFourDigits();
@@ -143,6 +149,7 @@ export class RequestBankAccountDetails extends ApplicationValidators {
         this.#setFullAddress();
         this.#setBranchPhoneNumber();
         this.#setAccountInformation();
+        this.#setMemberSince()
 
     }
 
