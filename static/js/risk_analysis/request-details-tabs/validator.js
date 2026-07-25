@@ -3,14 +3,15 @@
 export class ApplicationValidators {
 
 
-     validateResponse(data) {
+    validateResponse(data) {
         if (
             typeof data !== "object" || data === null
-                   || !data.APPLICATION_ID || !data.STATUS || !data.USER_INFORMATION
-                   || !data.ACCOUNT_DETAILS || !data.BANK_DETAILS || !data.USER_STATS
-                  ) {
+            || !data.APPLICATION_ID || !data.STATUS || !data.USER_INFORMATION
+            || !data.ACCOUNT_DETAILS || !data.BANK_DETAILS || !data.USER_STATS
+            || !data.REQUEST_CARD_INFO ||!data.PROFILE_INFORATION
+        ) {
 
-                throw new TypeError(
+            throw new TypeError(
                 "Invalid request header data structure."
             );
         }

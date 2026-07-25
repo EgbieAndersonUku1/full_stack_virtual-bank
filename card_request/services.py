@@ -526,24 +526,27 @@ def build_application_response_data(application: CardRequestApplication) -> dict
     account_number    = current_account.account_last_four_digits
     sort_number       = current_account.sortcode_last_four_digits
     phone_number      = current_account.sort_code.bank.phone_number
+    profile           = current_account.user_profile
+    user              = application.user
 
     context = {
         "APPLICATION_ID": application.application_id,
         "STATUS": application.status,
         "SUBMISSION_DATE": application.submitted_on,
-        "REQUEST_INFO": {
-            "CARD": application.basic_information.full_card,
-            "CARD_VARIANT": application.basic_information.card_type,
-            "RECIPIENT_ADDRESS": application.basic_information.full_address,
-            "PHONE_NUMBER": str(application.basic_information.phone_number),
-            "SPECIAL_REQUESTS": application.basic_information.special_requests,
+        "REQUEST_CARD_INFO": {
+            "CARD": basic_information.full_card,
+            "CARD_VARIANT": basic_information.card_type,
+            "RECIPIENT_ADDRESS": basic_information.full_address,
+            "PHONE_NUMBER": str(basic_information.phone_number),
+            "SPECIAL_REQUESTS": basic_information.special_requests,
         },
+        # user information given during the card request application not the same as profile information
         "USER_INFORMATION": {
             "FULL_NAME": basic_information.full_name,
             "PHONE_NUMBER": str(basic_information.phone_number),
             "ADDRESS": basic_information.full_address,
             "EMAIL_ADDRESS": basic_information.email,
-            "PROFILE_PIC": application.user.profile.profile_img,
+            "PROFILE_PIC": user.profile.profile_img,
             "PASSPORT": "",
             "NATIONALITY": "",
             "PREFFERED_LANGUAGE": "",
@@ -551,11 +554,9 @@ def build_application_response_data(application: CardRequestApplication) -> dict
         "USER_STATS": {
             "TOTAL_ACCOUNTS": bank_accounts.count(),
             "TOTAL_CARDS": 0,  # keep as 0 since it hasn't been built yet
-            "TRANSACTIONS": 0,  #  keep as 0 since it hasn't been built yet,
+            "TOTAL_TRANSACTIONS": 0,  #  keep as 0 since it hasn't been built yet,
             "ACCOUNT_BALANCE": current_account.balance,
-            "TOTAL_APPLICATIONS": application.get_user_applications(
-                application.user
-            ).count(),
+            "TOTAL_APPLICATIONS": application.get_user_applications(user).count(),
         },
         "ACCOUNT_DETAILS": {
             "SORT_CODE": sort_number,
@@ -575,7 +576,8 @@ def build_application_response_data(application: CardRequestApplication) -> dict
             "TYPE": current_account.account_type,
             "STATUS": current_account.status,
             "ACCOUNT_LAST_FOUR_DIGITS": account_number.split("*")[-1],
-            "SORT_CODE_LAST_FOUR_DIGITS": sort_number.split("*")[-1]
+            "SORT_CODE_LAST_FOUR_DIGITS": sort_number.split("*")[-1],
+            "MEMBER_SINCE": current_account.user_profile.user.created_on,
         },
         "BANK_DETAILS": {
             "BRANCH_NAME": current_account.sort_code.bank.branch_name,
@@ -599,6 +601,28 @@ def build_application_response_data(application: CardRequestApplication) -> dict
             "REPLACEMENT_CARDS": 0,
             "LOST_CARDS": 0,
             "STOLEN_CARDS": 0
+        },
+
+        "PROFILE_INFORATION" : {
+            "FULL_NAME": profile.full_name,
+            "PHONE_NUMBER": {
+                "EXT": phone_number.extension,
+                "NATIONAL_NUMBER": phone_number.national_number,
+                "COUNTRY_CODE": phone_number.country_code,
+            },
+            "ADDRESS": profile.full_address,
+            "EMAIL_ADDRESS": {
+                "EMAIL": profile.email,
+                "IS_VERIFIED": user.is_user_email_verified()
+            },
+
+            # not yet built
+            "PASSPORT": {
+                "IS_VERIFIED": False,
+                "PASSPORT": "N/A"
+            },
+            "NATIONALITY": "N/A",
+            "PREF_LANGUAGE": "English", # for now use English since the preferred languages hasn't been implmented yet
         }
     }
     return context
