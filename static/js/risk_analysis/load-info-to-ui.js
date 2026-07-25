@@ -6,6 +6,7 @@ import { deselectAllTabs, highlightTab } from "../utils/tab-utils.js";
 import { RequestHeader } from "./request-details-tabs/request-.tab-header.js";
 import { RequestBankAccountDetails } from "./request-details-tabs/request-account-info.js";
 import { RecipientCardApplicationInformation } from "./request-details-tabs/request-information.js";
+import { UserStatsAndProfileInformation } from "./request-details-tabs/request-user-information.js";
 
 
 const tabs = document.querySelectorAll(".tabs .tab")
@@ -202,6 +203,9 @@ function renderRequestInHeader(applicationData) {
 
     const cardRecipientApplicationInformation = new RecipientCardApplicationInformation(applicationData);
     cardRecipientApplicationInformation.render();
+
+    const profileUserAndStasInformation = new UserStatsAndProfileInformation(applicationData);
+    profileUserAndStasInformation.render();
 
 }
 

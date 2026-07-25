@@ -76,7 +76,7 @@
           </dt>
 
           <dd class="user-value">
-            <span id="fullName" class="capitalise">Jake Thompson</span>
+            <span id="profile-information__fullName" class="capitalise">Jake Thompson</span>
           </dd>
         </div>
 
@@ -88,13 +88,9 @@
           </dt>
 
           <dd class="user-value flex flex-space-between">
-            <span id="phoneNum">+44 7700 900123</span>
+            <span id="profile-information__phoneNum">+44 7700 900123</span>
 
-            <span
-              class="status status--approved capitalise"
-              id="is-phone-num-verified"
-              >Verified</span
-            >
+
           </dd>
         </div>
 
@@ -108,12 +104,9 @@
           <dd class="user-value flex flex-space-between">
             <!-- Address details -->
             <div class="address flex-grid">
-              <span id="address1"></span>
-              <span id="address2"></span>
-              <span id="city"></span>
-              <span id="county"></span>
-              <span id="postcode"></span>
-              <span id="country"></span>
+
+              <span id="profile-information__full-address"></span>
+
             </div>
 
             <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
@@ -128,9 +121,9 @@
           </dt>
 
           <dd class="user-value flex flex-space-between">
-            <span id="email-address">jakeThompson@gmail.com</span>
-            <span class="status status--approved" id="is-email-verified"
-              >Verified</span
+            <span id="profile-information__email-address">jakeThompson@gmail.com</span>
+            <span class="status status--approved" id="profile-information__is-email-verified"
+              ></span
             >
           </dd>
         </div>
@@ -143,8 +136,8 @@
           </dt>
 
           <dd class="user-value flex flex-space-between">
-            <span id="passport"></span>
-            <span class="status status--approved" id="is-passport-verified"
+            <span id="profile-information__passport"></span>
+            <span class="status status--approved" id="profile-information__is-passport-verified"
               >Verified</span
             >
           </dd>
@@ -157,7 +150,7 @@
             <span class="text-muted">Nationality</span>
           </dt>
 
-          <dd class="user-value" id="nationality"></dd>
+          <dd class="user-value" id="profile-information__nationality"></dd>
         </div>
 
         <!-- Preferred Language -->
@@ -167,7 +160,7 @@
             <span class="text-muted">Pref language</span>
           </dt>
 
-          <dd class="user-value" id="preferred-language"></dd>
+          <dd class="user-value" id="profile-information__preferred-language"></dd>
         </div>
       </dl>
     </div>
@@ -175,173 +168,12 @@
 
   <!-- user stats -->
   <!-- Displays a summary of the customer's banking activity -->
-  <section id="user-stats" class="mt-24">
-    <div class="user-stats__container">
-      <h2 class="header-9">User stats</h2>
-      <p class="text-muted">
-        Overview of accounts, cards, balances, and activity.
-      </p>
+  {% include "components/card_request/risk_analysis/request_data/user_stats.html" %}
 
-      <hr class="dividor" />
-
-      <!-- Statistics card collection -->
-      <div
-        class="user-stats__cards flex-grid two-column-grid"
-        role="list"
-        aria-label="User account statistics"
-      >
-        <!-- Total Accounts Card -->
-        <div
-          class="user-stats__card flex-grid two-column-30_70_grid"
-          role="listitem"
-          aria-labelledby="total-accounts-label"
-          aria-describedby="total-accounts-value"
-        >
-          <div class="user-stats__card-head">
-            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
-          </div>
-
-          <div class="user-stats__card-body center">
-            <p class="text-muted" id="total-accounts-label">Total Accounts</p>
-
-            <p id="total-accounts-value">0</p>
-          </div>
-        </div>
-
-        <!-- Total Cards Card -->
-        <div
-          class="user-stats__card flex-grid two-column-30_70_grid"
-          role="listitem"
-          aria-labelledby="total-cards-label"
-          aria-describedby="total-cards-value"
-        >
-          <div class="user-stats__card-head">
-            <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
-          </div>
-
-          <div class="user-stats__card-body center">
-            <p class="text-muted" id="total-cards-label">Total Cards</p>
-
-            <p id="total-cards-value"></p>
-          </div>
-        </div>
-
-        <!-- Transaction Count Card -->
-        <div
-          class="user-stats__card flex-grid two-column-30_70_grid"
-          role="listitem"
-          aria-labelledby="transactions-label"
-          aria-describedby="transactions-value"
-        >
-          <div class="user-stats__card-head">
-            <i
-              class="fa-solid fa-arrow-right-arrow-left"
-              aria-hidden="true"
-            ></i>
-          </div>
-
-          <div class="user-stats__card-body center">
-            <p class="text-muted" id="transactions-label">Transactions</p>
-
-            <p id="transactions-value"></p>
-          </div>
-        </div>
-
-        <!-- Account Balance Card -->
-        <div
-          class="user-stats__card flex-grid two-column-30_70_grid"
-          role="listitem"
-          aria-labelledby="balance-label"
-          aria-describedby="balance-value"
-        >
-          <div class="user-stats__card-head">
-            <i class="fa-solid fa-wallet" aria-hidden="true"></i>
-          </div>
-
-          <div class="user-stats__card-body center">
-            <p class="text-muted" id="balance-label">Account Balance</p>
-
-            <p id="balance-value">£0.00</p>
-          </div>
-
-
-        </div>
-
-          <!--Total applications made by the user -->
-        <div
-          class="user-stats__card flex-grid two-column-30_70_grid"
-          role="listitem"
-          aria-labelledby="total-application-label"
-          aria-describedby="total-application-value"
-        >
-          <div class="user-stats__card-head">
-            <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
-          </div>
-
-          <div class="user-stats__card-body center">
-            <p class="text-muted" id="total-application-label">Total Applications</p>
-
-            <p id="total-application-value"></p>
-          </div>
-      </div>
-    </div>
-  </section>
 
   <!-- run risk analysis -->
-  <section id="risk-analysis" class="mt-24">
-    <div class="risk-analysis__container">
-      <h2 class="header-8">Risk Analysis</h2>
-      <p class="text-muted mb-16">
-        Assess customer risk indicators and compliance status.
-      </p>
+  {% include "components/card_request/risk_analysis/risk_analysis.html" %}
 
-      <div class="risk-factors-overview mt-24">
-        <div id="risk-analysis-checklist" class="mb-16">
-          <!-- Generate by JS -->
-        </div>
 
-        <div id="rules" class="mt-8 mb-16">
-          <!-- generated by JavaScript -->
-        </div>
 
-        <!-- Decision panel -->
-        <div id="decision" class="mt-16 decision-panel">
-          <h2 class="header-8">Decision outcome</h2>
-
-          <p class="text-muted decision-subtitle">
-            Final risk score based on completed verification checks.
-          </p>
-
-          <div id="decisions" class="mt-8 decision-panel">
-            <span class="bold">Our Recommendation: </span>
-            <span id="our-recommendation"></span>
-
-            <div class="decision-circle">
-              <div class="decision-circle-inner">
-                <span class="decision-score" id="decision-score">0</span>
-                <span class="decision-max" id="decision-max">/ 0</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-24 mb-24" id="see-full-report-container">
-          <a href="#" id="full-report-link">See full report</a>
-        </div>
-
-        <div id="full-report">
-          <div class="spinner center" id="full-report-spinner"></div>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        class="btn-large blue-bg white-text"
-        id="risk-button-analyser"
-      >
-        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-        Risk Analysis
-      </button>
-    </div>
-  </section>
 </div>
