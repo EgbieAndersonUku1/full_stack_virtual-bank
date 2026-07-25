@@ -1,0 +1,111 @@
+  <section id="user-stats" class="mt-24">
+    <div class="user-stats__container">
+      <h2 class="header-9">User stats</h2>
+      <p class="text-muted">
+        Overview of accounts, cards, balances, and activity.
+      </p>
+
+      <hr class="dividor" />
+
+      <!-- Statistics card collection -->
+      <div
+        class="user-stats__cards flex-grid two-column-grid"
+        role="list"
+        aria-label="User account statistics"
+      >
+        <!-- Total Accounts Card -->
+        <div
+          class="user-stats__card flex-grid two-column-30_70_grid"
+          role="listitem"
+          aria-labelledby="total-accounts-label"
+          aria-describedby="total-accounts-value"
+        >
+          <div class="user-stats__card-head">
+            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+          </div>
+
+          <div class="user-stats__card-body center">
+            <p class="text-muted" id="total-accounts-label">Total Accounts</p>
+
+            <p id="total-accounts-value">0</p>
+          </div>
+        </div>
+
+        <!-- Total Cards Card -->
+        <div
+          class="user-stats__card flex-grid two-column-30_70_grid"
+          role="listitem"
+          aria-labelledby="total-cards-label"
+          aria-describedby="total-cards-value"
+        >
+          <div class="user-stats__card-head">
+            <i class="fa-solid fa-credit-card" aria-hidden="true"></i>
+          </div>
+
+          <div class="user-stats__card-body center">
+            <p class="text-muted" id="total-cards-label">Total Cards</p>
+
+            <p id="total-cards-value"></p>
+          </div>
+        </div>
+
+        <!-- Transaction Count Card -->
+        <div
+          class="user-stats__card flex-grid two-column-30_70_grid"
+          role="listitem"
+          aria-labelledby="transactions-label"
+          aria-describedby="transactions-value"
+        >
+          <div class="user-stats__card-head">
+            <i
+              class="fa-solid fa-arrow-right-arrow-left"
+              aria-hidden="true"
+            ></i>
+          </div>
+
+          <div class="user-stats__card-body center">
+            <p class="text-muted" id="transactions-label">Transactions</p>
+
+            <p id="transactions-value"></p>
+          </div>
+        </div>
+
+        <!-- Account Balance Card -->
+        <div
+          class="user-stats__card flex-grid two-column-30_70_grid"
+          role="listitem"
+          aria-labelledby="balance-label"
+          aria-describedby="balance-value"
+        >
+          <div class="user-stats__card-head">
+            <i class="fa-solid fa-wallet" aria-hidden="true"></i>
+          </div>
+
+          <div class="user-stats__card-body center">
+            <p class="text-muted" id="balance-label">Account Balance</p>
+
+            <p id="balance-value">£0.00</p>
+          </div>
+
+
+        </div>
+
+          <!--Total applications made by the user -->
+        <div
+          class="user-stats__card flex-grid two-column-30_70_grid"
+          role="listitem"
+          aria-labelledby="total-application-label"
+          aria-describedby="total-application-value"
+        >
+          <div class="user-stats__card-head">
+            <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+          </div>
+
+          <div class="user-stats__card-body center">
+            <p class="text-muted" id="total-application-label">Total Applications</p>
+
+            <p id="total-application-value"></p>
+          </div>
+      </div>
+    </div>
+  </section>
