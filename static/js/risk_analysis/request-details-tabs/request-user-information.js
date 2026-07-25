@@ -19,7 +19,12 @@ export class UserStatsAndProfileInformation extends ApplicationValidators{
             passport: document.getElementById("profile-information__passport"),
             isPassportVerified: document.getElementById("profile-information__is-passport-verified"),
             nationality: document.getElementById("profile-information__nationality"),
-            prefferedLanguage: document.getElementById("profile-information__preferred-language")
+            prefferedLanguage: document.getElementById("profile-information__preferred-language"),
+            totalAccounts: document.getElementById("total-accounts-value"),
+            totalCards: document.getElementById("total-cards-value"),
+            transactionsCount: document.getElementById("transactions-value"),
+            accountBalance: document.getElementById("balance-value"),
+            totalApplications: document.getElementById("total-application-value")
 
         }
 
@@ -110,11 +115,19 @@ export class UserStatsAndProfileInformation extends ApplicationValidators{
         this.#mapVerificationStatusToCSSStatus(profile.PASSPORT.IS_VERIFIED, this.elements.isPassportVerified)
     }
 
-   
+
+    #setUserStats() {
+        this.elements.totalAccounts.textContent      = this.data.USER_STATS.TOTAL_ACCOUNTS;
+        this.elements.totalCards.textContent         = this.data.USER_STATS.TOTAL_CARDS;
+        this.elements.transactionsCount.textContent  = this.data.USER_STATS.TOTAL_TRANSACTIONS;
+        this.elements.accountBalance.textContent     = this.data.USER_STATS.ACCOUNT_BALANCE;
+        this.elements.totalApplications.textContent  = this.data.USER_STATS.TOTAL_APPLICATIONS;
+    }
 
 
     render() {
         this.#setProfileInformation();
+        this.#setUserStats();
 
     }
 }

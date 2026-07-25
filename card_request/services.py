@@ -534,11 +534,11 @@ def build_application_response_data(application: CardRequestApplication) -> dict
         "STATUS": application.status,
         "SUBMISSION_DATE": application.submitted_on,
         "REQUEST_CARD_INFO": {
-            "CARD": application.basic_information.full_card,
-            "CARD_VARIANT": application.basic_information.card_type,
-            "RECIPIENT_ADDRESS": application.basic_information.full_address,
-            "PHONE_NUMBER": str(application.basic_information.phone_number),
-            "SPECIAL_REQUESTS": application.basic_information.special_requests,
+            "CARD": basic_information.full_card,
+            "CARD_VARIANT": basic_information.card_type,
+            "RECIPIENT_ADDRESS": basic_information.full_address,
+            "PHONE_NUMBER": str(basic_information.phone_number),
+            "SPECIAL_REQUESTS": basic_information.special_requests,
         },
         # user information given during the card request application not the same as profile information
         "USER_INFORMATION": {
@@ -554,7 +554,7 @@ def build_application_response_data(application: CardRequestApplication) -> dict
         "USER_STATS": {
             "TOTAL_ACCOUNTS": bank_accounts.count(),
             "TOTAL_CARDS": 0,  # keep as 0 since it hasn't been built yet
-            "TRANSACTIONS": 0,  #  keep as 0 since it hasn't been built yet,
+            "TOTAL_TRANSACTIONS": 0,  #  keep as 0 since it hasn't been built yet,
             "ACCOUNT_BALANCE": current_account.balance,
             "TOTAL_APPLICATIONS": application.get_user_applications(user).count(),
         },
