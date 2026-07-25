@@ -16,6 +16,7 @@ export class RecipientCardApplicationInformation extends ApplicationValidators {
             deliveryAddress: document.getElementById("request-card__recipient_address"),
             phoneNumber: document.getElementById("request-card__phoneNumber"),
             specialInstructions: document.getElementById("request-card__special-instructions"),
+          
         }
 
         this.validateElements(this.elements);
