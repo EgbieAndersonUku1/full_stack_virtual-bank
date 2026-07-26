@@ -12,6 +12,7 @@ from django_ckeditor_5.fields import CKEditor5Field
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
 
+from card.models import BankCard
 from user_profile.models import UserProfile
 from utils.security.generator import generate_secure_code
 from utils.utils import format_full_address
@@ -204,20 +205,6 @@ class CardRequestBasicInformation(QueryProfile):
         verbose_name = "Card request basic information"
         verbose_name_plural = "Card request basic information"
 
-    class CardType(models.TextChoices):
-        VIRTUAL = "virtual", _("Virtual")
-        PHYSICAL = "physical", _("Physical")
-        TEMPORARY = "temporary", _("Temporary")
-
-    class Card(models.TextChoices):
-        CREDIT = "credit", _("Credit")
-        DEBIT = "debit", _("Debit")
-
-    class CardBrand(models.TextChoices):
-        VISA = "visa", _("Visa")
-        MASTERCARD = "mastercard", _("Mastercard")
-        DISCOVER = "discover", _("Discover")
-
     application = models.OneToOneField(
         CardRequestApplication,
         on_delete=models.CASCADE,
@@ -225,6 +212,7 @@ class CardRequestBasicInformation(QueryProfile):
         null=True,
         blank=True,
     )
+
     first_name = models.CharField(max_length=100, verbose_name="First name*")
     last_name = models.CharField(max_length=100, verbose_name="Last name*")
     email = models.EmailField(max_length=100, verbose_name="Email*")
@@ -233,28 +221,33 @@ class CardRequestBasicInformation(QueryProfile):
     address2 = models.CharField(
         max_length=255, blank=True, null=True, verbose_name="Address line 2"
     )
-    country = CountryField(
-        blank_label="(select country)", null=True, verbose_name="Bank Country*"
-    )
+    country = CountryField(blank_label="(select country)",
+                           null=True,
+                           verbose_name="Bank Country*"
+                           )
     city = models.CharField(max_length=100, verbose_name="City*")
     state = models.CharField(max_length=100, verbose_name="State*")
     postal_code = models.CharField(max_length=20, verbose_name="Post code*")
-    special_requests = models.TextField(
-        blank=True, null=True, max_length=500, verbose_name="Special instructions"
-    )
+    special_requests = models.TextField(blank=True,
+                                        null=True,
+                                        max_length=500,
+                                        verbose_name="Special instructions"
+                                       )
     card_type = models.CharField(
         max_length=20,
-        choices=CardType.choices,
-        default=CardType.VIRTUAL,
+        choices=BankCard.CardType.choices,
+        default=BankCard.CardType.VIRTUAL,
         verbose_name="Card type*",
     )
-    card = models.CharField(
-        max_length=20, choices=Card.choices, default=Card.DEBIT, verbose_name="Card*"
-    )
+    card = models.CharField(max_length=20,
+                            choices=BankCard.CardCategory.choices,
+                            default=BankCard.CardCategory.DEBIT,
+                            verbose_name="Card*"
+                          )
     card_brand = models.CharField(
         max_length=20,
-        choices=CardBrand.choices,
-        default=CardBrand.VISA,
+        choices=BankCard.CardBrand.choices,
+        default=BankCard.CardBrand.VISA,
         verbose_name="Card brand*",
     )
     created_on = models.DateTimeField(auto_now_add=True)

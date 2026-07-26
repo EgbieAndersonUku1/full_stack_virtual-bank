@@ -64,7 +64,6 @@ async function handleDelegation(e) {
             break;
 
         case "load-more":
-            console.log("I am here")
             handleRendererAuditClick(e.target);
             break;
     }
@@ -72,7 +71,7 @@ async function handleDelegation(e) {
     if (applicationId) {
         const response = await getApplicationInfoRequest(applicationId.id);
         renderApplicationDetailsToUI(response.data.APPLICATION_DATA)
-        console.log(response)
+
 
     }
 }
@@ -246,6 +245,5 @@ async function showFirstTableRowData() {
 
     const firstRowApplicationId = tableBody.querySelector("tr").dataset.id;
     const response = await getApplicationInfoRequest(firstRowApplicationId);
-    console.log(response)
     renderApplicationDetailsToUI(response.data.APPLICATION_DATA)
 }
