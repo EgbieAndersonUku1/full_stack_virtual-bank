@@ -659,6 +659,11 @@ class BankAccount(models.Model):
         return str(self.account_number)
 
     @property
+    def full_name(self):
+        full_name = [self.user_profile.first_name, self.user_profile.middle_name, self.user_profile.last_name]
+        return " ".join(filter(None, full_name))
+    
+    @property
     def bank_name(self):
         return self.sort_code.bank.name
 

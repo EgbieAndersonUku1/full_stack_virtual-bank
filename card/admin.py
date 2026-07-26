@@ -9,12 +9,25 @@ from card.models import BankCard
 
 
 class BankCardAdmin(admin.ModelAdmin):
-    list_display       = ["id", "full_name", "card_number", "card_brand", "expiry_date", "created_on", "last_modified_on"]
+    list_display       = ["id", "full_name", "masked_card_number",
+                          "card_brand", "expiry_date", "created_on", "last_modified_on"]
     list_per_page      = 25
-    readonly_fields    = ["id", "expiry_date", "created_on", "last_modified_on", "balance"]
+    readonly_fields    = ["id",
+                          "expiry_date",
+                          "created_on",
+                          "last_modified_on",
+                          "balance",
+                          "bank_account",
+                          "card_number",
+                          "card_brand",
+                          "card_category",
+                          "card_type",
+                          "masked_card_number",
+                          "full_name",
+                          ]
     list_display_links = ["id", "full_name"]
 
-
+    @admin.display(description="Masked card number")
     def masked_card_number(self, obj):
         return obj.mask_card_number
 
@@ -29,7 +42,7 @@ class BankCardAdmin(admin.ModelAdmin):
                 "fields": [
                     "id",
                     "full_name",
-                    "card_number",
+                    "masked_card_number",
                     "bank_account",
                 ],
             },

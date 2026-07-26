@@ -45,8 +45,8 @@ class BankCard(models.Model):
 
     @property
     def mask_card_number(self):
-        return f"**** ****{self.card_number[:-4]}"
-    
+        return f"**** **** **** {self.card_number[-4:]}"
+
     @classmethod
     def get_by_bank_account(cls, bank_account: BankAccount) -> QuerySet["BankCard"]:
 
