@@ -55,6 +55,7 @@ class BankCardAdmin(admin.ModelAdmin):
                     "brand, category, and type."
                 ),
                 "fields": [
+                    "is_active",
                     "card_brand",
                     "card_category",
                     "card_type",

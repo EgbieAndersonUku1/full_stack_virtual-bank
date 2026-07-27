@@ -67,6 +67,8 @@ def money_transfer(request):
 def manage_credit_cards(request):
     return render(request, "home/dashboard/manage_cards.html")
 
+
+
 @onboarding_required
 @is_email_verified
 @login_required
