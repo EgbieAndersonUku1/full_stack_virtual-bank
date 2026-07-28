@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
+from bank.services import BankAccountCacheService
 from bank.utils import get_account_context
 from utils.decorators import is_email_verified, go_to_staff_page
-from bank.services import BankAccountCacheService
+from card.models import BankCard
 from user_profile.services import ProfileCacheService
+
 from setup.decorators import onboarding_required
 
 
@@ -65,7 +67,14 @@ def money_transfer(request):
 @is_email_verified
 @login_required
 def manage_credit_cards(request):
-    return render(request, "home/dashboard/manage_cards.html")
+    bank_account = BankAccountCacheService.get_current_account(user=request.user)
+    cards        = BankCard.get_by_bank_account(bank_account=bank_account)
+    context = {
+        "cards": cards,
+        "num_of_cards": cards.count(),
+    }
+
+    return render(request, "home/dashboard/manage_cards.html", context=context)
 
 
 
@@ -73,6 +82,7 @@ def manage_credit_cards(request):
 @is_email_verified
 @login_required
 def manage_admin(request):
+
     return render(request, "home/dashboard/admin/system_tools.html")
 
 

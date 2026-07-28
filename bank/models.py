@@ -668,6 +668,7 @@ class BankAccount(models.Model):
     def bank_name(self):
         return self.sort_code.bank.name
 
+
     @classmethod
     def get_all_account_by_user_profile(cls, user_profile: UserProfile):
 

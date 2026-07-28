@@ -59,41 +59,31 @@
                 <p class="pl-16">Select up to three cards to show on your dashboard.</p>
                 <p class="dashboard-limit mt-24 pl-16">
                     <span class="bold"> Dashboard cards:</span>
-                    <span id="num-of-card-selected">3</span> / <span id="maximum-cards">3</span> selected
+                    <span id="num-of-card-selected">0</span> / <span id="maximum-cards">3</span> selected
                 </p>
 
+                 <p class="dashboard-limit mt-24 pl-16">
+                    <span class="bold"> Number of Dashboard cards shown: </span>
+                    <span id="num-of-cards">{{ num_of_cards }}</span>
+
+                </p>
             </section>
 
 
             <!-- list of cards to manage -->
-            <section id="my-cards" aria-labelledby="credit-cards-heading">
-                <div class="my_cards__container p-16 mb-16">
+            {% if cards %}
+                {% include "components/bank/cards/cards.html" %}
+            {% else %}
+                {% include "components/bank/cards/empty_card_msg.html" %}
+            {% endif %}
 
-                    <h1 class="header-7">No Cards Available</h1>
-
-                    <p class="mb-4 mt-24">
-                        You currently do not have any active cards associated with your account.
-                    </p>
-
-                    <p class="mt-16">
-                        If you have recently submitted a card request, your application is currently being reviewed by
-                        our team.
-                    </p>
-
-                    <p class="mt-16">
-                        Once your application has been approved and your card has been issued, it will appear here
-                        automatically.
-                    </p>
-
-                </div>
-                <div class="credit-card-setting-info pl-24 mt-16">
-                    <p>Tip: You can manage your credit cards settings, set credit card limits, and make payments
-                        right from this page</p>
-                    <p>Click on <a href="#">set card limits here</a> to proceed</p>
-                </div>
-
-            </section>
-
+              <div class="credit-card-setting-info pl-24 mt-16">
+                <p>
+                Tip: You can manage your credit cards settings, set credit card limits,
+                and make payments right from this page
+                </p>
+                <p>Click on <a href="#">set card limits here</a> to proceed</p>
+            </div>
             {% else %}
 
             <!-- Information for staff will go here -->
@@ -101,9 +91,6 @@
             {% endif %}
 
         </section>
-
-
-
 
     </div>
 

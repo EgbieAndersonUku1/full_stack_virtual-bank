@@ -44,6 +44,14 @@ class BankCard(models.Model):
     last_modified_on = models.DateTimeField(auto_now=True)
 
     @property
+    def bank_name(self):
+        return self.bank_account.bank_name
+
+    @property
+    def bank_balance(self):
+        return self.bank_account.balance
+
+    @property
     def mask_card_number(self):
         return f"**** **** **** {self.card_number[-4:]}"
 
