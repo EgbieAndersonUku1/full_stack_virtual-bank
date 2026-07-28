@@ -123,6 +123,7 @@ class Bank(models.Model):
 
     objects = BankManager()
 
+    @staticmethod
     def validate_logo_size(file):
         max_size = 2 * 1024 * 1024  # 2MB
 
@@ -662,10 +663,11 @@ class BankAccount(models.Model):
     def full_name(self):
         full_name = [self.user_profile.first_name, self.user_profile.middle_name, self.user_profile.last_name]
         return " ".join(filter(None, full_name))
-    
+
     @property
     def bank_name(self):
         return self.sort_code.bank.name
+
 
     @classmethod
     def get_all_account_by_user_profile(cls, user_profile: UserProfile):

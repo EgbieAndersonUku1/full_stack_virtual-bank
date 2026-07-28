@@ -95,19 +95,19 @@ class AccountOnboardingService:
                             pin: str) -> bool:
 
 
-        user_profile, bank_account = None, None
+        user_profile, bank_account, bank_card = None, None, None
 
         with transaction.atomic():
 
             user_profile = cls._create_profile(user=user, profile_data=profile_data)
             bank_account = AccountService.open_bank_account(bank=bank, user_profile=user_profile)
+            bank_card    = BankCardService.create_default_bank_card(bank_account)
+
+            cls._create_pin(pin=pin, user=user, user_profile=user_profile)
 
             if bank.offer_saving_account == Bank.OfferSavingAccountOptions.YES:
                  AccountService.open_bank_account(bank=bank, user_profile=user_profile, account_type=BankAccount.AccountType.SAVINGS)
 
-            cls._create_pin(pin=pin, user=user, user_profile=user_profile)
-
-            BankCardService.create_default_bank_card(bank_account)
 
         if not bank_account:
             logger.debug("Bank account creation failed during onboarding process")
@@ -116,6 +116,10 @@ class AccountOnboardingService:
         if not user_profile:
             logger.debug("User profile creation failed during onboarding process")
             raise OnBoardingFailureError(_("User profile creation failed during onboarding"))
+
+        if not bank_card:
+            logger.debug("Default bank creation failed during onboarding process")
+            raise OnBoardingFailureError(_("Default card creation failed during onboarding"))
 
 
         cls._send_welcome_email(bank_account=bank_account,

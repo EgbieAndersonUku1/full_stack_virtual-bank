@@ -14,7 +14,6 @@ from utils.custom_errors import BankAccountTypeError
 
 
 class BankCard(models.Model):
-
     class Meta:
         ordering = ["-created_on"]
 
@@ -40,36 +39,57 @@ class BankCard(models.Model):
     card_brand       = models.CharField(max_length=20, choices=CardBrand.choices, default=CardBrand.VISA)
     card_type        = models.CharField(max_length=20, choices=CardType.choices, default=CardType.VIRTUAL)
     card_category    = models.CharField(max_length=20, choices=CardCategory.choices, default=CardCategory.DEBIT)
+    is_active        = models.BooleanField(default=True)
     created_on       = models.DateTimeField(auto_now_add=True)
     last_modified_on = models.DateTimeField(auto_now=True)
+
+    @property
+    def bank_name(self):
+        return self.bank_account.bank_name
+
+    @property
+    def bank_balance(self):
+        return self.bank_account.balance
 
     @property
     def mask_card_number(self):
         return f"**** **** **** {self.card_number[-4:]}"
 
     @classmethod
-    def get_by_bank_account(cls, bank_account: BankAccount) -> QuerySet["BankCard"]:
+    def _get_queryset(cls) -> QuerySet["BankCard"]:
+        """Return the base BankCard queryset with related objects preloaded."""
 
-        cls._validate_type(parameter_name="bank account",
-                           parameter_value=bank_account,
-                           expected_type=BankAccount
-                           )
-
-        return cls.objects.filter(bank_account=bank_account)
+        return cls.objects.select_related(
+            "bank_account",
+            "bank_account__sort_code__bank",
+        )
 
     @classmethod
-    def get_by_card_number(cls, card_number: str) -> BankCard | None:
+    def get_by_bank_account(cls, bank_account: BankAccount) -> QuerySet["BankCard"]:
+        """Return all bank cards associated with the given bank account."""
 
-        cls._validate_type(parameter_name="Card number",
-                           parameter_value=card_number,
-                           expected_type=str
-                           )
+        cls._validate_type(
+            parameter_name="Bank account",
+            parameter_value=bank_account,
+            expected_type=BankAccount,
+        )
+
+        return cls._get_queryset().filter(bank_account=bank_account)
+
+    @classmethod
+    def get_by_card_number(cls, card_number: str,) -> BankCard | None:
+        """Return the bank card with the given card number, or None if not found."""
+
+        cls._validate_type(
+            parameter_name="Card number",
+            parameter_value=card_number,
+            expected_type=str,
+        )
 
         try:
-            return cls.objects.get(card_number=card_number)
+            return cls._get_queryset().get(card_number=card_number)
         except cls.DoesNotExist:
             return None
-
 
     @staticmethod
     def _validate_type(parameter_name: str,
