@@ -5,10 +5,13 @@
 {% block title %}Main page{% endblock title %}
 
 
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
+
 {% block body %}
-
-
-
 
 <section id="dashboard-transfer" aria-label="User dashboard transfer">
 
@@ -97,12 +100,11 @@
 </section>
 
 
-
-
 {% endblock body %}
+
 
 {% block script %}
 
-
+    <script type="module" src="{% static '/js/card/showInDashboard.js' %}"></script>
 
 {% endblock script %}

@@ -11,6 +11,7 @@ from bank.services import AccountService
 from bank.models import Bank, BankAccount
 from card.services import BankCardService
 from setup.models import Pin
+from card.models import CardDashboard
 
 from user_profile.models import UserProfile
 from utils.utils import validate_params_are_strings
@@ -99,9 +100,10 @@ class AccountOnboardingService:
 
         with transaction.atomic():
 
-            user_profile = cls._create_profile(user=user, profile_data=profile_data)
-            bank_account = AccountService.open_bank_account(bank=bank, user_profile=user_profile)
-            bank_card    = BankCardService.create_default_bank_card(bank_account)
+            user_profile   = cls._create_profile(user=user, profile_data=profile_data)
+            bank_account   = AccountService.open_bank_account(bank=bank, user_profile=user_profile)
+            bank_card      = BankCardService.create_default_bank_card(bank_account)
+            card_dashboard = CardDashboard.objects.get_or_create(bank_account=bank_account)
 
             cls._create_pin(pin=pin, user=user, user_profile=user_profile)
 
@@ -110,16 +112,24 @@ class AccountOnboardingService:
 
 
         if not bank_account:
-            logger.debug("Bank account creation failed during onboarding process")
-            raise OnBoardingFailureError(_("Bank account creation failed during onboarding"))
+            error_msg = "Bank account creation failed during onboarding process"
+            logger.debug(error_msg)
+            raise OnBoardingFailureError(error_msg)
 
         if not user_profile:
-            logger.debug("User profile creation failed during onboarding process")
-            raise OnBoardingFailureError(_("User profile creation failed during onboarding"))
+            error_msg = "User profile creation failed during onboarding process"
+            logger.debug(error_msg)
+            raise OnBoardingFailureError(_(error_msg))
 
         if not bank_card:
-            logger.debug("Default bank creation failed during onboarding process")
-            raise OnBoardingFailureError(_("Default card creation failed during onboarding"))
+            error_msg = "Default bank creation failed during onboarding process"
+            logger.debug(error_msg)
+            raise OnBoardingFailureError(_(error_msg))
+
+        if not card_dashboard:
+            error_msg = "Default user card dashboard failed during onboarding process"
+            logger.debug(error_msg)
+            raise OnBoardingFailureError(_(error_msg))
 
 
         cls._send_welcome_email(bank_account=bank_account,
