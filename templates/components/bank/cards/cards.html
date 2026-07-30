@@ -85,16 +85,19 @@
           </div>
 
           <div class="show-in-dashboard-container">
-            <form action="" method="post" class="show-in-dashboard-form">
+
               <label for="credit-card-1" class="text-muted"
                 >Show in dashboard</label
               >
               <input
+              
                 type="checkbox"
                 name="show-in-dashboard"
-                id="credit-card-1"
+                id="{{ card.card_id }}"
+                data-card-number={{ card.card_number }}
+                class="card"
               />
-            </form>
+
           </div>
         </div>
 

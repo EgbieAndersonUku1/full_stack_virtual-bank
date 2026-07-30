@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from bank.models import BankAccount
-from card.models import BankCard
+
+from card.models import BankCard, CardDashboard
 
 # Register your models here.
 
@@ -56,6 +56,7 @@ class BankCardAdmin(admin.ModelAdmin):
                 ),
                 "fields": [
                     "is_active",
+                    "show_in_dashboard",
                     "card_brand",
                     "card_category",
                     "card_type",
@@ -93,5 +94,42 @@ class BankCardAdmin(admin.ModelAdmin):
 
 
 
+class CardDashboardAdmin(admin.ModelAdmin):
+    list_display       = ["id", "bank_account", "max_cards_to_show",  "created_on", "last_modified_on"]
+    list_per_page      = 25
+    readonly_fields    = ["id", "bank_account",  "created_on", "last_modified_on"]
+    list_display_links = ["id", "bank_account"]
+
+    fieldsets = (
+        (
+            "Dashboard Information",
+            {
+                "description": (
+                    "Displays the bank account associated with the dashboard "
+                    "and the maximum number of cards that can be displayed."
+                ),
+                "fields": [
+                    "id",
+                    "bank_account",
+                    "max_cards_to_show",
+                ],
+            },
+        ),
+        (
+            "Audit Information",
+            {
+                "description": (
+                    "Tracks when the dashboard record was created and when it "
+                    "was last modified."
+                ),
+                "fields": [
+                    "created_on",
+                    "last_modified_on",
+                ],
+            },
+        ),
+    )
+
 
 admin.site.register(BankCard, BankCardAdmin)
+admin.site.register(CardDashboard, CardDashboardAdmin)
