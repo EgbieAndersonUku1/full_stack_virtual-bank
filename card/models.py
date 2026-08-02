@@ -75,7 +75,10 @@ class BankCard(models.Model):
 
     @classmethod
     def get_dashboard_cards(cls, bank_account: BankAccount) -> QuerySet["BankCard"]:
-        """Return cards for the bank account configured to be displayed on the dashboard."""
+        """
+        Return cards for the bank account configured to be displayed on the dashboard.
+        Only returns cards that are active.
+        """
 
         cls._validate_type(parameter_name="bank account",
                            parameter_value=bank_account,
@@ -85,6 +88,7 @@ class BankCard(models.Model):
         return cls._base_queryset().filter(
             bank_account=bank_account,
             show_in_dashboard=True,
+            is_active=True,
         )
 
     @classmethod
@@ -142,7 +146,7 @@ class BankCard(models.Model):
 
 
 class CardDashboard(models.Model):
-    bank_account      = models.OneToOneField(BankAccount, on_delete=models.CASCADE)
+    bank_account      = models.OneToOneField(BankAccount, on_delete=models.CASCADE, related_name="dashboard_cards")
     max_cards_to_show = models.PositiveSmallIntegerField(default=3)
     created_on         = models.DateTimeField(auto_now_add=True)
     last_modified_on   = models.DateTimeField(auto_now=True)
@@ -159,7 +163,7 @@ class CardDashboard(models.Model):
     def get_by_bank_account(cls, bank_account: BankAccount) -> CardDashboard | None:
 
         if not isinstance(bank_account, BankAccount):
-            error_msg = _("Expected a bank object. Got type {}".format(type(bank_account).__name__))
+            error_msg = _("Expected a bank account object. Got type {}".format(type(bank_account).__name__))
             raise BankAccountTypeError(error_msg)
 
         try:

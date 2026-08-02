@@ -1,3 +1,5 @@
+import fetchData from "../fetch.js";
+
 const dashboardTransferSection = document.getElementById("dashboard-transfer");
 
 const csrfToken = document.getElementById("csrf_token");

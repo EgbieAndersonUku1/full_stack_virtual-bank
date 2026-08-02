@@ -1,0 +1,11 @@
+{% load static %}
+
+ <div class="card-type-logo flex flex-end">
+            {% if card.card_brand == "visa" %}
+                <img src="{% static 'images/icons/visa.svg' %}" alt="Visa logo" />
+            {% elif card.card_brand == "mastercard" %}
+                 <img src="{% static 'images/icons/mastercard.svg' %}" alt="Mastercard logo">
+            {% else %}
+                <img src="{% static 'images/icons/discover.svg' %}" alt="Discover logo">
+            {% endif %}
+          </div>

@@ -83,7 +83,7 @@ Typical usage:
         • Freeze the card
         • Close the card
 
-        
+
 Security Notes
 --------------
 Sensitive card information is never fully displayed.
@@ -126,123 +126,22 @@ through controlled system endpoints.
         <hr class="dividor">
 
         <!-- Cards container -->
-        <div id="bank-my-cards-overview" class="cards flex-grid three-column-grid mt-8 mb-8">
 
-            <!-- Card 1 -->
-            <div class="bank-card credit-visa-card" role="region"
-                aria-label="Atlas Bank Visa Credit Card, balance £100.00" data-card-id="card_92f3a1"
-                data-issued="2026-02-11" data-is-active="true" data-card-brand="visa" data-creation-date="2026-02-11"
-                data-cvc="***">
-                <div class="card-head">
-                    <div class="card-head-info">
-                        <h3>Atlas Bank</h3>
-                        <p class="bank-card-amount">£100.00</p>
-                    </div>
+      {% if dashboard_cards %}
 
-                    <div class="card-type-logo flex flex-end">
-                        <img src="{% static '/images/icons/visa.svg' %}" alt="Visa logo">
-                    </div>
-                </div>
+    <div id="bank-my-cards-overview" class="cards flex-grid three-column-grid mt-8 mb-8">
 
-                <div class="card-body">
-                    <div class="chip">
-                        <img src="{% static '/images/icons/sim-card-chip.svg' %}" alt="Card chip">
-                    </div>
+        {% for card in dashboard_cards %}
 
-                    <div class="credit-transaction-type flex flex-end">
-                        <span class="card-type">Credit</span>
-                    </div>
+            {% include "components/bank/cards/dashboard_cards.html" with card=card only %}
+        {% endfor %}
 
-                    <div class="card-number flex flex-end">
-                        <span class="card-number">************1224</span>
-                    </div>
-                </div>
+    </div>
 
-                <div class="card-footer flex flex-space-between">
-                    <div class="card-name">Johnathan Doe</div>
-                    <div class="card-expiry-date">
-                        Expiry date: January 2029
-                    </div>
-                </div>
-            </div>
+{% else %}
 
-            <!-- Card 2 -->
-            <div class="bank-card credit-mastercard-card" role="region"
-                aria-label="Atlas Bank Mastercard Credit Card, balance £7.26" data-card-id="card_92f3a2"
-                data-issued="2026-02-12" data-is-active="true" data-card-brand="mastercard"
-                data-creation-date="2026-02-11" data-cvc="***">
-                <div class="card-head">
-                    <div class="card-head-info">
-                        <h3>Atlas Bank</h3>
-                        <p class="bank-card-amount">£0.00</p>
-                    </div>
+    <p>You haven't selected any cards to be shown in the dashboard.</p>
 
-                    <div class="card-type-logo flex flex-end">
-                        <img src="/static/images/icons/mastercard.svg" alt="Mastercard logo">
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="chip">
-                        <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
-                    </div>
-
-                    <div class="credit-transaction-type flex flex-end">
-                        <span class="card-type">Credit</span>
-                    </div>
-
-                    <div class="card-number flex flex-end">
-                        <span class="card-number">************3336</span>
-                    </div>
-                </div>
-
-                <div class="card-footer flex flex-space-between">
-                    <div class="card-name">Jane Doe</div>
-                    <div class="card-expiry-date">
-                        <p>Expiry date: January 2028</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="bank-card credit-discover-card" role="region"
-                aria-label="Atlas Bank Discover Debit Card, balance £2.00" data-card-id="card_92f3a3"
-                data-issued="2026-02-12" data-is-active="false" data-card-brand="discover"
-                data-creation-date="2026-02-11" data-cvc="***">
-                <div class="card-head">
-                    <div class="card-head-info">
-                        <h3>Atlas Bank</h3>
-                        <p class="bank-card-amount">£2.00</p>
-                    </div>
-
-                    <div class="card-type-logo flex flex-end">
-                        <img src="/static/images/icons/discover.svg" alt="Discover logo">
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="chip">
-                        <img src="/static/images/icons/sim-card-chip.svg" alt="Card chip">
-                    </div>
-
-                    <div class="credit-transaction-type flex flex-end">
-                        <span class="card-type">Credit</span>
-                    </div>
-
-                    <div class="card-number flex flex-end">
-                        <span class="card-number">***********9991</span>
-
-                    </div>
-                </div>
-
-                <div class="card-footer flex flex-space-between">
-                    <div class="card-name">Johnathan Doe</div>
-                    <div class="card-expiry-date">
-                        <p>Expiry date: January 2027</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+{% endif %}
     </div>
 </section>

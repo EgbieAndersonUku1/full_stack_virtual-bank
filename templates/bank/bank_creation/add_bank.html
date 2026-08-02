@@ -32,13 +32,13 @@
 
                     <div class="spinner" id="bank-add-form-spinner"></div>
 
-                   
+
                     {% for error in form.non_field_errors %}
                         <p class="error">{{ error }}</p>
                     {% endfor %}
 
                     <form action="{% url 'add_bank' %}" method="post" id="add-bank-form" aria-labelledby="bank-form-title" enctype="multipart/form-data">
-                        
+
                         {% csrf_token %}
 
                         <!-- Basic Information -->
@@ -54,7 +54,7 @@
 
                                 {{ form.name }}
                                 {{ form.name.errors }}
-                              
+
                             </div>
 
                             <div class="group flex-grid">
@@ -65,7 +65,7 @@
 
                             <div class="group flex-grid">
                                   <label for="bank-description"> {{ form.description.label }}</label>
-                               
+
                                 {{ form.description }}
                                 {{ form.description.errors }}
                                 <p class="num-of-characters-remaining text-align-right character-usage-message">Minimum
@@ -76,7 +76,7 @@
 
                             <div class="group flex-grid">
                                 <label for="bank-logo"> {{ form.logo.label }}</label>
-                               
+
                                 {{ form.logo }}
                                 {{ form.logo.errors }}
                                 <small>Upload the bank’s official logo. Accepts png, jpeg, jpg and svg</small>
@@ -110,15 +110,15 @@
                             </div>
 
                               <div class="group flex-grid">
-                                <label for="branch-address_2"> {{ form.address_line_2.label }}</label> 
-                              
+                                <label for="branch-address_2"> {{ form.address_line_2.label }}</label>
+
                                 {{ form.address_line_2 }}
                                 {{ form.address_line_2.errors }}
                                 <small>Optional</small>
                             </div>
 
                             <div class="group flex-grid">
-                                <label for="branch-address_2">  {{ form.post_code.label }}</label> 
+                                <label for="branch-address_2">  {{ form.post_code.label }}</label>
                                  {{ form.post_code }}
                                   {{ form.post_code.errors }}
                             </div>
@@ -189,7 +189,7 @@
                                 <label for="monthly-deposit"> {{ form.monthly_deposit.label }}</label>
                                  {{ form.monthly_deposit }}
                                  {{ form.monthly_deposit.errors }}
-                                
+
                             </div>
 
                             <div class="group flex-grid">
@@ -245,7 +245,7 @@
 
 {% block script %}
 
-<script src="{% static '/js/bankSetup/add_bank.js' %}" type="module"></script>
+<script src="{% static 'js/bankSetup/add_bank.js' %}" type="module"></script>
 {% endblock script %}
 
 

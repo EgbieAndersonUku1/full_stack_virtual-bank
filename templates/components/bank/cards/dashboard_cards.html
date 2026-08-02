@@ -1,0 +1,45 @@
+{% load static %}
+
+<div
+  class="bank-card credit-{{ card.card_brand|lower }}-card"
+  role="region"
+  aria-label="{{ card.bank_name }}, balance {{ card.balance }}"
+  data-card-id="{{ card.card_id }}"
+  data-issued="{{ card.created_on }}"
+  data-is-active="{{ card.is_active }}"
+  data-card-brand="{{ card.card_brand|lower }}"
+  data-creation-date="{{ card.expiry_date|date:"d/m/Y" }}"
+  data-cvc="***"
+>
+  <div class="card-head">
+    <div class="card-head-info">
+    <h3>{{ card.bank_name | title }}</h3>
+
+      <p class="bank-card-amount">{{ card.balance }}</p>
+    </div>
+
+     {% include "components/bank/cards/card_brand_logo.html" with card=card %}
+
+  </div>
+
+  <div class="card-body">
+    <div class="chip">
+      <img src="{% static 'images/icons/sim-card-chip.svg' %}" alt="Card chip" />
+    </div>
+
+    <div class="credit-transaction-type flex flex-end">
+      <span class="card-type">{{ card.card_type |title }}</span>
+    </div>
+
+    <div class="card-number flex flex-end">
+      <span class="card-number">{{ card.mask_card_number }}</span>
+    </div>
+  </div>
+
+  <div class="card-footer flex flex-space-between">
+    <div class="card-name">{{ card.full_name |truncatechars:25|title }}</div>
+    <div class="card-expiry-date">
+         {% include "components/bank/cards/card_date.html" with card=card %}
+    </div>
+  </div>
+</div>
