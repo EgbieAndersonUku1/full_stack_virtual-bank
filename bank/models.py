@@ -657,7 +657,7 @@ class BankAccount(models.Model):
 
 
     def __str__(self):
-        return str(self.account_number)
+        return f"{str(self.full_name)} has a {self.account_type} account"
 
     @property
     def full_name(self):

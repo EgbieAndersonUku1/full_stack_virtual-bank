@@ -1,0 +1,5 @@
+ {% if card.expiry_date %}
+                Expiry date: {{ card.expiry_date|date:"d/m/Y" }}
+            {% else %}
+              <span class="deactivate-text"> Expiry date: Error  </span>
+            {% endif %}

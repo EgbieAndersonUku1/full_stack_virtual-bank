@@ -3,9 +3,11 @@ from django.contrib.auth.decorators import login_required
 
 from bank.services import BankAccountCacheService
 from bank.utils import get_account_context
+from card.services import CardDashboardServiceCache
 from utils.decorators import is_email_verified, go_to_staff_page
 from card.models import BankCard
 from user_profile.services import ProfileCacheService
+
 
 from setup.decorators import onboarding_required
 
@@ -31,11 +33,17 @@ def bank_home(request):
 def dashboard(request):
 
     bank_account = BankAccountCacheService.get_accounts(user = request.user)
+
+    current_account = bank_account.first()
+    dashboard_cards = CardDashboardServiceCache.get_user_cards(bank_account=current_account, session_key_id=request.user.id)
+
     context = {
         "number_of_accounts": 0,
         "current_account": None,
         "saving_account": None,
+        "dashboard_cards": dashboard_cards,
     }
+
 
     if bank_account:
 
@@ -67,12 +75,13 @@ def money_transfer(request):
 @is_email_verified
 @login_required
 def manage_credit_cards(request):
-    bank_account = BankAccountCacheService.get_current_account(user=request.user)
-    cards        = BankCard.get_by_bank_account(bank_account=bank_account)
+    bank_account    = BankAccountCacheService.get_current_account(user=request.user)
+    cards           = BankCard.get_by_bank_account(bank_account=bank_account)
     context = {
         "cards": cards,
         "num_of_cards": cards.count(),
     }
+
 
     return render(request, "home/dashboard/manage_cards.html", context=context)
 

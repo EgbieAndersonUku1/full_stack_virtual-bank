@@ -60,7 +60,7 @@
                                         {% if profile.profile_pic %}
                                         <img src="{{ request.user.profile.profile_img}}" alt="Profile">
                                         {% else %}
-                                        <img src="{% static '/images/icons/profile.png' %}"
+                                        <img src="{% static 'images/icons/profile.png' %}"
                                             alt="Profile picture of Sherlock Holmes" class="profile-img">
                                         {% endif %}
 
@@ -602,7 +602,7 @@
                                     <div class="flex-grid two-column-20_80_grid">
 
                                         <div class="setting-account-card__bank-logo centre">
-                                            <img src="{% static '/images/icons/checking-account.png' %}"
+                                            <img src="{% static 'images/icons/checking-account.png' %}"
                                                 alt="checking account" loading="lazy">
                                         </div>
 
@@ -699,7 +699,7 @@
                                     <div class="flex-grid two-column-20_80_grid">
 
                                         <div class="setting-account-card__bank-logo centre">
-                                            <img src="{% static '/images/icons/savings-account.png' %}"
+                                            <img src="{% static 'images/icons/savings-account.png' %}"
                                                 alt="Saving account" loading="lazy">
                                         </div>
 
@@ -875,7 +875,7 @@
                                                         </span>
                                                     </p>
 
-                                                  
+
 
                                                 </div>
 
@@ -959,6 +959,6 @@
 
 {% block script %}
 
-<script src="{% static '/js/dashboard/settings.js' %}" type="module"></script>
+<script src="{% static 'js/dashboard/settings.js' %}" type="module"></script>
 
 {% endblock script %}

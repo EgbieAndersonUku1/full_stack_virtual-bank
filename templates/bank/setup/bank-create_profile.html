@@ -46,13 +46,13 @@
                     <div class="profile-pic center" id="profile-pic-preview">
                         <div class="spinner center" id="create-profile-spinner"></div>
                         <div id="profile-img-preview">
-                         
+
                             <img src="{% static 'images/icons/profile.png' %}" alt="" srcset="" id="profile-bank-placeholder-img">
 
                         </div>
                         <p class="text-muted"> image preview</p>
                         <button type="button" class="btn-large green-bg white-text mb-24" id="profile-preview-btn">Save preview</button>
-                       
+
                     </div>
 
                     <div class="form-group flex-grid">
@@ -109,7 +109,7 @@
 
                             {{ form.last_name }}
                             {{ form.last_name.errors }}
-                            
+
 
                         </div>
 
@@ -288,13 +288,13 @@
                     <a href="{% url 'choose_pin' %}">
                         <button class="buttons btn-large blue-bg white-text capitalize" type="button">Back</button>
                     </a>
-                   
+
                     <a href="{% url 'bank_confirmation' %}">
                         <button type="submit" class="btn-large green-bg white-text capitalize">Continue</button>
                     </a>
-                  
+
                 </div>
-               
+
             </form>
 
         </div>
@@ -307,6 +307,6 @@
 
 
 {% block script %}
-<script src="{% static '/js/bankSetup/bankSetup.js' %}" type="module"></script>
-<script src="{% static '/js/bankSetup/profile-pic-crop.js' %}" type="module"></script>
+<script src="{% static 'js/bankSetup/bankSetup.js' %}" type="module"></script>
+<script src="{% static 'js/bankSetup/profile-pic-crop.js' %}" type="module"></script>
 {% endblock script %}

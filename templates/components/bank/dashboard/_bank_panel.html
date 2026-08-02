@@ -99,7 +99,7 @@ synchronise account balances and transaction histories.
     <div class="dash-bank-account__header flex flex-space-between">
 
         <h2 id="bank-account-title" class="bank-name capitalise">
-            My bank account 
+            My bank account
         </h2>
 
         <span class="account-status active" role="status" aria-live="polite" aria-label="Bank account status active">
@@ -133,15 +133,15 @@ synchronise account balances and transaction histories.
 
                 <li class="flex-row account-number" aria-label="Bank name">
                    Bank name: {{ current_account.bank_name }}
-                  
+
                 </li>
                 <!-- Personal Account -->
-              
+
                 <li class="flex-row account-number" aria-label="Personal Account ending in 7052">
                     Personal Account {{ current_account.account_last_four_digits }}
                     <a class="mini-action" aria-label="View Personal Account transactions">View</a>
                 </li>
-               
+
 
                 <!-- Saving Account -->
                 {% if saving_account %}
@@ -155,16 +155,16 @@ synchronise account balances and transaction histories.
 
             <!-- Last synced -->
             <div class="bank-last-updated">
-            
+
                 {{ current_account.last_updated | timesince}} via Open Banking
-              
+
             </div>
 
         </div>
 
         <!-- Illustration -->
         <div class="dash-bank-account-main-img">
-            <img src="{% static '/images/icons/bank_icon.png' %}" alt="Illustration representing connected bank account">
+            <img src="{% static 'images/icons/bank_icon.png' %}" alt="Illustration representing connected bank account">
         </div>
 
     </div>
@@ -194,7 +194,7 @@ synchronise account balances and transaction histories.
 
             <div class="balance-label ml-8">
                 <span>&plus;</span>
-                You have one month to fund your account, otherwise your account will be locked. 
+                You have one month to fund your account, otherwise your account will be locked.
             </div>
         {% endif %}
 

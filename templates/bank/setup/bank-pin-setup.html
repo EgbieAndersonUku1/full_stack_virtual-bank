@@ -7,13 +7,13 @@
 
 {% block body %}
 
-  
+
      <section id="bank-pin-setup" class="mt-48 mb-48">
             <div class="bank-pin-setup__container account-setup">
                 <div class="bank-status mb-24">
-                    
+
                     {% include "partials/messages/messages.html" %}
-                    
+
                     <small>Step 3 of 5</small>
                     <h1 class="capitalise light-bold">Set your pin</h1>
                     <p>Create a secure 6-digit PIN to approve bank transactions</p>
@@ -41,7 +41,7 @@
                     <label for="pin-hidden" class="sr-only">Enter 6 digit PIN</label>
                     <input id="pin-hidden" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]*"
                         autocomplete="one-time-code" class="sr-only" aria-describedby="pin-status pin-error">
-                    
+
 
                     <!-- Hidden input field that sends the pin as a single code to the back end-->
                     {{ form.pin }}
@@ -80,12 +80,12 @@
                     </div>
 
                       <div class="choose-bank__btns flex flex-end mt-8">
-                    
+
                     <a href="{% url 'choose_bank' %}"
                         class="capitalise btn-medium mr-24 btn-large bank-btn-back center capitalise" aria-label="Go back to bank choices">
                         <button type="button">Back</button>
                     </a>
-                    
+
                      <button type="submit" class="btn-large bank-btn-continue capitalise">
                         Continue
                     </button>
@@ -94,7 +94,7 @@
                 </form>
 
 
-              
+
 
             </div>
         </section>
@@ -106,5 +106,5 @@
 
 
 {% block script %}
-<script src="{% static '/js/bankSetup/bankPinSetup.js' %}" type="module"></script>
+<script src="{% static 'js/bankSetup/bankPinSetup.js' %}" type="module"></script>
 {% endblock script %}

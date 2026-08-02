@@ -180,3 +180,6 @@ cython_debug/
 
 
 sent_emails/
+
+
+requirements-dev.txt

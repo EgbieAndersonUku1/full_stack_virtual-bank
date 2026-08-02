@@ -21,20 +21,14 @@
             <p class="bank-card-amount">{{ card.balance }}</p>
           </div>
 
-          <div class="card-type-logo flex flex-end">
-            {% if card.card_brand == "visa" %}
-                <img src="{% static '/images/icons/visa.svg' %}" alt="Visa logo" />
-            {% elif card.card_brand == "mastercard" %}
-                 <img src="{% static '/images/icons/mastercard.svg' %}" alt="Mastercard logo">
-            {% else %}
-                <img src="{% static '/images/icons/discover.svg' %}" alt="Discover logo">
-            {% endif %}
-          </div>
+
+          {% include "components/bank/cards/card_brand_logo.html" with card=card %}
+
         </div>
 
         <div class="card-body">
           <div class="chip">
-            <img src="{% static '/images/icons/sim-card-chip.svg' %}" alt="Card chip" />
+            <img src="{% static 'images/icons/sim-card-chip.svg' %}" alt="Card chip" />
           </div>
 
           <div class="credit-transaction-type flex flex-end">
@@ -48,11 +42,7 @@
 
         <div class="card-footer flex flex-space-between">
           <div class="card-name">{{ card.full_name |truncatechars:25|title }}</div>
-            {% if card.expiry_date %}
-                Expiry date: {{ card.expiry_date|date:"d/m/Y" }}
-            {% else %}
-                Expiry date: N/A
-            {% endif %}
+             {% include "components/bank/cards/card_date.html" with card=card %}
         </div>
       </div>
 
@@ -90,12 +80,13 @@
                 >Show in dashboard</label
               >
               <input
-              
+
                 type="checkbox"
                 name="show-in-dashboard"
                 id="{{ card.card_id }}"
                 data-card-number={{ card.card_number }}
                 class="card"
+                {% if card.show_in_dashboard %} checked {% endif %}
               />
 
           </div>

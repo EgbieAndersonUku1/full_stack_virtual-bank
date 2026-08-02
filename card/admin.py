@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.http import HttpRequest
 
 
 from card.models import BankCard, CardDashboard
@@ -91,6 +92,8 @@ class BankCardAdmin(admin.ModelAdmin):
         ),
     ]
 
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return False
 
 
 
@@ -129,6 +132,10 @@ class CardDashboardAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return False
+
 
 
 admin.site.register(BankCard, BankCardAdmin)
