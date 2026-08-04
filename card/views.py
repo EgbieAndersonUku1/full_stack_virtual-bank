@@ -27,6 +27,11 @@ def update_card_dashboard_display(request):
 
     """
 
+    def construction_frontend_message(action):
+        if action:
+            return "Card added to your dashboard"
+        return "Card removed from your dashboard"
+
     def validate_dashboard_request_types(
         card_number: str,
         add_card_to_dashboard: bool,
@@ -50,8 +55,9 @@ def update_card_dashboard_display(request):
         if not isinstance(add_card_to_dashboard, bool):
             data["ERROR_MSG"] = {
                 "DISPLAY_ERROR": (
-                    "Expected a boolean object but got type {}".format(
-                        type(add_card_to_dashboard).__name__
+                    "Expected a boolean object but got type {} with value {value}".format(
+                        type(add_card_to_dashboard).__name__,
+                        value=add_card_to_dashboard
                     )
                 )
             }
@@ -114,9 +120,14 @@ def update_card_dashboard_display(request):
                     .get(bank_account=bank_account)
                 )
             except CardDashboard.DoesNotExist:
-                data["ERROR_MSG"] = "Card dashboard could not be found"
-                logger.critical("The card dashboard wasn't found. Likely it wasn't created during onboarding")
-                return data
+                logger.critical(
+                    "CardDashboard missing for bank account %s. "
+                    "This may be an existing account created before CardDashboard "
+                    "was introduced. Recreating record.",
+                    bank_account.pk
+                )
+                CardDashboard.objects.create(bank_account=bank_account)
+
 
             # Count current dashboard cards to enforce the maximum.
             displayed_card_count = BankCard.get_num_of_cards_in_dashboard(bank_account)
@@ -134,8 +145,9 @@ def update_card_dashboard_display(request):
             displayed_card_count = BankCard.get_num_of_cards_in_dashboard(bank_account)
 
             data["SUCCESS"]                   = True
-            data["SUCCESS_MSG"]               = "Your dashboard has successfully been updated"
+            data["SUCCESS_MSG"]               = construction_frontend_message(add_user_card_to_dashboard)
             data["NUM_OF_CARDS_IN_DASHBOARD"] = displayed_card_count
+            data["ACTION"]                    = "Added Card" if add_user_card_to_dashboard else "Removed Card"
             return data
 
     return handle_json_post_request(request, func=handle_card_dashboard_display)

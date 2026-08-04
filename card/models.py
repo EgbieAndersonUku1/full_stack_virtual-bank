@@ -59,6 +59,10 @@ class BankCard(models.Model):
     def mask_card_number(self):
         return f"**** **** **** {self.card_number[-4:]}"
 
+    @property
+    def user(self):
+        return self.bank_account.user_profile.user
+
     @classmethod
     def _base_queryset(cls) -> QuerySet["BankCard"]:
         """Return the base BankCard queryset with related objects preloaded."""
@@ -66,6 +70,7 @@ class BankCard(models.Model):
         return cls.objects.select_related(
             "bank_account",
             "bank_account__sort_code__bank",
+            "bank_account__user_profile__user"
         )
 
     @classmethod
