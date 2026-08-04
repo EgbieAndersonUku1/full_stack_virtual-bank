@@ -35,13 +35,16 @@ def dashboard(request):
     bank_account = BankAccountCacheService.get_accounts(user = request.user)
 
     current_account = bank_account.first()
-    dashboard_cards = CardDashboardServiceCache.get_user_cards(bank_account=current_account, session_key_id=request.user.id)
+    dashboard_cards = CardDashboardServiceCache.get_user_cards(bank_account=current_account,
+                                                               session_key_id=request.user.id
+                                                               )
 
     context = {
         "number_of_accounts": 0,
         "current_account": None,
         "saving_account": None,
         "dashboard_cards": dashboard_cards,
+
     }
 
 
@@ -77,9 +80,14 @@ def money_transfer(request):
 def manage_credit_cards(request):
     bank_account    = BankAccountCacheService.get_current_account(user=request.user)
     cards           = BankCard.get_by_bank_account(bank_account=bank_account)
+    dashboard_cards = CardDashboardServiceCache.get_user_cards(bank_account=bank_account,
+                                                               session_key_id=request.user.id
+                                                               )
+
     context = {
         "cards": cards,
         "num_of_cards": cards.count(),
+        "num_of_dashboard_cards_selected": len(dashboard_cards)
     }
 
 

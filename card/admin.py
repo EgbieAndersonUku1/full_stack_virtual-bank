@@ -10,7 +10,7 @@ from card.models import BankCard, CardDashboard
 
 
 class BankCardAdmin(admin.ModelAdmin):
-    list_display       = ["id", "full_name", "masked_card_number",
+    list_display       = ["full_name", "masked_card_number", "show_in_dashboard",
                           "card_brand", "expiry_date", "created_on", "last_modified_on"]
     list_per_page      = 25
     readonly_fields    = ["id",
@@ -26,7 +26,7 @@ class BankCardAdmin(admin.ModelAdmin):
                           "masked_card_number",
                           "full_name",
                           ]
-    list_display_links = ["id", "full_name"]
+    list_display_links = ["full_name", "masked_card_number"]
 
     @admin.display(description="Masked card number")
     def masked_card_number(self, obj):

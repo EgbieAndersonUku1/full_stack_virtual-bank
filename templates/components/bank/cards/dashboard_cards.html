@@ -1,5 +1,6 @@
 {% load static %}
 
+{% if card.show_in_dashboard and card.is_active %}
 <div
   class="bank-card credit-{{ card.card_brand|lower }}-card"
   role="region"
@@ -43,3 +44,5 @@
     </div>
   </div>
 </div>
+
+{% endif %}
