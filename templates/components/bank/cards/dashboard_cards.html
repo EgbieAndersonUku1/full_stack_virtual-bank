@@ -8,7 +8,7 @@
   data-card-id="{{ card.card_id }}"
   data-issued="{{ card.created_on }}"
   data-is-active="{{ card.is_active }}"
-  data-card-brand="{{ card.card_brand|lower }}"
+  data-card-brand="{{ card.card_brand|title }}"
   data-creation-date="{{ card.expiry_date|date:"d/m/Y" }}"
   data-cvc="***"
 >

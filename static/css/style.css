@@ -3559,7 +3559,7 @@ clicks the button
     top: 0;
     left: 0;
     bottom: 0;
-    width: 25%;
+    width: 30%;
 
 }
 
@@ -6297,4 +6297,11 @@ textarea::placeholder {
 #physical-location-p-label,
 #our-number-p-label {
     margin-left: 0;
+}
+
+
+/* controls the padding (top and bottom) for the card inside the dashboard `view card details` */
+#full-card-details-info p {
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-4);
 }

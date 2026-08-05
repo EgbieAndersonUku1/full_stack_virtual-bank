@@ -413,13 +413,16 @@ export function dimBackground(dimBackgroundElement, dim = false) {
  * after every specified number of characters. It also provides an option
  * to keep only digits by removing all non-numeric characters.
  *
- * @param {Event} e - The input event containing the target value.
+ * @param {string} value  - The value to add the dashes to
  * @param {number} lengthPerDash - The number of characters between dashes (default: 5).
  * @param {boolean} digitsOnly - If true, removes all non-numeric characters (default: false).
  */
-export function applyDashToInput(e, lengthPerDash = 5, digitsOnly = false, charsOnly = false) {
+export function applyDashToInput(value, lengthPerDash = 5, digitsOnly = false, charsOnly = false) {
 
-    const value = e.target.value.trim();
+    if (typeof value !== "string") {
+        throw new TypeError(`The value must be a string. Expected string got type ${typeof value}`)
+    }
+    value = value.trim();
 
     if (!value) return;
     if (!Number.isInteger(lengthPerDash)) {
@@ -442,7 +445,7 @@ export function applyDashToInput(e, lengthPerDash = 5, digitsOnly = false, chars
         }
     }
 
-    e.target.value = formattedText.join("");
+   return formattedText.join("");
 
 };
 
