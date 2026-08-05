@@ -41,7 +41,7 @@ function handleDelegation(e) {
 
     const helperIcon = e.target.closest(`#${WALLET_ICON_HELPER}`);
 
-   
+
     if (!helperIcon) {
         walletHelperMoodle.classList.remove("show");
         dimBackground(dimBackgroundElement, false);
@@ -56,5 +56,6 @@ function handleDelegation(e) {
 function handleCodeInputField(e) {
     const lengthPerDash = 5;
     e.preventDefault();
-    applyDashToInput(e, lengthPerDash, false, true);
+    const formattedText = applyDashToInput(e.target.value, lengthPerDash, false, true);
+    e.target.value = formattedText;
 }

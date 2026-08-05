@@ -1,5 +1,5 @@
 
-import { checkIfHTMLElement } from "../utils.js";
+import { checkIfHTMLElement, applyDashToInput } from "../utils.js";
 import { logError, warnError } from "../logger.js";
 
 
@@ -11,7 +11,7 @@ const CARD_IMAGES = {
         src: "../static/images/icons/visa.svg",
         alt: "Visa card logo",
         brand: "visa",
-       
+
     },
 
     mastercard: {
@@ -25,7 +25,7 @@ const CARD_IMAGES = {
         alt: "Discover logo",
         brand: "discover",
     }
-    
+
 }
 
 
@@ -34,7 +34,7 @@ export const cardImplementer = {
     /**
      * Creates a new card element with the specified details.
      *
-     * This function delegates the creation of a single card element to another function, `createSingleCreateCard`, 
+     * This function delegates the creation of a single card element to another function, `createSingleCreateCard`,
      * which takes care of the details of how the card is structured.
      *
      * @function createCard
@@ -45,12 +45,12 @@ export const cardImplementer = {
         return createSingleCreateCard(cardDetails);
     },
 
-    
+
     /**
      * Places a card element into a specified location within the DOM.
      *
      * This function checks if both the location and card div elements are valid HTML elements before appending
-     * the card div to the location div. If either element is invalid, an error is logged. Optionally, it can 
+     * the card div to the location div. If either element is invalid, an error is logged. Optionally, it can
      * clear the location div before appending the new card div.
      *
      * @function placeCardDivIn
@@ -69,7 +69,7 @@ export const cardImplementer = {
         try {
             if (clearBeforeAppend) {
                 locationDiv.innerHTML = "";
-              
+
             }
             locationDiv.appendChild(cardDiv);
             return true;
@@ -113,7 +113,7 @@ export function createSingleCreateCard(cardDetails) {
     cardOverlay.id = `card_${cardDetails.id}`;
     cardDiv.appendChild(cardOverlay);
 
-   
+
     if (!cardDetails.isActive) applyCardBlockStatus(cardDiv, cardDetails);
 
     return cardDiv;
@@ -242,7 +242,7 @@ function applyCardBlockStatus(cardDiv, cardDetails) {
     const overlayId = `card_${cardDetails.id}`;
     let cardOverlay = cardDiv.querySelector(`#${overlayId}`);
 
-  
+
     if (!cardOverlay) {
         cardOverlay = document.createElement("div");
         cardOverlay.id = overlayId;
@@ -283,11 +283,11 @@ export function removeCardBlockStatus(cardDiv, cardDetails) {
 
 
 export function createCardDetails(cardDetails) {
-    
+
     const fragment  = document.createDocumentFragment()
-   
+
    const cardFields = [
-     { fieldName: "Card ID", fieldValue: cardDetails.cardId },
+     { fieldName: "Card ID", fieldValue: applyDashToInput(cardDetails.cardId, 5, true)},
     { fieldName: "Bank", fieldValue: cardDetails.bankName },
     { fieldName: "Card Name", fieldValue: cardDetails.cardName },
     { fieldName: "Card Number", fieldValue: cardDetails.cardNumber },
@@ -302,13 +302,13 @@ export function createCardDetails(cardDetails) {
 ];
 
 
-    const isActiveElement    = updateCardActiveStatus(cardDetails, document.createElement("p")); 
+    const isActiveElement    = updateCardActiveStatus(cardDetails, document.createElement("p"));
     cardFields.forEach((cardField) => createFieldElement(cardField.fieldName, cardField.fieldValue, fragment))
 
-    createFieldElement("Can the card be used", cardDetails.cardStatus, fragment);
+    createFieldElement("Can the card be used", cardDetails.isActive, fragment);
     fragment.appendChild(isActiveElement)
     return fragment;
-    
+
 
 }
 
@@ -358,15 +358,15 @@ function createFieldElement(fieldName, fieldDescription, divToAddTo) {
 function updateCardActiveStatus(cardDetails, cardActiveElement) {
 
 
-    if (cardDetails.cardStatus === "true") {
+    if (cardDetails.isActive) {
         cardActiveElement.className = "active-text";
         cardActiveElement.textContent = "The card is active";
         return cardActiveElement;
-    } 
-    
+    }
+
     cardActiveElement.className = "deactivate-text";
     cardActiveElement.textContent = "The card is blocked";
     return cardActiveElement;
 
-    
+
 }

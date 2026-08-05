@@ -51,8 +51,8 @@ async function handleEmailInputFieldClick(e) {
         method: "POST",
 
     });
-    
-    clearElementField(djangoEmailError)    
+
+    clearElementField(djangoEmailError)
     toggleFieldMsg(emailExists, resp.data);
 
 }
@@ -70,17 +70,17 @@ async function handleUserInputFieldClick(e) {
         },
         method: "POST",
 
-    })   
+    })
 
     clearElementField(djangoUsernameError)
     toggleFieldMsg(usernnameExists, resp.data);
-   
+
 }
 
 
 
 function toggleFieldMsg(element, data) {
-   
+
     element.classList.remove("active-text", "deactivate-text")
     if (!data.IS_AVAILABLE) {
          element.classList.add("deactivate-text");
@@ -90,7 +90,7 @@ function toggleFieldMsg(element, data) {
 
     element.textContent = data.MSG;
     element.style.display = "block";
-  
+
 }
 
 
@@ -128,7 +128,7 @@ function handleDelegation(e) {
 
     const helperIcon = e.target.closest(`#${WALLET_ICON_HELPER}`);
 
-   
+
     if (!helperIcon) {
         walletHelperMoodle.classList.remove("show");
         dimBackground(dimBackgroundElement, false);
@@ -143,13 +143,14 @@ function handleDelegation(e) {
 function handleCodeInputField(e) {
     const lengthPerDash = 5;
     e.preventDefault();
-    applyDashToInput(e, lengthPerDash, false, true);
+    const formattedText = applyDashToInput(e.target.value, lengthPerDash, false, true);
+    e.target.value = formattedText;
 }
 
 
 function clearElementField(element) {
     if (!checkIfHTMLElement(element, "unknown", true)) return;
- 
+
     element.textContent = "";
 }
 
