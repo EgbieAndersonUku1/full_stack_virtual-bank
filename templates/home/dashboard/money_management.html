@@ -1,0 +1,83 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title%}Main page{% endblock title %} {% block body %}
+
+<section id="dashboard-admin" aria-label="Dashboard admin">
+  <div class="dashboard__container">
+    <!-- Main content -->
+    <section class="dashboard__container__main" tabindex="-1">
+      {% include "partials/header/header.html" %}
+
+      <!-- Money management -->
+      <section id="money-management-panel" class="mt-48">
+        <div class="admin-panel__container">
+          <h1 class="capitalise">Money Management</h1>
+          <p class="section-subtitle">
+            Manage your money, move funds between accounts, and review your
+            transaction history.
+          </p>
+
+          <div class="cards flex-grid three-column-grid admin-cards">
+            <a href="#" class="card admin-card" aria-label="Open Add Funds">
+              <div class="head center">
+                <img
+                  src="{% static 'images/card-icons/add_funds.png' %}"
+                  alt="Add Funds"
+                  class="admin-card-icon"
+                />
+              </div>
+              <div class="body">
+                <h1 class="capitalize">Add Funds</h1>
+                <p>
+                  Add money to your account using a linked bank account or
+                  payment method.
+                </p>
+              </div>
+            </a>
+
+            <a
+              href="{% url 'money_transfer' %}"
+              class="card admin-card"
+              aria-label="Open Transfer Money"
+            >
+              <div class="head center">
+                <img
+                  src="{% static 'images/card-icons/transfer_money.png' %}"
+                  alt="Transfer Money"
+                  class="admin-card-icon"
+                />
+              </div>
+              <div class="body">
+                <h1 class="capitalize">Transfer Money</h1>
+                <p>
+                  Send money between your accounts or to another recipient
+                  securely.
+                </p>
+              </div>
+            </a>
+
+            <a href="#" class="card admin-card" aria-label="Open Transactions">
+              <div class="head center">
+                <img
+                  src="{% static 'images/card-icons/transactions.png' %}"
+                  alt="Transactions"
+                  class="admin-card-icon"
+                />
+              </div>
+              <div class="body">
+                <h1 class="capitalize">Transactions</h1>
+                <p>
+                  Review your recent payments, transfers, and account activity.
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+</section>
+
+{% endblock body %}

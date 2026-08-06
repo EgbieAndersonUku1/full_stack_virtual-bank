@@ -119,3 +119,10 @@ def manage_settings(request):
     context.update(get_account_context(bank_account))
 
     return render(request,  "home/dashboard/settings.html", context=context)
+
+
+@onboarding_required
+@is_email_verified
+@login_required
+def money_management_portal(request):
+    return render(request, "home//dashboard/money_management.html")
