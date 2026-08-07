@@ -44,6 +44,7 @@ def dashboard(request):
         "current_account": None,
         "saving_account": None,
         "dashboard_cards": dashboard_cards,
+        "has_wallet": False,
 
     }
 
@@ -60,6 +61,7 @@ def dashboard(request):
         context["has_overdraft"]       = bank.offer_overdraft
         context["interest_rates"]      = bank.interest_rate_percent
         context["has_saving_account"]  = bank.offer_saving_account
+        context["bank_name"]           = bank.name
 
 
     return render(request, "home/dashboard/dashboard.html", context=context)
