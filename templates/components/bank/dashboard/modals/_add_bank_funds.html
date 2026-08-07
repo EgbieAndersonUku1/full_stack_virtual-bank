@@ -51,19 +51,43 @@ included in other views where account funding is required.
     <div class="account-add-funds__content mb-16 pl-24 pr-24 pb-4">
 
         <h1 id="add-funds-title" class="capitalise mt-16 light-bold header-5">
-            Add funds
+            Quick Add Funds
         </h1>
 
-        <p class="text-muted light-bold">
-            To your bank account VB: IB145-210-985
+        <p class="text-muted light-bold info p-16">
+              <strong>Please note:</strong> This is a simplified way to quickly add funds to your {{ bank_name | title }}
+              Bank accounts. For advanced features such as recurring transfers, scheduled payments, saved recipients,
+              transferring between accounts or sending money to other people, use <strong>Money Management → Add Funds</strong>.
+              If you choose a debit card as the funding source, funds will be charged to your default debit card.
+
         </p>
 
         <h2 class="mt-24 mb-8 capitalise header-8 light-bold">
-            Select source
+            Select source to fund
         </h2>
 
         <!-- Source cards should behave like buttons -->
-        <div class="account-card flex flex-space-between mb-8 active" role="button" tabindex="0"
+         <div class="account-card flex flex-space-between mb-8 active" role="button" tabindex="0"
+            aria-label="Select bank account ending 705" data-account="savings-account">
+
+            <div class="account-card-details flex-grid two-column-20_80_grid">
+                <div class="account-card__image">
+                    <img src="{% static 'images/card-icons/account-bank-icon.png' %}" alt="Bank account icon">
+                </div>
+
+                <div class="account-card__description pt-16">
+                    <h3 class="card-title">Current account</h3>
+                    <p>Add funds to {{ bank_name | title }} current account</p>
+                </div>
+            </div>
+
+            <span aria-hidden="true" class="mt-48 pr-24">&gt;</span>
+
+
+        </div>
+
+        {% if has_saving_account %}
+        <div class="account-card flex flex-space-between mb-8" role="button" tabindex="0"
             aria-label="Select bank account ending 705" data-account="savings-account">
 
             <div class="account-card-details flex-grid two-column-20_80_grid">
@@ -73,7 +97,7 @@ included in other views where account funding is required.
 
                 <div class="account-card__description pt-16">
                     <h3 class="card-title">Saving account</h3>
-                    <p>Funding source from Atlas bank ending 701</p>
+                     <p>Add funds to {{ bank_name | title }} saving account</p>
                 </div>
             </div>
 
@@ -81,6 +105,7 @@ included in other views where account funding is required.
 
 
         </div>
+        {% endif %}
 
         <!-- Debit card -->
         <div class="account-card flex flex-space-between" role="button" tabindex="0"
@@ -93,7 +118,7 @@ included in other views where account funding is required.
 
                 <div class="account-card__description pt-16 ml-4">
                     <h3 class="card-title">Debit card</h3>
-                    <p>Funding source from your debit cards</p>
+                     <p>Add funds to {{ bank_name | title }} default debit card</p>
                 </div>
             </div>
 
@@ -101,6 +126,8 @@ included in other views where account funding is required.
         </div>
 
         <!-- Wallet -->
+
+        {% if has_wallet %}
         <div class="account-card flex flex-space-between" role="button" tabindex="0"
             aria-label="Select wallet funding source" data-account="wallet">
 
@@ -111,12 +138,13 @@ included in other views where account funding is required.
 
                 <div class="account-card__description pt-16 ml-4">
                     <h3 class="card-title">Wallet</h3>
-                    <p>Funding source from your wallet</p>
+                     <p>Add funds to wallet</p>
                 </div>
             </div>
 
             <span aria-hidden="true" class="mt-48 pr-24">&gt;</span>
         </div>
+        {% endif %}
 
         <!-- Amount -->
         <div class="account-card-input flex flex-space-between mt-24">
