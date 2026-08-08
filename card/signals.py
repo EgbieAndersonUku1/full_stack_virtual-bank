@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete, pre_save, pre_delete
 from django.dispatch import receiver
 
-from bank.services import BankAccountCacheService
+from bank.services.services import BankAccountCacheService
 from card.models import BankCard
 from card.services import CardDashboardServiceCache
 from utils.safe_cache import delete_cache_with_retry, set_cache_with_retry

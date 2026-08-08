@@ -1,9 +1,9 @@
 from utils.custom_errors import ProfileNotFoundError
-from bank.services import BankAccountCacheService
+from bank.services.services import BankAccountCacheService
 
 
 def bank_details(request):
-  
+
     if not request.user.is_authenticated:
         return {
             "bank_balance": None

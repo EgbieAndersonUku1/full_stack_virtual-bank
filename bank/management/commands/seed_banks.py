@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from bank.services import BankProvisioningService
+from bank.services.services import BankProvisioningService
 from decimal import Decimal
 
 from django.conf import settings
@@ -186,4 +186,3 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Bank cache was successfully created"))
         else:
             self.stdout.write(self.style.ERROR("Failed to create bank cache"))
-      

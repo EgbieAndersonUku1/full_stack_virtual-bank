@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from bank.services import BankAccountCacheService
+from bank.services.services import BankAccountCacheService
 from bank.utils import get_account_context
 from card.services import CardDashboardServiceCache
 from utils.decorators import is_email_verified, go_to_staff_page

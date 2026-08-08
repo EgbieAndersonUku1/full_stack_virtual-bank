@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
 from utils.decorators import has_superuser_permissions
-from .services import BankProvisioningService
+from .services.services import BankProvisioningService
 
 from bank.forms import AddBankForm
 
@@ -24,7 +24,7 @@ def add_bank(request):
             BankProvisioningService.create_bank(cleaned_bank_data)
             messages.success(request, _("Bank created successfully"))
             return redirect("add_bank")
-        
+
         messages.error(request, _("We couldn't add the bank. Please correct the highlighted errors and try again."))
     context = {
         "form": form
