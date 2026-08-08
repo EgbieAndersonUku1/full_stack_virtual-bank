@@ -15,6 +15,7 @@ from django.contrib.auth import get_user_model
 
 
 from utils.currencies import get_currencies
+from utils.custom_errors import IncorrectAmountError, IncorrectAmountTypeError
 from utils.utils import format_full_address
 from user_profile.models import UserProfile
 from bank.errors import SortCodeRangeExhaustedError
@@ -673,6 +674,33 @@ class BankAccount(models.Model):
     def bank_name(self):
         return self.sort_code.bank.name
 
+    def credit(self, amount: Decimal) -> None:
+        """
+        Credit funds to the account balance.
+
+        The supplied amount must be a positive `Decimal` value. The balance is
+        updated in memory only, the caller is responsible for saving the account
+        instance within the appropriate database transaction.
+
+        Args:
+        amount (Decimal): The positive amount to add to the account balance.
+
+        Raises:
+        IncorrectAmountTypeError: If `amount` is not a `Decimal`.
+        IncorrectAmountError: If `amount` is less than or equal to zero.
+        """
+
+        if not isinstance(amount, Decimal):
+            error_msg = _("Expected a Decimal. Got type {}".format(type(amount).__name__))
+            raise IncorrectAmountTypeError(error_msg)
+
+        if amount <= Decimal("0"):
+            error_msg = _("Amount must be greater than 0. Got amount {}".format(amount))
+            raise IncorrectAmountError(error_msg)
+
+        self.balance += amount
+
+
 
     @classmethod
     def get_all_account_by_user_profile(cls, user_profile: UserProfile):
@@ -791,6 +819,9 @@ class LedgerEntry(models.Model):
     model is responsible for safely applying credit and debit operations.
     """
 
+    class Meta:
+        verbose_name_plural = "Ledger entries"
+        verbose_name        = "Ledger entry"
     class TransactionType(models.TextChoices):
         ADD_FUNDS     = "ADD_FUNDS", _("Adding funds")
         TRANSFER_IN   = "TRANSFER_IN", _("Transfer in")
@@ -801,6 +832,7 @@ class LedgerEntry(models.Model):
     class Source(models.TextChoices):
         BANK_TRANSFER      = "BANK_TRANSFER", _("Bank transfer")
         INTERNAL_TRANSFER  = "INTERNAL_TRANSFER", _("Internal transfer")
+        EXTERNAL           = "EXTERNA", _("External")
         CARD               = "CARD", _("Card")
 
     class Status(models.TextChoices):
@@ -819,7 +851,7 @@ class LedgerEntry(models.Model):
     opening_balance  = models.DecimalField(max_digits=12, decimal_places=2)
     closing_balance  = models.DecimalField(max_digits=12, decimal_places=2,)
     amount           = models.DecimalField(max_digits=12, decimal_places=2)
-    currency         = models.CharField(max_length=3, choices=get_currencies())
+    currency         = models.CharField(max_length=3)
     description      = models.CharField(max_length=255)
     risk_flag        = models.BooleanField(default=False)
     risk_reason      = models.CharField(null=True, blank=True, max_length=255)
@@ -829,6 +861,7 @@ class LedgerEntry(models.Model):
     created_on       = models.DateTimeField(auto_now_add=True)
     completed_on     = models.DateTimeField(null=True, blank=True)
     metadata         = models.JSONField(default=dict)
+    review_required  = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"{self.reference} - {self.transaction_type} - {self.amount}"
