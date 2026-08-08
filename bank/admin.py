@@ -4,7 +4,7 @@ from django.db.models import Count
 
 
 from .models import (Bank,
-                     BankAccount,
+                     BankAccount, LedgerEntry,
                      SortCode,
                      SortCodeAllocationState,
                      SortCodeAllocatorLastRecordLookup,
@@ -539,6 +539,132 @@ class SortCodeAllocationStateLogAdmin(admin.ModelAdmin):
         return False
 
 
+class LedgerEntryAdmin(admin.ModelAdmin):
+
+    readonly_fields = [
+        "id",
+        "reference",
+        "transaction_type",
+        "source",
+        "status",
+        "movement",
+        "opening_balance",
+        "closing_balance",
+        "amount",
+        "currency",
+        "description",
+        "risk_flag",
+        "risk_reason",
+        "review_required",
+        "user",
+        "account",
+        "created_on",
+        "completed_on",
+        "metadata",
+    ]
+
+    list_display = ["id", "transaction_type", "movement", "amount", "currency", "status",  "risk_flag", "review_required",
+                    "account",
+                    "created_on",
+                    ]
+
+    list_display_links = ["id"]
+    list_filter        = ["transaction_type", "source", "movement", "status", "risk_flag", "review_required", "currency"]
+    search_fields      = ["reference",  "user__username", "user__email", "account__account_number"]
+    ordering           = ["-created_on"]
+
+    fieldsets = [
+        (
+            "Transaction Identity",
+            {
+                "description": (
+                    "Identifies the financial transaction and describes the type "
+                    "of business event that produced the ledger entry."
+                ),
+                "fields": [
+                    "id",
+                    "reference",
+                    "transaction_type",
+                    "source",
+                    "movement",
+                ],
+            },
+        ),
+
+        (
+            "Financial Movement",
+            {
+                "description": (
+                    "Records the financial movement applied to the account, "
+                    "including the balance before and after the transaction."
+                ),
+                "fields": [
+                    "opening_balance",
+                    "amount",
+                    "closing_balance",
+                    "currency",
+                ],
+            },
+        ),
+
+        (
+            "Transaction Status",
+            {
+                "description": (
+                    "Records the current processing state of the transaction "
+                    "and when the transaction was completed."
+                ),
+                "fields": [
+                    "status",
+                    "created_on",
+                    "completed_on",
+                ],
+            },
+        ),
+
+        (
+            "Risk & Review",
+            {
+                "description": (
+                    "Contains information about risk evaluation and whether "
+                    "the transaction requires additional review."
+                ),
+                "fields": [
+                    "risk_flag",
+                    "risk_reason",
+                    "review_required",
+                ],
+            },
+        ),
+
+        (
+            "Account & User",
+            {
+                "description": (
+                    "Identifies the user and bank account associated with "
+                    "the financial movement."
+                ),
+                "fields": [
+                    "user",
+                    "account",
+                ],
+            },
+        ),
+
+        (
+            "Additional Information",
+            {
+                "description": (
+                    "Stores the transaction description and additional "
+                    "structured metadata associated with the ledger entry."
+                ),
+                "fields": [
+                    "description",
+                    "metadata",
+                ],
+            },
+        ),
+    ]
 
 
 admin.site.register(Bank, BankAdmin)
@@ -548,5 +674,5 @@ admin.site.register(SortCodeAllocatorLastRecordLookup, SortCodeAllocatorRecordLo
 admin.site.register(SortCodeAllocationState, SortCodeAllocationStateAdmin)
 admin.site.register(SortCodeRangePool, SortCodeRangePoolAdmin)
 admin.site.register(SortCodeAllocationStateLog, SortCodeAllocationStateLogAdmin)
-
+admin.site.register(LedgerEntry, LedgerEntryAdmin)
 

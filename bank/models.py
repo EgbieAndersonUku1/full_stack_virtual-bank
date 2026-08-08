@@ -11,11 +11,17 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.db.models.query import QuerySet
 from django.conf import settings
 from django.templatetags.static import static
+from django.contrib.auth import get_user_model
 
+
+from utils.currencies import get_currencies
+from utils.custom_errors import IncorrectAmountError, IncorrectAmountTypeError
 from utils.utils import format_full_address
 from user_profile.models import UserProfile
 from bank.errors import SortCodeRangeExhaustedError
 
+
+User = get_user_model()
 
 
 # Create your models here.
@@ -668,6 +674,33 @@ class BankAccount(models.Model):
     def bank_name(self):
         return self.sort_code.bank.name
 
+    def credit(self, amount: Decimal) -> None:
+        """
+        Credit funds to the account balance.
+
+        The supplied amount must be a positive `Decimal` value. The balance is
+        updated in memory only, the caller is responsible for saving the account
+        instance within the appropriate database transaction.
+
+        Args:
+        amount (Decimal): The positive amount to add to the account balance.
+
+        Raises:
+        IncorrectAmountTypeError: If `amount` is not a `Decimal`.
+        IncorrectAmountError: If `amount` is less than or equal to zero.
+        """
+
+        if not isinstance(amount, Decimal):
+            error_msg = _("Expected a Decimal. Got type {}".format(type(amount).__name__))
+            raise IncorrectAmountTypeError(error_msg)
+
+        if amount <= Decimal("0"):
+            error_msg = _("Amount must be greater than 0. Got amount {}".format(amount))
+            raise IncorrectAmountError(error_msg)
+
+        self.balance += amount
+
+
 
     @classmethod
     def get_all_account_by_user_profile(cls, user_profile: UserProfile):
@@ -727,3 +760,110 @@ class BankAccount(models.Model):
         self.full_clean()
 
         super().save(*args, **kwargs)
+
+
+class LedgerEntry(models.Model):
+    """
+    LedgerEntry Model
+
+    The LedgerEntry model represents an individual financial movement
+    affecting a user's bank account.
+
+    A ledger entry provides an immutable record of how an account balance
+    changed as the result of a financial transaction. It records the balance
+    before and after the movement, the amount involved, the type and source
+    of the transaction, and whether the movement was a credit or debit.
+
+    The ledger purpose is to provide an auditable history of account
+    activity. The account balance represents the current state of the
+    account and the ledger entries explain how that state was reached.
+    These records allow all financial movements to be use as an audit
+    or to be able to reconstruct an account active
+
+    A transaction type describes the business event that occurred, and
+    the movement describes how that event affected the account balance.
+
+    For example, assume the user is adding £500 to a current account which
+    has as an opening balance of £1000, this action would create a ledger
+    entry similar to:
+
+    ```
+    Transaction type: ADD_FUNDS
+    Movement: CREDIT
+    Opening balance: £1,000.00
+    Amount: £500.00
+    Closing balance: £1,500.00
+    ```
+
+    A transfer between two accounts would result in multiple ledger
+    entries belonging to the same business transaction. One account would
+    record a DEBIT movement while the receiving account would record a
+    CREDIT movement.
+
+    The ledger entry also stores risk information and transaction metadata
+    to support auditing, risk analysis, and future transaction types.
+
+    Key responsibilities:
+    - Record individual financial movements.
+    - Record the account balance before and after a movement.
+    - Identify the business transaction that caused the movement.
+    - Identify whether the account was credited or debited.
+    - Record the transaction source and status.
+    - Preserve financial history for auditing and investigation.
+
+    Note:
+
+    The ledger entry does not determine how a financial operation is
+    performed. The Business operations such as funding, transfers, and payments
+    are all orchestrated by their respective service layers, and the bank account
+    model is responsible for safely applying credit and debit operations.
+    """
+
+    class Meta:
+        verbose_name_plural = "Ledger entries"
+        verbose_name        = "Ledger entry"
+    class TransactionType(models.TextChoices):
+        ADD_FUNDS     = "ADD_FUNDS", _("Adding funds")
+        TRANSFER_IN   = "TRANSFER_IN", _("Transfer in")
+        TRANSFER_OUT  = "TRANSFER_OUT", _("Transfer out")
+        CARD_PAYMENT  = "CARD_PAYMENT", _("Card payment")
+        REFUND        = "REFUND", _("Refund")
+
+    class Source(models.TextChoices):
+        BANK_TRANSFER      = "BANK_TRANSFER", _("Bank transfer")
+        INTERNAL_TRANSFER  = "INTERNAL_TRANSFER", _("Internal transfer")
+        EXTERNAL           = "EXTERNA", _("External")
+        CARD               = "CARD", _("Card")
+
+    class Status(models.TextChoices):
+        COMPLETED = "COMPLETED", _("Completed")
+        PENDING   = "PENDING", _("Pending")
+        FAILED    = "FAILED", _("Failed")
+
+    class Movement(models.TextChoices):
+        CREDIT = "CREDIT", _("Credit")
+        DEBIT = "DEBIT", _("Debit")
+
+    reference        = models.CharField(max_length=50, unique=True)
+    transaction_type = models.CharField(max_length=25, choices=TransactionType.choices)
+    source           = models.CharField(max_length=25, choices=Source.choices)
+    status           = models.CharField(max_length=10,choices=Status.choices)
+    opening_balance  = models.DecimalField(max_digits=12, decimal_places=2)
+    closing_balance  = models.DecimalField(max_digits=12, decimal_places=2,)
+    amount           = models.DecimalField(max_digits=12, decimal_places=2)
+    currency         = models.CharField(max_length=3)
+    description      = models.CharField(max_length=255)
+    risk_flag        = models.BooleanField(default=False)
+    risk_reason      = models.CharField(null=True, blank=True, max_length=255)
+    movement         = models.CharField(max_length=6, choices=Movement.choices)
+    user             = models.ForeignKey(User, on_delete=models.PROTECT, related_name="ledger_entry")
+    account          = models.ForeignKey(BankAccount, on_delete=models.PROTECT, related_name="ledger_entry")
+    created_on       = models.DateTimeField(auto_now_add=True)
+    completed_on     = models.DateTimeField(null=True, blank=True)
+    metadata         = models.JSONField(default=dict)
+    review_required  = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f"{self.reference} - {self.transaction_type} - {self.amount}"
+
+

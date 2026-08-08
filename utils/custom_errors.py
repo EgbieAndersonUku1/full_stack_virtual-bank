@@ -46,3 +46,15 @@ class CardRequestApplicationTypeError(Exception):
 
 class BankAccountTypeError(Exception):
     pass
+
+
+class IncorrectAmountError(Exception):
+    pass
+
+
+class IncorrectAmountTypeError(Exception):
+    pass
+
+
+class MissingCurrentAccountError(Exception):
+    pass
