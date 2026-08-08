@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_protect
 
 
 from authentication.view_helper import handle_json_post_request
-from bank.services import BankAccountCacheService
+from bank.services.services import BankAccountCacheService
 from card.models import CardDashboard, BankCard
 
 # Create your views here.

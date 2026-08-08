@@ -10,7 +10,7 @@ from django.db.models import QuerySet
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from bank.services import BankAccountCacheService
+from bank.services.services import BankAccountCacheService
 from utils.custom_errors import CardRequestApplicationTypeError
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
 from utils.utils import format_boolean_as_text
