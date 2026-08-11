@@ -11,7 +11,7 @@ def get_account_context(bank_accounts) -> dict[str, Any]:
     Return a dictionary of account-related context for templates.
 
     Accepts either a BankAccount or an iterable of BankAccount objects.
-    
+
     The first account is treated as the current account and the second
     account, if present, is treated as the savings account. The returned
     dictionary can be merged directly into a view context using
@@ -26,14 +26,14 @@ def get_account_context(bank_accounts) -> dict[str, Any]:
         and the expected number of accounts.
     """
 
-    
+
     if isinstance(bank_accounts, BankAccount):
         accounts = [bank_accounts]
     elif isinstance(bank_accounts, Iterable):
         accounts = list(bank_accounts[:2])
     else:
         accounts = []
-   
+
     number_of_accounts = len(accounts)
 
     return {

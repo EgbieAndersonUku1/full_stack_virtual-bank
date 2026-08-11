@@ -6306,3 +6306,22 @@ textarea::placeholder {
     padding-top: var(--space-4);
     padding-bottom: var(--space-4);
 }
+
+
+/* the modal pin for verify the pin before a transaction is made */
+#bank-pin-transaction {
+    border: 3px solid lavender;
+    box-shadow: var(--box-shadow-primary);
+    width: 93%;
+    position: absolute;
+    background: white;
+    top: 0;
+    z-index: 10000;
+    padding: 100px;
+    width: 50%;
+    display: none;
+}
+
+#bank-pin-transaction.show {
+    display: block;
+}

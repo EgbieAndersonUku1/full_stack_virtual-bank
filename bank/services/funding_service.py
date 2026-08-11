@@ -108,6 +108,8 @@ class FundingService:
                     current_account.status = BankAccount.Status.ACTIVE
 
                 current_account.save()
+                BankAccountCacheService.set(user)
+
                 ledger_entry.status        = LedgerEntry.Status.COMPLETED
                 ledger_entry.completed_on  = timezone.now()
 

@@ -3,36 +3,37 @@ import { sanitizeText,
         parseCurrency,
         checkIfHTMLElement,
         deselectAllElements,
-         selectElement,
-         toTitle,
+        selectElement,
+        toTitle,
         toggleElement  } from "../utils.js";
 
+
+import { BankFundBtn } from "./bank/bankFundInput.js";
 import { AlertUtils } from "../alerts.js";
+import { BankFundInput } from "./bank/bankFundInput.js";
 import { cardImplementer, createCardDetails } from "../card/cardBuilder.js";
 import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js";
 import { warnError } from "../logger.js";
 import { parseFormData } from "../formUtils.js";
+import { transferFormSelectOption } from "./bank-dashboard-transfer.js";
+import { cardSelectionPanelState } from "./bank-dashboard-cardSelection.js";
+import { selectedCardStore } from "./dashboard-utils.js";
+import { walletAuthForm, handleWalletAuthForm } from "./wallet/wallet.js";
+import { WalletWizard } from "./wallet/walletWizard.js";
+import { handleWalletLinkFormSubmission } from "./wallet/walletWizard.js";
+import { handleStatusButtonClick } from "./wallet/WalletStatus.js";
+import { handleDisconnecectionConfirmationButton } from "./wallet/status/disconnect.js";
 
 
 
-
-const connectWalletModal = document.getElementById("connect-wallet-modal");
-const connectWalletStepOne = document.getElementById("connect-wallet-modal__step-one");
-const connectWalletStepThree = document.getElementById("connect-wallet-modal__step-three");
-const connectWalletStepTwo = document.getElementById("connect-wallet-modal__step-two");
 const dashboard = document.getElementById("dashboard");
 const linkAccountForm = document.getElementById("link-wallet-form");
-const progressElement = document.getElementById("walletProgress");
-const progressValue = document.getElementById("walletProgressValue");
-const walletAuthForm = document.getElementById("connect-wallet-form");
-const walletAuthInputFieldPanel = document.getElementById("connect-with-wallet-id");
+
 const walletManualForm = document.getElementById("manually-verification-wallet-form");
-const walletManualFormSection = document.getElementById("link-wallet-verifcation");
-const walletOptionAuthInputFields = document.querySelectorAll("#connect-wallet-auth-id-wrapper input");
+
 const statusWalletDisconnectPanel = document.getElementById("dashboard__status")
 const disconnectInputFieldElement = document.getElementById("wallet-disconnect-inputfield");
 const disconnectConfirmaionPanel = document.getElementById("wallet-disconnection-confirmation");
-const amountInputField = document.getElementById("account-card__amount");
 const bankCardSelectionTypes = document.querySelectorAll(".account-card");
 const addFundsToBankPanel = document.getElementById("bank-account-add-funds");
 const viewBankTransacionPanel = document.getElementById("bank-account-view-transactions");
@@ -54,9 +55,11 @@ const sourceCardNumberElement = document.querySelector(".transfer-confirmation__
 const targetCardNumberElement = document.querySelector(".transfer-confirmation__target-account-value");
 const transferAmountElement = document.querySelector('.transfer-confirmation__summary-value');
 
+// the modal for adding bank pin
+const bankPinModal = document.getElementById("bank-pin-transaction")
+
 // hidden form values
 
-const MAX_TRANSFER_AMOUNT = 1_000_000;
 let walletModalStep2Button;
 
 const excludeFields = new Set(["username", "email", "wallet-disconnect-inputfield",
@@ -77,21 +80,6 @@ minimumCharactersToUse(transferFormTextArea, {
 
 
 
-// Constants for wallet modal element IDs
-const WalletWizardIds = {
-    AUTH_CANCEL_BTN: "auth-wallet__cancel-btn",
-    BACK_ANCHOR: "wallet-modal-connect-back-anchor",
-    CANCEL_BTN: "connect-wallet__cancel-btn",
-    CONNECT_BTN: "connect-wallet-btn",
-    MANUAL_CONNECTION: "select-manual-connection",
-    MANUAL_FORM_BACK: "wallet-manually-form-back-step",
-    PREVIOUS_STEP1: "wallet-modal-previous-step1",
-    PREVIOUS_STEP2: "wallet-modal-previous-step2",
-    STEP1_BTN: "connect-wallet-step1-btn",
-    STEP2_BTN: "connect-wallet-step2-btn",
-    WALLET_ID_CONNECT: "wallet-id-connect"
-};
-
 
 
 // TODO add one time checker here for one time static element check
@@ -99,336 +87,7 @@ const WalletWizardIds = {
 dashboard.addEventListener("click", handleDelegation);
 dashboard.addEventListener("change", handleDelegation)
 walletAuthForm.addEventListener("submit", handleWalletAuthForm);
-amountInputField.addEventListener("keydown", handleEnter);
 fundsTransferForm.addEventListener("submit", handleTransferForm)
-
-
-
-
-// records the select option for the select form,
-// so that can be displayed in the confirmation
-// modal panel.
-const transferFormSelectOption = {
-
-    optionSelection: null,
-
-    /**
-     * Stores the selected option for the form  e.g wallet or bank
-     * Only accepts a valid HTMLElement to prevent invalid state.
-     */
-    set(selection) {
-        this.optionSelection = selection
-    },
-
-
-    /**
-     * Returns the selected option e.g "wallet" or "bank"
-     */
-    getSelection() {
-
-        return  this.optionSelection ? toTitle(this.optionSelection): null;
-    },
-
-
-    /**
-     * Clears the option for the selection
-     */
-    clear() {
-        this.optionSelection = null;
-    }
-}
-
-
-
-/**
- * Manages the open/closed state of the card selection panel.
- *
- * This object is used to track whether the card selection panel
- * is currently open, allowing the application to handle user
- * interactions appropriately (e.g., ensuring a target card is
- * selected before confirming a transfer).
- */
-const cardSelectionPanelState = {
-
-    /** Whether the card selection panel is open (true) or closed (false). */
-    isOpen: false,
-
-    /**
-     * Sets the panel state to open or closed.
-     *
-     * @param {boolean} open - True to open the panel, false to close. Defaults to false.
-     * @throws {Error} If `open` is not a boolean.
-     */
-    set(open = false) {
-        if (typeof open !== "boolean") {
-            throw new Error(`Expected boolean but received ${typeof open}: ${open}`);
-        }
-        this.isOpen = open;
-    },
-
-    /**
-     * Returns whether the panel is currently open.
-     *
-     * @returns {boolean} True if open, false if closed.
-     */
-    isPanelOpen() {
-        return this.isOpen;
-    },
-
-    /**
-     * Resets the panel state to closed.
-     */
-    clear() {
-        this.isOpen = false;
-    }
-
-};
-
-
-
-// records which card was clicked
-const selectedCardStore = {
-    element: null,
-
-    /**
-     * Stores the selected card element.
-     * Only accepts a valid HTMLElement to prevent invalid state.
-     *
-     * @param {HTMLElement|null} cardElement - The card DOM element to store.
-     *                                           Pass null to clear selection.
-     */
-    set(cardElement) {
-
-        if (!checkIfHTMLElement(cardElement, "selectedCardStore", true)) return;
-        this.element = cardElement;
-    },
-
-    /**
-     * Returns the currently stored card element.
-     *
-     * @returns {HTMLElement|null} The selected card element or null if none is selected.
-     */
-    get() {
-        return this.element;
-    },
-
-    /**
-     * Clears the stored card selection.
-     */
-    clear() {
-        this.element = null;
-    }
-};
-
-
-
-
-/**
- * WalletWizard handles the multi-step connect wallet modal flow.
- * Steps can be navigated dynamically with next/back buttons.
- * It also manages showing/hiding the modal and individual steps.
- */const WalletWizard = (() => {
-
-    // Cached DOM elements
-
-    /** Hides the wallet authentication input panel. */
-    function closeWalletAuthPanel() {
-        toggleElement({ element: walletAuthInputFieldPanel, show: false });
-    }
-
-    /** Opens the wallet authentication panel and disables step 2 action. */
-    function openWalletAuthInputPanel() {
-        disableStep2Button();
-        toggleElement({ element: walletAuthInputFieldPanel });
-    }
-
-    /** Handles wallet ID selection and prepares auth input fields. */
-    function selectWalletIdConnect(e) {
-        disableStep2Button();
-        WalletWizard.handleWalletConnectAuthInputFields(e);
-    }
-
-    /**
-     * Shows or hides manual wallet connection form.
-     * @param {boolean} show Whether to display the manual connection form.
-     */
-    function selectManualConnection(show = true) {
-        if (show) {
-            disableStep2Button();
-            toggleElement({ element: walletManualFormSection });
-            return;
-        }
-
-        enableStep2Button();
-        toggleElement({ element: walletManualFormSection, show: false });
-    }
-
-    // Public object
-    return {
-
-        /** Opens the modal and displays step one. */
-        goToStepOne() {
-            this.openModel();
-            this.showStep(connectWalletStepOne);
-        },
-
-        /** Navigates to wallet connection step two. */
-        goToStepTwo() {
-            this.hideAllSteps();
-            this.showStep(connectWalletStepTwo);
-        },
-
-        /** Navigates to wallet connection step three. */
-        goToStepThree() {
-            this.hideAllSteps();
-            this.showStep(connectWalletStepThree);
-        },
-
-        /** Opens the wallet modal and resets steps. */
-        openModel() {
-            toggleElement({ element: connectWalletModal, show: true });
-            this.hideAllSteps();
-        },
-
-        /** Closes the wallet modal and clears step visibility. */
-        closeModal() {
-            toggleElement({ element: connectWalletModal, show: false });
-            this.hideAllSteps();
-        },
-
-        /**
-         * Displays a given wizard step.
-         * @param {HTMLElement} step Step element to show.
-         */
-        showStep(step) {
-            toggleElement({ element: step, show: true });
-        },
-
-        /**
-         * Navigates to the previous step.
-         * @param {number} stepNumber Current step number.
-         */
-        previousStep(stepNumber) {
-            if (stepNumber === 2) {
-                this.goToStepTwo();
-                return;
-            }
-            this.goToStepOne();
-        },
-
-        /** Hides all wizard steps. */
-        hideAllSteps() {
-            [connectWalletStepOne, connectWalletStepTwo, connectWalletStepThree].forEach(el =>
-                toggleElement({ element: el, show: false })
-            );
-        },
-
-        /**
-         * Handles deletion navigation in auth input fields.
-         * @param {KeyboardEvent} e Key event.
-         */
-        handleBackspaceOrDelete(e) {
-            if (e.key === "Backspace" || e.key === "Delete") {
-                this.handleWalletConnectAuthInputFields(e, true);
-            }
-        },
-
-        /**
-         * Manages auth input field focus and navigation.
-         * @param {Event} e Input event.
-         * @param {boolean} deleteMode Whether navigation is triggered by deletion.
-         */
-        handleWalletConnectAuthInputFields(e, deleteMode = false) {
-
-            openWalletAuthInputPanel();
-            walletOptionAuthInputFields[0]?.focus();
-
-            if (e && e.target) {
-                e.target.value = sanitizeText(e.target.value, true);
-            }
-
-            for (let currentIndex = 1; currentIndex < walletOptionAuthInputFields.length; currentIndex++) {
-                const previousIndex = currentIndex - 1;
-                const lastIndex = walletOptionAuthInputFields.length - 1;
-
-                if (!walletOptionAuthInputFields[previousIndex].value) {
-                    return;
-                }
-
-                if (!deleteMode) {
-                    walletOptionAuthInputFields[currentIndex].focus();
-                } else {
-                    walletOptionAuthInputFields[previousIndex].focus();
-                }
-
-                // Ensure last field clears correctly during deletion.
-                if (currentIndex === lastIndex && deleteMode) {
-                    walletOptionAuthInputFields[currentIndex].value = "";
-                }
-
-                if (currentIndex === lastIndex && !deleteMode) {
-                    walletOptionAuthInputFields[currentIndex].focus();
-                }
-            }
-        },
-
-        /**
-         * Central event handler for wallet connection UI actions.
-         * @param {Event} e Click event.
-         */
-        handleWalletConnectionSteps(e) {
-            const elementID = e.target.id;
-
-            if (elementID === "modal-close-btn") {
-                WalletWizard.closeModal();
-                return;
-            }
-
-            switch (elementID) {
-                case WalletWizardIds.CONNECT_BTN:
-                    WalletWizard.goToStepOne();
-                    break;
-                case WalletWizardIds.STEP1_BTN:
-                    WalletWizard.goToStepTwo();
-                    break;
-                case WalletWizardIds.STEP2_BTN:
-                    WalletWizard.goToStepThree();
-                    break;
-                case WalletWizardIds.WALLET_ID_CONNECT:
-                    selectWalletIdConnect();
-                    break;
-                case WalletWizardIds.CANCEL_BTN:
-                    WalletWizard.closeModal();
-                    break;
-                case WalletWizardIds.AUTH_CANCEL_BTN:
-                    enableStep2Button();
-                    closeWalletAuthPanel();
-                    break;
-                case WalletWizardIds.PREVIOUS_STEP2:
-                    WalletWizard.previousStep(2);
-                    break;
-                case WalletWizardIds.PREVIOUS_STEP1:
-                    WalletWizard.previousStep(1);
-                    break;
-                case WalletWizardIds.BACK_ANCHOR:
-                    enableStep2Button();
-                    closeWalletAuthPanel();
-                    WalletWizard.previousStep(2);
-                    break;
-                case WalletWizardIds.MANUAL_CONNECTION:
-                    selectManualConnection();
-                    break;
-                case WalletWizardIds.MANUAL_FORM_BACK:
-                    WalletWizard.previousStep(2);
-                    selectManualConnection(false);
-                    break;
-            }
-        }
-    };
-})();
-
-
-
 
 
 
@@ -457,7 +116,7 @@ dashboard.addEventListener("keydown", (e) => {
  * Events listeners
  */
 linkAccountForm.addEventListener("submit", handleWalletLinkFormSubmission);
-walletManualForm.addEventListener("submit", handleManualFormSubmission);
+walletManualForm.addEventListener("submit", WalletWizard.handleManualFormSubmission);
 
 
 
@@ -466,14 +125,14 @@ walletManualForm.addEventListener("submit", handleManualFormSubmission);
  * Delegates wallet connection UI events to WalletWizard.
  * @param {Event} e Click or submit event.
  */
-function handleDelegation(e) {
+async function handleDelegation(e) {
 
     WalletWizard.handleWalletConnectionSteps(e);
     handleStatusButtonClick(e);
-    handleBankFundInput(e);
+    BankFundInput.handleInput(e);
+    BankFundInput.handleToggleAddFundsPanel(e)
     handleBankCardTypes(e);
-    handleFundAccountBtn(e);
-    handleToggleAddFundsPanel(e);
+    await BankFundBtn.handleFundAccountBtn(e);
     handleTableHightlight(e);
     handleToggleViewBankTransactionPanel(e);
     handleCardClick(e);
@@ -491,194 +150,6 @@ function handleDelegation(e) {
 
 
 
-/**
- * Updates the wallet connection progress UI.
- * - Sets the CSS progress value
- * - Updates the visible percentage
- * - Handles completion state at 100%
- *
- * @param {number} percent - Progress percentage (0–100)
- */
-function setWalletProgress(percent) {
-    const completionPercentage = "100%";
-
-    progressElement.style.setProperty("--progress", percent);
-    progressValue.textContent = percent + "%";
-
-    if (progressValue.textContent === completionPercentage) {
-        const innerProgressBar = document.querySelector(".wallet-progress");
-
-        if (innerProgressBar) {
-            innerProgressBar.style.background = "#16A34A";
-            showWalletAuthCompletionMsg();
-
-        }
-    }
-}
-
-
-
-/**
- * Starts the wallet authentication progress animation.
- * Increments progress until completion is reached.
- */
-function startProgress() {
-    let progress = 0;
-    setWalletProgress(0);
-    const MILLI_SECONDS = 25
-
-    const interval = setInterval(() => {
-        progress += 1;
-        setWalletProgress(progress);
-
-        if (progress >= 100) {
-            clearInterval(interval);
-        }
-    }, MILLI_SECONDS);
-}
-
-
-
-/**
- * Handles wallet authentication form submission.
- * Prevents default submit behaviour and starts progress flow.
- *
- * @param {Event} e - Form submit event
- */
-function handleWalletAuthForm(e) {
-    e.preventDefault();
-    console.log(e.target.id)
-    startProgress();
-    removeAuthWalletVerifyBtn();
-}
-
-
-/**
- * Displays the wallet authentication completion message.
- */
-function showWalletAuthCompletionMsg() {
-    const container = document.getElementById("wallet-auth-completion");
-    toggleElement({ element: container, cSSSelector: "hide", show: false });
-}
-
-
-/**
- * Removes the wallet verification button after successful authentication.
- */
-function removeAuthWalletVerifyBtn() {
-    const btn = document.getElementById("auth-verify-btn");
-    btn.style.display = "none";
-}
-
-
-
-/**
- * Handles the form link confirmation form, the final step before
- * a wallet is linked to the bank account.
- */
-async function handleWalletLinkFormSubmission(e) {
-    e.preventDefault();
-
-    const confirmed = await AlertUtils.showConfirmationAlert({
-        title: "Link wallet to bank account?",
-        text: "This will securely link your wallet so funds can move between accounts.",
-        confirmButtonText: "Link account",
-        messageToDisplayOnSuccess: "The accounts have been linked",
-        denyButtonText: "Cancel",
-        cancelMessage: "Wallet linking cancelled."
-    });
-
-    if (confirmed) {
-        WalletWizard.closeModal();
-    }
-
-
-}
-
-
-/**
- * Disables the Step 2 button in the wallet wizard.
- * Sets the button text to "Disabled" and reduces opacity.
- */
-function disableStep2Button() {
-    if (!walletModalStep2Button) {
-        walletModalStep2Button = document.getElementById("connect-wallet-step2-btn");
-    }
-
-    walletModalStep2Button.disabled = true;
-    walletModalStep2Button.textContent = "Disabled";
-    walletModalStep2Button.style.opacity = "0.5";
-}
-
-
-/**
- * Enables the Step 2 button in the wallet wizard.
- * Sets the button text to "Continue" and restores full opacity.
- */
-function enableStep2Button() {
-    walletModalStep2Button.disabled = false;
-    walletModalStep2Button.textContent = "Continue";
-    walletModalStep2Button.style.opacity = "1";
-}
-
-
-/**
- * Handles submission of the manual wallet connection form.
- * Shows a success alert, hides the manual form, and enables Step 2 button.
- * @param {Event} e Form submit event.
- */
-function handleManualFormSubmission(e) {
-
-    e.preventDefault();
-
-    AlertUtils.showAlert({
-        title: "Wallet verified",
-        text: "Your wallet credentials have been successfully verified. You can now proceed with linking the wallet",
-        icon: "success",
-        confirmButtonText: "Continue"
-    });
-
-    toggleElement({ element: walletManualFormSection, show: false });
-    enableStep2Button();
-}
-
-
-/**
- * Handles clicks on status buttons.
- * Delegates the click to toggleStatusPanel.
- * @param {MouseEvent} e - The click event.
- * @returns {void}
- */
-function handleStatusButtonClick(e) {
-    toggleStatusPanel(e)
-}
-
-/**
- * Handles the confirmation process for disconnecting a wallet.
- * @async
- * @returns {Promise<void>}
- */
-async function handleDisconnecectionConfirmationButton() {
-    const expectedWord = "disconnect";
-
-    if (!disconnectInputFieldElement) return;
-    if (disconnectInputFieldElement.value.length < expectedWord.length) return;
-    if (disconnectInputFieldElement.value.toLowerCase() !== expectedWord) return;
-
-    const confirmed = await AlertUtils.showConfirmationAlert({
-        title: "Are you sure you want to disconnect wallet?",
-        text: "This action will disconnect your wallet from your bank, and stop all information.",
-        confirmButtonText: "Disconnect wallet",
-        messageToDisplayOnSuccess: "The wallet has been disconnected",
-        denyButtonText: "Cancel Disconnect",
-        cancelMessage: "No action taken."
-    });
-
-    if (confirmed) {
-        closeStatusPanels();
-        WalletWizard.closeModal();
-    }
-}
 
 /**
  * Handles the wallet connection refresh action.
@@ -714,167 +185,16 @@ async function handleTestConnection() {
     });
 }
 
-/**
- * Toggles visibility of various status and confirmation panels
- * based on which button was clicked.
- * @param {MouseEvent} e - The click event.
- * @returns {void}
- */
-function toggleStatusPanel(e) {
-
-    if (e.target.id === "disconnect-wallet-status") {
-        statusWalletDisconnectPanel.classList.add("show");
-        return;
-    }
-
-    const buttonID = e.target.closest("button")?.id;
-
-    switch (buttonID) {
-        case "disconnect-btn":
-
-            toggleElement({ element: disconnectConfirmaionPanel });
-            disconnectInputFieldElement.focus()
-            break;
-        case "confirm-disconnect-btn":
-            handleDisconnecectionConfirmationButton();
-            break;
-        case "cancel-disconnect-btn":
-            toggleElement({ element: disconnectConfirmaionPanel, show: false });
-            break;
-        case "disconnection-modal-close-btn":
-            closeConfirmationPanel();
-            break;
-        case "dashboard-status-modal-close-btn":
-            closeStatusPanels();
-            break;
-        case "refresh-connection-btn":
-            handleRefreshConnection();
-            break;
-        case "test-connection-btn":
-            handleTestConnection();
-            break;
-        case "connect-modal-close-btn":
-            WalletWizard.closeModal();
-            break;
-    }
-}
-
-
-/**
- * Closes all wallet-related status panels and clears input fields.
- * @returns {void}
- */
-function closeStatusPanels() {
-    toggleElement({ element: statusWalletDisconnectPanel, show: false })
-    closeConfirmationPanel();
-    clearDisconnectInputField();
-}
-
-
-/**
- * Closes the disconnect confirmation panel.
- * @returns {void}
- */
-function closeConfirmationPanel() {
-    toggleElement({ element: disconnectConfirmaionPanel, show: false })
-}
-
-
-/**
- * Clears the input field used for confirming wallet disconnection.
- * @returns {void}
- */
-function clearDisconnectInputField() {
-    disconnectInputFieldElement.value = "";
-}
 
 
 
 
 
-/**
- * Handles clicks on the plus and minus buttons for the bank fund input.
- *
- * This function:
- * 1. Checks the ID of the clicked element.
- * 2. If the "plus" button is clicked, increments the amount input field by 1 (default).
- * 3. If the "minus" button is clicked, decrements the amount input field by 1.
- *
- * @param {MouseEvent} e - The click event triggered on the plus or minus button.
- *
- * @example
- * // Attach this handler to the plus and minus buttons
- * plusButton.addEventListener('click', handleBankFundInput);
- * minusButton.addEventListener('click', handleBankFundInput);
- */
-function handleBankFundInput(e) {
-
-    switch (e.target.id) {
-        case "plus":
-            adjustCurrencyInput(amountInputField);
-            break;
-        case "minus":
-            adjustCurrencyInput(amountInputField, -1);
-            break;
-
-    }
-
-}
 
 
 
 
-/**
- * Adjusts a currency input value by a specified number of pennies.
- * The function increase or decrease the amount by `0.01`. It also
- * assures that amount doesn't pass the maximum amount or minimum
- * threshold
- *
- *
- * @param {HTMLInputElement} amountInputField - The input element containing the currency amount.
- * @param {number} [deltaPennies=1] - Number of pennies to adjust by.
- *        Use positive values to increase and negative values to decrease.
- * @param {number} - The maximum number the field cannot exceed by. Default 1,000,000
- * @param {number} - The minimun number the field cannot go below by. Default -
- *
- * @example
- * stepCurrencyInput(input, 1);   // Increase by £0.01
- * stepCurrencyInput(input, -1);  // Decrease by £0.01
- */
-function adjustCurrencyInput(amountInputField, deltaPennies = 1, maxAmount = 1_000_000, minAmount = 0) {
 
-    const current = Number(amountInputField.value) || 0;
-
-    const pennies = Math.round(current * 100);
-    const newAmount = (pennies + deltaPennies) / 100;
-
-
-    if (newAmount > maxAmount || newAmount < minAmount) return;
-
-    amountInputField.value = newAmount.toFixed(2);
-}
-
-
-/**
- * Handles the Enter key press on the amount input field.
- *
- * When the Enter key is pressed, the function ensures that the input value
- * is within the defined minimum and maximum limits. It also formats it to two
- * decimal places.
- *
- * @param {KeyboardEvent} e - The keyboard event triggered by a key press.
- */
-function handleEnter(e) {
-    if (e.key !== "Enter") return;
-
-    const maxAmount = 1000000;
-    const minAmount = 0;
-
-    let value = Number(amountInputField.value) || 0;
-    value = Math.min(Math.max(value, minAmount), maxAmount);
-
-    amountInputField.value = value.toFixed(2);
-}
 
 
 
@@ -907,117 +227,11 @@ function handleBankCardTypes(e) {
 
 
 
-/**
- * Handles the "Add Funds" button click for transferring money to the user's bank account
- * when the add funds button is clicked. The functions shows a confirmation message
- * before and after the transfer
- *
- * @param {Event} e - The click event triggered by the user.
- */
-async function handleFundAccountBtn(e) {
-    const buttonId = "account_card__add_funds-btn";
-    if (e.target.id !== buttonId) return;
-
-    const amount = amountInputField.value;
-    if (!amount || amount <= 0) return;
-
-
-    if (amount > MAX_TRANSFER_AMOUNT) {
-        resetTransferAmountToDefault();
-        AlertUtils.showAlert({
-            title: "Transfer amount too high",
-            text: `The amount you entered exceeds the maximum allowed transfer of £${MAX_TRANSFER_AMOUNT.toLocaleString()}. Please enter an amount up to £${MAX_TRANSFER_AMOUNT.toLocaleString()}.`,
-            icon: "warning",
-            confirmButtonText: "OK",
-        });
-
-
-        return;
-    }
-
-    const confirmed = await AlertUtils.showConfirmationAlert({
-        title: "Do you want to proceed?",
-        text: `You about to transfer £${amount} to your bank account, do you want to proceed?`,
-        confirmButtonText: "Transfer funds",
-        messageToDisplayOnSuccess: "The funds have been transferred",
-        denyButtonText: "Cancel Transfer",
-        cancelMessage: "No action taken."
-    });
-
-    if (confirmed) {
-        // This will be replaced with a fetch and at the momemnt it is simply a placeholder
-        console.log("Funds have been transferred");
-        clearAmountInputField();
-    }
-
-}
-
-
-/**
- * Clears the amount input field by setting its value to an empty string.
- */
-function clearAmountInputField() {
-    amountInputField.value = "";
-}
-
-
-/**
- * Resets the transfer amount to the default amount
- */
-function resetTransferAmountToDefault() {
-    amountInputField.value = MAX_TRANSFER_AMOUNT.toFixed(2)
-}
-
-
-/**
- * Handles toggling the "Add Funds" panel open or closed based on which element is clicked.
- *
- * Depending on the clicked button, this function either opens or closes the add funds panel.
- *
- * @param {Event} e - The click event triggered by the user.
- */
-function handleToggleAddFundsPanel(e) {
-    const closeBtnId = "add-funds-close-panel";
-    const addFundsBtn = "add-funds-bank";
-
-    // console.log(e.target.id)
-    // console.log("I am here")
-    switch (e.target.id) {
-
-        case closeBtnId:
-            closeAddFundsPanel();
-            break;
-        case addFundsBtn:
-            openAddFundsPanel();
-            break;
-    }
-}
-
-
-
-/**
- * Opens the "Add Funds" panel.
- *
- * This function toggles the visibility of the add funds panel and sets focus
- * to the amount input field for immediate user input.
- */
-function openAddFundsPanel() {
-    // console.log("open");
-    toggleElement({ element: addFundsToBankPanel });
-    amountInputField.focus(); // Focus input for convenience
-}
 
 
 
 
-/**
- * Closes the "Add Funds" panel.
- *
- * This function hides the add funds panel by setting its visibility to false.
- */
-function closeAddFundsPanel() {
-    toggleElement({ element: addFundsToBankPanel, show: false }); // Hide the panel
-}
+
 
 
 
@@ -1381,7 +595,7 @@ function getCardDetailsFromElement(bankCardElement) {
 
     const [month, year] = expiryDate.split("Expiry date: ")
 
-   
+
     const cardDetails = {
         cardId: bankCardElement.dataset.cardId,
         bankName: bankName,
@@ -1613,7 +827,8 @@ function closeSelectCardTransferSidePanel() {
 }
 
 function handleAnotherCardSelectTransferFormOption() {
-      toggleElement({ element: selectCardsContainer })
+
+    toggleElement({ element: selectCardsContainer })
 
     const selectedCard = selectedCardStore.get();
 
@@ -2016,6 +1231,12 @@ function handleTransferCancelConfirmationButtonClick(e) {
 
 
 
+function showBankPinModal() {
+    toggleElement({ element:bankPinModal, cssSelector: "show" })
+}
+
+
+
 /**
  * Handles the click event for the transfer confirmation button.
  *
@@ -2040,6 +1261,8 @@ async function handleTransferConfirmationButtonClick(e) {
     if (e.target.id !== buttonId) {
         return;
     }
+
+
 
     const confirmed = await AlertUtils.showConfirmationAlert({
         title: "Transfer process",
