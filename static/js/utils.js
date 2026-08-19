@@ -1013,3 +1013,19 @@ export function capitaliseEveryFirstWord(text, separator =" ") {
     return capitalisedPhrases.join(separator);
 
 }
+
+
+
+/**
+ * Clears all HTML content from the given HTML element.
+ *
+ * @param {HTMLElement} htmlElement - The HTML element to clear.
+ * @returns {void}
+ */
+export function clearInnerHTML(htmlElement) {
+    if (!checkIfHTMLElement(htmlElement, "Html element")) {
+        return;
+    }
+
+    htmlElement.innerHTML = "";
+}

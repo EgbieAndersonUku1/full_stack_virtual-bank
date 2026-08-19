@@ -10,7 +10,6 @@ const walletManualFormSection = document.getElementById("link-wallet-verifcation
 const walletOptionAuthInputFields = document.querySelectorAll("#connect-wallet-auth-id-wrapper input");
 
 
-
 // ---------------------------------------------------------------------------
 // Wallet Wizard
 // ---------------------------------------------------------------------------

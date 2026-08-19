@@ -6,20 +6,9 @@ import { WalletWizard } from "./walletWizard.js";
 // Wallet status DOM references
 // ---------------------------------------------------------------------------
 
-const statusWalletDisconnectPanel =
-    document.getElementById("dashboard__status");
-
-const disconnectInputFieldElement = document.getElementById(
-    "wallet-disconnect-inputfield"
-);
-
-const disconnectConfirmaionPanel = document.getElementById(
-    "wallet-disconnection-confirmation"
-);
-
-
-
-
+const statusWalletDisconnectPanel = document.getElementById("dashboard__status");
+const disconnectInputFieldElement = document.getElementById("wallet-disconnect-inputfield");
+const disconnectConfirmaionPanel  = document.getElementById("wallet-disconnection-confirmation");
 
 
 /**
@@ -67,6 +56,9 @@ function startProgress() {
         }
     }, MILLI_SECONDS);
 }
+
+
+
 
 // ---------------------------------------------------------------------------
 // Wallet disconnect
@@ -268,7 +260,7 @@ function toggleStatusPanel(e) {
  * @param {MouseEvent} e - The click event.
  * @returns {void}
  */
-export function handleStatusButtonClick(e) {
+export function handleWalletStatusButtonClick(e) {
     toggleStatusPanel(e)
 }
 

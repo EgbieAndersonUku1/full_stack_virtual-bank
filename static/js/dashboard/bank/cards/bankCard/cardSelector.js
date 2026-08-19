@@ -1,3 +1,41 @@
+import { deselectAllElements, selectElement } from "../../../../utils.js"
+
+
+
+
+/**
+ * Deselects all cards in the provided card elements collection.
+ *
+ * This function is a wrapper around `deselectAllElements` and removes
+ * the specified selection class from each card.
+ *
+ * @param {NodeListOf<HTMLElement>} [cardsNodeElements=creditCardElements]
+ * The card elements to deselect.
+ *
+ * @param {string} [cardVisibleSelector="is-selected"]
+ * The CSS class indicating that a card is selected.
+ *
+ * @returns {void}
+ */
+export function deselectAllCards(cardsNodeElements, cardVisibleSelector = "is-selected") {
+    deselectAllElements(cardsNodeElements, cardVisibleSelector)
+}
+
+
+
+/**
+ * Selects a single card by applying the specified CSS class.
+ *
+ * @param {HTMLElement} cardElement - The card element to select.
+ * @param {string} cssSelector - The CSS class used to indicate selection.
+ * @returns {void}
+ */
+export function selectSingleCard(cardElement, cssSelector) {
+    selectElement(cardElement, cssSelector)
+}
+
+
+
 /**
  * Manages the open/closed state of the card selection panel.
  *
