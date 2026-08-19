@@ -356,7 +356,7 @@ class BankAccountCacheService:
     CACHE_TIMEOUT = 300
 
     @classmethod
-    def get_accounts(cls, user: User) -> QuerySet["BankAccount"]:
+    def _get_profile_or_raise(cls, user: User) -> UserProfile:
 
         profile = ProfileCacheService.get_user_profile(user=user)
 
@@ -364,8 +364,25 @@ class BankAccountCacheService:
 
             logger.debug("The user profile couldn't be located for the BankAccountCache service method ")
             raise ProfileNotFoundError(_("The profile for the user wasn't found"))
+        return profile
 
-        bank_account = get_cache_or_set(key=f"bank-account-{profile.user.id}",
+    @classmethod
+    def _construct_session_key(cls, profile: UserProfile) -> str:
+        return f"bank-account-{profile.user.id}"
+
+    @classmethod
+    def set(cls, user: User) -> QuerySet["BankAccount"]:
+
+        profile     = cls._get_profile_or_raise(user)
+        session_key = cls._construct_session_key(profile)
+        set_cache_with_retry(keu=session_key, value=BankAccount.get_all_account_by_user_profile(profile))
+
+    @classmethod
+    def get_accounts(cls, user: User) -> QuerySet["BankAccount"]:
+
+        profile     = cls._get_profile_or_raise(user)
+        session_key = cls._construct_session_key(profile)
+        bank_account = get_cache_or_set(key=session_key,
                          value_or_func=lambda:BankAccount.get_all_account_by_user_profile(profile),
                          ttl=cls.CACHE_TIMEOUT
                          )
