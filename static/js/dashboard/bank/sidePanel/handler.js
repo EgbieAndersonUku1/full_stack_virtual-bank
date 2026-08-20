@@ -1,6 +1,6 @@
-import { toggleElement } from "../../utils.js";
-import { BANK_DASHBOARD_ELEMENTS } from "./panelElements.js";
+import { toggleElement } from "../../../utils.js";
 import { deselectAllCards } from "../bank/_bankCard.js";
+import { BANK_DASHBOARD_ELEMENTS } from "./panelElements.js";
 
 
 

@@ -752,7 +752,16 @@ export function enableAutoFocusNavigation(inputElements, onlyNumbers = true) {
         });
         return;
     }
+
+    inputElements[0].focus();
+    
     inputElements.forEach((input) => {
+
+        if (input.dataset.autoFocusNavigation === "true") {
+            return;
+        }
+
+        input.dataset.autoFocusNavigation = "true";
 
         input.addEventListener("input", (e) => {
 
@@ -760,23 +769,21 @@ export function enableAutoFocusNavigation(inputElements, onlyNumbers = true) {
                 e.target.value = sanitizeText(e.target.value, true);
             }
 
-            // Normal typing behaviour
             if (e.target.value.length === 1) {
                 e.target.nextElementSibling?.focus();
             }
         });
 
         input.addEventListener("keydown", (e) => {
+
             if (e.key === "Backspace" && !e.target.value) {
                 e.target.previousElementSibling?.focus();
             }
-        });
 
+        });
 
     });
 }
-
-
 
 export function parseCharsFromObject(fieldObject) {
 

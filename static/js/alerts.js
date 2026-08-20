@@ -34,7 +34,7 @@ export const AlertUtils = {
      * @param {Object} options - The options for the alert.
      * @param {string} options.title - The title of the alert.
      * @param {string} options.text - The text content of the alert.
-     * @param {string} options.icon - The icon to display in the alert. 
+     * @param {string} options.icon - The icon to display in the alert.
      *                                Available options: 'success', 'error', 'warning', 'info', 'question'.
      * @param {string} options.confirmButtonText - The text for the confirm button.
      */
@@ -46,37 +46,53 @@ export const AlertUtils = {
             confirmButtonText: confirmButtonText
         });
     },
-
-    async showConfirmationAlert({showDenyButton = true,  
-        showCancelButton = true, 
-        confirmButtonText = "", 
-        denyButtonText = "", 
+    async showConfirmationAlert({
+        showDenyButton = true,
+        showCancelButton = true,
+        confirmButtonText = "",
+        denyButtonText = "",
         title = "",
-        text  = "",
+        text = "",
         icon = "info",
         cancelMessage = "",
-        messageToDisplayOnSuccess="",
-      } = {}) {
-          return Swal.fire({
-              title: title,
-              text: text,
-              showDenyButton: showDenyButton,
-              showCancelButton: showCancelButton,
-              confirmButtonText: confirmButtonText,
-              denyButtonText: denyButtonText,
-              icon: icon,
-          }).then((result) => {
-              if (result.isConfirmed) {
-                  Swal.fire(messageToDisplayOnSuccess, "", "success");
-                  return true;
-              } else if (result.isDenied) {
-                  Swal.fire(cancelMessage, "", "info");
-                  return false;
-              }
-              return null;
-          });
-      }
- 
+        messageToDisplayOnSuccess = "",
+    } = {}) {
+
+        return Swal.fire({
+            title: title,
+            text: text,
+            showDenyButton: showDenyButton,
+            showCancelButton: showCancelButton,
+            confirmButtonText: confirmButtonText,
+            denyButtonText: denyButtonText,
+            icon: icon,
+            returnFocus: false,
+        }).then(async (result) => {
+
+            if (result.isConfirmed) {
+
+                await Swal.fire({
+                    title: messageToDisplayOnSuccess,
+                    icon: "success",
+                    returnFocus: false,
+                });
+
+                return true;
+
+            } else if (result.isDenied) {
+
+                await Swal.fire({
+                    title: cancelMessage,
+                    icon: "info",
+                    returnFocus: false,
+                });
+
+                return false;
+            }
+
+            return null;
+        });
+    }
 };
 
 

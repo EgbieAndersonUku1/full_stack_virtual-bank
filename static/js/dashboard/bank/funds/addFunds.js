@@ -43,7 +43,7 @@ import { toggleElement } from "../../../utils.js";
 import { AddFundBtn } from "./addFundBtn.js";
 import { BankFundAmountInputField } from "./bankFundAmountInputField.js";
 import { BankCard } from "../cards/bankCard/bankCard.js";
-
+import { PinModal } from "../pin/pinModal.js";
 
 const addFundsToBankPanel = document.getElementById("bank-account-add-funds");
 
@@ -56,7 +56,7 @@ const addFundsToBankPanel = document.getElementById("bank-account-add-funds");
  * `hide()` methods, while the underlying toggle implementation
  * remains encapsulated within the module.
  */
-const AddFundModal = (() => {
+export const AddFundModal = (() => {
 
     /**
      * Toggles the Add Funds modal between its visible and hidden states.
@@ -173,13 +173,14 @@ export const BankFundInput = (() => {
         handleToggleAddFundsPanel(e);
         handleEnter(e);
         handleInput(e);
-        await AddFundBtn.handleFundAccountBtn(e)
+        const isClicked = await AddFundBtn.handleFundAccountBtn(e)
+
+        if (isClicked) {
+           PinModal.show()
+        }
 
         BankCard.handleEvents(e)
-        // BankCard.handleBankCardTypes(e)
-        // BankCard.handleCardSelectionTimeout();
-        // BankCard.handleCardClick(e);
-        // BankCard.handleViewMoreInfoCardClick(e);
+
     }
 
 

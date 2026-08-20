@@ -1,11 +1,11 @@
-import { toggleElement, checkIfHTMLElement } from "../../../../utils.js";
-import { selectedCardStore } from "../../../dashboard-utils.js";
-import { BANK_DASHBOARD_ELEMENTS, BANK_DASHBOARD_SELECTORS } from "../../../panel/panelElements.js";
-import { deselectAllCards, selectSingleCard } from "./cardSelector.js";
-import { getSelectableCardElement } from "./cardElementUtils.js";
 import { warnError } from "../../../../logger.js";
+import { checkIfHTMLElement, toggleElement } from "../../../../utils.js";
+import { selectedCardStore } from "../../../dashboard-utils.js";
+import { BANK_DASHBOARD_ELEMENTS, BANK_DASHBOARD_SELECTORS } from "../../sidePanel/panelElements.js";
 import { getCardDetailsFromElement } from "./cardDetailsExtractor.js";
 import { viewFullCardDetails } from "./cardDetailsView.js";
+import { getSelectableCardElement } from "./cardElementUtils.js";
+import { deselectAllCards, selectSingleCard } from "./cardSelector.js";
 
 const bankCardSelectionTypes = document.querySelectorAll(".account-card");
 
@@ -14,28 +14,40 @@ const bankCardSelectionTypes = document.querySelectorAll(".account-card");
 export const BankCard = (() => {
 
     let timeoutId;
-    const EXPECTED_ACCOUNT_TYPES   = ["savings-account", "debit-cards", "wallet"];
+
+    const EXPECTED_ACCOUNT_TYPES = ["current-account", "savings-account",  "debit-cards", "wallet"];
+    let cardSelectedName = EXPECTED_ACCOUNT_TYPES[0];
 
     const BANK_CARD_CLASS          = "bank-card";
     const BANK_TRANSFER_CARD_CLASS = "bank-transfer-card";
     const SELECTED_CARD_CLASS      = "is-selected";
 
     /**
+     * Returns the name of the card selected
+     * @returns {string} - The name of the card selected e.g card, bank, etc
+     */
+    function getSelectCardName() {
+        return cardSelectedName;
+    }
+
+
+    /**
      * Handles the selection of bank card types when a user interacts with an account card.
      *
      * This function checks if the clicked card is one of the expected account types
-     * (savings account, debit card, or wallet). If it is, it deselects all other
+     * (Current account, savings account or debit card). If it is, it deselects all other
      * bank card types and selects the clicked card.
      *
      * @param {Event} e - The event triggered by user interaction (e.g., click).
      */
     function handleBankCardTypes(e) {
         const accountCardSelector = ".account-card";
-        const accountCard = e.target.closest(accountCardSelector);
+        const accountCard         = e.target.closest(accountCardSelector);
 
         if (!EXPECTED_ACCOUNT_TYPES.includes(accountCard?.dataset.account)) return;
         if (!checkIfHTMLElement(accountCard, "account card")) return;
 
+        cardSelectedName = accountCard?.dataset.account;
         deselectAllCards(bankCardSelectionTypes, "active");
         selectSingleCard(accountCard, "active");
     }
@@ -59,8 +71,8 @@ export const BankCard = (() => {
     function processSelectedCardClick(e) {
 
         const bankCardClass = "bank-card";
-        const cssSelector   = "is-selected"
-        const targetCard    = getSelectableCardElement(e, bankCardClass);
+        const cssSelector = "is-selected"
+        const targetCard = getSelectableCardElement(e, bankCardClass);
 
         if (targetCard === null) return;
 
@@ -101,7 +113,7 @@ export const BankCard = (() => {
 
         transferToHiddenValueField.value = targetCardDetails.cardId;
         targetCardHiddenNumberValueField.value = targetCardDetails.cardNumber;
-        // startCardSelectionTimeout();
+        startCardSelectionTimeout();
 
     }
 
@@ -257,7 +269,8 @@ export const BankCard = (() => {
     }
 
     return {
-       handleEvents
+        handleEvents,
+        getSelectCardName
     }
 
 })()

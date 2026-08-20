@@ -1,11 +1,11 @@
 import { toggleElement } from "../../../../utils.js";
-import { BANK_DASHBOARD_ELEMENTS } from "../../../panel/panelElements.js";
+import { BANK_DASHBOARD_ELEMENTS } from "../../sidePanel/panelElements.js";
 import { setBankCardButtonsVisibility } from "./cardDetailsView.js";
 import { cardSelectionPanelState, deselectAllCards } from "./cardSelector.js";
 
 
 const askTransferConfirmationPanel = document.getElementById("bank-transfer-quick-confirmation");
-const fundsTransferForm            = document.getElementById("funds-transfer-form");
+const fundsTransferForm = document.getElementById("funds-transfer-form");
 
 
 /**
@@ -75,7 +75,7 @@ export function setTransferConfirmationVisibility(visible = true) {
 export function resetTransferWorkflow() {
 
     toggleElement({ element: BANK_DASHBOARD_ELEMENTS.VIEW_BANK_TRANSACTION_PANEL, show: false });
-    toggleElement({ element: BANK_DASHBOARD_ELEMENTS.EXTRA_CARD_INFO_PANEL, show: false});
+    toggleElement({ element: BANK_DASHBOARD_ELEMENTS.EXTRA_CARD_INFO_PANEL, show: false });
     toggleElement({ element: BANK_DASHBOARD_ELEMENTS.VIEW_EXTRA_CARD_INFO, show: false });
     toggleElement({ element: BANK_DASHBOARD_ELEMENTS.CARD_TRANSFER_FORM_SECTION, show: false });
     toggleElement({ element: BANK_DASHBOARD_ELEMENTS.SELECT_CARDS_CONTAINER, show: false });
