@@ -45,7 +45,11 @@ import { BankFundAmountInputField } from "./bankFundAmountInputField.js";
 import { BankCard } from "../cards/bankCard/bankCard.js";
 import { PinModal } from "../pin/pinModal.js";
 
+
+
 const addFundsToBankPanel = document.getElementById("bank-account-add-funds");
+
+
 
 
 /**
@@ -176,7 +180,9 @@ export const BankFundInput = (() => {
         const isClicked = await AddFundBtn.handleFundAccountBtn(e)
 
         if (isClicked) {
-           PinModal.show()
+           PinModal.show();
+
+
         }
 
         BankCard.handleEvents(e)

@@ -22,7 +22,6 @@ function handleForm(e) {
 
     if (confirmVerificationForm.checkValidity()) {
 
-        const EXPECTED_PIN_LENGTH = 12;
         const formData   = new FormData(confirmVerificationForm);
         const parsedData = parseFormData(formData, [
                 'first_code',
@@ -38,8 +37,8 @@ function handleForm(e) {
                 'eleventh_code',
                 'twelfth_code'
         ])
-        
-             
+
+
         const code = parseCharsFromObject(parsedData);
         if (!code) {
             warnError("handleForm", {
@@ -56,7 +55,7 @@ function handleForm(e) {
         setTimeout(() => {
             confirmVerificationForm.submit()
         }, DELAY_MS)
-      
+
 
     } else {
         confirmVerificationForm.reportValidity()

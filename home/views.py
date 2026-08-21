@@ -7,6 +7,7 @@ from card.services import CardDashboardServiceCache
 from utils.decorators import is_email_verified, go_to_staff_page
 from card.models import BankCard
 from user_profile.services import ProfileCacheService
+from authentication.view_helper import handle_json_post_request
 
 
 from setup.decorators import onboarding_required
@@ -128,3 +129,11 @@ def manage_settings(request):
 @login_required
 def money_management_portal(request):
     return render(request, "home//dashboard/money_management.html")
+
+
+
+@onboarding_required
+@is_email_verified
+@login_required
+def quick_fund_current_account(request):
+    pass
