@@ -6340,3 +6340,26 @@ textarea::placeholder {
 #bank-pin-transaction.show {
     display: block;
 }
+
+
+/* The spinner belongs to the pin form */
+#pin-form-spinner {
+
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    left: 50%;
+    z-index: 10000;
+    margin-top: 4px;
+    cursor: pointer;
+    display: none;
+}
+
+#pin-form-spinner.show {
+    display: block;
+}
+
+/* the pin form button */
+#pin-btn.loading {
+    color: transparent;
+}

@@ -41,7 +41,7 @@ export const AddFundBtn = {
 
             AlertUtils.showAlert({
                 title: "Transfer amount too high",
-                text: `The amount you entered exceeds the maximum allowed transfer of £${BankFundAmountInputField.MAX_TRANSFER_AMOUNT.toLocaleString()}. Please enter an amount up to £${BankFundAmountInputField.MAX_TRANSFER_AMOUNT.toLocaleString()}.`,
+                text: `The amount you entered exceeds the maximum allowed field amount of £${BankFundAmountInputField.MAX_TRANSFER_AMOUNT.toLocaleString()}. Please enter an amount up to £${BankFundAmountInputField.MAX_TRANSFER_AMOUNT.toLocaleString()}.`,
                 icon: "warning",
                 confirmButtonText: "OK",
             });

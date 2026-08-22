@@ -53,7 +53,14 @@
                 <div class="virtual-bank_container__amount">
 
                     {% if bank_balance != None %}
-                         <span class="bold"><span class="currency">£</span>{{ bank_balance }}</span>
+                         <span class="bold"><span class="currency">£</span>
+
+                           <span id="nav-bank-balance">
+                                {{ bank_balance }}
+                           </span>
+
+
+                         </span>
                     {% endif %}
 
                 </div>

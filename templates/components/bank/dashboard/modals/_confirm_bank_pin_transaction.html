@@ -11,16 +11,17 @@
                 <legend class="mb-16">Enter your six digit PIN</legend>
 
                 <div class="flex-grid six-column-grid" id="bank-pin-input-fields">
-                    <input type="text" name="pin_1" id="pin_1" maxlength="1" inputmode="numeric" aria-label="PIN digit 1" required>
-                    <input type="text" name="pin_2" id="pin_2" maxlength="1" inputmode="numeric" aria-label="PIN digit 2" required>
-                    <input type="text" name="pin_3" id="pin_3" maxlength="1" inputmode="numeric" aria-label="PIN digit 3" required>
-                    <input type="text" name="pin_4" id="pin_4" maxlength="1" inputmode="numeric" aria-label="PIN digit 4" required>
-                    <input type="text" name="pin_5" id="pin_5" maxlength="1" inputmode="numeric" aria-label="PIN digit 5" required>
-                    <input type="text" name="pin_6" id="pin_6" maxlength="1" inputmode="numeric" aria-label="PIN digit 6" required>
+                    <input type="password" name="pin_1" id="pin_1" maxlength="1" inputmode="numeric" aria-label="PIN digit 1" required>
+                    <input type="password" name="pin_2" id="pin_2" maxlength="1" inputmode="numeric" aria-label="PIN digit 2" required>
+                    <input type="password" name="pin_3" id="pin_3" maxlength="1" inputmode="numeric" aria-label="PIN digit 3" required>
+                    <input type="password" name="pin_4" id="pin_4" maxlength="1" inputmode="numeric" aria-label="PIN digit 4" required>
+                    <input type="password" name="pin_5" id="pin_5" maxlength="1" inputmode="numeric" aria-label="PIN digit 5" required>
+                    <input type="password" name="pin_6" id="pin_6" maxlength="1" inputmode="numeric" aria-label="PIN digit 6" required>
                 </div>
             </fieldset>
 
             <div class="button mt-24">
+                 <div class="spinner" id="pin-form-spinner"></div>
                 <button type="submit" class="btn-large white-text blue-bg capitalise" id="pin-btn">Send</button>
             </div>
 

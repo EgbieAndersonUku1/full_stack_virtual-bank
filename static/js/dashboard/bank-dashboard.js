@@ -10,7 +10,6 @@ import { WalletWizard, handleWalletLinkFormSubmission } from "./wallet/walletWiz
 const dashboard         = document.getElementById("dashboard");
 const linkAccountForm   = document.getElementById("link-wallet-form");
 const walletManualForm  = document.getElementById("manually-verification-wallet-form");
-const fundsTransferForm = document.getElementById("funds-transfer-form")
 
 
 const excludeFields = new Set(["username", "email", "wallet-disconnect-inputfield",
@@ -65,8 +64,7 @@ async function handleDelegation(e) {
     WalletWizard.handleWalletConnectionSteps(e);
     handleWalletStatusClick(e);
 
-
-    BankFundInput.handleEvents(e)
+    BankFundInput.handleEvents(e);
     DashboardCardSidePanel.handleEvents(e);
 
 }

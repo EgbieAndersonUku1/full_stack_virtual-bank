@@ -2,7 +2,7 @@ import { BankFundAmountInputField } from "./bankFundAmountInputField.js";
 import { getCsrfToken } from "../../../security/csrf.js";
 import fetchData from "../../../fetch.js";
 import { AlertUtils } from "../../../alerts.js";
-
+import { DashboardBankPanel } from "../../panel/dasboardPanel.js";
 
 
 /**
@@ -33,15 +33,26 @@ export async function submitBankFundTransaction(pin) {
 
 
 
+
+/**
+ * Handles the response from a bank-funding transaction.
+ *
+ * Displays a success or error alert based on the transaction result and,
+ * when successful, updates the displayed account balances.
+ *
+ * @param {Object} data - The bank-funding transaction response.
+ * @returns {boolean} `true` when the transaction was successful, otherwise `false`.
+ */
 export function handleBankFundRespData(data) {
 
-     if (!data.SUCCESS) {
+    if (!data.SUCCESS) {
         AlertUtils.showAlert({
             title: data.ACTION,
             text: data.MSG,
             icon: "error",
             confirmButtonText: "Ok!",
-        })
+        });
+
         return false;
     }
 
@@ -50,16 +61,24 @@ export function handleBankFundRespData(data) {
         text: data.MSG,
         icon: "success",
         confirmButtonText: "Ok!",
-    })
+    });
 
-    updateFrontendAmount(data)
+    updateFrontendBalance(data.BALANCE);
+
     return true;
-
-
 }
 
 
-function updateFrontendAmount(data) {
-   
-    console.log(data);
+
+/**
+ * Updates the displayed current account and navigation balances
+ * using the balance returned by the bank-funding transaction.
+ *
+ * @param {Object} balance- The updated bank balance to be rendered to the frontend.
+ * @returns {void}
+ */
+function updateFrontendBalance(balance) {
+
+    DashboardBankPanel.setCurrentAccountBalance(balance);
+    DashboardBankPanel.setNavBankBalance(balance);
 }

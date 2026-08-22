@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from decimal import Decimal, InvalidOperation
 
 from bank.services.services import BankAccountCacheService
 from bank.utils import get_account_context

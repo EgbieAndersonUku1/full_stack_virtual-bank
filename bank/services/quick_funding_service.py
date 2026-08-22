@@ -68,6 +68,7 @@ class QuickFundResponse(TypedDict):
     MSG: str
     ACTION: str
     AMOUNT: Decimal
+    BALANCE: Decimal
 
 
 
@@ -170,7 +171,8 @@ class QuickFundingService:
             "SUCCESS": False,
             "MSG": "",
             "ACTION": "",
-            "AMOUNT": Decimal("0.00")
+            "AMOUNT": Decimal("0.00"),
+            "BALANCE": Decimal("0.00")
         }
 
         # PIN verification must occur before delegating to the financial service.
@@ -206,8 +208,8 @@ class QuickFundingService:
         resp = func(amount=decimal_amount, user=user)
 
         data["SUCCESS"] = True
-        data["ACTION"]   = "Account Funded"
         ledger_entry    = resp["ledger_entry"]
+        data["BALANCE"] = ledger_entry.closing_balance
 
         if ledger_entry.risk_flag:
             data["ACTION"]  = Action.FUNDING_PENDING_REVIEW
