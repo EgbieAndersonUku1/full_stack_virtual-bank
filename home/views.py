@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from decimal import Decimal, InvalidOperation
 
 from bank.services.services import BankAccountCacheService
 from bank.utils import get_account_context
@@ -7,10 +8,9 @@ from card.services import CardDashboardServiceCache
 from utils.decorators import is_email_verified, go_to_staff_page
 from card.models import BankCard
 from user_profile.services import ProfileCacheService
-
-
+from authentication.view_helper import handle_json_post_request
 from setup.decorators import onboarding_required
-
+from bank.services.quick_funding_service import QuickFundingService
 
 # Create your views here.
 
@@ -128,3 +128,19 @@ def manage_settings(request):
 @login_required
 def money_management_portal(request):
     return render(request, "home//dashboard/money_management.html")
+
+
+
+@login_required
+@onboarding_required
+@is_email_verified
+def quick_fund_current_account(request):
+
+    def fund_current_account(request_body):
+        pin = request_body.get("pin")["values"]
+        return QuickFundingService.quick_fund_current_account(pin=pin,
+                                                          amount=request_body.get("amount"),
+                                                          user=request.user)
+
+
+    return handle_json_post_request(request, func=fund_current_account)

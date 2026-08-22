@@ -4,6 +4,12 @@
 
 {% block title %}Dashb0ard Main page{% endblock title %}
 
+<!--Add the csrf token to this page-->
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
 
 {% block body %}
 

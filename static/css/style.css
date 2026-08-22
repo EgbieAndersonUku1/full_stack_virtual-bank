@@ -6322,6 +6322,21 @@ textarea::placeholder {
     display: none;
 }
 
+#bank-pin-input-fields {
+    column-gap: var(--space-8);
+}
+
+#bank-pin-input-fields input {
+    text-align: center;
+    caret-color: #000;
+}
+
+#bank-pin-input-fields input:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+
 #bank-pin-transaction.show {
     display: block;
 }

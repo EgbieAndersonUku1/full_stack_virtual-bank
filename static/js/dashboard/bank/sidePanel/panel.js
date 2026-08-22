@@ -1,12 +1,10 @@
 import { toggleElement } from "../../../utils.js";
-import { deselectAllCards } from "../cards/bankCard/cardSelector.js";
-import { BANK_DASHBOARD_ELEMENTS } from "../../panel/panelElements.js";
-import { openSourceCardTransferForm } from "../cards/bankCard/cardTransfer.js";
+import { handleTransferTypeChange, openSourceCardTransferForm } from "../cards/bankCard/cardTransfer.js";
 import { resetTransferWorkflow } from "../cards/bankCard/cardTransferWorkflow.js";
-import { handleTransferTypeChange } from "../cards/bankCard/cardTransfer.js";
+import { BANK_DASHBOARD_ELEMENTS } from "./panelElements.js";
 
 
-const bankCardButtons              = document.querySelector(".view-card-panel-buttons");
+const bankCardButtons = document.querySelector(".view-card-panel-buttons");
 const askTransferConfirmationPanel = document.getElementById("bank-transfer-quick-confirmation");
 
 

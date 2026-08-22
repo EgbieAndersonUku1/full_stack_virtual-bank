@@ -1,9 +1,8 @@
-import { BANK_DASHBOARD_ELEMENTS } from "../../../panel/panelElements.js";
-import { getCardDetailsFromElement } from "./cardDetailsExtractor.js";
-import { cardImplementer } from "../../../../card/cardBuilder.js";
+import { cardImplementer, createCardDetails } from "../../../../card/cardBuilder.js";
 import { toggleElement } from "../../../../utils.js";
 import { selectedCardStore } from "../../../dashboard-utils.js";
-import { createCardDetails } from "../../../../card/cardBuilder.js";
+import { BANK_DASHBOARD_ELEMENTS } from "../../sidePanel/panelElements.js";
+import { getCardDetailsFromElement } from "./cardDetailsExtractor.js";
 
 
 
@@ -60,8 +59,8 @@ export function viewFullCardDetails() {
 
     toggleElement({ element: BANK_DASHBOARD_ELEMENTS.VIEW_EXTRA_CARD_INFO, show: false })
 
-    const cardDetails      = getCardDetailsFromElement(bankCardElement);
-    const card             = cardImplementer.createCardDiv(cardDetails);
+    const cardDetails = getCardDetailsFromElement(bankCardElement);
+    const card = cardImplementer.createCardDiv(cardDetails);
 
     // Add the card image to the side panel display view window
     cardImplementer.placeCardDivIn(BANK_DASHBOARD_ELEMENTS.FULL_CARD_DETAILS_CONTAINER, card, true);

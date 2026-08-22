@@ -53,15 +53,12 @@ export const AddFundBtn = {
             title: "Do you want to proceed?",
             text: `You are about to add £${amount.toFixed(2)} to your bank account. Do you want to proceed?`,
             confirmButtonText: "Add funds",
-            messageToDisplayOnSuccess: "The funds have been added",
+            messageToDisplayOnSuccess: "Please enter your pin",
             denyButtonText: "Cancel funding",
             cancelMessage: "No action taken."
         });
 
-        if (confirmed) {
-            // TODO: Replace with a fetch request to process the transfer.
-            console.log("Funds have been transferred");
-            BankFundAmountInputField.clearAmountInputField()
-        }
+        return confirmed ? true : false;
+
     }
 };

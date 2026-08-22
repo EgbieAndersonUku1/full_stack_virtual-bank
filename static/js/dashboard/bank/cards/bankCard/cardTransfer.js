@@ -1,19 +1,19 @@
 import { AlertUtils } from "../../../../alerts.js";
-import { attachCardDetails } from "./cardElementUtils.js";
-import { getCardDetailsFromElement } from "./cardDetailsExtractor.js";
-import { toggleElement, clearInnerHTML } from "../../../../utils.js";
-import { BANK_DASHBOARD_ELEMENTS } from "../../../panel/panelElements.js";
-import { selectedCardStore } from "../../../dashboard-utils.js";
-import { setTransferConfirmationVisibility } from "./cardTransferWorkflow.js";
-import { cardSelectionPanelState } from "./cardSelector.js";
-import { transferDestinationState } from "../transferState.js";
+import { clearInnerHTML, toggleElement } from "../../../../utils.js";
 import { minimumCharactersToUse } from "../../../../utils/password/textboxCharEnforcer.js";
+import { selectedCardStore } from "../../../dashboard-utils.js";
+import { BANK_DASHBOARD_ELEMENTS } from "../../sidePanel/panelElements.js";
+import { transferDestinationState } from "../transferState.js";
+import { getCardDetailsFromElement } from "./cardDetailsExtractor.js";
+import { attachCardDetails } from "./cardElementUtils.js";
+import { cardSelectionPanelState } from "./cardSelector.js";
+import { setTransferConfirmationVisibility } from "./cardTransferWorkflow.js";
 
 
-const selectCardsContainer    = BANK_DASHBOARD_ELEMENTS.SELECT_CARDS_CONTAINER;
+const selectCardsContainer = BANK_DASHBOARD_ELEMENTS.SELECT_CARDS_CONTAINER;
 const creditCardsNodeElements = document.querySelectorAll(".bank-card");
-const fundsTransferForm       = document.getElementById("funds-transfer-form");
-const transferFormTextArea    = document.getElementById("bank-transfer-note");
+const fundsTransferForm = document.getElementById("funds-transfer-form");
+const transferFormTextArea = document.getElementById("bank-transfer-note");
 
 
 
@@ -44,8 +44,8 @@ function renderTransferCardSelectionMessage() {
 
     clearInnerHTML(selectCardsContainer);
 
-    const message              = document.createElement("p");
-    message.textContent        = "Choose a card to transfer to. Only active cards are shown.";
+    const message = document.createElement("p");
+    message.textContent = "Choose a card to transfer to. Only active cards are shown.";
     message.style.marginBottom = "24px";
 
     selectCardsContainer.append(message);
@@ -76,7 +76,7 @@ export function openSourceCardTransferForm() {
         return;
     }
 
-    toggleElement({element: BANK_DASHBOARD_ELEMENTS.CARD_TRANSFER_FORM_SECTION});
+    toggleElement({ element: BANK_DASHBOARD_ELEMENTS.CARD_TRANSFER_FORM_SECTION });
 }
 
 
@@ -99,7 +99,7 @@ export function openSourceCardTransferForm() {
  * @returns {void} Returns early if no source card is currently selected.
  */
 export function showAlternativeTransferCards() {
-    toggleElement({ element: BANK_DASHBOARD_ELEMENTS.SELECT_CARDS_CONTAINER});
+    toggleElement({ element: BANK_DASHBOARD_ELEMENTS.SELECT_CARDS_CONTAINER });
 
     const selectedCard = selectedCardStore.get();
 
