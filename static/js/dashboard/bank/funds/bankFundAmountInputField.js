@@ -14,8 +14,8 @@ const amountInputField = document.getElementById("account-card__amount");
  * transfer amount.
  */
 export const BankFundAmountInputField = {
-    MAX_TRANSFER_AMOUNT: 10_000,
-    MIN_TRANSFER_AMOUNT: 0,
+    MAX_FIELD_AMOUNT: 100_000,
+    MIN_FIELD_AMOUNT: 0,
 
     /**
      * Clears the current value from the bank fund amount input field.
@@ -55,7 +55,7 @@ export const BankFundAmountInputField = {
      * @returns {void}
      */
     resetTransferAmountToMax() {
-        amountInputField.value = this.MAX_TRANSFER_AMOUNT.toFixed(2);
+        amountInputField.value = this.MAX_FIELD_AMOUNT.toFixed(2);
     },
 
     /**
@@ -68,7 +68,7 @@ export const BankFundAmountInputField = {
     setMaxTransferAmount(amount) {
         this._validateAmountType(amount);
 
-        this.MAX_TRANSFER_AMOUNT = amount;
+        this.MAX_FIELD_AMOUNT = amount;
     },
 
     /**
@@ -77,7 +77,7 @@ export const BankFundAmountInputField = {
      * @returns {number} The maximum permitted transfer amount.
      */
     getMaxTransferAmount() {
-        return this.MAX_TRANSFER_AMOUNT;
+        return this.MAX_FIELD_AMOUNT;
     },
 
     /**
@@ -119,8 +119,8 @@ export const BankFundAmountInputField = {
         const newAmount = (pennies + deltaPennies) / 100;
 
         if (
-            newAmount > this.MAX_TRANSFER_AMOUNT ||
-            newAmount < this.MIN_TRANSFER_AMOUNT
+            newAmount > this.MAX_FIELD_AMOUNT ||
+            newAmount < this.MIN_FIELD_AMOUNT
         ) {
             return;
         }
@@ -141,8 +141,8 @@ export const BankFundAmountInputField = {
         let amount = Number(amountInputField.value) || 0;
 
         amount = Math.min(
-            Math.max(amount, this.MIN_TRANSFER_AMOUNT),
-            this.MAX_TRANSFER_AMOUNT
+            Math.max(amount, this.MIN_FIELD_AMOUNT),
+            this.MAX_FIELD_AMOUNT
         );
 
         amountInputField.value = amount.toFixed(2);

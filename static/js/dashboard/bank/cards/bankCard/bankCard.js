@@ -9,14 +9,24 @@ import { deselectAllCards, selectSingleCard } from "./cardSelector.js";
 
 const bankCardSelectionTypes = document.querySelectorAll(".account-card");
 
+export const BankCardType = {
+    CURRENT_ACCOUNT: "current-account",
+    SAVING_ACCOUNT: "savings-account",
+    DEBIT_CARD: "debit-cards",
+    WALLET: "wallet"
+};
+
+// Automatically extracts all values into an array
+BankCardType.ALL = Object.values(BankCardType);
+
 
 
 export const BankCard = (() => {
 
     let timeoutId;
 
-    const EXPECTED_ACCOUNT_TYPES = ["current-account", "savings-account",  "debit-cards", "wallet"];
-    let cardSelectedName = EXPECTED_ACCOUNT_TYPES[0];
+    const EXPECTED_ACCOUNT_TYPES = BankCardType.ALL;
+    let cardSelectedName = BankCardType.CURRENT_ACCOUNT;
 
     const BANK_CARD_CLASS          = "bank-card";
     const BANK_TRANSFER_CARD_CLASS = "bank-transfer-card";
@@ -70,8 +80,8 @@ export const BankCard = (() => {
      */
     function processSelectedCardClick(e) {
 
-        const bankCardClass = "bank-card";
-        const cssSelector = "is-selected"
+        const bankCardClass = BANK_CARD_CLASS;
+        const cssSelector =  SELECTED_CARD_CLASS
         const targetCard = getSelectableCardElement(e, bankCardClass);
 
         if (targetCard === null) return;
@@ -137,14 +147,14 @@ export const BankCard = (() => {
      */
     function processCreditCardOverviewClick(e) {
 
-        const bankCardClass = "bank-card";
-        const excludeClass = "bank-transfer-card";
+        const bankCardClass = BANK_CARD_CLASS;
+        const excludeClass =  BANK_TRANSFER_CARD_CLASS;
 
         const bankCardElement = getSelectableCardElement(e, bankCardClass, excludeClass);
 
         if (bankCardElement === null) return;
 
-        const cardSelectedSelector = "is-selected";
+        const cardSelectedSelector = SELECTED_CARD_CLASS;
 
         deselectAllCards();
         selectSingleCard(bankCardElement, cardSelectedSelector)

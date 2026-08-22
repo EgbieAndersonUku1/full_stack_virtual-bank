@@ -53,7 +53,7 @@ export const AddFundBtn = {
             title: "Do you want to proceed?",
             text: `You are about to add £${amount.toFixed(2)} to your bank account. Do you want to proceed?`,
             confirmButtonText: "Add funds",
-            messageToDisplayOnSuccess: "Please enter your pin to begin process",
+            messageToDisplayOnSuccess: "Please enter your pin",
             denyButtonText: "Cancel funding",
             cancelMessage: "No action taken."
         });

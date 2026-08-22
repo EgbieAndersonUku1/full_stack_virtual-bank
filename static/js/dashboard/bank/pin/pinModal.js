@@ -1,14 +1,19 @@
-import { toggleElement, enableAutoFocusNavigation } from "../../../utils.js";
+import { enableAutoFocusNavigation } from "../../../utils.js";
 import { AddFundModal } from "../funds/addFunds.js";
 import { parseFormData } from "../../../formUtils.js";
 import { parseCharsFromObject } from "../../../utils.js";
-import { submitBankFundTransaction } from "../funds/bankFundTransaction.js";
+import { submitBankFundTransaction, handleBankFundRespData } from "../funds/bankFundTransaction.js";
+import { warnError } from "../../../logger.js";
+import { BankFundAmountInputField } from "../funds/bankFundAmountInputField.js";
+import { BankCardType } from "../cards/bankCard/bankCard.js";
+import { BankCard } from "../cards/bankCard/bankCard.js";
 
 
 const main            = document.querySelector("main");
 const pinModalElement = document.getElementById("bank-pin-transaction");
 const pinFields       = document.querySelectorAll("#bank-pin-input-fields input");
 const pinForm         = document.getElementById("bank-pin-transaction-form");
+const pinFormbutton   = document.getElementById("pin-btn");
 
 
 
@@ -89,15 +94,41 @@ export const PinModal = (() => {
         return processPin();
     }
 
+    function disablePinFormButton() {
+        pinFormbutton.disabled = true;
+    }
+
+    function enablePinFormButton() {
+        pinFormbutton.disabled = false;
+
+    }
+
     return {
         show,
         hide,
         handlePinForm,
+        disablePinFormButton,
+        enablePinFormButton
 
     }
 
 
 })()
+
+
+
+/**
+ * Resets the funding flow to its initial state.
+ *
+ * Hides the PIN modal, restores the add-funds modal,
+ * re-enables PIN submission, and clears the funding amount.
+ */
+function resetFundingFlow() {
+    PinModal.hide();
+    AddFundModal.show();
+    PinModal.enablePinFormButton();
+    BankFundAmountInputField.clearAmountInputField();
+}
 
 
 
@@ -116,11 +147,32 @@ async function handleBankFundSubmission(e) {
         return;
     }
 
-    console.log("I am here")
-    console.log(pin);
+    const cardSelectedName = BankCard.getSelectCardName()
+
+    PinModal.disablePinFormButton()
+
+    switch(cardSelectedName) {
+
+        case BankCardType.CURRENT_ACCOUNT:
+            const resp = await submitBankFundTransaction(pin);
+            const data = resp.data;
+
+            handleBankFundRespData(data)
+            resetFundingFlow();
+            break;
+
+        case BankCardType.SAVING_ACCOUNT:
+            break;
+
+        case BankCardType.DEBIT_CARD:
+            break;
+
+        case BankCardType.WALLET:
+            break;
+    }
 
 
-    // await submitBankFundTransaction(pin);
+
 }
 
 

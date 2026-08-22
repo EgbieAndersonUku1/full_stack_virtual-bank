@@ -1,6 +1,7 @@
 import { BankFundAmountInputField } from "./bankFundAmountInputField.js";
 import { getCsrfToken } from "../../../security/csrf.js";
 import fetchData from "../../../fetch.js";
+import { AlertUtils } from "../../../alerts.js";
 
 
 
@@ -17,7 +18,6 @@ import fetchData from "../../../fetch.js";
 export async function submitBankFundTransaction(pin) {
 
     const amount = BankFundAmountInputField.getAmountInputFieldValue();
-    const csrfToken = getCsrfToken();
 
     return await fetchData({
         url: "/dashboard/quick_fund/current_account/",
@@ -29,4 +29,37 @@ export async function submitBankFundTransaction(pin) {
         }
 
     });
+}
+
+
+
+export function handleBankFundRespData(data) {
+
+     if (!data.SUCCESS) {
+        AlertUtils.showAlert({
+            title: data.ACTION,
+            text: data.MSG,
+            icon: "error",
+            confirmButtonText: "Ok!",
+        })
+        return false;
+    }
+
+    AlertUtils.showAlert({
+        title: data.ACTION,
+        text: data.MSG,
+        icon: "success",
+        confirmButtonText: "Ok!",
+    })
+
+    updateFrontendAmount(data)
+    return true;
+
+
+}
+
+
+function updateFrontendAmount(data) {
+   
+    console.log(data);
 }

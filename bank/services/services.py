@@ -375,7 +375,7 @@ class BankAccountCacheService:
 
         profile     = cls._get_profile_or_raise(user)
         session_key = cls._construct_session_key(profile)
-        set_cache_with_retry(keu=session_key, value=BankAccount.get_all_account_by_user_profile(profile))
+        set_cache_with_retry(key=session_key, value=BankAccount.get_all_account_by_user_profile(profile))
 
     @classmethod
     def get_accounts(cls, user: User) -> QuerySet["BankAccount"]:
