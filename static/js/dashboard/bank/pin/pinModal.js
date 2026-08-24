@@ -2,7 +2,7 @@ import { enableAutoFocusNavigation } from "../../../utils.js";
 import { AddFundModal } from "../funds/addFunds.js";
 import { parseFormData } from "../../../formUtils.js";
 import { parseCharsFromObject, toggleSpinner } from "../../../utils.js";
-import { submitBankFundTransaction, handleBankFundRespData } from "../funds/bankFundTransaction.js";
+import { submitBankFundTransaction, handleBankFundRespData, submitBankFundSavingTransaction } from "../funds/bankFundTransaction.js";
 import { warnError } from "../../../logger.js";
 import { BankFundAmountInputField } from "../funds/bankFundAmountInputField.js";
 import { BankCardType } from "../cards/bankCard/bankCard.js";
@@ -280,6 +280,7 @@ async function handleBankFundSubmission(e) {
     }
 
     const cardSelectedName = BankCard.getSelectCardName();
+    let resp;
 
     PinModal.disablePinFormButton();
     PinModal.showSpinner();
@@ -287,13 +288,13 @@ async function handleBankFundSubmission(e) {
     switch (cardSelectedName) {
 
         case BankCardType.CURRENT_ACCOUNT:
-            const resp = await submitBankFundTransaction(pin);
-            const data = resp.data;
-
-            handleFundingResponse(data);
+            resp = await submitBankFundTransaction(pin);
+            handleFundingResponse(resp.data);
             break;
 
         case BankCardType.SAVING_ACCOUNT:
+            resp = await submitBankFundSavingTransaction(pin);
+            handleFundingResponse(resp.data);
             break;
 
         case BankCardType.DEBIT_CARD:

@@ -10,6 +10,7 @@ from user_profile.services import ProfileCacheService
 from authentication.view_helper import handle_json_post_request
 from setup.decorators import onboarding_required
 from bank.services.quick_funding_service import QuickFundingService
+from .view_helper import format_balance_fields
 
 # Create your views here.
 
@@ -137,9 +138,30 @@ def quick_fund_current_account(request):
 
     def fund_current_account(request_body):
         pin = request_body.get("pin")["values"]
-        return QuickFundingService.quick_fund_current_account(pin=pin,
+        data = QuickFundingService.quick_fund_current_account(pin=pin,
                                                           amount=request_body.get("amount"),
                                                           user=request.user)
+        format_balance_fields(data)
+        return data
 
 
     return handle_json_post_request(request, func=fund_current_account)
+
+
+
+
+@login_required
+@onboarding_required
+@is_email_verified
+def quick_fund_savings_account(request):
+
+    def fund_savings_account(request_body):
+        pin = request_body.get("pin")["values"]
+        data =  QuickFundingService.quick_fund_savings_account(pin=pin,
+                                                            amount=request_body.get("amount"),
+                                                            user=request.user
+                                                             )
+        format_balance_fields(data)
+        return data
+    return handle_json_post_request(request, func=fund_savings_account)
+

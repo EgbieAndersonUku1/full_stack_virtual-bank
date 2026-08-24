@@ -90,7 +90,7 @@ This component is typically connected to financial APIs that
 synchronise account balances and transaction histories.
 -->
 {% load static %}
-
+{% load currency_filters %}
 
 
 <section class="dash-bank-account dashboard-card mb-24" aria-labelledby="bank-account-title">
@@ -252,11 +252,11 @@ synchronise account balances and transaction histories.
     <!-- Total Balance -->
     <div class="balance-highlight total" aria-live="polite" aria-label="Total balance across accounts">
         <div class="balance-label">
-            Total balance across accounts
+            Total balance across accounts (savings + current account)
         </div>
         <div class="balance-value">
             <span aria-hidden="true">£</span>
-            <span aria-label="1" id="total_balance_accross_accounts">N/A</span>
+            <span aria-label="1" id="total_balance_accross_accounts">{{ total_account_balances }}</span>
         </div>
     </div>
 
@@ -278,7 +278,7 @@ synchronise account balances and transaction histories.
         </div>
         <div class="balance-value">
             <span aria-hidden="true">£</span>
-            <span id="saving_account_balance">0.00</span>
+            <span id="saving_account_balance">{{ saving_account.balance|format_field_currency }}</span>
         </div>
     </div>
 
@@ -288,7 +288,7 @@ synchronise account balances and transaction histories.
         </div>
         <div class="balance-value">
             <span aria-hidden="true">£</span>
-            <span id="current_account_balance">{{ current_account.balance }}</span>
+            <span id="current_account_balance">{{ current_account.balance|format_field_currency }}</span>
         </div>
     </div>
 

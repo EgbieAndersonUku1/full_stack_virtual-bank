@@ -40,12 +40,14 @@ from typing import Callable, TypedDict, Literal
 from django.contrib.auth import get_user_model
 
 from bank.services.funding_service import FundingService, FundingResponse
+from bank.services.funding_service import AccountType as Accounts
+from bank.services.services import BankAccountCacheService
 from setup.models import Pin
 
 
 User = get_user_model()
 
-AccountType = Literal["current_account", "saving_account"]
+AccountType = Literal[Accounts.CURRENT_ACCOUNT, Accounts.SAVING_ACCOUNT]
 
 
 
@@ -64,12 +66,22 @@ class Action(StrEnum):
 
 
 class QuickFundResponse(TypedDict):
+    """
+    Defines the response returned by the quick funding service.
+
+    The response contains the funding result and the latest account balances
+    calculated by the backend.
+    """
     SUCCESS: bool
     MSG: str
     ACTION: str
     AMOUNT: Decimal
-    BALANCE: Decimal
+    CURRENT_ACCOUNT_BALANCE: Decimal
+    SAVINGS_ACCOUNT_BALANCE: Decimal
+    TOTAL_BALANCE: Decimal
 
+    # Closing balance of the account involved in the funding transaction.
+    BALANCE: Decimal
 
 
 
@@ -99,6 +111,16 @@ class QuickFundingService:
     ``FundingService`` should be used directly when PIN validation has already
     been handled elsewhere or is not required.
     """
+
+    @classmethod
+    def _add_total_balance_to_response(
+                                    cls,
+                                    data: QuickFundResponse,
+                                    current_balance: Decimal,
+                                    saving_balance: Decimal,
+                                ) -> None:
+        """Add the combined current and savings balances to the response."""
+        data["TOTAL_BALANCE"] = current_balance + saving_balance
 
     @classmethod
     def _convert_amount_to_decimal(cls, amount: int | float) -> Decimal | None:
@@ -136,12 +158,13 @@ class QuickFundingService:
         """
         return {
             "current_account": FundingService.add_funds_to_current_account,
+            "saving_account": FundingService.add_funds_to_saving_account,
         }[account_to_fund]
 
     @classmethod
     def _fund_account(cls, user_pin: str, amount: int | float,
                        user: User,
-                       account_type: AccountType = "current_account"
+                       account_type: AccountType = Accounts.CURRENT_ACCOUNT
                        ) -> QuickFundResponse:
 
         """
@@ -162,9 +185,13 @@ class QuickFundingService:
             describing the outcome of the funding request.
 
         Note:
-            If the funding amount exceeds the configured risk threshold, the
-            funding request may be placed into a pending review state rather
-            than immediately crediting the account.
+             - If the funding amount exceeds the configured risk threshold, the
+               funding request may be placed into a pending review state rather
+               than immediately crediting the account.
+             - Should be called using the methods:
+                - quick_fund_current_account(...)
+                - quick_fund_savings_account(...)
+
         """
 
         data: QuickFundResponse = {
@@ -172,7 +199,11 @@ class QuickFundingService:
             "MSG": "",
             "ACTION": "",
             "AMOUNT": Decimal("0.00"),
-            "BALANCE": Decimal("0.00")
+            "BALANCE": Decimal("0.00"),
+            "CURRENT_ACCOUNT_BALANCE": Decimal("0.00"),
+            "SAVINGS_ACCOUNT_BALANCE": Decimal("0.00"),
+            "TOTAL_BALANCE": Decimal("0.00")
+
         }
 
         # PIN verification must occur before delegating to the financial service.
@@ -239,10 +270,21 @@ class QuickFundingService:
             A ``QuickFundResponse`` describing the result of the funding
             request.
         """
-        return cls._fund_account(user_pin=pin, amount=amount, user=user)
+
+        saving_account = BankAccountCacheService.get_saving_account(user)
+        data           = cls._fund_account(user_pin=pin, amount=amount, user=user)
+
+        data["CURRENT_ACCOUNT_BALANCE"]  = data["BALANCE"]
+        data["SAVINGS_ACCOUNT_BALANCE"]  = saving_account.balance
+
+        cls._add_total_balance_to_response(data,
+                                          current_balance=data["CURRENT_ACCOUNT_BALANCE"],
+                                          saving_balance=data["SAVINGS_ACCOUNT_BALANCE"]
+                                          )
+        return data
 
     @classmethod
-    def quick_fund_saving_account(cls, pin: str, amount: int | float, user: User) -> QuickFundResponse:
+    def quick_fund_savings_account(cls, pin: str, amount: int | float, user: User) -> QuickFundResponse:
         """
         Quickly fund the user's savings account after PIN verification.
 
@@ -255,9 +297,17 @@ class QuickFundingService:
             A ``QuickFundResponse`` describing the result of the funding
             request.
 
-        Raises:
-            NotImplementedError: If savings account funding has not yet been
-                implemented.
         """
-        raise NotImplementedError("Savings account funding is not implemented yet.")
+        current_account = BankAccountCacheService.get_current_account(user)
+        data            = cls._fund_account(user_pin=pin, amount=amount, user=user, account_type=Accounts.SAVING_ACCOUNT)
+
+        data["SAVINGS_ACCOUNT_BALANCE"] = data["BALANCE"]
+        data["CURRENT_ACCOUNT_BALANCE"] = current_account.balance
+
+        cls._add_total_balance_to_response(data,
+                                          current_balance= data["CURRENT_ACCOUNT_BALANCE"],
+                                          saving_balance=data["SAVINGS_ACCOUNT_BALANCE"]
+                                          )
+        return data
+
 

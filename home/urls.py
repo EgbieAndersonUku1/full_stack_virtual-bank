@@ -15,5 +15,6 @@ urlpatterns = [
     path("dashboard/settings/", view=views.manage_settings, name="manage_settings"),
     path("dashboard/money_management/", view=views.money_management_portal, name="money_management"),
     path("dashboard/quick_fund/current_account/", view=views.quick_fund_current_account, name="quick_fund_current_account"),
+    path("dashboard/quick_fund/saving_account/", view=views.quick_fund_savings_account, name="quick_fund_savings_account"),
 
 ]

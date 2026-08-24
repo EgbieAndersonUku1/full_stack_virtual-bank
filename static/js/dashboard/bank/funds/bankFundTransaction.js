@@ -5,6 +5,22 @@ import { AlertUtils } from "../../../alerts.js";
 import { DashboardBankPanel } from "../../panel/dasboardPanel.js";
 
 
+
+
+async function submitBankFund(pin, url, amount) {
+    return await fetchData({
+        url: url,
+        method: "POST",
+        csrfToken: getCsrfToken(),
+        body: {
+            amount:amount,
+            pin: pin
+        }
+
+    });
+}
+
+
 /**
  * Submits a bank-fund transaction using the entered PIN and
  * the amount provided by the bank-fund amount input field.
@@ -18,19 +34,19 @@ import { DashboardBankPanel } from "../../panel/dasboardPanel.js";
 export async function submitBankFundTransaction(pin) {
 
     const amount = BankFundAmountInputField.getAmountInputFieldValue();
+    const url    =  "/dashboard/quick_fund/current_account/";
 
-    return await fetchData({
-        url: "/dashboard/quick_fund/current_account/",
-        method: "POST",
-        csrfToken: getCsrfToken(),
-        body: {
-            amount:amount,
-            pin: pin
-        }
-
-    });
+    return await submitBankFund(pin, url, amount);
 }
 
+
+
+export async function submitBankFundSavingTransaction(pin) {
+    const amount = BankFundAmountInputField.getAmountInputFieldValue();
+    const url    =  "/dashboard/quick_fund/saving_account/";
+    return await submitBankFund(pin, url, amount);
+
+}
 
 
 
@@ -63,7 +79,7 @@ export function handleBankFundRespData(data) {
         confirmButtonText: "Ok!",
     });
 
-    updateFrontendBalance(data.BALANCE);
+    updateFrontendBalance(data);
 
     return true;
 }
@@ -77,8 +93,10 @@ export function handleBankFundRespData(data) {
  * @param {Object} balance- The updated bank balance to be rendered to the frontend.
  * @returns {void}
  */
-function updateFrontendBalance(balance) {
+function updateFrontendBalance(data) {
 
-    DashboardBankPanel.setCurrentAccountBalance(balance);
-    DashboardBankPanel.setNavBankBalance(balance);
+    DashboardBankPanel.setCurrentAccountBalance(data.CURRENT_ACCOUNT_BALANCE);
+    DashboardBankPanel.setNavBankBalance(data.TOTAL_BALANCE);
+    DashboardBankPanel.setSavingAccountBalance(data.SAVINGS_ACCOUNT_BALANCE);
+    DashboardBankPanel.setTotalAccountBalance(data.TOTAL_BALANCE)
 }
