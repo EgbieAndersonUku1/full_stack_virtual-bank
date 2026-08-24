@@ -3,6 +3,7 @@ import { getCsrfToken } from "../../../security/csrf.js";
 import fetchData from "../../../fetch.js";
 import { AlertUtils } from "../../../alerts.js";
 import { DashboardBankPanel } from "../../panel/dasboardPanel.js";
+import { formatCurrency } from "../../../utils.js";
 
 
 
@@ -98,5 +99,7 @@ function updateFrontendBalance(data) {
     DashboardBankPanel.setCurrentAccountBalance(data.CURRENT_ACCOUNT_BALANCE);
     DashboardBankPanel.setNavBankBalance(data.TOTAL_BALANCE);
     DashboardBankPanel.setSavingAccountBalance(data.SAVINGS_ACCOUNT_BALANCE);
-    DashboardBankPanel.setTotalAccountBalance(data.TOTAL_BALANCE)
+    DashboardBankPanel.setTotalAccountBalance(data.TOTAL_BALANCE);
+    DashboardBankPanel.setPendingBalance(data.PENDING_AMOUNT);
+  
 }

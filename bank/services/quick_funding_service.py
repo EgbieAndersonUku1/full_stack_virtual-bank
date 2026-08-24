@@ -41,8 +41,11 @@ from django.contrib.auth import get_user_model
 
 from bank.services.funding_service import FundingService, FundingResponse
 from bank.services.funding_service import AccountType as Accounts
-from bank.services.services import BankAccountCacheService
+from bank.services.bank_services import BankAccountCacheService
+from bank.models import LedgerEntry
 from setup.models import Pin
+from bank.services.ledger_services import LedgerEntryCache
+
 
 
 User = get_user_model()
@@ -79,6 +82,7 @@ class QuickFundResponse(TypedDict):
     CURRENT_ACCOUNT_BALANCE: Decimal
     SAVINGS_ACCOUNT_BALANCE: Decimal
     TOTAL_BALANCE: Decimal
+    PENDING_AMOUNT: Decimal
 
     # Closing balance of the account involved in the funding transaction.
     BALANCE: Decimal
@@ -111,6 +115,31 @@ class QuickFundingService:
     ``FundingService`` should be used directly when PIN validation has already
     been handled elsewhere or is not required.
     """
+
+    @classmethod
+    def _get_pending_amount_and_cache(cls, user: User) -> Decimal:
+        """
+        Retrieve the user's total pending funding amount and update the cache.
+
+        The pending amount is calculated from the user's ledger entries and
+        stored in ``LedgerEntryCache`` so subsequent requests can retrieve the
+        value without querying the database again.
+
+        Args:
+            user (User): The user whose pending funding amount should be
+                retrieved.
+
+        Returns:
+            Decimal: The user's total pending funding amount.
+
+        Raises:
+            TypeError: If ``user`` is not a valid User instance.
+        """
+
+        total_pending_amount = LedgerEntry.get_pending_funding_amount_for_user(user)
+        LedgerEntryCache.set_pending_amount(total_pending_amount, user)
+
+        return total_pending_amount
 
     @classmethod
     def _add_total_balance_to_response(
@@ -202,7 +231,8 @@ class QuickFundingService:
             "BALANCE": Decimal("0.00"),
             "CURRENT_ACCOUNT_BALANCE": Decimal("0.00"),
             "SAVINGS_ACCOUNT_BALANCE": Decimal("0.00"),
-            "TOTAL_BALANCE": Decimal("0.00")
+            "TOTAL_BALANCE": Decimal("0.00"),
+            "PENDING_AMOUNT": Decimal("0.00"),
 
         }
 
@@ -243,16 +273,18 @@ class QuickFundingService:
         data["BALANCE"] = ledger_entry.closing_balance
 
         if ledger_entry.risk_flag:
-            data["ACTION"]  = Action.FUNDING_PENDING_REVIEW
-            data["MSG"]     = (
+            data["PENDING_AMOUNT"] = cls._get_pending_amount_and_cache(user)
+            data["ACTION"]         = Action.FUNDING_PENDING_REVIEW
+            data["MSG"] = (
                     "Your funding request is pending review because the amount exceeds "
                     "the risk threshold."
             )
             return data
 
-        data["MSG"]    = f"Your account has been successfully credited with {ledger_entry.amount}."
-        data["AMOUNT"] = ledger_entry.amount
-        data["ACTION"] = Action.ACCOUNT_CREDITED
+        data["MSG"]            = f"Your account has been successfully credited with {ledger_entry.amount}."
+        data["AMOUNT"]         = ledger_entry.amount
+        data["ACTION"]         = Action.ACCOUNT_CREDITED
+        data["PENDING_AMOUNT"] = cls._get_pending_amount_and_cache(user)
 
         return data
 

@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 
-from bank.services.services import AccountService
+from bank.services.bank_services import AccountService
 from bank.models import Bank, BankAccount
 from card.services import BankCardService
 from setup.models import Pin

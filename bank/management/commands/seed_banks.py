@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from bank.services.services import BankProvisioningService
+from bank.services.bank_services import BankProvisioningService
 from decimal import Decimal
 
 from django.conf import settings

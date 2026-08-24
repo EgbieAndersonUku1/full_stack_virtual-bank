@@ -1,6 +1,6 @@
 import logging
 
-from bank.services.services import BankAccountCacheService
+from bank.services.bank_services import BankAccountCacheService
 from bank.utils import get_account_context
 from card_request.services import CardRequestsApplicationCacheService
 from utils.custom_errors import ProfileNotFoundError

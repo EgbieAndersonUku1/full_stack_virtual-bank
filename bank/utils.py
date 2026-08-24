@@ -2,7 +2,7 @@
 from typing import Any
 from collections.abc import Iterable
 
-from bank.services.services import BankAccountCacheService
+from bank.services.bank_services import BankAccountCacheService
 
 from .models import BankAccount
 from utils.formatter import format_currency

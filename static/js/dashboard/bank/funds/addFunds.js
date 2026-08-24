@@ -38,7 +38,7 @@
 
 
 import { AlertUtils } from "../../../alerts.js";
-import { toggleElement } from "../../../utils.js";
+import { toggleElement, dimBackground } from "../../../utils.js";
 
 import { AddFundBtn } from "./addFundBtn.js";
 import { BankFundAmountInputField } from "./bankFundAmountInputField.js";
@@ -47,7 +47,8 @@ import { PinModal } from "../pin/pinModal.js";
 
 
 
-const addFundsToBankPanel = document.getElementById("bank-account-add-funds");
+const addFundsToBankPanel  = document.getElementById("bank-account-add-funds");
+const dimBackgroundElement = document.getElementById("dim");
 
 
 
@@ -77,6 +78,7 @@ export const AddFundModal = (() => {
      */
     function show() {
         toggleWindow();
+        dimBackground(dimBackgroundElement, true)
     }
 
     /**
@@ -84,6 +86,7 @@ export const AddFundModal = (() => {
      */
     function hide() {
         toggleWindow(false);
+        dimBackground(dimBackgroundElement, false)
     }
 
     return {

@@ -1,7 +1,7 @@
 import { enableAutoFocusNavigation } from "../../../utils.js";
 import { AddFundModal } from "../funds/addFunds.js";
 import { parseFormData } from "../../../formUtils.js";
-import { parseCharsFromObject, toggleSpinner } from "../../../utils.js";
+import { parseCharsFromObject, toggleSpinner, dimBackground } from "../../../utils.js";
 import { submitBankFundTransaction, handleBankFundRespData, submitBankFundSavingTransaction } from "../funds/bankFundTransaction.js";
 import { warnError } from "../../../logger.js";
 import { BankFundAmountInputField } from "../funds/bankFundAmountInputField.js";
@@ -9,12 +9,14 @@ import { BankCardType } from "../cards/bankCard/bankCard.js";
 import { BankCard } from "../cards/bankCard/bankCard.js";
 
 
-const main            = document.querySelector("main");
-const pinModalElement = document.getElementById("bank-pin-transaction");
-const pinFields       = document.querySelectorAll("#bank-pin-input-fields input");
-const pinForm         = document.getElementById("bank-pin-transaction-form");
-const pinFormbutton   = document.getElementById("pin-btn");
-const pinSpinner      = document.getElementById("pin-form-spinner");
+
+const main                 = document.querySelector("main");
+const pinModalElement      = document.getElementById("bank-pin-transaction");
+const pinFields            = document.querySelectorAll("#bank-pin-input-fields input");
+const pinForm              = document.getElementById("bank-pin-transaction-form");
+const pinFormbutton        = document.getElementById("pin-btn");
+const pinSpinner           = document.getElementById("pin-form-spinner");
+const dimBackgroundElement = document.getElementById("dim");
 
 
 
@@ -62,6 +64,7 @@ export const PinModal = (() => {
         AddFundModal.hide();
         pinModalElement.classList.add(cssSelectorToShow.trim());
         enableAutoFocusNavigation(pinFields);
+        dimBackground(dimBackgroundElement, true);
 
     }
 
@@ -81,6 +84,7 @@ export const PinModal = (() => {
      */
     function hide(cssSelectorToHide="show") {
         pinModalElement.classList.remove(cssSelectorToHide.trim());
+        dimBackground(dimBackgroundElement, false)
     }
 
 
