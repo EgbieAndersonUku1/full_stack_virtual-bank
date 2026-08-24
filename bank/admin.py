@@ -568,10 +568,11 @@ class LedgerEntryAdmin(admin.ModelAdmin):
                     "created_on",
                     ]
 
-    list_display_links = ["id"]
+    list_display_links = ["id", "transaction_type"]
     list_filter        = ["transaction_type", "source", "movement", "status", "risk_flag", "review_required", "currency"]
     search_fields      = ["reference",  "user__username", "user__email", "account__account_number"]
     ordering           = ["-created_on"]
+    list_per_page      = 20
 
     fieldsets = [
         (

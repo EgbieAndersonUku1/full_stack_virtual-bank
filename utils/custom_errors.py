@@ -58,3 +58,7 @@ class IncorrectAmountTypeError(Exception):
 
 class MissingCurrentAccountError(Exception):
     pass
+
+
+class MissingAccountError(Exception):
+    pass

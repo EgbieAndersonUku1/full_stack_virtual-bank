@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 import logging
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
@@ -408,4 +409,37 @@ class BankAccountCacheService:
 
         return bank_accounts.filter(account_type=BankAccount.AccountType.BASIC).first()
 
+
+    @classmethod
+    def get_total_account_balance(cls, user: User) -> Decimal:
+        """
+        Return the combined balance of the user's current and savings accounts.
+
+        The method retrieves both accounts and adds their current balances
+        together to provide the user's total account balance. If the user
+        doesn't have a saving account returns the current account balance.
+
+        Note:
+           A Current account is created by default, however, saving accounts is only
+           created if the user has choosing a bank with a savings account
+           option.
+
+        Args:
+            user (User): The user whose account balances should be calculated.
+
+        Returns:
+            Decimal: The combined balance of the user's current and savings
+                accounts.
+        """
+
+
+        current_account = cls.get_current_account(user)
+        saving_account = cls.get_saving_account(user)
+
+        total_balance = current_account.balance
+
+        if saving_account:
+            total_balance += saving_account.balance
+
+        return total_balance
 

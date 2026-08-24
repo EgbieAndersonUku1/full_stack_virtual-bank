@@ -2,7 +2,10 @@
 from typing import Any
 from collections.abc import Iterable
 
+from bank.services.services import BankAccountCacheService
+
 from .models import BankAccount
+from utils.formatter import format_currency
 
 
 
@@ -26,6 +29,7 @@ def get_account_context(bank_accounts) -> dict[str, Any]:
         and the expected number of accounts.
     """
 
+    total_account_balances = "N/A"
 
     if isinstance(bank_accounts, BankAccount):
         accounts = [bank_accounts]
@@ -36,8 +40,13 @@ def get_account_context(bank_accounts) -> dict[str, Any]:
 
     number_of_accounts = len(accounts)
 
+    if number_of_accounts >= 1:
+        user = accounts[0].user_profile.user
+        total_account_balances = format_currency(BankAccountCacheService.get_total_account_balance(user))
+
     return {
         "number_of_accounts": number_of_accounts,
         "current_account": accounts[0] if  number_of_accounts > 0 else None,
         "saving_account": accounts[1] if  number_of_accounts > 1 else None,
+        "total_account_balances": total_account_balances,
     }

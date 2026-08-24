@@ -700,8 +700,6 @@ class BankAccount(models.Model):
 
         self.balance += amount
 
-
-
     @classmethod
     def get_all_account_by_user_profile(cls, user_profile: UserProfile):
 
