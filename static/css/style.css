@@ -2486,7 +2486,8 @@ time {
     background: white;
     width: 55%;
     margin: auto;
-    z-index: 1000;
+
+    z-index: 100000;
     box-shadow: var(--box-shadow-primary);
     cursor: pointer;
 }
@@ -6316,7 +6317,7 @@ textarea::placeholder {
     position: absolute;
     background: white;
     top: 0;
-    z-index: 10000;
+    z-index: 100000;
     padding: 100px;
     width: 50%;
     display: none;
@@ -6362,4 +6363,10 @@ textarea::placeholder {
 /* the pin form button */
 #pin-btn.loading {
     color: transparent;
+}
+
+
+/* currency symbol for bank dashboard */
+#pending-amount-currency-symbol.show {
+    display: none;
 }

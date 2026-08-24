@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Case, When, Value, IntegerField
+from django.db.models import Case, Sum, When, Value, IntegerField
 from django.db.models import Count
 from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
 from django_countries.fields import CountryField
@@ -19,6 +19,7 @@ from utils.custom_errors import IncorrectAmountError, IncorrectAmountTypeError
 from utils.utils import format_full_address
 from user_profile.models import UserProfile
 from bank.errors import SortCodeRangeExhaustedError
+from utils.security.validators import validate_user
 
 
 User = get_user_model()
@@ -861,6 +862,38 @@ class LedgerEntry(models.Model):
     metadata         = models.JSONField(default=dict)
     review_required  = models.BooleanField(default=False)
 
+    @classmethod
+    def get_pending_funding_amount_for_user(cls, user: User) -> Decimal:
+        """
+        Return the total amount of pending funding transactions for a user.
+
+        Only ledger entries that are flagged for risk review and have a
+        pending status are included in the total.
+
+        Args:
+            user (User): The user whose pending funding transactions should
+                be totalled.
+
+        Returns:
+            Decimal: The total amount currently pending review. Returns
+                ``Decimal("0.00")`` if the user has no pending funding
+                transactions.
+
+        Raises:
+            TypeError: If ``user`` is not a ``User`` instance.
+        """
+        validate_user(user)
+
+        return (
+            cls.objects
+            .filter(
+                user=user,
+                risk_flag=True,
+                status=LedgerEntry.Status.PENDING,
+            )
+            .aggregate(total=Sum("amount"))["total"]
+            or Decimal("0.00")
+        )
     def __str__(self) -> str:
         return f"{self.reference} - {self.transaction_type} - {self.amount}"
 

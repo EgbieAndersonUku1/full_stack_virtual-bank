@@ -266,8 +266,9 @@ synchronise account balances and transaction histories.
             Total pending
         </div>
         <div class="balance-value">
-            <span aria-hidden="true">£</span>
-            <span aria-label="500 pounds" id="account_pending_amount">0.00</span>
+            <span aria-hidden="true" id="pending-amount-currency-symbol">£</span>
+            <span aria-label="500 pounds" id="account_pending_amount">{{ pending_amount }}</span>
+
         </div>
     </div>
 

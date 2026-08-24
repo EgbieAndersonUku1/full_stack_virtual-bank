@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
 from utils.decorators import has_superuser_permissions
-from .services.services import BankProvisioningService
+from .services.bank_services import BankProvisioningService
 
 from bank.forms import AddBankForm
 

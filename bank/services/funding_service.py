@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from enum import StrEnum
 
 from bank.models import BankAccount, LedgerEntry
-from bank.services.services import BankAccountCacheService
+from bank.services.bank_services import BankAccountCacheService
 from utils.custom_errors import MissingAccountError
 from utils.security.generator import generate_secure_code as generate_reference
 

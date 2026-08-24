@@ -1,13 +1,14 @@
 import { warnError } from "../../logger.js";
+import { formatCurrency } from "../../utils.js";
 
 const currentAccountBalance = document.getElementById("current_account_balance");
 const savingAccountBalance  = document.getElementById("saving_account_balance");
 const pendingBalance        = document.getElementById("account_pending_amount");
 const totalAccountsBalance  = document.getElementById("total_balance_accross_accounts");
 const navBankBalance        = document.getElementById("nav-bank-balance");
+const currencySymbol        = document.getElementById("pending-amount-currency-symbol")
 
 
-console.log(currentAccountBalance)
 
 export const DashboardBankPanel = (() => {
 
@@ -73,7 +74,11 @@ export const DashboardBankPanel = (() => {
      * @returns {void}
      */
     function setPendingBalance(amount) {
-        setBalance(amount, pendingBalance);
+
+        // Hide the static currency symbol in the HTML first because `formatCurrency`
+        // includes the currency symbol in the formatted amount.
+        currencySymbol.style.display = "none";
+        setBalance(formatCurrency(amount), pendingBalance);
     }
 
     /**

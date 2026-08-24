@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from bank.models import Bank
 from .forms import PinConfirmCodeForm
-from bank.services.services import get_banks_with_cache_fallback
+from bank.services.bank_services import get_banks_with_cache_fallback
 from setup.services.service import AccountOnboardingService
 from .decorators import is_onboarding_steps_completed
 from setup.decorators import onboarding_required
