@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from user_profile.models import UserProfile
+from utils.validators.validators import validate_user
 
 
 User = get_user_model()
@@ -23,7 +24,7 @@ class Pin(models.Model):
     created_on    = models.DateTimeField(auto_now_add=True)
     last_updated  = models.DateTimeField(auto_now=True)
     is_active     = models.BooleanField(default=True)
-    
+
     @property
     def username(self):
         """Returns the username associated with the pin"""
@@ -44,11 +45,10 @@ class Pin(models.Model):
             Returns None instead of raising Pin.DoesNotExist to simplify
             safe lookups in service layers or views.
         """
-        if not isinstance(user, User):
-            raise TypeError(_(f"Expected a user object but got User with type ({type(user).__name__})"))
-        
+
+        validate_user(user)
         return cls.objects.filter(user=user).first()
-       
+
     def is_hashed(self, value: str) -> bool:
         """
         Hash and set the user's PIN securely.
@@ -83,7 +83,7 @@ class Pin(models.Model):
             None
         """
         self.pin = make_password(pin)
-    
+
     def verify_pin(self, pin: str) -> bool:
         """
         Verify a raw PIN against the stored hashed PIN.
@@ -95,7 +95,7 @@ class Pin(models.Model):
             bool: True if the PIN matches the stored hash, False otherwise.
         """
         return check_password(pin, self.pin)
-    
+
     def save(self, *args, **kwargs):
         """
         Save the Pin instance with a safety check to ensure
@@ -108,10 +108,10 @@ class Pin(models.Model):
             This acts as a safeguard to enforce use of set_pin()
             before saving the model.
         """
-   
+
         if self.pin and not self.is_hashed(self.pin):
             raise ValidationError(_("The pin must not be stored in plain text. Set pin using set_pin() method"))
-        
+
         super().save(*args, **kwargs)
 
 

@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 from bank.services.bank_services import BankAccountCacheService
-from bank.services.ledger_services import LedgerEntryCache
 from bank.utils import get_account_context
 from card.services import CardDashboardServiceCache
 from utils.decorators import is_email_verified, go_to_staff_page
@@ -11,7 +10,9 @@ from user_profile.services import ProfileCacheService
 from authentication.view_helper import handle_json_post_request
 from setup.decorators import onboarding_required
 from bank.services.quick_funding_service import QuickFundingService
-from .view_helper import format_balance_fields
+from .view_helper import format_balance_fields, extract_pin_from_dict, extract_amount_from_dict
+
+
 
 # Create your views here.
 
@@ -135,11 +136,12 @@ def money_management_portal(request):
 @is_email_verified
 def quick_fund_current_account(request):
 
-    def fund_current_account(request_body):
-        pin = request_body.get("pin")["values"]
-        data = QuickFundingService.quick_fund_current_account(pin=pin,
+    def fund_current_account(request_body: dict):
+        data = QuickFundingService.quick_fund_current_account(
+                                                          pin=extract_pin_from_dict(request_body),
                                                           amount=request_body.get("amount"),
-                                                          user=request.user)
+                                                          user=request.user
+                                                          )
         format_balance_fields(data)
         return data
 
@@ -155,9 +157,9 @@ def quick_fund_current_account(request):
 def quick_fund_savings_account(request):
 
     def fund_savings_account(request_body):
-        pin = request_body.get("pin")["values"]
-        data =  QuickFundingService.quick_fund_savings_account(pin=pin,
-                                                            amount=request_body.get("amount"),
+        data =  QuickFundingService.quick_fund_savings_account(
+                                                            pin=extract_pin_from_dict(request_body),
+                                                            amount=extract_amount_from_dict(request_body),
                                                             user=request.user
                                                              )
         format_balance_fields(data)

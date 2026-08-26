@@ -1,22 +1,25 @@
 from decimal import Decimal
-from typing import TypedDict, Literal
+from enum import StrEnum
+from typing import Literal, TypedDict
+
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from enum import StrEnum
 
 from bank.models import BankAccount, LedgerEntry
 from bank.services.bank_services import BankAccountCacheService
 from utils.custom_errors import MissingAccountError
 from utils.security.generator import generate_secure_code as generate_reference
+from utils.validators.validators import validate_user
 
 User = get_user_model()
 
 
 class AccountType(StrEnum):
     CURRENT_ACCOUNT = "current_account"
-    SAVING_ACCOUNT  = "saving_account"
+    SAVING_ACCOUNT = "saving_account"
+    BANK_CARD = "bank_card"
 
 
 Accounts = Literal[AccountType.CURRENT_ACCOUNT, AccountType.SAVING_ACCOUNT]
@@ -31,36 +34,53 @@ class FundingService:
     RISK_THRESHOLD = Decimal("10000.00")
 
     @classmethod
-    def _validate_user(cls, user: User) -> None:
-        if not isinstance(user, User):
-            error_msg = _(
-                "Expected a user instance. Got user with type {}".format(
-                    type(user).__name__
-                )
-            )
-            raise TypeError(error_msg)
+    def _get_bank_account_or_raise(
+        cls, user: User, destination: Accounts
+    ) -> BankAccount:
+        """
+        Retrieve the funding destination for a user.
 
-    @classmethod
-    def _get_bank_account_or_raise(cls, user: User, account_to_retrieve: Accounts) -> BankAccount:
+        The destination may be the user's current account, savings account,
+        or default bank card. If the requested destination cannot be found,
+        a ``MissingAccountError`` is raised.
 
-        if account_to_retrieve == AccountType.CURRENT_ACCOUNT:
+        Args:
+            user (User): The user whose funding destination should be retrieved.
+            destination (AccountType): The type of destination to retrieve,
+                such as a current account, savings account, or bank card.
+
+        Returns:
+            BankAccount: The requested funding destination.
+
+        Raises:
+            MissingAccountError: If the requested funding destination does not
+                exist for the user.
+            ValueError: If an unsupported destination type is supplied.
+        """
+
+        if destination == AccountType.CURRENT_ACCOUNT:
             account = BankAccountCacheService.get_current_account(user)
-        else:
+
+        elif destination == AccountType.SAVING_ACCOUNT:
             account = BankAccountCacheService.get_saving_account(user)
 
+        else:
+            raise ValueError(f"Unsupported destination: {destination}")
+
         if not account:
-            error_msg = _(
-                "The current account for user with id {} is missing".format(user.id)
+            raise MissingAccountError(
+                _("The requested funding destination could not be found.")
             )
-            raise MissingAccountError(error_msg)
 
         return account
 
     @classmethod
-    def _add_funds_to_account(cls, amount: Decimal, user: User, account_to_fund: str) -> FundingResponse:
+    def _add_funds_to_destination(
+        cls, amount: Decimal, user: User, account_to_fund: str
+    ) -> FundingResponse:
 
-        cls._validate_user(user)
-        account = cls._get_bank_account_or_raise(user=user, account_to_retrieve=account_to_fund)
+        validate_user(user)
+        account = cls._get_bank_account_or_raise(user=user, destination=account_to_fund)
 
         with transaction.atomic():
 
@@ -83,7 +103,7 @@ class FundingService:
                 ledger_entry.risk_flag = True
                 ledger_entry.risk_reason = f"User {user} funded the account with an amount that exceeded the risk threshold."
 
-                ledger_entry.status          = LedgerEntry.Status.PENDING
+                ledger_entry.status = LedgerEntry.Status.PENDING
                 ledger_entry.review_required = True
             else:
 
@@ -97,10 +117,10 @@ class FundingService:
                 account.save()
                 BankAccountCacheService.set(user)
 
-                ledger_entry.status       = LedgerEntry.Status.COMPLETED
+                ledger_entry.status = LedgerEntry.Status.COMPLETED
                 ledger_entry.completed_on = timezone.now()
 
-            ledger_entry.closing_balance  = account.balance
+            ledger_entry.closing_balance = account.balance
             ledger_entry.save()
 
             resp: FundingResponse = {
@@ -110,7 +130,9 @@ class FundingService:
             return resp
 
     @classmethod
-    def add_funds_to_saving_account(cls, amount: Decimal, user: User) -> FundingResponse:
+    def add_funds_to_saving_account(
+        cls, amount: Decimal, user: User
+    ) -> FundingResponse:
         """
         Add funds to the user's saving bank account.
 
@@ -145,10 +167,14 @@ class FundingService:
                 }
 
         """
-        return cls._add_funds_to_account(amount=amount, user=user, account_to_fund=AccountType.SAVING_ACCOUNT)
+        return cls._add_funds_to_destination(
+            amount=amount, user=user, account_to_fund=AccountType.SAVING_ACCOUNT
+        )
 
     @classmethod
-    def add_funds_to_current_account(cls, amount: Decimal, user: User) -> FundingResponse:
+    def add_funds_to_current_account(
+        cls, amount: Decimal, user: User
+    ) -> FundingResponse:
         """
         Add funds to the user's current bank account.
 
@@ -184,4 +210,7 @@ class FundingService:
                 }
 
         """
-        return cls._add_funds_to_account(amount=amount, user=user, account_to_fund=AccountType.CURRENT_ACCOUNT)
+        return cls._add_funds_to_destination(
+            amount=amount, user=user, account_to_fund=AccountType.CURRENT_ACCOUNT
+        )
+
