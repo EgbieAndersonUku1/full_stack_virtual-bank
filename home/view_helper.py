@@ -1,4 +1,8 @@
+from django.utils.translation import gettext_lazy as _
+
 from utils.formatter import format_currency
+from utils.validators.validators import validate_dict
+
 
 
 def format_balance_fields(data: dict) -> None:
@@ -18,9 +22,8 @@ def format_balance_fields(data: dict) -> None:
     """
 
     if not isinstance(data, dict):
-        raise TypeError(
-            f"Expected a dict, got type {type(data).__name__}"
-        )
+        error_msg = "Expected a dict, got type {}".format(type(data).__name__)
+        raise TypeError(_(error_msg))
 
     required_keys = (
         "CURRENT_ACCOUNT_BALANCE",
@@ -31,7 +34,49 @@ def format_balance_fields(data: dict) -> None:
 
     for key in required_keys:
         if key not in data:
-            raise KeyError(f"Required key '{key}' is missing from the response.")
+            error_msg = "Required key '{}' is missing from the response.".format(key)
+            raise KeyError(_(error_msg))
 
     for key in required_keys:
         data[key] = format_currency(data[key])
+
+
+
+def extract_pin_from_dict(data: dict) -> str | None:
+    """
+    Extracts a pin string from a dictinary object.
+
+    The function takes a dictionary object and extracts
+    a pin if found. If no pin is found returns None.
+
+    Args:
+        data (dict): A dictionary object contain the pin string
+
+    Returns:
+        A pin in the form of a string or none if not found.
+
+    """
+    validate_dict(data)
+    return data.get("pin", {}).get("values")
+
+
+
+def extract_amount_from_dict(data: dict) -> str | None:
+    """
+    Extracts a pin string from a dictinary object.
+
+    The function takes a dictionary object and extracts
+    a pin if found. If no pin is found returns None.
+
+    Args:
+        data (dict): A dictionary object contain the pin string
+
+    Returns:
+        A pin in the form of a string or none if not found.
+
+    """
+    validate_dict(data)
+
+    return data.get("amount")
+
+

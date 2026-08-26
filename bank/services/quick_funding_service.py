@@ -33,25 +33,27 @@ Note:
     directly when PIN validation is not part of the operation.
 """
 
-
+import logging
 from decimal import Decimal, InvalidOperation
 from enum import StrEnum
-from typing import Callable, TypedDict, Literal
+from typing import Callable, Literal, TypedDict
+
 from django.contrib.auth import get_user_model
 
-from bank.services.funding_service import FundingService, FundingResponse
-from bank.services.funding_service import AccountType as Accounts
-from bank.services.bank_services import BankAccountCacheService
 from bank.models import LedgerEntry
-from setup.models import Pin
+from bank.services.bank_services import BankAccountCacheService
+from bank.services.funding_service import AccountType as Accounts
+from bank.services.funding_service import FundingResponse, FundingService
 from bank.services.ledger_services import LedgerEntryCache
+from setup.models import Pin
 
-
+logger = logging.Logger(__name__)
 
 User = get_user_model()
 
-AccountType = Literal[Accounts.CURRENT_ACCOUNT, Accounts.SAVING_ACCOUNT]
-
+AccountType = Literal[
+    Accounts.CURRENT_ACCOUNT, Accounts.SAVING_ACCOUNT, Accounts.BANK_CARD
+]
 
 
 class Action(StrEnum):
@@ -60,12 +62,11 @@ class Action(StrEnum):
     is readable for the frontend.
     """
 
-    ACCOUNT_CREDITED       = "Account Credited"
+    ACCOUNT_CREDITED = "Account Credited"
     FUNDING_PENDING_REVIEW = "Funding Pending Review"
-    INVALID_PIN            = "Invalid Pin"
-    INVALID_AMOUNT         = "Invalid amount"
-    INTERNAL_ERROR         = "Internal Error"
-
+    INVALID_PIN = "Invalid Pin"
+    INVALID_AMOUNT = "Invalid amount"
+    INTERNAL_ERROR = "Internal Error"
 
 
 class QuickFundResponse(TypedDict):
@@ -75,6 +76,7 @@ class QuickFundResponse(TypedDict):
     The response contains the funding result and the latest account balances
     calculated by the backend.
     """
+
     SUCCESS: bool
     MSG: str
     ACTION: str
@@ -87,6 +89,43 @@ class QuickFundResponse(TypedDict):
     # Closing balance of the account involved in the funding transaction.
     BALANCE: Decimal
 
+
+class PinVerificationResult(StrEnum):
+    VALID = "VALID"
+    INVALID = "INVALID"
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+
+
+class PinService:
+
+    @classmethod
+    def verify_pin(cls, user_pin: str, user: User) -> PinVerificationResult:
+
+        pin = Pin.get_pin_by_user(user=user)
+
+        if not pin:
+            msg = f"Internal error, user {user.id} PIN was not found"
+            logger.critical(msg)
+            return PinVerificationResult.INTERNAL_ERROR
+
+        if not pin.verify_pin(user_pin):
+            return PinVerificationResult.INVALID
+
+        return PinVerificationResult.VALID
+
+
+# internal use only not be imported
+data: QuickFundResponse = {
+    "SUCCESS": False,
+    "MSG": "",
+    "ACTION": "",
+    "AMOUNT": Decimal("0.00"),
+    "BALANCE": Decimal("0.00"),
+    "CURRENT_ACCOUNT_BALANCE": Decimal("0.00"),
+    "SAVINGS_ACCOUNT_BALANCE": Decimal("0.00"),
+    "TOTAL_BALANCE": Decimal("0.00"),
+    "PENDING_AMOUNT": Decimal("0.00"),
+}
 
 
 class QuickFundingService:
@@ -143,11 +182,11 @@ class QuickFundingService:
 
     @classmethod
     def _add_total_balance_to_response(
-                                    cls,
-                                    data: QuickFundResponse,
-                                    current_balance: Decimal,
-                                    saving_balance: Decimal,
-                                ) -> None:
+        cls,
+        data: QuickFundResponse,
+        current_balance: Decimal,
+        saving_balance: Decimal,
+    ) -> None:
         """Add the combined current and savings balances to the response."""
         data["TOTAL_BALANCE"] = current_balance + saving_balance
 
@@ -166,13 +205,16 @@ class QuickFundingService:
             A ``Decimal`` representation of the amount, or ``None``
             if the amount cannot be converted to ``Decimal``.
         """
+
         try:
             return Decimal(str(amount))
         except InvalidOperation:
             return None
 
     @classmethod
-    def _get_funding_method(cls, account_to_fund: str = "current_account") -> Callable[[Decimal, User], FundingResponse]:
+    def _get_funding_method(
+        cls, account_to_fund: str = "current_account"
+    ) -> Callable[[Decimal, User], FundingResponse]:
         """
         Return the funding service method for the requested account type.
 
@@ -191,11 +233,13 @@ class QuickFundingService:
         }[account_to_fund]
 
     @classmethod
-    def _fund_account(cls, user_pin: str, amount: int | float,
-                       user: User,
-                       account_type: AccountType = Accounts.CURRENT_ACCOUNT
-                       ) -> QuickFundResponse:
-
+    def _fund_account(
+        cls,
+        user_pin: str,
+        amount: int | float,
+        user: User,
+        account_type: AccountType = Accounts.CURRENT_ACCOUNT,
+    ) -> QuickFundResponse:
         """
         Process a quick funding request for a user's bank account.
 
@@ -222,35 +266,22 @@ class QuickFundingService:
                 - quick_fund_savings_account(...)
 
         """
-
-        data: QuickFundResponse = {
-            "SUCCESS": False,
-            "MSG": "",
-            "ACTION": "",
-            "AMOUNT": Decimal("0.00"),
-            "BALANCE": Decimal("0.00"),
-            "CURRENT_ACCOUNT_BALANCE": Decimal("0.00"),
-            "SAVINGS_ACCOUNT_BALANCE": Decimal("0.00"),
-            "TOTAL_BALANCE": Decimal("0.00"),
-            "PENDING_AMOUNT": Decimal("0.00"),
-
-        }
-
         # PIN verification must occur before delegating to the financial service.
-        pin = Pin.get_pin_by_user(user=user)
+        pin_result = PinService.verify_pin(
+            user_pin=user_pin,
+            user=user,
+        )
 
-        if not pin:
+        if pin_result == PinVerificationResult.INTERNAL_ERROR:
             data["MSG"] = (
-                    "Something went wrong and the user associated with pin wasn't found. "
-                    "Try again later."
-                )
+                "Something went wrong and the PIN associated with your "
+                "account could not be found. Please try again later."
+            )
             data["ACTION"] = Action.INTERNAL_ERROR
             return data
 
-        is_valid = pin.verify_pin(user_pin)
-
-        if not is_valid:
-            data["MSG"]   = "The pin entered is invalid"
+        if pin_result == PinVerificationResult.INVALID:
+            data["MSG"] = "The PIN entered is invalid."
             data["ACTION"] = Action.INVALID_PIN
             return data
 
@@ -258,9 +289,9 @@ class QuickFundingService:
 
         if decimal_amount is None:
             data["MSG"] = (
-                    f"The amount entered is invalid. Expected a float or int, "
-                    f"but got type {type(amount).__name__}."
-                )
+                f"The amount entered is invalid. Expected a float or int, "
+                f"but got type {type(amount).__name__}."
+            )
 
             data["ACTION"] = Action.INVALID_AMOUNT
             return data
@@ -269,27 +300,31 @@ class QuickFundingService:
         resp = func(amount=decimal_amount, user=user)
 
         data["SUCCESS"] = True
-        ledger_entry    = resp["ledger_entry"]
+        ledger_entry = resp["ledger_entry"]
         data["BALANCE"] = ledger_entry.closing_balance
 
         if ledger_entry.risk_flag:
             data["PENDING_AMOUNT"] = cls._get_pending_amount_and_cache(user)
-            data["ACTION"]         = Action.FUNDING_PENDING_REVIEW
+            data["ACTION"] = Action.FUNDING_PENDING_REVIEW
             data["MSG"] = (
-                    "Your funding request is pending review because the amount exceeds "
-                    "the risk threshold."
+                "Your funding request is pending review because the amount exceeds "
+                "the risk threshold."
             )
             return data
 
-        data["MSG"]            = f"Your account has been successfully credited with {ledger_entry.amount}."
-        data["AMOUNT"]         = ledger_entry.amount
-        data["ACTION"]         = Action.ACCOUNT_CREDITED
+        data["MSG"] = (
+            f"Your account has been successfully credited with {ledger_entry.amount}."
+        )
+        data["AMOUNT"] = ledger_entry.amount
+        data["ACTION"] = Action.ACCOUNT_CREDITED
         data["PENDING_AMOUNT"] = cls._get_pending_amount_and_cache(user)
 
         return data
 
     @classmethod
-    def quick_fund_current_account(cls, pin: str, amount: int | float, user: User) -> QuickFundResponse:
+    def quick_fund_current_account(
+        cls, pin: str, amount: int | float, user: User
+    ) -> QuickFundResponse:
         """
         Quickly fund the user's current account after PIN verification.
 
@@ -304,19 +339,22 @@ class QuickFundingService:
         """
 
         saving_account = BankAccountCacheService.get_saving_account(user)
-        data           = cls._fund_account(user_pin=pin, amount=amount, user=user)
+        data = cls._fund_account(user_pin=pin, amount=amount, user=user)
 
-        data["CURRENT_ACCOUNT_BALANCE"]  = data["BALANCE"]
-        data["SAVINGS_ACCOUNT_BALANCE"]  = saving_account.balance
+        data["CURRENT_ACCOUNT_BALANCE"] = data["BALANCE"]
+        data["SAVINGS_ACCOUNT_BALANCE"] = saving_account.balance
 
-        cls._add_total_balance_to_response(data,
-                                          current_balance=data["CURRENT_ACCOUNT_BALANCE"],
-                                          saving_balance=data["SAVINGS_ACCOUNT_BALANCE"]
-                                          )
+        cls._add_total_balance_to_response(
+            data,
+            current_balance=data["CURRENT_ACCOUNT_BALANCE"],
+            saving_balance=data["SAVINGS_ACCOUNT_BALANCE"],
+        )
         return data
 
     @classmethod
-    def quick_fund_savings_account(cls, pin: str, amount: int | float, user: User) -> QuickFundResponse:
+    def quick_fund_savings_account(
+        cls, pin: str, amount: int | float | Decimal, user: User
+    ) -> QuickFundResponse:
         """
         Quickly fund the user's savings account after PIN verification.
 
@@ -331,15 +369,17 @@ class QuickFundingService:
 
         """
         current_account = BankAccountCacheService.get_current_account(user)
-        data            = cls._fund_account(user_pin=pin, amount=amount, user=user, account_type=Accounts.SAVING_ACCOUNT)
+        data = cls._fund_account(
+            user_pin=pin, amount=amount, user=user, account_type=Accounts.SAVING_ACCOUNT
+        )
 
         data["SAVINGS_ACCOUNT_BALANCE"] = data["BALANCE"]
         data["CURRENT_ACCOUNT_BALANCE"] = current_account.balance
 
-        cls._add_total_balance_to_response(data,
-                                          current_balance= data["CURRENT_ACCOUNT_BALANCE"],
-                                          saving_balance=data["SAVINGS_ACCOUNT_BALANCE"]
-                                          )
+        cls._add_total_balance_to_response(
+            data,
+            current_balance=data["CURRENT_ACCOUNT_BALANCE"],
+            saving_balance=data["SAVINGS_ACCOUNT_BALANCE"],
+        )
         return data
-
 

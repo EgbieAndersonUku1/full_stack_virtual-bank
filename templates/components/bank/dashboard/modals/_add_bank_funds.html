@@ -107,24 +107,6 @@ included in other views where account funding is required.
         </div>
         {% endif %}
 
-        <!-- Debit card -->
-        <div class="account-card flex flex-space-between" role="button" tabindex="0"
-            aria-label="Select debit card source" data-account="debit-cards">
-
-            <div class="account-card-details flex-grid two-column-20_80_grid">
-                <div class="account-card__image">
-                    <img src="{%  static 'images/card-icons/credit-card.png' %}" alt="Debit card icon">
-                </div>
-
-                <div class="account-card__description pt-16 ml-4">
-                    <h3 class="card-title">Debit card</h3>
-                     <p>Add funds to {{ bank_name | title }} default debit card</p>
-                </div>
-            </div>
-
-            <span aria-hidden="true" class="mt-48 pr-24">&gt;</span>
-        </div>
-
         <!-- Wallet -->
 
         {% if has_wallet %}

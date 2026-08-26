@@ -17,7 +17,6 @@ class BankCardAdmin(admin.ModelAdmin):
                           "expiry_date",
                           "created_on",
                           "last_modified_on",
-                          "balance",
                           "bank_account",
                           "card_number",
                           "card_brand",
@@ -25,6 +24,7 @@ class BankCardAdmin(admin.ModelAdmin):
                           "card_type",
                           "masked_card_number",
                           "full_name",
+                          "default_card",
                           ]
     list_display_links = ["full_name", "masked_card_number"]
 
@@ -58,6 +58,7 @@ class BankCardAdmin(admin.ModelAdmin):
                 "fields": [
                     "is_active",
                     "show_in_dashboard",
+                    "default_card",
                     "card_brand",
                     "card_category",
                     "card_type",
@@ -72,7 +73,6 @@ class BankCardAdmin(admin.ModelAdmin):
                     "including current balance and expiry information."
                 ),
                 "fields": [
-                    "balance",
                     "expiry_date",
                 ],
             },

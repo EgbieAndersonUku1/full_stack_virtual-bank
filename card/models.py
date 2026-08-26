@@ -5,14 +5,16 @@ from django.db.models import Prefetch
 from django.db import models
 from decimal import Decimal
 from django.utils.translation import gettext_lazy as _
-from typing import Iterable, Type, Any
+from typing import Iterable, Type, Any, Literal
 
 
 from bank.models import BankAccount
-from utils.custom_errors import BankAccountTypeError
+from utils.custom_errors import BankAccountTypeError, IncorrectAmountError, IncorrectAmountTypeError
 from utils.security.generator import generate_secure_code
+from utils.validators.validators import validate_amount
 
 # Create your models here.
+
 
 
 class BankCard(models.Model):
@@ -38,7 +40,6 @@ class BankCard(models.Model):
     bank_account      = models.ForeignKey(BankAccount, on_delete=models.CASCADE, related_name="cards")
     card_number       = models.CharField(max_length=32, unique=True)
     expiry_date       = models.DateTimeField(blank=True, null=True, editable=False)
-    balance           = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
     card_brand        = models.CharField(max_length=20, choices=CardBrand.choices, default=CardBrand.VISA)
     card_type         = models.CharField(max_length=20, choices=CardType.choices, default=CardType.VIRTUAL)
     card_category     = models.CharField(max_length=20, choices=CardCategory.choices, default=CardCategory.DEBIT)
@@ -46,6 +47,7 @@ class BankCard(models.Model):
     created_on        = models.DateTimeField(auto_now_add=True)
     last_modified_on  = models.DateTimeField(auto_now=True)
     show_in_dashboard = models.BooleanField(default=False)
+    default_card      = models.BooleanField(default=False)
 
     @property
     def bank_name(self):
@@ -72,6 +74,47 @@ class BankCard(models.Model):
             "bank_account__sort_code__bank",
             "bank_account__user_profile__user"
         )
+
+    @classmethod
+    def get_default_card(cls, bank_account: BankAccount) -> BankCard:
+        """
+        Return the default card associated with the bank account.
+
+        Args:
+            bank_account: The bank account associated with the default card
+
+        Returns:
+            The bank card instance associated with bank account.
+        """
+        cls._validate_type(parameter_name="bank account",
+                            parameter_value=bank_account,
+                            expected_type=BankAccount
+                            )
+
+        return cls._base_queryset().filter(
+                                        bank_account=bank_account,
+                                        is_active=True
+                                         ).first()
+
+    @classmethod
+    def get_by_card_type(cls, bank_account: BankAccount, card_type: card_type) -> BankCard:
+        cls._validate_type(parameter_name="bank account",
+                            parameter_value=bank_account,
+                            expected_type=BankAccount
+                            )
+
+        if not isinstance(card_type, str):
+            error_msg = "Expected a string, got type {}".format(type(card_type).__name__)
+            raise TypeError(_(error_msg))
+
+        return cls._base_queryset().filter(
+            bank_account=bank_account,
+            is_active=True,
+            card_type=card_type
+        ).order_by("created_on", "id").first()
+
+
+
 
     @classmethod
     def get_num_of_cards_in_dashboard(cls, bank_account: BankAccount) -> int:
@@ -189,3 +232,10 @@ class CardDashboard(models.Model):
 
     def __str__(self) -> str:
         return self.bank_account.full_name
+
+
+
+card_type = Literal[BankCard.CardBrand.DISCOVER,
+                    BankCard.CardBrand.VISA,
+                    BankCard.CardBrand.MASTERCARD
+                    ]

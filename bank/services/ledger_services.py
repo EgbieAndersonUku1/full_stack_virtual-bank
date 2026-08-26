@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from bank.models import LedgerEntry
 from utils.safe_cache import set_cache_with_retry, get_cache_with_retry
-from utils.security.validators import validate_user
+from utils.validators.validators import validate_user
 
 User = get_user_model()
 

@@ -19,7 +19,8 @@ from utils.custom_errors import IncorrectAmountError, IncorrectAmountTypeError
 from utils.utils import format_full_address
 from user_profile.models import UserProfile
 from bank.errors import SortCodeRangeExhaustedError
-from utils.security.validators import validate_user
+from utils.validators.validators import validate_user
+from utils.validators.validators import validate_amount
 
 
 User = get_user_model()
@@ -687,18 +688,13 @@ class BankAccount(models.Model):
         amount (Decimal): The positive amount to add to the account balance.
 
         Raises:
-        IncorrectAmountTypeError: If `amount` is not a `Decimal`.
-        IncorrectAmountError: If `amount` is less than or equal to zero.
+            IncorrectAmountTypeError: If `amount` is not a `Decimal`.
+            IncorrectAmountError: If `amount` is less than or equal to zero.
+
+            Note the error is raised from validate_amount method
         """
 
-        if not isinstance(amount, Decimal):
-            error_msg = _("Expected a Decimal. Got type {}".format(type(amount).__name__))
-            raise IncorrectAmountTypeError(error_msg)
-
-        if amount <= Decimal("0"):
-            error_msg = _("Amount must be greater than 0. Got amount {}".format(amount))
-            raise IncorrectAmountError(error_msg)
-
+        validate_amount(amount)
         self.balance += amount
 
     @classmethod

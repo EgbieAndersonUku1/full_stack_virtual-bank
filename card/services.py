@@ -9,8 +9,9 @@ from django.utils import timezone
 from datetime import timedelta
 
 from bank.models import BankAccount
+from bank.services.bank_services import BankAccountCacheService
 from .models import BankCard, CardDashboard
-from utils.custom_errors import BankAccountTypeError
+from utils.custom_errors import BankAccountTypeError, MissingCurrentAccountError
 from utils.security.generator import generate_secure_code
 from utils.safe_cache import set_cache_with_retry, get_cache_with_retry
 
@@ -70,7 +71,53 @@ class BankCardService:
             expiry_date=expiry_date,
             card_brand=BankCard.CardBrand.VISA,
             card_type=BankCard.CardType.VIRTUAL,
+            default_card=True,
         )
+
+    @staticmethod
+    def get_default_card(user: User) -> BankCard:
+        """
+        Retrieve the user's default bank card.
+
+        The default card is associated with the user's current bank
+        account. The current account is retrieved through the account
+        cache before the default card is requested.
+
+        Use this method if you want to retrieve a default card
+        using the user iunstance
+
+
+
+        Args:
+            user (User): The user whose default card should be retrieved.
+
+        Returns:
+             BankCard: The user's default bank card.
+
+        Raises:
+            MissingCurrentAccountError: If the user does not have a current account.
+        """
+
+
+        current_account = BankAccountCacheService.get_current_account(user)
+
+        if current_account is None:
+            error_msg = (
+                        f"User {user.id} is missing a current account"
+                    )
+            logger.critical(error_msg)
+            raise MissingCurrentAccountError(_(error_msg))
+
+        bank_card = BankCard.get_default_card(current_account)
+
+        if bank_card:
+            return bank_card
+
+        # fallback to visa card
+        return BankCard.get_by_card_type(bank_account=current_account,
+                                          card_type=BankCard.CardBrand.VISA
+                                          )
+
 
 
 
@@ -100,3 +147,4 @@ class CardDashboardServiceCache:
                 set_cache_with_retry(session_key, cards)
 
         return cards
+
