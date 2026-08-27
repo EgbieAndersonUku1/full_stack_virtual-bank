@@ -27,12 +27,13 @@ urlpatterns = [
     path('bank/setup/', include("setup.urls")),
     # path('', include('core_admin.urls')),
     path('', include("home.urls")),
-    path('', include("authentication.urls")),
+
     path('employee/', include('platform_employee.urls')),
     path('card-request/', include('card_request.urls')),
     path("ckeditor5/", include("django_ckeditor_5.urls")),
     path('cards/', include("card.urls")),
     path("", include("django_auth_recovery_codes.urls")),  # recovery codes
+     path('', include("authentication.urls")),
 ]
 
 
