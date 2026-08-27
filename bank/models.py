@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.db import models
 from django.db.models import Case, Sum, When, Value, IntegerField
 from django.db.models import Count
@@ -894,3 +896,25 @@ class LedgerEntry(models.Model):
         return f"{self.reference} - {self.transaction_type} - {self.amount}"
 
 
+
+class AccountSecuritySettings(models.Model):
+    user                     = models.OneToOneField(User, on_delete=models.CASCADE, related_name="security_settings")
+    enable_recovery_code     = models.BooleanField(default=True)
+    enable_suspicious_alert  = models.BooleanField(default=True)
+    created_on               = models.DateTimeField(auto_now_add=True)
+    updated_on               = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Account Security Settings"
+        
+    def __str__(self) -> str:
+        return str(self.user)
+
+    @classmethod
+    def get_by_user(cls, user: User) -> AccountSecuritySettings | None:
+        validate_user(user)
+
+        try:
+            return cls.objects.get(user=user)
+        except cls.DoesNotExist:
+            return None

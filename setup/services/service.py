@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 from bank.services.bank_services import AccountService
-from bank.models import Bank, BankAccount
+from bank.models import AccountSecuritySettings, Bank, BankAccount
 from card.services import BankCardService
 from setup.models import Pin
 from card.models import CardDashboard
@@ -88,6 +88,15 @@ class AccountOnboardingService:
                                       sort_code_masked=bank_account.sortcode_last_four_digits,
                                       bank_name=bank_account.bank_name,
                                        )
+
+
+    @classmethod
+    def _validate_instances_or_raise_error(cls, instance_list: list) -> None:
+        for (error_msg, instance) in instance_list:
+            if not instance:
+                logger.debug(error_msg)
+                raise OnBoardingFailureError(error_msg)
+
     @classmethod
     def complete_onboarding(cls,
                             user: User,
@@ -100,37 +109,27 @@ class AccountOnboardingService:
 
         with transaction.atomic():
 
-            user_profile   = cls._create_profile(user=user, profile_data=profile_data)
-            bank_account   = AccountService.open_bank_account(bank=bank, user_profile=user_profile)
-            bank_card      = BankCardService.create_default_bank_card(bank_account)
-            card_dashboard = CardDashboard.objects.get_or_create(bank_account=bank_account)
+            user_profile              = cls._create_profile(user=user, profile_data=profile_data)
+            bank_account              = AccountService.open_bank_account(bank=bank, user_profile=user_profile)
+            bank_card                 = BankCardService.create_default_bank_card(bank_account)
+            card_dashboard            = CardDashboard.objects.get_or_create(bank_account=bank_account)
+            account_security_settings = AccountSecuritySettings.objects.get_or_create(user=user_profile.user)
 
             cls._create_pin(pin=pin, user=user, user_profile=user_profile)
 
             if bank.offer_saving_account == Bank.OfferSavingAccountOptions.YES:
                  AccountService.open_bank_account(bank=bank, user_profile=user_profile, account_type=BankAccount.AccountType.SAVINGS)
 
+        instances_to_validate = [
+                                ("User profile creation failed during onboarding process", user_profile),
+                                ("Bank account creation failed during onboarding process", bank_account),
+                                ("Default bank creation failed during onboarding process", bank_card),
+                                ("Default user card dashboard failed during onboarding process", card_dashboard),
+                                ( "Account settings for user not created during onboarding", account_security_settings)
 
-        if not bank_account:
-            error_msg = "Bank account creation failed during onboarding process"
-            logger.debug(error_msg)
-            raise OnBoardingFailureError(error_msg)
+                                 ]
 
-        if not user_profile:
-            error_msg = "User profile creation failed during onboarding process"
-            logger.debug(error_msg)
-            raise OnBoardingFailureError(_(error_msg))
-
-        if not bank_card:
-            error_msg = "Default bank creation failed during onboarding process"
-            logger.debug(error_msg)
-            raise OnBoardingFailureError(_(error_msg))
-
-        if not card_dashboard:
-            error_msg = "Default user card dashboard failed during onboarding process"
-            logger.debug(error_msg)
-            raise OnBoardingFailureError(_(error_msg))
-
+        cls._validate_instances_or_raise_error(instances_to_validate)
 
         cls._send_welcome_email(bank_account=bank_account,
                                 user_profile=user_profile
