@@ -33,10 +33,10 @@
                     <div class="label">
                          {{ form.username.label }}
                     </div>
-                   
+
                     {{ form.username }}
                     {{ form.username.errors }}
-                  
+
                     <small id="username-exists" class="field-check">Username already exists</small>
                 </div>
 
@@ -45,7 +45,7 @@
                     <div class="label">
                           {{ form.email.label }}
                     </div>
-                   
+
                     {{ form.email }}
                     {{ form.email.errors }}
                     <small id="email-exists" class="field-check">Email already exists</small>
@@ -57,13 +57,13 @@
                         id="wallet-helper-icon">
                         <i class="fa-solid fa-circle-question" aria-hidden="true" id="wallet-register-code-info"></i>
                     </span>
-                    
+
                     <div class="label">
                           {{ form.wallet_registeration_code.label }}
                     </div>
-                  
+
                     {{ form.wallet_registeration_code }}
-                    
+
                     <small id="wallet-unique-code" class="field-check">The wallet registration code is
                         invalid</small>
                     <small id="wallet-code-help" class="italic">
@@ -76,9 +76,9 @@
 
                     <div class="flex-grid">
                         <div class="label">
-                              {{ form.password.label }} 
+                              {{ form.password.label }}
                         </div>
-                      
+
                         {{ form.password }}
                         {{ form.password.errors }}
                     </div>
@@ -87,7 +87,7 @@
                         <div class="label">
                               {{ form.confirm_password.label }}
                         </div>
-                      
+
                         {{ form.confirm_password }}
                          {{ form.confirm_password.errors }}
                     </div>
@@ -156,7 +156,7 @@
                     {{ form.terms_and_condition }}
                     <small id="terms-of-condition-checkbox" class="pl-8">
                         <a href="{% url 'terms_and_conditions' %}"> I agree to the Terms of Service and Privacy Policy</a>
-                      
+
                     </small>
                 </div>
 
@@ -175,7 +175,7 @@
             <div id="already-have-an-account" class="center">
 
                 <span> Already have an account?</span>
-                <a href="{% url 'login_user' %}" class="auth-link">Login</a>
+                <a href="{% url 'authentication_login_user' %}" class="auth-link">Login</a>
             </div>
 
 
