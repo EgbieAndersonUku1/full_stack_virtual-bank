@@ -9,11 +9,64 @@ from .models import (Bank,
                      SortCodeAllocationState,
                      SortCodeAllocatorLastRecordLookup,
                      SortCodeRangePool,
-                     SortCodeAllocationStateLog
+                     SortCodeAllocationStateLog,
+                     AccountSecuritySettings
                      )
 
 
 # Register your models here.
+class AccountSecuritySettingsAdmin(admin.ModelAdmin):
+
+    readonly_fields    = ["created_on", "updated_on", "id"]
+    list_display       = ["user", "enable_recovery_code", "enable_suspicious_alert", "created_on", "updated_on"]
+    list_display_links = ["user"]
+    list_filter        = ["enable_recovery_code", "enable_suspicious_alert", "created_on"]
+    search_fields      = ["user__username", "user__email"]
+
+    ordering = [
+        "-created_on",
+    ]
+
+    fieldsets = [
+        (
+            "User",
+            {
+                "description": (
+                    "Identifies the user whose account security preferences "
+                    "are being configured."
+                ),
+                "fields": ["id", "user"],
+            },
+        ),
+
+        (
+            "Security Features",
+            {
+                "description": (
+                    "Controls which security features are available to the user "
+                    "through the application."
+                ),
+                "fields": [
+                    "enable_recovery_code",
+                    "enable_suspicious_alert",
+                ],
+            },
+        ),
+
+        (
+            "System & Audit",
+            {
+                "description": (
+                    "Displays system-generated timestamps for the creation "
+                    "and most recent update of these security settings."
+                ),
+                "fields": ["created_on", "updated_on"],
+            },
+        ),
+    ]
+
+
+
 
 
 class BankAdmin(admin.ModelAdmin):
@@ -676,4 +729,5 @@ admin.site.register(SortCodeAllocationState, SortCodeAllocationStateAdmin)
 admin.site.register(SortCodeRangePool, SortCodeRangePoolAdmin)
 admin.site.register(SortCodeAllocationStateLog, SortCodeAllocationStateLogAdmin)
 admin.site.register(LedgerEntry, LedgerEntryAdmin)
+admin.site.register(AccountSecuritySettings, AccountSecuritySettingsAdmin)
 

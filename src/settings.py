@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django_auth_recovery_codes",
 
      # my apps
     'bank.apps.BankConfig',
@@ -184,13 +185,15 @@ Q_CLUSTER = {
     'name': 'virtualBank',
     'workers': 4,
     'recycle': 500,
-    'timeout': 60,
+    'timeout': 300,
+    'retry': 600,
     'compress': True,
     'save_limit': 1000,
     'queue_limit': 1000,
     'label': 'Django Q',
-    'orm': "default",
+    'orm': 'default',
 }
+
 
 
 # for now send the email to the console since we are in development, later wire it to gmail
@@ -354,3 +357,106 @@ CKEDITOR_5_CONFIGS = {
         ],
     },
 }
+
+
+
+
+
+
+# setting up the flags for django 2fa recovery code
+
+# ===========================
+# Email / Admin
+# ===========================
+DJANGO_AUTH_RECOVERY_CODES_ADMIN_SENDER_EMAIL = getenv(
+    "DJANGO_AUTH_RECOVERY_CODES_ADMIN_SENDER_EMAIL"
+)
+
+DJANGO_AUTH_RECOVERY_CODE_ADMIN_EMAIL_HOST_USER = getenv(
+    "DJANGO_AUTH_RECOVERY_CODE_ADMIN_EMAIL_HOST_USER"
+)
+
+DJANGO_AUTH_RECOVERY_CODE_ADMIN_USERNAME = getenv(
+    "DJANGO_AUTH_RECOVERY_CODE_ADMIN_USERNAME"
+)
+
+DJANGO_AUTH_RECOVERY_CODE_STORE_EMAIL_LOG = False
+
+# ===========================
+# 🔑 Security / Keys
+# ===========================
+DJANGO_AUTH_RECOVERY_KEY = getenv("DJANGO_AUTH_RECOVERY_KEY")
+
+
+# ===========================
+# 📜 Audit / Retention
+# ===========================
+DJANGO_AUTH_RECOVERY_CODE_AUDIT_ENABLE_AUTO_CLEANUP = True
+DJANGO_AUTH_RECOVERY_CODE_AUDIT_RETENTION_DAYS = 30
+DJANGO_AUTH_RECOVERY_CODE_PURGE_DELETE_RETENTION_DAYS = 30
+DJANGO_AUTH_RECOVERY_CODE_PURGE_DELETE_SCHEDULER_USE_LOGGER = True
+
+
+# ===========================
+# ⏳ Rate Limiting / Cooldowns
+# ===========================
+DJANGO_AUTH_RECOVERY_CODES_AUTH_RATE_LIMITER_USE_CACHE = True
+DJANGO_AUTH_RECOVERY_CODES_BASE_COOLDOWN = 100  # five minutes minutes lock down
+DJANGO_AUTH_RECOVERY_CODES_COOLDOWN_CUTOFF_POINT = 3600
+DJANGO_AUTH_RECOVERY_CODES_COOLDOWN_MULTIPLIER = 2
+DJANGO_AUTH_RECOVERY_CODES_MAX_LOGIN_ATTEMPTS = 5
+
+
+# ===========================
+# 📦 Caching
+# ===========================
+DJANGO_AUTH_RECOVERY_CODES_CACHE_MAX = 3600
+DJANGO_AUTH_RECOVERY_CODES_CACHE_MIN = 1
+DJANGO_AUTH_RECOVERY_CODES_CACHE_TTL = 3600
+
+# ===========================
+# 📊 Pagination / Limits
+# ===========================
+DJANGO_AUTH_RECOVERY_CODE_MAX_VISIBLE = 20
+DJANGO_AUTH_RECOVERY_CODE_PER_PAGE = 5
+DJANGO_AUTH_RECOVERY_CODES_BATCH_DELETE_SIZE = 400
+DJANGO_AUTH_RECOVERY_CODES_MAX_DELETIONS_PER_RUN = -1
+
+# ===========================
+# 📂 Files / Naming
+# ===========================
+DJANGO_AUTH_RECOVERY_CODES_DEFAULT_FILE_NAME = "recovery_codes"
+DJANGO_AUTH_RECOVERY_CODES_DEFAULT_FORMAT = "txt"
+
+
+# ===========================
+# 🌍 Site / Redirects
+# ===========================
+DJANGO_AUTH_RECOVERY_CODES_SITE_NAME = "Virtual bank"
+DJANGO_AUTH_RECOVERY_CODE_REDIRECT_VIEW_AFTER_LOGOUT = "logout_user"
+
+
+
+# ===========================
+# 🌍 REcovery code email sucess message
+# ===========================
+DJANGO_AUTH_RECOVERY_CODE_EMAIL_SUCCESS_MSG = "Your recovery codes email has been successfully delivered."
+
+
+
+
+
+# Tell EmailSender where to find the templates dir
+
+import django_auth_recovery_codes
+from pathlib import Path
+
+# Get the path to the installed package
+PACKAGE_DIR = Path(django_auth_recovery_codes.__file__).parent
+
+# Define the templates directory within the package
+MYAPP_TEMPLATES_DIR = PACKAGE_DIR / "templates" / "django_auth_recovery_codes"
+
+
+from django_auth_recovery_codes.loggers.logger_config import DJANGO_AUTH_RECOVERY_CODES_LOGGING
+LOGGING = DJANGO_AUTH_RECOVERY_CODES_LOGGING
