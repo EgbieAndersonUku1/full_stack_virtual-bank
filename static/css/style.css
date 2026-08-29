@@ -2481,10 +2481,10 @@ time {
 #connect-with-wallet-id,
 #connect-wallet-modal {
     position: fixed;
-    top: 8%;
-    left: 25%;
+    top: 10px;
+    left: 20%;
     background: white;
-    width: 55%;
+    right: 0;
     margin: auto;
 
     z-index: 100000;
@@ -3449,7 +3449,7 @@ clicks the button
 
 #transaction-report {
     font-size: 0.875rem; /* 14px */
-    overflow-y: auto;
+    overflow-y: scroll;
 
 }
 
