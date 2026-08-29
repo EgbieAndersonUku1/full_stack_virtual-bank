@@ -79,7 +79,7 @@ need to inspect financial activity.
 -->
 
 <section id="bank-account-view-transactions" aria-labelledby="transactions-title">
-   
+
 
     <!-- The body -->
     <div class="bank-account-transactions__body p-24">
@@ -89,16 +89,17 @@ need to inspect financial activity.
         </h1>
 
         <p class="text-muted">
-            For chase account: IB VB-849500
+            For your {{ current_account.bank_name }} account:
         </p>
 
         <p id="table-instructions" class="table-instructions mt-4">
-            Click a row once and move away to select it. Click it again to deselect.
+            {% comment %} Click a row once and move away to select it. Click it again to deselect. {% endcomment %}
         </p>
 
         <!-- The optional form -->
         <form action="" method="post" id="bank-transaction-form" class="mt-8">
 
+            {% csrf_token %}
             <div class="bank-transaction-form-wrapper flex-grid three-column-grid">
 
                 <!-- from field -->
@@ -118,17 +119,9 @@ need to inspect financial activity.
                     <label for="transaction-type">Types</label>
                     <select name="type" id="transaction-type" required>
                         <option value="all" disabled>All Types</option>
-                        <option value="deposit" selected>Pay In (Deposits)</option>
-                        <option value="transfer_out">Transfers Out</option>
-                        <option value="transfer_in">Transfers In</option>
-                        <option value="card_payment">Card Payments</option>
-                        <option value="direct_debit">Direct Debits</option>
-                        <option value="subscription">Subscriptions</option>
-                        <option value="utility_payment">Utility Payments</option>
-                        <option value="refund">Refunds</option>
-                        <option value="atm_withdrawal">ATM Withdrawals</option>
-                        <option value="fees">Fees &amp; Charges</option>
-                        <option value="payment_received">Payments Received</option>
+                        <option value="credit" selected>Credit</option>
+                        <option value="debit">Debit</option>
+
                     </select>
                 </div>
 
@@ -148,60 +141,133 @@ need to inspect financial activity.
             <table id="transaction-report-table" aria-describedby="table-instructions">
                 <thead>
                     <tr id="row-header">
-                        <th scope="col">Date</th>
-                        <th scope="col">Description</th>
-                        <th scope="col" class="align-right">Amount</th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Transaction type</th>
+                        <th scope="col">Movement</th>
+                        <th scope="col">Amount</th>
+                         <th scope="col">Opening balance</th>
+                        <th scope="col">Closing balance</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Sent on</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     <tr>
-                        <td>Today, 10:32</td>
-                        <td>Payment - TARDIS time-travel seat booking</td>
-                        <td class="align-right negative">-£719.56</td>
+                        <td>1</td>
+                        <td>Added fund</td>
+                        <td>Credit</td>
+                        <td class=" negative">-£719.56</td>>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
+                        <td>Completed</td>
+                        <td>26/06/2026</td>
+
                     </tr>
 
                     <tr>
-                        <td>11 February 2026</td>
+                        <td>2</td>
+                        <td>Add funding</td>
+                        <td>Credit</td>
+                        <td class=" negative">-£500.00</td>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
                         <td>Pending</td>
-                        <td class="align-right negative">-£500.00</td>
+                        <td>26/06/2026</td>
+
                     </tr>
 
                     <tr>
-                        <td>25 December 2025</td>
-                        <td>Interplanetary snack delivery subscription from Galifrey</td>
-                        <td class="align-right negative">-£420.00</td>
+                        <td>3</td>
+                        <td>Add funding</td>
+                        <td>Credit</td>
+                        <td class=" negative">-£420.00</td>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
+                        <td>Completed</td>
+                        <td>26/06/2026</td>
                     </tr>
 
                     <tr>
-                        <td>1st June 2025</td>
-                        <td>Transfer Money</td>
-                        <td class="align-right negative">-£110.00</td>
+                        <td>4</td>
+                        <td>Add funding</td>
+                        <td>Credit</td>
+                        <td class=" negative">-£420.00</td>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
+                        <td>Completed</td>
+                        <td>26/06/2026</td>
                     </tr>
 
                     <tr>
-                        <td>22 Apr 2024</td>
-                        <td>Utility Payment</td>
-                        <td class="align-right negative">-£87.45</td>
+                        <td>5</td>
+                        <td>Add funding</td>
+                        <td>Credit</td>
+                        <td class="negative">-£87.45</td>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
+                        <td>Completed</td>
+                        <td>26/06/2026</td>
                     </tr>
 
                     <tr>
-                        <td>20 Apr 2024</td>
-                        <td>Subscription – Streaming Service</td>
-                        <td class="align-right negative">-£12.99</td>
+                        <td>6</td>
+                        <td>Add funding</td>
+                        <td>Credit</td>
+                        <td class=" postive">-£420.00</td>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
+                        <td>Completed</td>
+                        <td>26/06/2026</td>
                     </tr>
 
                     <tr>
-                        <td>18 Apr 2024</td>
-                        <td>Donation from Unit for saving the Earth from the Daleks</td>
-                        <td class="align-right positive">£2,500.00</td>
+                        <td>7</td>
+                        <td>Add funding</td>
+                        <td>Credit</td>
+                        <td class=" negative">-£420.00</td>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
+                        <td>Completed</td>
+                        <td>26/06/2026</td>
                     </tr>
 
                     <tr>
-                        <td>15 Apr 2024</td>
-                        <td>Payment Received from River Song</td>
-                        <td class="align-right positive">£350.00</td>
+                        <td>8</td>
+                        <td>Add funding</td>
+                        <td>Credit</td>
+                        <td class=" positive">£350.00</td>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
+                        <td>Completed</td>
+                        <td>26/06/2026</td>
                     </tr>
+
+                    <tr>
+                        <td>9</td>
+                        <td>Add funding</td>
+                        <td>Credit</td>
+                        <td class=" positive">£350.00</td>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
+                        <td>Completed</td>
+                        <td>26/06/2026</td>
+                    </tr>
+
+                    <tr>
+                        <td>10</td>
+                        <td>Add funding</td>
+                        <td>Credit</td>
+                        <td class=" positive">£350.00</td>
+                        <td>2500.00</td>
+                        <td>2500.00</td>
+                        <td>Completed</td>
+                        <td>26/06/2026</td>
+                    </tr>
+
+
+
+
                 </tbody>
             </table>
             <div class="show flex flex-end">

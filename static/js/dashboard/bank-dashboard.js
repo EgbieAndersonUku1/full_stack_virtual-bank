@@ -1,15 +1,16 @@
 import { BankFundInput } from "./bank/funds/addFunds.js";
 
 import { DashboardCardSidePanel } from "./bank/sidePanel/panel.js";
+import { ViewTransactionsModal } from "./bank/viewTransactions/transactionModal.js";
 import { handleWalletStatusClick } from "./wallet/WalletStatus.js";
 import { handleDisconnecectionConfirmationButton } from "./wallet/status/disconnect.js";
 import { handleWalletAuthForm, walletAuthForm } from "./wallet/wallet.js";
 import { WalletWizard, handleWalletLinkFormSubmission } from "./wallet/walletWizard.js";
 
 
-const dashboard         = document.getElementById("dashboard");
-const linkAccountForm   = document.getElementById("link-wallet-form");
-const walletManualForm  = document.getElementById("manually-verification-wallet-form");
+const dashboard = document.getElementById("dashboard");
+const linkAccountForm = document.getElementById("link-wallet-form");
+const walletManualForm = document.getElementById("manually-verification-wallet-form");
 
 
 const excludeFields = new Set(["username", "email", "wallet-disconnect-inputfield",
@@ -66,6 +67,8 @@ async function handleDelegation(e) {
 
     BankFundInput.handleEvents(e);
     DashboardCardSidePanel.handleEvents(e);
+
+    ViewTransactionsModal.handleEvent(e);
 
 }
 
