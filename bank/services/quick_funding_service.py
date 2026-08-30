@@ -45,6 +45,7 @@ from bank.services.bank_services import BankAccountCacheService
 from bank.services.funding_service import AccountType as Accounts
 from bank.services.funding_service import FundingResponse, FundingService
 from bank.services.ledger_services import LedgerEntryCache
+from utils.converter import convert_amount_to_decimal
 from setup.models import Pin
 
 logger = logging.Logger(__name__)
@@ -188,9 +189,15 @@ class QuickFundingService:
         saving_balance: Decimal,
     ) -> None:
         """Add the combined current and savings balances to the response."""
-        current_balance = Decimal(str(current_balance))
-        saving_balance = Decimal(str(saving_balance))
-        data["TOTAL_BALANCE"] = current_balance + saving_balance
+
+        if current_balance is None:
+            current_balance = cls._convert_amount_to_decimal(0)
+
+        if saving_balance is None:
+            saving_balance = cls._convert_amount_to_decimal(0)
+
+
+        data["TOTAL_BALANCE"] = (current_balance + saving_balance)
 
     @classmethod
     def _convert_amount_to_decimal(cls, amount: int | float) -> Decimal | None:
@@ -209,7 +216,7 @@ class QuickFundingService:
         """
 
         try:
-            return Decimal(str(amount))
+           return convert_amount_to_decimal(amount)
         except InvalidOperation:
             return None
 
@@ -291,7 +298,7 @@ class QuickFundingService:
 
         if decimal_amount is None:
             data["MSG"] = (
-                f"The amount entered is invalid. Expected a float or int, "
+                f"The amount entered is invalid. Expected a decimal"
                 f"but got type {type(amount).__name__}."
             )
 
@@ -304,6 +311,8 @@ class QuickFundingService:
         data["SUCCESS"] = True
         ledger_entry = resp["ledger_entry"]
         data["BALANCE"] = ledger_entry.closing_balance
+
+
 
         if ledger_entry.risk_flag:
             data["PENDING_AMOUNT"] = cls._get_pending_amount_and_cache(user)
@@ -343,7 +352,7 @@ class QuickFundingService:
         saving_account = BankAccountCacheService.get_saving_account(user)
         data = cls._fund_account(user_pin=pin, amount=amount, user=user)
 
-        data["CURRENT_ACCOUNT_BALANCE"] = data["BALANCE"]
+        data["CURRENT_ACCOUNT_BALANCE"] = cls._convert_amount_to_decimal(data["BALANCE"])
         data["SAVINGS_ACCOUNT_BALANCE"] = saving_account.balance
 
         cls._add_total_balance_to_response(
@@ -375,7 +384,8 @@ class QuickFundingService:
             user_pin=pin, amount=amount, user=user, account_type=Accounts.SAVING_ACCOUNT
         )
 
-        data["SAVINGS_ACCOUNT_BALANCE"] = data["BALANCE"]
+
+        data["SAVINGS_ACCOUNT_BALANCE"] = cls._convert_amount_to_decimal(data["BALANCE"])
         data["CURRENT_ACCOUNT_BALANCE"] = current_account.balance
 
         cls._add_total_balance_to_response(
