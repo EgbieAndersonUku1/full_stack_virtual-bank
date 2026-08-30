@@ -12,6 +12,7 @@ from bank.services.bank_services import BankAccountCacheService
 from utils.custom_errors import MissingAccountError
 from utils.security.generator import generate_secure_code as generate_reference
 from utils.validators.validators import validate_user
+from bank.services.transaction_services import UserRecentTransactionsCacheService
 
 User = get_user_model()
 
@@ -98,6 +99,10 @@ class FundingService:
                 user=user,
                 account=account,
             )
+
+            transaction.on_commit(
+                    lambda: UserRecentTransactionsCacheService.set(user)
+                )
 
             if amount >= cls.RISK_THRESHOLD:
                 ledger_entry.risk_flag = True

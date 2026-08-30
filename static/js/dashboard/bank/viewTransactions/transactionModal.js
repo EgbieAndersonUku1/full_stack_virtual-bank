@@ -23,8 +23,6 @@ export const ViewTransactionsModal = (() => {
 
     function handleEvent(e) {
 
-
-
         const clickedViewBtn = e.target.closest(`#${viewTransactionButtonId}`);
         const clickedCloseBtn = e.target.closest(`#${closePanelId}`);
 
@@ -32,7 +30,6 @@ export const ViewTransactionsModal = (() => {
         if (!clickedViewBtn && !clickedCloseBtn) return;
 
 
-        console.log("I am here")
         if (e.target.id === viewTransactionButtonId) {
 
             showPanel();

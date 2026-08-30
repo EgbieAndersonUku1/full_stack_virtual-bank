@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 from bank.services.bank_services import BankAccountCacheService
+from bank.services.transaction_services import UserRecentTransactionsCacheService
 from bank.utils import get_account_context
 from card.services import CardDashboardServiceCache
 from utils.decorators import is_email_verified, go_to_staff_page
@@ -41,12 +42,17 @@ def dashboard(request):
                                                                session_key_id=request.user.id
                                                                )
 
+    recent_transactions_list = UserRecentTransactionsCacheService.get(request.user)
+    num_of_transactions      = len(recent_transactions_list)
     context = {
         "number_of_accounts": 0,
         "current_account": None,
         "saving_account": None,
         "dashboard_cards": dashboard_cards,
         "has_wallet": False,
+        "recent_transactions_list": recent_transactions_list,
+        "has_recent_transactions": num_of_transactions > 0,
+        "num_of_transactions": num_of_transactions,
     }
 
 

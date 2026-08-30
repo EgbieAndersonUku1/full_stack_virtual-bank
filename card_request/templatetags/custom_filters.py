@@ -6,6 +6,6 @@ register = template.Library()
 @register.filter
 def remove_under_score(value):
     if value is None:
-        return
+        return ""
     return " ".join(value.split("_"))
 
