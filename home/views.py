@@ -43,7 +43,13 @@ def dashboard(request):
                                                                )
 
     recent_transactions_list = UserRecentTransactionsCacheService.get(request.user)
-    num_of_transactions      = len(recent_transactions_list)
+    num_of_transactions      = (recent_transactions_list[0]
+                                if isinstance(recent_transactions_list, tuple)
+                                else
+                                recent_transactions_list
+                                )
+
+    num_of_transactions = len(num_of_transactions)
     context = {
         "number_of_accounts": 0,
         "current_account": None,
@@ -56,6 +62,7 @@ def dashboard(request):
     }
 
 
+  
     if bank_account:
 
         context.update(get_account_context(bank_account))
@@ -145,7 +152,7 @@ def quick_fund_current_account(request):
     def fund_current_account(request_body: dict):
         data = QuickFundingService.quick_fund_current_account(
                                                           pin=extract_pin_from_dict(request_body),
-                                                          amount=request_body.get("amount"),
+                                                          amount=extract_amount_from_dict(request_body),
                                                           user=request.user
                                                           )
         format_balance_fields(data)

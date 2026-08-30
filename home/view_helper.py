@@ -1,3 +1,5 @@
+from decimal import Decimal,InvalidOperation
+
 from django.utils.translation import gettext_lazy as _
 
 from utils.formatter import format_currency
@@ -38,8 +40,10 @@ def format_balance_fields(data: dict) -> None:
             raise KeyError(_(error_msg))
 
     for key in required_keys:
-        data[key] = format_currency(data[key])
-
+        try:
+            data[key] = format_currency(data[key])
+        except InvalidOperation:
+            pass
 
 
 def extract_pin_from_dict(data: dict) -> str | None:
@@ -61,22 +65,21 @@ def extract_pin_from_dict(data: dict) -> str | None:
 
 
 
-def extract_amount_from_dict(data: dict) -> str | None:
+def extract_amount_from_dict(data: dict) -> Decimal | None:
     """
-    Extracts a pin string from a dictinary object.
-
-    The function takes a dictionary object and extracts
-    a pin if found. If no pin is found returns None.
+    Extract the amount from a dictionary and return it as a Decimal.
 
     Args:
-        data (dict): A dictionary object contain the pin string
+        data: Dictionary containing an amount value.
 
     Returns:
-        A pin in the form of a string or none if not found.
-
+        The amount as a Decimal, or None if no amount is present.
     """
     validate_dict(data)
 
-    return data.get("amount")
+    amount = data.get("amount")
 
+    if amount is None or amount == "":
+        return None
 
+    return Decimal(str(amount))

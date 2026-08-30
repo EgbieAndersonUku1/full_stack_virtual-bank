@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from django.contrib.auth import get_user_model
-from django.db.models import QuerySet
+from django.db.models import F, QuerySet
 
 from bank.models import LedgerEntry
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
@@ -170,7 +170,9 @@ class UserRecentTransactionsCacheService:
                 user,
                 limit=limit,
                 offset=offset,
-            ).values(
+            )
+            .annotate(account_type=F("account__account_type"))
+            .values(
                 "id",
                 "transaction_type",
                 "movement",
@@ -179,6 +181,7 @@ class UserRecentTransactionsCacheService:
                 "closing_balance",
                 "created_on",
                 "status",
+                "account_type"
             )
         )
 
