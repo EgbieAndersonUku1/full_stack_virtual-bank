@@ -6370,3 +6370,10 @@ textarea::placeholder {
 #pending-amount-currency-symbol.show {
     display: none;
 }
+
+
+/* transaction message inside modal dashboard */
+#no-transactions-message {
+    padding-top: 256px;
+    padding-bottom: 256px;
+}

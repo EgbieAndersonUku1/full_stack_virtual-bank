@@ -1,13 +1,15 @@
+import logging
 from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from bank.models import LedgerEntry
 from utils.safe_cache import set_cache_with_retry, get_cache_with_retry
-from utils.validators.validators import validate_user
+from utils.validators.validators import validate_user, validate_amount
 
 User = get_user_model()
 
+logger = logging.Logger(__name__)
 
 class LedgerEntryCache:
 
@@ -45,6 +47,8 @@ class LedgerEntryCache:
             return pending_amount
 
         pending_amount = LedgerEntry.get_pending_funding_amount_for_user(user)
+
+        logging.debug(f"Amount not found get amound from database and then caching for user {user.id}")
         cls.set_pending_amount(pending_amount, user)
 
         return pending_amount
@@ -66,16 +70,15 @@ class LedgerEntryCache:
         """
 
         validate_user(user)
-
         if not isinstance(amount, Decimal):
             error_msg = f"Expected a decimal oject got type {type(amount).__name__}"
             raise TypeError(_(error_msg))
 
+        logging.debug(f"Adding the amount {amount} to the ledger entry cache for user {user.id}")
         set_cache_with_retry(
             key=cls._construct_session_key(user),
             value=amount
         )
-
 
     @classmethod
     def _construct_session_key(cls, user) -> str:

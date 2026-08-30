@@ -9,5 +9,7 @@ register = template.Library()
 def format_field_currency(value):
     if value is None:
         return
+    if isinstance(value, str):
+        return 
     return format_currency(value)
 

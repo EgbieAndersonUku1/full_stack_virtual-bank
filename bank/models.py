@@ -892,6 +892,81 @@ class LedgerEntry(models.Model):
             .aggregate(total=Sum("amount"))["total"]
             or Decimal("0.00")
         )
+
+
+    @classmethod
+    def get_user_ledger(cls, user: User, limit: int | None = None, offset: int = 0) -> QuerySet["LedgerEntry"]:
+        """
+        Return the ledger entries belonging to a user.
+
+        Args:
+            user (User):
+                The user whose ledger entries should be returned.
+
+            limit (int | None):
+                The maximum number of ledger entries to return.
+                If None, all matching entries are returned.
+                Defaults to None.
+
+            offset (int):
+                The number of matching ledger entries to skip before
+                returning results. Defaults to 0.
+
+        Raises:
+            TypeError:
+                If `user` is not a valid User instance, as validated by
+                `validate_user`, or if `limit` or `offset` is not an integer.
+
+            ValueError:
+                If `limit` is less than or equal to 0, or if `offset` is
+                less than 0.
+
+        Returns:
+            QuerySet[LedgerEntry]:
+                A lazy QuerySet containing the user's ledger entries,
+                ordered from newest to oldest.
+
+        Note:
+            The QuerySet is returned lazily so that the database query is
+            not evaluated until the results are accessed.
+        """
+        validate_user(user)
+
+        if limit is not None and not isinstance(limit, int):
+            error_msg = (
+                f"Expected an integer but got object with type "
+                f"{type(limit).__name__}"
+            )
+            raise TypeError(_(error_msg))
+
+        if not isinstance(offset, int):
+            error_msg = (
+                f"Expected an integer but got object with type "
+                f"{type(offset).__name__}"
+            )
+            raise TypeError(_(error_msg))
+
+        if limit is not None and limit <= 0:
+            raise ValueError(
+                _(f"Limit must be greater than 0. Got {limit}")
+            )
+
+        if offset < 0:
+            raise ValueError(
+                _(f"Offset must be greater than or equal to 0. Got {offset}")
+            )
+
+        qs = cls.objects.filter(user=user).order_by("-created_on")
+
+        if offset:
+            qs = qs[offset:]
+
+        if limit is not None:
+            qs = qs[:limit]
+
+        return qs
+
+
     def __str__(self) -> str:
         return f"{self.reference} - {self.transaction_type} - {self.amount}"
 
@@ -906,7 +981,7 @@ class AccountSecuritySettings(models.Model):
 
     class Meta:
         verbose_name_plural = "Account Security Settings"
-        
+
     def __str__(self) -> str:
         return str(self.user)
 

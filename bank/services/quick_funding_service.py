@@ -382,4 +382,3 @@ class QuickFundingService:
             saving_balance=data["SAVINGS_ACCOUNT_BALANCE"],
         )
         return data
-
