@@ -188,6 +188,8 @@ class QuickFundingService:
         saving_balance: Decimal,
     ) -> None:
         """Add the combined current and savings balances to the response."""
+        current_balance = Decimal(str(current_balance))
+        saving_balance = Decimal(str(saving_balance))
         data["TOTAL_BALANCE"] = current_balance + saving_balance
 
     @classmethod
