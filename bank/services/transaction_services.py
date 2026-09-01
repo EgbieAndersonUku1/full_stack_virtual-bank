@@ -1,12 +1,54 @@
 from __future__ import annotations
-
+from typing import Any
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.db.models import F, QuerySet
+from django.db.models import F
+from django.utils.timezone import datetime
 
 from bank.models import LedgerEntry
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
+from utils.validators.validators import validate_datetime
 
 User = get_user_model()
+
+
+
+def _construct_recent_transaction_cache_key(user: User, page: int) -> str:
+    """
+    Construct the cache key for a user's transaction page.
+    """
+    return (
+            f"ledger_entries__{user.id}"
+            f"__recent_transactions__page_{page}"
+        )
+
+class TransactionServiceBase:
+
+    @classmethod
+    def fetch(cls, user: User, limit: int, offset: int) -> list[dict]:
+        """
+        Fetch a page of ledger transactions directly from the database.
+        """
+        return list(
+                LedgerEntry.get_user_ledger(
+                    user,
+                    limit=limit,
+                    offset=offset,
+                )
+                .annotate(account_type=F("account__account_type"))
+                .values(
+                    "id",
+                    "transaction_type",
+                    "movement",
+                    "amount",
+                    "opening_balance",
+                    "closing_balance",
+                    "created_on",
+                    "status",
+                    "account_type"
+                )
+            )
+
 
 
 
@@ -89,11 +131,11 @@ class UserRecentTransactionsCacheService:
         """
         cls._validate_page(page)
 
-        key = cls._construct_cache_key(user, page)
+        key = _construct_recent_transaction_cache_key(user, page)
 
         return get_cache_or_set(
             key,
-            lambda: cls._fetch(
+            lambda: TransactionServiceBase.fetch(
                 user,
                 limit=cls.PAGE_SIZE,
                 offset=(page - 1) * cls.PAGE_SIZE,
@@ -107,12 +149,12 @@ class UserRecentTransactionsCacheService:
         data_dict_list = cls.get(user=user, page=page)
 
         if not data_dict_list:
-            key = cls._construct_cache_key(user, page)
-            data_dict_list = cls._fetch(
-                        user,
-                        limit=cls.PAGE_SIZE,
-                        offset=(page - 1) * cls.PAGE_SIZE,
-                    ),
+            key = _construct_recent_transaction_cache_key(user, page)
+            data_dict_list = TransactionServiceBase.fetch(
+                                        user,
+                                        limit=cls.PAGE_SIZE,
+                                        offset=(page - 1) * cls.PAGE_SIZE,
+                                    ),
             set_cache_with_retry(
                         key,
                         value=data_dict_list,
@@ -147,11 +189,11 @@ class UserRecentTransactionsCacheService:
         """
         cls._validate_page(page)
 
-        key = cls._construct_cache_key(user, page)
+        key = _construct_recent_transaction_cache_key(user, page)
 
         set_cache_with_retry(
             key,
-            value=cls._fetch(
+            value=TransactionServiceBase.fetch(
                 user,
                 limit=cls.PAGE_SIZE,
                 offset=(page - 1) * cls.PAGE_SIZE,
@@ -159,41 +201,6 @@ class UserRecentTransactionsCacheService:
             ttl=cls.CACHE_TTL,
         )
 
-    @classmethod
-    def _fetch(cls, user: User, limit: int, offset: int) -> list[dict]:
-        """
-        Fetch a page of ledger transactions directly from the database.
-        """
-        return list(
-
-            LedgerEntry.get_user_ledger(
-                user,
-                limit=limit,
-                offset=offset,
-            )
-            .annotate(account_type=F("account__account_type"))
-            .values(
-                "id",
-                "transaction_type",
-                "movement",
-                "amount",
-                "opening_balance",
-                "closing_balance",
-                "created_on",
-                "status",
-                "account_type"
-            )
-        )
-
-    @classmethod
-    def _construct_cache_key(cls, user: User, page: int) -> str:
-        """
-        Construct the cache key for a user's transaction page.
-        """
-        return (
-            f"ledger_entries__{user.id}"
-            f"__recent_transactions__page_{page}"
-        )
 
     @classmethod
     def _validate_page(cls, page: int) -> None:
@@ -225,3 +232,45 @@ class UserRecentTransactionsCacheService:
             )
             raise ValueError(_(error_msg))
 
+
+
+class TransactionSearchService:
+    """Service for searching and retrieving transactions for a user."""
+
+    @classmethod
+    def search(
+        cls,
+        page: int = 1,
+        page_size: int = 10,
+        *,
+        user: User,
+        from_date: datetime,
+        to_date: datetime,
+        card_type: str,
+        account_type: str,
+    ):
+        """Search for a user's transactions using the provided filters.
+
+        Args:
+            page: The page number of results to return. Defaults to 1.
+            page_size: The maximum number of transactions to return per page.
+                Defaults to 10.
+            user: The user whose transactions should be searched.
+            from_date: The start of the transaction date range.
+            to_date: The end of the transaction date range.
+            card_type: The card type to filter transactions by.
+            account_type: The account type to filter transactions by.
+
+        Returns:
+            The transactions matching the provided search criteria.
+
+        Raises:
+            DateTimeError: If from_date or to_date is not a valid datetime.
+            TypeError: If card_type or account_type is not a string.
+            UserError: If the user is invalid or does not meet the requirements
+                enforced by the Ledger model.
+        """
+        for date in (from_date, to_date):
+            validate_datetime(date)
+
+        raise NotImplementedError("The method hasn't been implemented yet")
