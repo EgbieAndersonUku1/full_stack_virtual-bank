@@ -82,6 +82,13 @@ need to inspect financial activity.
 {% load custom_filters %}
 {% load currency_filters %}
 
+<!--Add the csrf token to this page-->
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
+
 <section id="bank-account-view-transactions" aria-labelledby="transactions-title">
 
 
@@ -121,20 +128,20 @@ need to inspect financial activity.
 
                 <!-- from field -->
                 <div class="form-row flex-grid">
-                    <label for="from">From</label>
-                    <input type="date" name="from" id="from">
+                    <label for="from_date">From</label>
+                    <input type="date" name="from_date" id="from_date" required>
                 </div>
 
                 <!-- to field -->
                 <div class="form-row flex-grid">
-                    <label for="to">To</label>
-                    <input type="date" name="to" id="to">
+                    <label for="to_date">To</label>
+                    <input type="date" name="to_date" id="to_date" required>
                 </div>
 
                 <!-- type field -->
                 <div class="form-row flex-grid">
-                    <label for="transaction-type">Types</label>
-                    <select name="type" id="transaction-type" required>
+                    <label for="transaction_type">Types</label>
+                    <select name="transaction_type" id="transaction_type" required>
                         <option value="all" disabled>All Types</option>
                         <option value="credit" selected>Credit</option>
                         <option value="debit">Debit</option>

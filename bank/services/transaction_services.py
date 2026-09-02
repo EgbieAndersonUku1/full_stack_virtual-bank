@@ -246,7 +246,7 @@ class TransactionSearchService:
         user: User,
         from_date: datetime,
         to_date: datetime,
-        card_type: str,
+        movement: str,
         account_type: str,
     ):
         """Search for a user's transactions using the provided filters.
@@ -258,7 +258,7 @@ class TransactionSearchService:
             user: The user whose transactions should be searched.
             from_date: The start of the transaction date range.
             to_date: The end of the transaction date range.
-            card_type: The card type to filter transactions by.
+            movement: The movement to filter transactions by e.g credit or debit.
             account_type: The account type to filter transactions by.
 
         Returns:
@@ -266,7 +266,7 @@ class TransactionSearchService:
 
         Raises:
             DateTimeError: If from_date or to_date is not a valid datetime.
-            TypeError: If card_type or account_type is not a string.
+            TypeError: If movement or account_type is not a string.
             UserError: If the user is invalid or does not meet the requirements
                 enforced by the Ledger model.
         """
