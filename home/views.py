@@ -183,10 +183,14 @@ def quick_fund_savings_account(request):
 
 
 
-def search_transactions(request):
+@login_required
+@onboarding_required
+@is_email_verified
+def search_recent_transactions(request):
 
     def get_transactions(request_body):
-        return TransactionSearchService.search(
+        
+        return TransactionSearchService.recent_transaction_search(
             user=request.user,
             **request_body,
         )

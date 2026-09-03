@@ -65,7 +65,7 @@ include:
 • transaction_date
 • description
 • amount
-• transaction_type
+• account_type
 • status (optional: pending, completed)
 
 Pagination data may be supplied by the backend API or Django view
@@ -138,18 +138,40 @@ need to inspect financial activity.
                     <input type="date" name="to_date" id="to_date" required>
                 </div>
 
-                <!-- type field -->
+                  <!-- movement field -->
                 <div class="form-row flex-grid">
-                    <label for="transaction_type">Types</label>
-                    <select name="transaction_type" id="transaction_type" required>
-                        <option value="all" disabled>All Types</option>
-                        <option value="credit" selected>Credit</option>
-                        <option value="debit">Debit</option>
-                        <option value="current_account">Current Account</option>
-                        <option value="savings_account">Savings Account</option>
+                    <label for="movement">Movement</label>
+                    <select name="movement" id="movement" required>
+                        <option value="" disabled selected>movement</option>
+                        <option value="credit">In</option>
+                        <option value="debit">Out</option>
 
                     </select>
                 </div>
+
+                <!-- type field -->
+                <div class="form-row flex-grid">
+                    <label for="account_type">Account Type</label>
+                    <select name="account_type" id="account_type" required>
+                        <option value="" disabled selected>Account Type</option>
+                        <option value="basic">Current Account</option>
+                        <option value="savings">Savings Account</option>
+
+                    </select>
+                </div>
+
+                 <!-- status -->
+                <div class="form-row flex-grid">
+                    <label for="account_type">status</label>
+                    <select name="status" id="account_type" required>
+                        <option value="" disabled selected>Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+
+                    </select>
+                </div>
+
+
 
             </div>
 

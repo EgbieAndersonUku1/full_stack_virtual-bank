@@ -4,13 +4,18 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.db.models import F
 from django.utils.timezone import datetime
+from typing import TypedDict
 
 from bank.models import LedgerEntry
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
-from utils.validators.validators import validate_datetime
+from utils.converter import convert_date_string_to_date_object
+
 
 User = get_user_model()
 
+def _is_valid_date_range(from_date: datetime, to_date: datetime):
+    """Return True if the date range is valid."""
+    return from_date <= to_date
 
 
 def _construct_recent_transaction_cache_key(user: User, page: int) -> str:
@@ -238,18 +243,18 @@ class TransactionSearchService:
     """Service for searching and retrieving transactions for a user."""
 
     @classmethod
-    def search(
+    def recent_transaction_search(
         cls,
         page: int = 1,
-        page_size: int = 10,
         *,
         user: User,
         from_date: datetime,
         to_date: datetime,
-        movement: str,
-        account_type: str,
-    ):
-        """Search for a user's transactions using the provided filters.
+        movement: str | None = None,
+        account_type: str | None= None,
+        status: str | None = None,
+    ) -> dict:
+        """Search for a user's recent transactions using the provided filters.
 
         Args:
             page: The page number of results to return. Defaults to 1.
@@ -270,7 +275,40 @@ class TransactionSearchService:
             UserError: If the user is invalid or does not meet the requirements
                 enforced by the Ledger model.
         """
-        for date in (from_date, to_date):
-            validate_datetime(date)
+        recent_transactions = UserRecentTransactionsCacheService.get(user, page)
 
-        raise NotImplementedError("The method hasn't been implemented yet")
+        to_date_object   = convert_date_string_to_date_object(to_date)
+        from_date_object = convert_date_string_to_date_object(from_date)
+
+        if not _is_valid_date_range(from_date, to_date):
+            error = "The from date cannot be after the to date."
+            # return api to go here
+
+        filtered_data = []
+
+        for transaction in recent_transactions:
+            created_on = transaction["created_on"].date()
+
+            if not (from_date_object <= created_on <= to_date_object):
+                print("I am here in dates")
+                continue
+
+            if transaction["movement"].lower() != movement.lower():
+                print("I am here in movement")
+                continue
+
+            if transaction["account_type"].lower() != account_type.lower():
+                print("I am here in account type")
+                continue
+
+            if transaction["status"].lower() != status.lower():
+                print("I am here in status")
+                continue
+
+
+            filtered_data.append(transaction)
+
+        print(filtered_data)
+
+
+        # raise NotImplementedError("The method hasn't been implemented yet")
