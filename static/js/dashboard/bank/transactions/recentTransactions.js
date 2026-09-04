@@ -2,12 +2,50 @@ import { parseFormData } from "../../../formUtils.js";
 import fetchData from "../../../fetch.js";
 import { getCsrfToken } from "../../../security/csrf.js";
 import { warnError } from "../../../logger.js";
+import { toggleSpinner, clearElementField } from "../../../utils.js";
+import { AlertUtils } from "../../../alerts.js";
+
 
 const recentBankTransactionForm = document.getElementById("bank-transaction-form");
+const transactionFilterBtn      = document.getElementById("bank-filter-btn");
+const spinner                   = document.getElementById("transaction-report-spinner");
+const transactionTable          = document.querySelector("#transaction-report-table tbody");
+const transactionTitle          = document.getElementById("transactions-title");
 
 
 
 recentBankTransactionForm?.addEventListener("submit", handleForm);
+
+
+function disableTransactionButton(disable) {
+    transactionFilterBtn.disabled = disable ? true : false;
+}
+
+
+
+
+
+function handleData(data) {
+
+    disableTransactionButton(false)
+
+    if (!data.SUCCESS) {
+
+        toggleSpinner(spinner, false);
+        AlertUtils.showAlert({
+            title: data.ACTION,
+            text: data.ERROR_MSG,
+            icon: "error",
+            confirmButtonText: "Ok"
+        })
+
+
+        return;
+    }
+
+    renderTableTransactions(data.TRANSACTIONS, data.NUMBER_RETURNED)
+}
+
 
 
 
@@ -33,9 +71,10 @@ async function handleForm(e) {
             return;
         }
 
-        console.log(parsedData)
+        disableTransactionButton(true);
+        toggleSpinner(spinner)
 
-        const data = await fetchData({
+        const resp = await fetchData({
             url: "/dashboard/search/recent_transactions/",
             csrfToken: getCsrfToken(),
             body: {
@@ -49,9 +88,73 @@ async function handleForm(e) {
 
         })
 
-        console.log(parsedData)
+        handleData(resp.data);
 
     } else {
         recentBankTransactionForm.reportValidity();
     }
+}
+
+
+
+
+/**
+ * Reset the transaction search UI after processing.
+ */
+function resetTransactionSearchUI() {
+    disableTransactionButton(false);
+    toggleSpinner(spinner, false);
+}
+
+
+
+
+function renderTableTransactions(transactions, numOfTransactions) {
+
+    const fragment = document.createDocumentFragment();
+    clearElementField(transactionTable)
+
+    if (!Array.isArray(transactions)) {
+        warnError("renderTableTransactions", {
+            error: `Expected an array but got ${typeof transactions}`
+        })
+        return;
+    }
+
+    transactionTitle.textContent = `Transaction History (${numOfTransactions})`
+
+    if (numOfTransactions === 0) {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `<td colspan="9">No transactions found</td>`;
+
+        transactionTable.appendChild(tr)
+
+        resetTransactionSearchUI();
+        return;
+    }
+
+        transactions.forEach((transaction) => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td class="transaction-id">${transaction.id}</td>
+            <td class="transaction-type">${transaction.transaction_type}</td>
+            <td class="movement">${transaction.movement}</td>
+            <td class="amount">${transaction.amount}</td>
+            <td class="opening-balance">${transaction.opening_balance}</td>
+            <td class="closing-balance">${transaction.closing_balance}</td>
+            <td class="account-type">${transaction.account_type}</td>
+            <td class="status">${transaction.status}</td>
+            <td class="created-on">${transaction.created_on}</td>
+        `;
+
+        fragment.appendChild(tr);
+    });
+
+    transactionTable.appendChild(fragment);
+    resetTransactionSearchUI();
+
+
+
 }

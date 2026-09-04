@@ -788,7 +788,7 @@ export function enableAutoFocusNavigation(inputElements, onlyNumbers = true) {
 export function parseCharsFromObject(fieldObject) {
 
     const objectType = typeof fieldObject
-  
+
     if (objectType !== "object") {
         logError("parseCharsFromObject", {
             field: "fieldObject",
@@ -1035,4 +1035,13 @@ export function clearInnerHTML(htmlElement) {
     }
 
     htmlElement.innerHTML = "";
+}
+
+
+
+
+export function clearElementField(element) {
+    if (!checkIfHTMLElement(element, "unknown", true)) return;
+
+    element.textContent = "";
 }

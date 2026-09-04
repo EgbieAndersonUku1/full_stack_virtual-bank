@@ -1,7 +1,7 @@
 import { getCsrfToken } from "../security/csrf.js";
 import fetchData from "../fetch.js";
 import CheckFrontEndPasswordStrength from "../utils/password/checkPasswordStrength.js";
-import { applyDashToInput, checkIfHTMLElement, dimBackground, showSpinnerFor, toggleSpinner } from "../utils.js";
+import { applyDashToInput, dimBackground, clearElementField, toggleSpinner } from "../utils.js";
 
 
 
@@ -148,11 +148,6 @@ function handleCodeInputField(e) {
 }
 
 
-function clearElementField(element) {
-    if (!checkIfHTMLElement(element, "unknown", true)) return;
-
-    element.textContent = "";
-}
 
 
 function handleRegisterForm(e) {

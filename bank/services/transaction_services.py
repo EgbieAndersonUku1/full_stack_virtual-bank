@@ -7,11 +7,22 @@ from django.utils.timezone import datetime
 from typing import TypedDict
 
 from bank.models import LedgerEntry
+from utils.formatter import format_currency
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
 from utils.converter import convert_date_string_to_date_object
+from utils.utils import remove_under_score
 
 
 User = get_user_model()
+
+class DataResponse(TypedDict):
+    SUCCESS: bool
+    ERROR_MSG: str
+    SUCCESS_MSG: str
+    TRANSACTIONS: list
+    NUMBER_RETURNED: int
+    ACTION: str
+
 
 def _is_valid_date_range(from_date: datetime, to_date: datetime):
     """Return True if the date range is valid."""
@@ -253,7 +264,7 @@ class TransactionSearchService:
         movement: str | None = None,
         account_type: str | None= None,
         status: str | None = None,
-    ) -> dict:
+    ) -> DataResponse:
         """Search for a user's recent transactions using the provided filters.
 
         Args:
@@ -281,8 +292,16 @@ class TransactionSearchService:
         from_date_object = convert_date_string_to_date_object(from_date)
 
         if not _is_valid_date_range(from_date, to_date):
-            error = "The from date cannot be after the to date."
-            # return api to go here
+            error_msg  = "The from date cannot be after the to date."
+            data: DataResponse =  {
+                "SUCCESS": False,
+                "ERROR_MSG": error_msg,
+                "SUCCESS_MSG": "",
+                "TRANSACTIONS": [],
+                "NUMBER_RETURNED": 0,
+                "ACTION": "Invalid date",
+            }
+            return data
 
         filtered_data = []
 
@@ -290,25 +309,39 @@ class TransactionSearchService:
             created_on = transaction["created_on"].date()
 
             if not (from_date_object <= created_on <= to_date_object):
-                print("I am here in dates")
                 continue
 
             if transaction["movement"].lower() != movement.lower():
-                print("I am here in movement")
                 continue
 
             if transaction["account_type"].lower() != account_type.lower():
-                print("I am here in account type")
                 continue
 
             if transaction["status"].lower() != status.lower():
-                print("I am here in status")
                 continue
 
+            transaction_copy = transaction.copy()
 
-            filtered_data.append(transaction)
+            transaction_copy["transaction_type"] = remove_under_score(transaction["transaction_type"]).title()
+            transaction_copy["opening_balance"]  = format_currency(transaction["opening_balance"])
+            transaction_copy["closing_balance"]  = format_currency(transaction["closing_balance"])
+            transaction_copy["movement"]         = transaction["movement"].title()
+            transaction_copy["status"]           = transaction["status"].title()
+            transaction_copy["created_on"]       = transaction["created_on"].strftime("%d %b %Y, %H:%M")
 
-        print(filtered_data)
+            if transaction["account_type"] == "basic":
+               transaction_copy["account_type"]  = "current"
 
+            transaction_copy["account_type"] = transaction_copy["account_type"].title()
+            filtered_data.append(transaction_copy)
 
-        # raise NotImplementedError("The method hasn't been implemented yet")
+        data: DataResponse =  {
+                        "SUCCESS": True,
+                        "ERROR_MSG": "",
+                        "SUCCESS_MSG": "Successfully, retrieved data",
+                        "TRANSACTIONS": filtered_data,
+                        "NUMBER_RETURNED": len(filtered_data),
+                        "ACTION": "Successfully retrieved data"
+                    }
+
+        return data
