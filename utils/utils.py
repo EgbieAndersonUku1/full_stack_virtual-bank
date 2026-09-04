@@ -128,7 +128,7 @@ def format_full_address(address_1: str,
         return
 
     return ', '.join(cleaned_address_parts)
-    
+
 
 
 
@@ -145,3 +145,11 @@ def format_boolean_as_text(value: bool) -> str:
             Returns "Yes" when the value is True, otherwise "No".
     """
     return "Yes" if value else "No"
+
+
+
+def remove_under_score(value):
+    if value is None:
+        return ""
+
+    return " ".join(value.split("_"))

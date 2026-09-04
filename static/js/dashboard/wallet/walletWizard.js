@@ -244,6 +244,13 @@ export const WalletWizard = (() => {
      * @param {boolean} deleteMode Whether navigation is triggered by deletion.
      */
     function handleWalletConnectAuthInputFields(e, deleteMode = false) {
+
+
+
+        if (e.target.type !== "text") {
+            return;
+        }
+
         openWalletAuthInputPanel();
 
         walletOptionAuthInputFields[0]?.focus();

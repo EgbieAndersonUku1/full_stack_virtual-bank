@@ -11,6 +11,7 @@ from user_profile.services import ProfileCacheService
 from authentication.view_helper import handle_json_post_request
 from setup.decorators import onboarding_required
 from bank.services.quick_funding_service import QuickFundingService
+from bank.services.transaction_services import TransactionSearchService
 from .view_helper import format_balance_fields, extract_pin_from_dict, extract_amount_from_dict
 
 
@@ -62,7 +63,7 @@ def dashboard(request):
     }
 
 
-  
+
     if bank_account:
 
         context.update(get_account_context(bank_account))
@@ -179,3 +180,19 @@ def quick_fund_savings_account(request):
         return data
     return handle_json_post_request(request, func=fund_savings_account)
 
+
+
+
+@login_required
+@onboarding_required
+@is_email_verified
+def search_recent_transactions(request):
+
+    def get_transactions(request_body):
+        
+        return TransactionSearchService.recent_transaction_search(
+            user=request.user,
+            **request_body,
+        )
+
+    return handle_json_post_request(request, func=get_transactions)

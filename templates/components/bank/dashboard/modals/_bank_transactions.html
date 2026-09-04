@@ -65,7 +65,7 @@ include:
 • transaction_date
 • description
 • amount
-• transaction_type
+• account_type
 • status (optional: pending, completed)
 
 Pagination data may be supplied by the backend API or Django view
@@ -81,6 +81,13 @@ need to inspect financial activity.
 
 {% load custom_filters %}
 {% load currency_filters %}
+
+<!--Add the csrf token to this page-->
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
 
 <section id="bank-account-view-transactions" aria-labelledby="transactions-title">
 
@@ -121,26 +128,50 @@ need to inspect financial activity.
 
                 <!-- from field -->
                 <div class="form-row flex-grid">
-                    <label for="from">From</label>
-                    <input type="date" name="from" id="from">
+                    <label for="from_date">From</label>
+                    <input type="date" name="from_date" id="from_date" required>
                 </div>
 
                 <!-- to field -->
                 <div class="form-row flex-grid">
-                    <label for="to">To</label>
-                    <input type="date" name="to" id="to">
+                    <label for="to_date">To</label>
+                    <input type="date" name="to_date" id="to_date" required>
+                </div>
+
+                  <!-- movement field -->
+                <div class="form-row flex-grid">
+                    <label for="movement">Movement</label>
+                    <select name="movement" id="movement" required>
+                        <option value="" disabled selected>movement</option>
+                        <option value="credit">In</option>
+                        <option value="debit">Out</option>
+
+                    </select>
                 </div>
 
                 <!-- type field -->
                 <div class="form-row flex-grid">
-                    <label for="transaction-type">Types</label>
-                    <select name="type" id="transaction-type" required>
-                        <option value="all" disabled>All Types</option>
-                        <option value="credit" selected>Credit</option>
-                        <option value="debit">Debit</option>
+                    <label for="account_type">Account Type</label>
+                    <select name="account_type" id="account_type" required>
+                        <option value="" disabled selected>Account Type</option>
+                        <option value="basic">Current Account</option>
+                        <option value="savings">Savings Account</option>
 
                     </select>
                 </div>
+
+                 <!-- status -->
+                <div class="form-row flex-grid">
+                    <label for="account_type">status</label>
+                    <select name="status" id="account_type" required>
+                        <option value="" disabled selected>Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+
+                    </select>
+                </div>
+
+
 
             </div>
 
@@ -155,6 +186,8 @@ need to inspect financial activity.
 
         <!-- The table that displays the transaction form report -->
         <div id="transaction-report" class="mt-8">
+
+            <div class="spinner" id="transaction-report-spinner"></div>
             <table id="transaction-report-table" aria-describedby="table-instructions">
                 <thead>
                     <tr id="row-header">
@@ -178,9 +211,9 @@ need to inspect financial activity.
                         <td>{{ transaction.movement|title }}</td>
 
                         {% if transaction.movement == "CREDIT" %}
-                            <td class="positive">+{{ transaction.amount }}</td>
+                            <td class="positive">+{{ transaction.amount|format_field_currency }}</td>
                         {% else %}
-                          <td class="negative">-{{transaction.amount }}</td>
+                          <td class="negative">-{{transaction.amount|format_field_currency }}</td>
                         {% endif %}
 
                         <td>{{ transaction.opening_balance|format_field_currency }}</td>

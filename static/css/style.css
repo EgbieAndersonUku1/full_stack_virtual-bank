@@ -6381,3 +6381,21 @@ textarea::placeholder {
     padding-top: 256px;
     padding-bottom: 256px;
 }
+
+
+
+/* transaction report spinner */
+
+#transaction-report-spinner {
+    left: 40%;
+    position: absolute;
+    top: 30%;
+
+    width: 100px;
+    height: 100px;
+    border: 9px solid #e5e5e5;
+    border-top: 4px solid #333;
+
+    display: none;
+
+}

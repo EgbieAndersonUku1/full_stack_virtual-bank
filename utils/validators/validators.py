@@ -1,8 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import datetime
 from decimal import Decimal
 
-from utils.custom_errors import IncorrectAmountError, IncorrectAmountTypeError
+
+from utils.custom_errors import (IncorrectAmountError,
+                                IncorrectAmountTypeError,
+                                DateTimeError
+                                )
 
 
 User = get_user_model()
@@ -74,3 +79,15 @@ def validate_dict(data: dict) -> None:
             f"Expected a dict, got type {type(data).__name__}"
         )
         raise TypeError(_(error_msg))
+
+
+
+def validate_datetime(date: datetime):
+
+    if not isinstance(date, datetime):
+        error_msg = (
+            f"Expected a datetime, got type {type(data).__name__}"
+        )
+        raise DateTimeError(_(error_msg))
+
+
