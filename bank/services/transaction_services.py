@@ -325,6 +325,7 @@ class TransactionSearchService:
             transaction_copy["transaction_type"] = remove_under_score(transaction["transaction_type"]).title()
             transaction_copy["opening_balance"]  = format_currency(transaction["opening_balance"])
             transaction_copy["closing_balance"]  = format_currency(transaction["closing_balance"])
+            transaction_copy["amount"]           = format_currency(transaction["amount"])
             transaction_copy["movement"]         = transaction["movement"].title()
             transaction_copy["status"]           = transaction["status"].title()
             transaction_copy["created_on"]       = transaction["created_on"].strftime("%d %b %Y, %H:%M")

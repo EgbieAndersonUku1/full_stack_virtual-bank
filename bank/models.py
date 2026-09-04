@@ -648,7 +648,7 @@ class BankAccount(models.Model):
 
     sort_code         = models.ForeignKey(SortCode, on_delete=models.PROTECT, related_name="bank_accounts", blank=True, null=True)
     account_number    = models.CharField(max_length=8, editable=False)
-    user_profile      = models.ForeignKey(UserProfile, on_delete=models.PROTECT, blank=True, null=True, related_name="bank_accounts")
+    user_profile      = models.ForeignKey(UserProfile, on_delete=models.PROTECT, blank=True, null=True, related_name="bank_accounts", db_index=True)
     balance           = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
     last_interest_run = models.DateTimeField(null=True, blank=True)
     account_type      = models.CharField(max_length=20, choices=AccountType.choices, default=AccountType.BASIC)

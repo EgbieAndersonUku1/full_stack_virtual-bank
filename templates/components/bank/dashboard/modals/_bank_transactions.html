@@ -211,9 +211,9 @@ need to inspect financial activity.
                         <td>{{ transaction.movement|title }}</td>
 
                         {% if transaction.movement == "CREDIT" %}
-                            <td class="positive">+{{ transaction.amount }}</td>
+                            <td class="positive">+{{ transaction.amount|format_field_currency }}</td>
                         {% else %}
-                          <td class="negative">-{{transaction.amount }}</td>
+                          <td class="negative">-{{transaction.amount|format_field_currency }}</td>
                         {% endif %}
 
                         <td>{{ transaction.opening_balance|format_field_currency }}</td>

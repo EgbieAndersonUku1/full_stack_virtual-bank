@@ -7,10 +7,10 @@ import { AlertUtils } from "../../../alerts.js";
 
 
 const recentBankTransactionForm = document.getElementById("bank-transaction-form");
-const transactionFilterBtn      = document.getElementById("bank-filter-btn");
-const spinner                   = document.getElementById("transaction-report-spinner");
-const transactionTable          = document.querySelector("#transaction-report-table tbody");
-const transactionTitle          = document.getElementById("transactions-title");
+const transactionFilterBtn = document.getElementById("bank-filter-btn");
+const spinner = document.getElementById("transaction-report-spinner");
+const transactionTable = document.querySelector("#transaction-report-table tbody");
+const transactionTitle = document.getElementById("transactions-title");
 
 
 
@@ -22,7 +22,10 @@ function disableTransactionButton(disable) {
 }
 
 
-
+const PositiveAndNegativeClass = {
+    POSITIVE : "positive",
+    NEGATIVE: "negative"
+}
 
 
 function handleData(data) {
@@ -66,7 +69,7 @@ async function handleForm(e) {
 
         if (!parsedData) {
             warnError("handleForm", {
-                error:"Parsed data for the form data return none"
+                error: "Parsed data for the form data return none"
             });
             return;
         }
@@ -107,6 +110,10 @@ function resetTransactionSearchUI() {
 }
 
 
+function getPositiveNegativeClass(condition) {
+    return condition ? PositiveAndNegativeClass.POSITIVE : PositiveAndNegativeClass.NEGATIVE;
+}
+
 
 
 function renderTableTransactions(transactions, numOfTransactions) {
@@ -124,6 +131,7 @@ function renderTableTransactions(transactions, numOfTransactions) {
     transactionTitle.textContent = `Transaction History (${numOfTransactions})`
 
     if (numOfTransactions === 0) {
+
         const tr = document.createElement("tr");
 
         tr.innerHTML = `<td colspan="9">No transactions found</td>`;
@@ -134,18 +142,23 @@ function renderTableTransactions(transactions, numOfTransactions) {
         return;
     }
 
-        transactions.forEach((transaction) => {
+    transactions.forEach((transaction) => {
         const tr = document.createElement("tr");
+
+        const amountClass = getPositiveNegativeClass(transaction.movement.toLowerCase() === "credit");
+        const statusClass = getPositiveNegativeClass(transaction.status.toLowerCase() === "completed");
+
+        const amountPrefix = amountClass === PositiveAndNegativeClass.POSITIVE ? "+" : "-"
 
         tr.innerHTML = `
             <td class="transaction-id">${transaction.id}</td>
             <td class="transaction-type">${transaction.transaction_type}</td>
             <td class="movement">${transaction.movement}</td>
-            <td class="amount">${transaction.amount}</td>
+            <td class="amount ${amountClass}">${amountPrefix}${transaction.amount}</td>
             <td class="opening-balance">${transaction.opening_balance}</td>
             <td class="closing-balance">${transaction.closing_balance}</td>
             <td class="account-type">${transaction.account_type}</td>
-            <td class="status">${transaction.status}</td>
+            <td class="status ${statusClass}">${transaction.status}</td>
             <td class="created-on">${transaction.created_on}</td>
         `;
 
