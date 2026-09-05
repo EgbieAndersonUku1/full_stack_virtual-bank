@@ -60,7 +60,7 @@ walletManualForm.addEventListener("submit", WalletWizard.handleManualFormSubmiss
  * Delegates wallet connection UI events to WalletWizard.
  * @param {Event} e Click or submit event.
  */
-async function handleDelegation(e) {
+function handleDelegation(e) {
 
     WalletWizard.handleWalletConnectionSteps(e);
     handleWalletStatusClick(e);

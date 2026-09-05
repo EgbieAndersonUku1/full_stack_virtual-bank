@@ -15,6 +15,7 @@ const transactionTitle = document.getElementById("transactions-title");
 
 
 recentBankTransactionForm?.addEventListener("submit", handleForm);
+const transactions = []
 
 
 function disableTransactionButton(disable) {
@@ -25,6 +26,26 @@ function disableTransactionButton(disable) {
 const PositiveAndNegativeClass = {
     POSITIVE : "positive",
     NEGATIVE: "negative"
+}
+
+
+
+
+export async function renderRecentTransactions() {
+    const resp = await fetchData({
+            url: "/dashboard/get/recent_transactions/",
+            csrfToken: getCsrfToken(),
+            body: {},
+            method: "GET",
+
+        })
+
+
+    const data = resp.data;
+    transactions.push(data)
+    renderTableTransactions(data.TRANSACTIONS, data.NUMBER_RETURNED)
+
+
 }
 
 
@@ -171,3 +192,6 @@ function renderTableTransactions(transactions, numOfTransactions) {
 
 
 }
+
+
+

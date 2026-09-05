@@ -1,4 +1,5 @@
 import { dimBackground, toggleElement } from "../../../utils.js";
+import { renderRecentTransactions } from "../transactions/recentTransactions.js";
 
 
 const viewBankTransacionPanel = document.getElementById("bank-account-view-transactions");
@@ -33,6 +34,7 @@ export const ViewTransactionsModal = (() => {
         if (e.target.id === viewTransactionButtonId) {
 
             showPanel();
+            renderRecentTransactions();
             return;
 
         }
