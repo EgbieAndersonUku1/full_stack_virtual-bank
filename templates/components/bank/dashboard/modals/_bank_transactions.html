@@ -204,47 +204,12 @@ need to inspect financial activity.
                 </thead>
 
                 <tbody>
-                    {% for transaction in recent_transactions_list %}
-                    <tr>
-                        <td>{{ transaction.id }}</td>
-                        <td>{{ transaction.transaction_type|remove_under_score|title }}</td>
-                        <td>{{ transaction.movement|title }}</td>
 
-                        {% if transaction.movement == "CREDIT" %}
-                            <td class="positive">+{{ transaction.amount|format_field_currency }}</td>
-                        {% else %}
-                          <td class="negative">-{{transaction.amount|format_field_currency }}</td>
-                        {% endif %}
-
-                        <td>{{ transaction.opening_balance|format_field_currency }}</td>
-                        <td>{{ transaction.closing_balance|format_field_currency }}</td>
-
-
-                        {% if transaction.account_type == "basic" %}
-                            <td>Current</td>
-                        {% elif transaction.account_type == "savings" %}
-                            <td>Savings</td>
-                        {% elif transaction.account_type == "premium" %}
-                            <td>Premium</td>
-                        {% else %}
-                            <td>{{ transaction.account_type }}</td>
-                        {% endif %}
-
-
-                        {% if transaction.status == "PENDING" %}
-                            <td class="negative">{{ transaction.status|title }}</td>
-                        {% else %}
-                            <td class="positive">{{ transaction.status|title }}</td>
-                        {% endif %}
-                        <td>{{ transaction.created_on|date:"d M Y, H:i" }}</td>
-
-                    </tr>
-                    {% endfor %}
-
-
+                    <!-- This content will be generated via JS -->
 
                 </tbody>
             </table>
+
             <div class="show center mt=8">
                 <a href="#">show all transactions</a>
             </div>

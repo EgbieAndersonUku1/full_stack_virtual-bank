@@ -1,8 +1,10 @@
+import json
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 from bank.services.bank_services import BankAccountCacheService
-from bank.services.transaction_services import UserRecentTransactionsCacheService
+from bank.services.transaction_services import DataResponse, TransactionService, UserRecentTransactionsCacheService
 from bank.utils import get_account_context
 from card.services import CardDashboardServiceCache
 from utils.decorators import is_email_verified, go_to_staff_page
@@ -188,11 +190,24 @@ def quick_fund_savings_account(request):
 @is_email_verified
 def search_recent_transactions(request):
 
-    def get_transactions(request_body):
-        
+    def get_transactions(request_body) -> DataResponse:
+
         return TransactionSearchService.recent_transaction_search(
             user=request.user,
             **request_body,
         )
 
     return handle_json_post_request(request, func=get_transactions)
+
+
+
+
+@login_required
+@onboarding_required
+@is_email_verified
+def get_recent_transactions(request):
+
+    transactions = TransactionService.get_recent_transactions(user=request.user)
+
+    return JsonResponse({"data": transactions}, status=200)
+

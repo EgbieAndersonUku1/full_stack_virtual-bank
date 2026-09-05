@@ -38,7 +38,7 @@ def _construct_recent_transaction_cache_key(user: User, page: int) -> str:
             f"__recent_transactions__page_{page}"
         )
 
-class TransactionServiceBase:
+class _TransactionServiceBase:
 
     @classmethod
     def fetch(cls, user: User, limit: int, offset: int) -> list[dict]:
@@ -64,6 +64,35 @@ class TransactionServiceBase:
                     "account_type"
                 )
             )
+
+    @staticmethod
+    def format_transaction(transaction: dict) -> dict:
+        """Format transaction data for display in the frontend.
+
+        Args:
+            transaction: The transaction data to format.
+
+        Returns:
+            A copy of the transaction data with display-friendly formatting.
+        """
+        transaction_copy = transaction.copy()
+
+        transaction_copy["transaction_type"] = remove_under_score(transaction["transaction_type"]).title()
+        transaction_copy["opening_balance"] = format_currency(transaction["opening_balance"])
+        transaction_copy["closing_balance"] = format_currency(transaction["closing_balance"])
+        transaction_copy["amount"] = format_currency(transaction["amount"])
+        transaction_copy["movement"] = transaction["movement"].title()
+        transaction_copy["status"] = transaction["status"].title()
+        transaction_copy["created_on"] = transaction["created_on"].strftime(
+            "%d %b %Y, %H:%M"
+        )
+
+        if transaction["account_type"] == "basic":
+            transaction_copy["account_type"] = "current"
+
+        transaction_copy["account_type"] = transaction_copy["account_type"].title()
+
+        return transaction_copy
 
 
 
@@ -151,7 +180,7 @@ class UserRecentTransactionsCacheService:
 
         return get_cache_or_set(
             key,
-            lambda: TransactionServiceBase.fetch(
+            lambda: _TransactionServiceBase.fetch(
                 user,
                 limit=cls.PAGE_SIZE,
                 offset=(page - 1) * cls.PAGE_SIZE,
@@ -166,7 +195,7 @@ class UserRecentTransactionsCacheService:
 
         if not data_dict_list:
             key = _construct_recent_transaction_cache_key(user, page)
-            data_dict_list = TransactionServiceBase.fetch(
+            data_dict_list = _TransactionServiceBase.fetch(
                                         user,
                                         limit=cls.PAGE_SIZE,
                                         offset=(page - 1) * cls.PAGE_SIZE,
@@ -209,7 +238,7 @@ class UserRecentTransactionsCacheService:
 
         set_cache_with_retry(
             key,
-            value=TransactionServiceBase.fetch(
+            value=_TransactionServiceBase.fetch(
                 user,
                 limit=cls.PAGE_SIZE,
                 offset=(page - 1) * cls.PAGE_SIZE,
@@ -320,21 +349,8 @@ class TransactionSearchService:
             if transaction["status"].lower() != status.lower():
                 continue
 
-            transaction_copy = transaction.copy()
-
-            transaction_copy["transaction_type"] = remove_under_score(transaction["transaction_type"]).title()
-            transaction_copy["opening_balance"]  = format_currency(transaction["opening_balance"])
-            transaction_copy["closing_balance"]  = format_currency(transaction["closing_balance"])
-            transaction_copy["amount"]           = format_currency(transaction["amount"])
-            transaction_copy["movement"]         = transaction["movement"].title()
-            transaction_copy["status"]           = transaction["status"].title()
-            transaction_copy["created_on"]       = transaction["created_on"].strftime("%d %b %Y, %H:%M")
-
-            if transaction["account_type"] == "basic":
-               transaction_copy["account_type"]  = "current"
-
-            transaction_copy["account_type"] = transaction_copy["account_type"].title()
-            filtered_data.append(transaction_copy)
+            formatted_transaction = _TransactionServiceBase.format_transaction(transaction)
+            filtered_data.append(formatted_transaction)
 
         data: DataResponse =  {
                         "SUCCESS": True,
@@ -345,4 +361,34 @@ class TransactionSearchService:
                         "ACTION": "Successfully retrieved data"
                     }
 
+        return data
+
+
+
+class TransactionService:
+
+    @classmethod
+    def get_recent_transactions(cls, user : User, page : int = 1) -> DataResponse:
+
+        recent_transactions = UserRecentTransactionsCacheService.get(user, page)
+
+        cleaned_data = []
+
+        for transaction in recent_transactions:
+
+            formatted_transaction = _TransactionServiceBase.format_transaction(transaction)
+            cleaned_data.append(formatted_transaction)
+
+        number_returned    = len(cleaned_data)
+        is_populated       =  number_returned > 0
+        data: DataResponse =  {
+
+                            "SUCCESS": True if is_populated else False,
+                            "ERROR_MSG": "",
+                            "SUCCESS_MSG": "Successfully, retrieved transactions data" if is_populated else "No transactions found",
+                            "TRANSACTIONS": cleaned_data,
+                            "NUMBER_RETURNED": number_returned,
+                            "ACTION": "Successfully retrieved data"
+
+                            }
         return data
