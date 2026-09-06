@@ -7,16 +7,22 @@ import { AlertUtils } from "../../../alerts.js";
 
 
 const recentBankTransactionForm = document.getElementById("bank-transaction-form");
-const transactionFilterBtn = document.getElementById("bank-filter-btn");
-const spinner = document.getElementById("transaction-report-spinner");
-const transactionTable = document.querySelector("#transaction-report-table tbody");
-const transactionTitle = document.getElementById("transactions-title");
-const accountTotalBalance     = document.getElementById("total_account_balances");
+const transactionFilterBtn      = document.getElementById("bank-filter-btn");
+const spinner                   = document.getElementById("transaction-report-spinner");
+const transactionTable          = document.querySelector("#transaction-report-table tbody");
+const transactionTitle          = document.getElementById("transactions-title");
+const accountTotalBalance       = document.getElementById("total_account_balances");
+const resetButton               = document.getElementById("bank-reset-btn");
 
 
 
 recentBankTransactionForm?.addEventListener("submit", handleForm);
-const transactions = []
+resetButton?.addEventListener("click", handleResetButton);
+
+
+
+
+let recentTransactions = {};
 
 
 function disableTransactionButton(disable) {
@@ -31,27 +37,30 @@ const PositiveAndNegativeClass = {
 }
 
 
+async function getRecentTransactions() {
+
+    // get request doesnn't require a csrf token since it is not a post
+     return await fetchData({
+         url: "/dashboard/get/recent_transactions/",
+         body: {},
+        method: "GET",
+
+    })
+}
 
 
 export async function renderRecentTransactions() {
-    const resp = await fetchData({
-            url: "/dashboard/get/recent_transactions/",
-            body: {},
-            method: "GET",
-
-        })
-
+   const resp = await getRecentTransactions();
 
     const data = resp.data;
 
-
-    transactions.push({
+    recentTransactions = {
         transactions: data.TRANSACTIONS,
         numOfTransactions: data.NUMBER_RETURNED,
         totalBalance: data.TOTAL_BALANCE,
-    })
+    }
 
-    renderTransactions(data.TRANSACTIONS, data.NUMBER_RETURNED, data.TOTAL_BALANCE)
+    renderTransactions(data.TRANSACTIONS, data.NUMBER_RETURNED, data.TOTAL_BALANCE);
 
 
 }
@@ -229,9 +238,16 @@ function renderTransactions(transactions, numOfTransactions, totalBalance) {
     transactionTable.appendChild(fragment);
     resetTransactionSearchUI();
 
-
-
 }
 
 
 
+function handleResetButton() {
+
+    recentBankTransactionForm.reset();
+
+    renderTransactions(recentTransactions.transactions,
+                        recentTransactions.numOfTransactions,
+                        recentTransactions.totalBalance
+                      );
+}
