@@ -110,7 +110,7 @@ need to inspect financial activity.
         <div class="balance_overview mt-8 mb-8">
              <div class="info">
                  <span class="bold pl-8">Total Balance: </span>
-                 <span>{{ total_account_balances }}</span>
+                 <span id="total_account_balances">{{ total_account_balances }}</span>
              </div>
 
         </div>
@@ -177,8 +177,12 @@ need to inspect financial activity.
 
             <!-- filter button -->
             <div class="form-row flex flex-end">
-                <button type="submit" id="bank-filter-btn">
+                <button type="submit" id="bank-filter-btn" class="mr-4">
                     Filter transactions
+                </button>
+
+                <button type="button" id="bank-reset-btn" class="red-bg">
+                   Reset
                 </button>
             </div>
 

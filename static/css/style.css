@@ -3394,6 +3394,8 @@ clicks the button
     top: 0;
 }
 
+
+#bank-reset-btn,
 #bank-filter-btn {
     all: unset;
     cursor: pointer;
@@ -3405,10 +3407,17 @@ clicks the button
     margin-top: var(--space-8);
 }
 
+#bank-reset-btn:hover,
 #bank-filter-btn:hover {
     background: black;
 
 }
+
+#bank-reset-btn {
+    background: var(--red);
+    
+}
+
 
 .align-right {
     text-align: right;
