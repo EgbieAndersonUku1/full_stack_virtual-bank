@@ -11,6 +11,7 @@ const transactionFilterBtn = document.getElementById("bank-filter-btn");
 const spinner = document.getElementById("transaction-report-spinner");
 const transactionTable = document.querySelector("#transaction-report-table tbody");
 const transactionTitle = document.getElementById("transactions-title");
+const accountTotalBalance     = document.getElementById("total_account_balances");
 
 
 
@@ -21,6 +22,7 @@ const transactions = []
 function disableTransactionButton(disable) {
     transactionFilterBtn.disabled = disable ? true : false;
 }
+
 
 
 const PositiveAndNegativeClass = {
@@ -34,7 +36,6 @@ const PositiveAndNegativeClass = {
 export async function renderRecentTransactions() {
     const resp = await fetchData({
             url: "/dashboard/get/recent_transactions/",
-            csrfToken: getCsrfToken(),
             body: {},
             method: "GET",
 
@@ -42,8 +43,15 @@ export async function renderRecentTransactions() {
 
 
     const data = resp.data;
-    transactions.push(data)
-    renderTableTransactions(data.TRANSACTIONS, data.NUMBER_RETURNED)
+
+
+    transactions.push({
+        transactions: data.TRANSACTIONS,
+        numOfTransactions: data.NUMBER_RETURNED,
+        totalBalance: data.TOTAL_BALANCE,
+    })
+
+    renderTransactions(data.TRANSACTIONS, data.NUMBER_RETURNED, data.TOTAL_BALANCE)
 
 
 }
@@ -63,16 +71,23 @@ function handleData(data) {
             confirmButtonText: "Ok"
         })
 
-
         return;
     }
 
-    renderTableTransactions(data.TRANSACTIONS, data.NUMBER_RETURNED)
+    renderTransactions(data.TRANSACTIONS, data.NUMBER_RETURNED, data.TOTAL_BALANCE)
 }
 
 
 
 
+/**
+
+Validate the transaction search form and submit the search request.
+
+Prevents the default form submission, validates the form data,
+sends the search request to the backend, and handles the response.
+
+*/
 async function handleForm(e) {
     e.preventDefault();
 
@@ -131,25 +146,50 @@ function resetTransactionSearchUI() {
 }
 
 
+
+
+/**
+
+Return the positive or negative CSS class based on a condition.
+
+@param {boolean} condition - Determines which CSS class to return.
+@returns {string} The positive or negative CSS class.
+*/
 function getPositiveNegativeClass(condition) {
     return condition ? PositiveAndNegativeClass.POSITIVE : PositiveAndNegativeClass.NEGATIVE;
 }
 
 
 
-function renderTableTransactions(transactions, numOfTransactions) {
+
+/**
+ *  Reset the transaction search fields and restore the recent transactions.
+ * */
+function resetTransactionSearch() {
+
+    recentBankTransactionForm.reset()
+    const data = transactions.pop()
+    renderTransactions(data.TRANSACTIONS, data.NUMBER_RETURNED, data.TOTAL_BALANCE);
+}
+
+
+
+
+
+function renderTransactions(transactions, numOfTransactions, totalBalance) {
 
     const fragment = document.createDocumentFragment();
     clearElementField(transactionTable)
 
     if (!Array.isArray(transactions)) {
-        warnError("renderTableTransactions", {
+        warnError("renderTransactions", {
             error: `Expected an array but got ${typeof transactions}`
         })
         return;
     }
 
-    transactionTitle.textContent = `Transaction History (${numOfTransactions})`
+    transactionTitle.textContent     = `Transaction History (${numOfTransactions})`;
+    accountTotalBalance.textContent  =  totalBalance
 
     if (numOfTransactions === 0) {
 

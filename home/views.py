@@ -2,6 +2,7 @@ import json
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_protect
 
 from bank.services.bank_services import BankAccountCacheService
 from bank.services.transaction_services import DataResponse, TransactionService, UserRecentTransactionsCacheService
@@ -113,17 +114,17 @@ def manage_credit_cards(request):
 
 
 
-@onboarding_required
-@is_email_verified
 @login_required
+@is_email_verified
+@onboarding_required
 def manage_admin(request):
 
     return render(request, "home/dashboard/admin/system_tools.html")
 
 
-@onboarding_required
-@is_email_verified
 @login_required
+@is_email_verified
+@onboarding_required
 def manage_settings(request):
 
     user         = request.user
@@ -139,9 +140,9 @@ def manage_settings(request):
     return render(request,  "home/dashboard/settings.html", context=context)
 
 
-@onboarding_required
-@is_email_verified
 @login_required
+@is_email_verified
+@onboarding_required
 def money_management_portal(request):
     return render(request, "home//dashboard/money_management.html")
 
@@ -150,6 +151,7 @@ def money_management_portal(request):
 @login_required
 @onboarding_required
 @is_email_verified
+@csrf_protect
 def quick_fund_current_account(request):
 
     def fund_current_account(request_body: dict):
@@ -170,6 +172,7 @@ def quick_fund_current_account(request):
 @login_required
 @onboarding_required
 @is_email_verified
+@csrf_protect
 def quick_fund_savings_account(request):
 
     def fund_savings_account(request_body):
@@ -188,6 +191,7 @@ def quick_fund_savings_account(request):
 @login_required
 @onboarding_required
 @is_email_verified
+@csrf_protect
 def search_recent_transactions(request):
 
     def get_transactions(request_body) -> DataResponse:

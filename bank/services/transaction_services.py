@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Any
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.db.models import F
@@ -7,6 +6,7 @@ from django.utils.timezone import datetime
 from typing import TypedDict
 
 from bank.models import LedgerEntry
+from bank.services.bank_services import BankAccountCacheService
 from utils.formatter import format_currency
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
 from utils.converter import convert_date_string_to_date_object
@@ -22,6 +22,7 @@ class DataResponse(TypedDict):
     TRANSACTIONS: list
     NUMBER_RETURNED: int
     ACTION: str
+    TOTAL_BALANCE: str
 
 
 def _is_valid_date_range(from_date: datetime, to_date: datetime):
@@ -94,6 +95,9 @@ class _TransactionServiceBase:
 
         return transaction_copy
 
+    @staticmethod
+    def total_balance(user: User):
+        return format_currency(BankAccountCacheService.get_total_account_balance(user))
 
 
 
@@ -329,6 +333,7 @@ class TransactionSearchService:
                 "TRANSACTIONS": [],
                 "NUMBER_RETURNED": 0,
                 "ACTION": "Invalid date",
+                "TOTAL_BALANCE": _TransactionServiceBase.total_balance(user)
             }
             return data
 
@@ -358,7 +363,8 @@ class TransactionSearchService:
                         "SUCCESS_MSG": "Successfully, retrieved data",
                         "TRANSACTIONS": filtered_data,
                         "NUMBER_RETURNED": len(filtered_data),
-                        "ACTION": "Successfully retrieved data"
+                        "ACTION": "Data retrieval",
+                        "TOTAL_BALANCE": _TransactionServiceBase.total_balance(user)
                     }
 
         return data
@@ -367,8 +373,8 @@ class TransactionSearchService:
 
 class TransactionService:
 
-    @classmethod
-    def get_recent_transactions(cls, user : User, page : int = 1) -> DataResponse:
+    @staticmethod
+    def get_recent_transactions(user : User, page : int = 1) -> DataResponse:
 
         recent_transactions = UserRecentTransactionsCacheService.get(user, page)
 
@@ -388,7 +394,8 @@ class TransactionService:
                             "SUCCESS_MSG": "Successfully, retrieved transactions data" if is_populated else "No transactions found",
                             "TRANSACTIONS": cleaned_data,
                             "NUMBER_RETURNED": number_returned,
-                            "ACTION": "Successfully retrieved data"
+                            "ACTION": "Data retrieval",
+                            "TOTAL_BALANCE": _TransactionServiceBase.total_balance(user),
 
                             }
         return data
