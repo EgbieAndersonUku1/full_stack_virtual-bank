@@ -18,5 +18,6 @@ urlpatterns = [
     path("dashboard/quick_fund/saving_account/", view=views.quick_fund_savings_account, name="quick_fund_savings_account"),
     path("dashboard/search/recent_transactions/", view=views.search_recent_transactions, name="search_recent_transactions"),
     path("dashboard/get/recent_transactions/", view=views.get_recent_transactions, name="get_recent_transactions"),
+    path("dashboard/transactions/", view=views.show_transactions, name="show_transactions"),
 
 ]

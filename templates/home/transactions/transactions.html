@@ -1,0 +1,197 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Dashb0ard Main page{% endblock title %}
+
+<!--Add the csrf token to this page-->
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
+
+{% block body %}
+
+
+<section class="dashboard__container__main" tabindex="-1">
+
+
+    {% include "partials/header/header.html" %}
+
+    {% include "partials/messages/messages.html" %}
+
+
+    {% if request.user and not request.user.is_superuser or not request.user.is_staff %}
+
+    <p class="text-muted greeting mt-24 ml-24">
+        Stay on top of your finances by keeping track of your spending, savings, and recent transactions.
+    </p>
+
+    <hr class="dividor">
+
+      <div id="user-transaction-report" class="mt-16 transaction-report">
+
+            <table id="user-transaction-report-table" aria-describedby="table-instructions">
+                <thead>
+                    <tr id="row-header">
+                        <th scope="col">ID</th>
+                        <th scope="col">Transaction type</th>
+                        <th scope="col">Movement</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Opening Balance</th>
+                        <th scope="col">Closing Balance</th>
+                        <th scope="col">Account Type</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>1001</td>
+                        <td>Card payment</td>
+                        <td>Debit</td>
+                        <td class="negative">-£24.50</td>
+                        <td>£1,250.00</td>
+                        <td>£1,225.50</td>
+                        <td>Current</td>
+                        <td class="positive">Completed</td>
+                        <td>08 Sep 2026, 09:15</td>
+                    </tr>
+
+                    <tr>
+                        <td>1002</td>
+                        <td>Salary</td>
+                        <td>Credit</td>
+                        <td class="positive">+£2,500.00</td>
+                        <td>£1,225.50</td>
+                        <td>£3,725.50</td>
+                        <td>Current</td>
+                        <td class="positive">Completed</td>
+                        <td>07 Sep 2026, 08:30</td>
+                    </tr>
+
+                    <tr>
+                        <td>1003</td>
+                        <td>Transfer</td>
+                        <td>Debit</td>
+                        <td class="negative">-£150.00</td>
+                        <td>£3,725.50</td>
+                        <td>£3,575.50</td>
+                        <td>Savings</td>
+                        <td class="negative">Pending</td>
+                        <td>06 Sep 2026, 14:42</td>
+                    </tr>
+
+                    <tr>
+                        <td>1004</td>
+                        <td>Cash deposit</td>
+                        <td>Credit</td>
+                        <td class="positive">+£300.00</td>
+                        <td>£3,575.50</td>
+                        <td>£3,875.50</td>
+                        <td>Current</td>
+                        <td class="positive">Completed</td>
+                        <td>05 Sep 2026, 11:20</td>
+                    </tr>
+
+                    <tr>
+                        <td>1005</td>
+                        <td>Direct debit</td>
+                        <td>Debit</td>
+                        <td class="negative">-£72.99</td>
+                        <td>£3,875.50</td>
+                        <td>£3,802.51</td>
+                        <td>Current</td>
+                        <td class="positive">Completed</td>
+                        <td>04 Sep 2026, 16:05</td>
+                    </tr>
+
+                    <tr>
+                        <td>1006</td>
+                        <td>Transfer</td>
+                        <td>Credit</td>
+                        <td class="positive">+£450.00</td>
+                        <td>£3,802.51</td>
+                        <td>£4,252.51</td>
+                        <td>Savings</td>
+                        <td class="positive">Completed</td>
+                        <td>03 Sep 2026, 10:12</td>
+                    </tr>
+
+                    <tr>
+                        <td>1007</td>
+                        <td>Card payment</td>
+                        <td>Debit</td>
+                        <td class="negative">-£38.75</td>
+                        <td>£4,252.51</td>
+                        <td>£4,213.76</td>
+                        <td>Current</td>
+                        <td class="negative">Pending</td>
+                        <td>02 Sep 2026, 18:45</td>
+                    </tr>
+
+                    <tr>
+                        <td>1008</td>
+                        <td>Refund</td>
+                        <td>Credit</td>
+                        <td class="positive">+£65.00</td>
+                        <td>£4,213.76</td>
+                        <td>£4,278.76</td>
+                        <td>Current</td>
+                        <td class="positive">Completed</td>
+                        <td>01 Sep 2026, 13:30</td>
+                    </tr>
+
+                    <tr>
+                        <td>1009</td>
+                        <td>Bill payment</td>
+                        <td>Debit</td>
+                        <td class="negative">-£120.00</td>
+                        <td>£4,278.76</td>
+                        <td>£4,158.76</td>
+                        <td>Current</td>
+                        <td class="positive">Completed</td>
+                        <td>31 Aug 2026, 09:50</td>
+                    </tr>
+
+                    <tr>
+                        <td>1010</td>
+                        <td>Transfer</td>
+                        <td>Credit</td>
+                        <td class="positive">+£200.00</td>
+                        <td>£4,158.76</td>
+                        <td>£4,358.76</td>
+                        <td>Savings</td>
+                        <td class="positive">Completed</td>
+                        <td>30 Aug 2026, 15:10</td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+
+            <div class="pagination flex flex-end mt-12 mb-12">
+              <a href="">1</a>
+              <a href="">2</a>
+              <a href="">3</a>
+              <a href="">4</a>
+              <a href="">5</a>
+              <a href="">6</a>
+            </div>
+
+
+        </div>
+
+    {% endif %}
+
+
+
+</section>
+
+
+
+{% endblock body %}
+

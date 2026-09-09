@@ -212,6 +212,12 @@ def search_recent_transactions(request):
 def get_recent_transactions(request):
 
     transactions = TransactionService.get_recent_transactions(user=request.user)
-
     return JsonResponse({"data": transactions}, status=200)
 
+
+
+@login_required
+@onboarding_required
+@is_email_verified
+def show_transactions(request):
+    return render(request, "home/transactions/transactions.html")
