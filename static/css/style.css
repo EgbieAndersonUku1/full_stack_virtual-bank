@@ -3415,7 +3415,7 @@ clicks the button
 
 #bank-reset-btn {
     background: var(--red);
-    
+
 }
 
 
@@ -3431,20 +3431,22 @@ clicks the button
     color: #1f8a70;
 }
 
-#transaction-report table {
+.transaction-report table {
     width: 100%;
+    cursor: pointer;
 
 
 }
 
 
-#transaction-report table tr {
+.transaction-report table tr {
    text-align: center;
    border-bottom: 3px solid black;
 
 }
 
-#transaction-report table th {
+
+.transaction-report table th {
   background: lavender;
 
 }
@@ -3460,19 +3462,19 @@ clicks the button
 }
 
 
-#transaction-report {
+.transaction-report {
     font-size: 0.875rem; /* 14px */
     overflow-y: scroll;
 
 }
 
-#transaction-report th,
-#transaction-report td {
+.transaction-report th,
+.transaction-report td {
     padding: 8px 12px;
     border-bottom: 2px solid #eee;;
 }
 
-#transaction-report tr:hover {
+.transaction-report tr:hover {
     background: ghostwhite;
 }
 
@@ -5246,6 +5248,7 @@ clicks the button
 
 }
 
+.transaction-report table tbody tr:hover,
 #card-requests-table tr:hover {
     transform: scale(1);
 
@@ -6407,4 +6410,34 @@ textarea::placeholder {
 
     display: none;
 
+}
+
+
+#transactions-info,
+#user-transaction-report {
+    width: 97%;
+    margin: auto;
+}
+
+
+#user-transaction-report-table table tr:hover {
+    background: lavender;
+}
+
+
+#transactions-info {
+    padding-top: var(--space-24);
+    padding-bottom: var(--space-24);
+    padding-left: var(--space-16);
+
+}
+
+
+/* The current pagination */
+.pagination .current {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 6px 10px;
 }

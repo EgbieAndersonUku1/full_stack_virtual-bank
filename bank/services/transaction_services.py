@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import F
 from django.utils.timezone import datetime
 from typing import TypedDict
+from django.core.paginator import Paginator
 
 from bank.models import LedgerEntry
 from bank.services.bank_services import BankAccountCacheService
@@ -30,6 +31,7 @@ def _is_valid_date_range(from_date: datetime, to_date: datetime):
     return from_date <= to_date
 
 
+
 def _construct_recent_transaction_cache_key(user: User, page: int) -> str:
     """
     Construct the cache key for a user's transaction page.
@@ -38,6 +40,8 @@ def _construct_recent_transaction_cache_key(user: User, page: int) -> str:
             f"ledger_entries__{user.id}"
             f"__recent_transactions__page_{page}"
         )
+
+
 
 class _TransactionServiceBase:
 
@@ -99,7 +103,23 @@ class _TransactionServiceBase:
     def total_balance(user: User):
         return format_currency(BankAccountCacheService.get_total_account_balance(user))
 
+    @staticmethod
+    def set(session_key : str,
+            user: User,
+            limit: int,
+            page : int = 1,
+            page_size : int = 10,
+            ttl: int = 300):
 
+        set_cache_with_retry(
+                    session_key,
+                    value=_TransactionServiceBase.fetch(
+                        user,
+                        limit=limit,
+                        offset=(page - 1) * page_size,
+                    ),
+                    ttl=ttl,
+                )
 
 class UserRecentTransactionsCacheService:
     """
@@ -250,7 +270,6 @@ class UserRecentTransactionsCacheService:
             ttl=cls.CACHE_TTL,
         )
 
-
     @classmethod
     def _validate_page(cls, page: int) -> None:
         """
@@ -399,3 +418,25 @@ class TransactionService:
 
                             }
         return data
+
+    @staticmethod
+    def get_user_transactions(user: User, page: int, page_size: int):
+
+        ledger_entry_qs = (LedgerEntry.get_user_ledger(
+                            user,
+                            ).annotate(account_type=F("account__account_type"))
+                            .values(
+                                "id",
+                                "transaction_type",
+                                "movement",
+                                "amount",
+                                "opening_balance",
+                                "closing_balance",
+                                "created_on",
+                                "status",
+                                "account_type"
+                            )
+                    )
+
+        paginator = Paginator(ledger_entry_qs, page_size)
+        return paginator.get_page(page)

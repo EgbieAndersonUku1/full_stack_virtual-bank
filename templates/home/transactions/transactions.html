@@ -1,0 +1,206 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+{% load currency_filters %}
+{% load custom_filters %}
+
+
+{% block title %}Dashb0ard Main page{% endblock title %}
+
+<!--Add the csrf token to this page-->
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
+
+{% block body %}
+
+
+<section class="dashboard__container__main" tabindex="-1">
+
+
+    {% include "partials/header/header.html" %}
+
+    {% include "partials/messages/messages.html" %}
+
+
+    {% if request.user and not request.user.is_superuser or not request.user.is_staff %}
+
+    <p class="text-muted greeting ml-24 white-bg pt-18 pb-18" id="transactions-info">
+        Stay on top of your finances by keeping track of your spending, savings, and recent transactions.
+    </p>
+
+    <hr class="dividor">
+
+      <div id="user-transaction-report" class="mt-16 transaction-report">
+
+        <form action="" method="post" id="bank-transaction-form" class="mt-8">
+
+            {% csrf_token %}
+
+            {% if page_object %}
+            <div class="bank-transaction-form-wrapper flex-grid three-column-grid">
+
+                <!-- from field -->
+                <div class="form-row flex-grid">
+                    <label for="from_date">From</label>
+                    <input type="date" name="from_date" id="from_date" required>
+                </div>
+
+                <!-- to field -->
+                <div class="form-row flex-grid">
+                    <label for="to_date">To</label>
+                    <input type="date" name="to_date" id="to_date" required>
+                </div>
+
+                  <!-- movement field -->
+                <div class="form-row flex-grid">
+                    <label for="movement">Movement</label>
+                    <select name="movement" id="movement" required>
+                        <option value="" disabled selected>movement</option>
+                        <option value="credit">In</option>
+                        <option value="debit">Out</option>
+
+                    </select>
+                </div>
+
+                <!-- type field -->
+                <div class="form-row flex-grid">
+                    <label for="account_type">Account Type</label>
+                    <select name="account_type" id="account_type" required>
+                        <option value="" disabled selected>Account Type</option>
+                        <option value="basic">Current Account</option>
+                        <option value="savings">Savings Account</option>
+
+                    </select>
+                </div>
+
+                 <!-- status -->
+                <div class="form-row flex-grid">
+                    <label for="account_type">status</label>
+                    <select name="status" id="account_type" required>
+                        <option value="" disabled selected>Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+
+                    </select>
+                </div>
+
+
+
+            </div>
+
+            <!-- filter button -->
+            <div class="form-row flex flex-end mb-24">
+                <button type="submit" id="bank-filter-btn" class="mr-4">
+                    Filter transactions
+                </button>
+
+                <button type="button" id="bank-reset-btn" class="red-bg">
+                   Reset
+                </button>
+            </div>
+
+        </form>
+
+            <table id="user-transaction-report-table" aria-describedby="table-instructions">
+                <thead>
+                    <tr id="row-header">
+                        <th scope="col">ID</th>
+                        <th scope="col">Transaction type</th>
+                        <th scope="col">Movement</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Opening Balance</th>
+                        <th scope="col">Closing Balance</th>
+                        <th scope="col">Account Type</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for transaction in page_object %}
+                    <tr>
+                        <td>{{ transaction.id }}</td>
+                        <td>{{ transaction.transaction_type|remove_under_score|title }}</td>
+                        <td>{{ transaction.movement|title }}</td>
+
+                        {% if transaction.movement|title == "Debit" %}
+                            <td class="negative">-{{ transaction.amount|format_field_currency }}</td>
+                        {% else %}
+                            <td class="positive">+{{ transaction.amount|format_field_currency }}</td>
+                        {% endif %}
+
+                        <td>{{ transaction.opening_balance|format_field_currency }}</td>
+                        <td>{{ transaction.closing_balance|format_field_currency }}</td>
+
+
+                        {% if transaction.account_type == "basic" %}
+                            <td>Current</td>
+                        {% else %}
+                             <td>Savings</td>
+                        {% endif %}
+
+                        {% if transaction.status|title == "Pending" %}
+                            <td class="negative">{{ transaction.status|title }}</td>
+                        {% else %}
+                            <td class="positive">{{ transaction.status|title }}</td>
+                        {% endif %}
+
+                        <td>{{ transaction.created_on|date:"d M Y, H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+
+
+
+
+
+                </tbody>
+            </table>
+
+
+            <div class="pagination flex flex-end mt-24 mb-24">
+            <span class="step-links">
+                {% if page_object.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_object.previous_page_number }}">previous</a>
+                {% endif %}
+
+                {% for page_number in page_object.paginator.page_range %}
+                    {% if page_number == page_object.number %}
+                        <span class="current">{{ page_number }}</span>
+                    {% else %}
+                        <a href="?page={{ page_number }}">{{ page_number }}</a>
+                    {% endif %}
+                {% endfor %}
+
+
+
+                {% if page_object.has_next %}
+                    <a href="?page={{ page_object.next_page_number }}">next</a>
+                    <a href="?page={{ page_object.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+
+
+
+
+        </div>
+        {% else %}
+
+            <p>There are no transactions</p>
+
+        {% endif %}
+
+    {% endif %}
+
+
+
+</section>
+
+
+
+{% endblock body %}
+

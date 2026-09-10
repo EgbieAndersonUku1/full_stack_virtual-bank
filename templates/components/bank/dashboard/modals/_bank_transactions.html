@@ -189,7 +189,7 @@ need to inspect financial activity.
         </form>
 
         <!-- The table that displays the transaction form report -->
-        <div id="transaction-report" class="mt-8">
+        <div id="transaction-report" class="mt-8 transaction-report">
 
             <div class="spinner" id="transaction-report-spinner"></div>
             <table id="transaction-report-table" aria-describedby="table-instructions">
@@ -215,7 +215,7 @@ need to inspect financial activity.
             </table>
 
             <div class="show center mt=8">
-                <a href="#">show all transactions</a>
+                <a href="{% url 'show_transactions' %}">show all transactions</a>
             </div>
 
         </div>
