@@ -1,8 +1,8 @@
-import json
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_protect
+from django.core.paginator import Paginator
 
 from bank.services.bank_services import BankAccountCacheService
 from bank.services.transaction_services import DataResponse, TransactionService, UserRecentTransactionsCacheService
@@ -220,4 +220,16 @@ def get_recent_transactions(request):
 @onboarding_required
 @is_email_verified
 def show_transactions(request):
-    return render(request, "home/transactions/transactions.html")
+
+    PER_PAGE  = 10
+    page      = request.GET.get("page", 1)
+    page_size = request.GET.get("page_size", PER_PAGE)
+
+    context = {
+        "page_object": TransactionService.get_user_transactions(user=request.user,
+                                                                page=int(page),
+                                                                page_size=int(page_size),
+
+                                                                )
+    }
+    return render(request, "home/transactions/transactions.html", context=context)

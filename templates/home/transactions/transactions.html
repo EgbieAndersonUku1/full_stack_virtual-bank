@@ -1,6 +1,9 @@
 {% extends "partials/dashboard/base.html" %}
 
 {% load static %}
+{% load currency_filters %}
+{% load custom_filters %}
+
 
 {% block title %}Dashb0ard Main page{% endblock title %}
 
@@ -24,13 +27,82 @@
 
     {% if request.user and not request.user.is_superuser or not request.user.is_staff %}
 
-    <p class="text-muted greeting mt-24 ml-24">
+    <p class="text-muted greeting ml-24 white-bg pt-18 pb-18" id="transactions-info">
         Stay on top of your finances by keeping track of your spending, savings, and recent transactions.
     </p>
 
     <hr class="dividor">
 
       <div id="user-transaction-report" class="mt-16 transaction-report">
+
+        <form action="" method="post" id="bank-transaction-form" class="mt-8">
+
+            {% csrf_token %}
+
+            {% if page_object %}
+            <div class="bank-transaction-form-wrapper flex-grid three-column-grid">
+
+                <!-- from field -->
+                <div class="form-row flex-grid">
+                    <label for="from_date">From</label>
+                    <input type="date" name="from_date" id="from_date" required>
+                </div>
+
+                <!-- to field -->
+                <div class="form-row flex-grid">
+                    <label for="to_date">To</label>
+                    <input type="date" name="to_date" id="to_date" required>
+                </div>
+
+                  <!-- movement field -->
+                <div class="form-row flex-grid">
+                    <label for="movement">Movement</label>
+                    <select name="movement" id="movement" required>
+                        <option value="" disabled selected>movement</option>
+                        <option value="credit">In</option>
+                        <option value="debit">Out</option>
+
+                    </select>
+                </div>
+
+                <!-- type field -->
+                <div class="form-row flex-grid">
+                    <label for="account_type">Account Type</label>
+                    <select name="account_type" id="account_type" required>
+                        <option value="" disabled selected>Account Type</option>
+                        <option value="basic">Current Account</option>
+                        <option value="savings">Savings Account</option>
+
+                    </select>
+                </div>
+
+                 <!-- status -->
+                <div class="form-row flex-grid">
+                    <label for="account_type">status</label>
+                    <select name="status" id="account_type" required>
+                        <option value="" disabled selected>Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+
+                    </select>
+                </div>
+
+
+
+            </div>
+
+            <!-- filter button -->
+            <div class="form-row flex flex-end mb-24">
+                <button type="submit" id="bank-filter-btn" class="mr-4">
+                    Filter transactions
+                </button>
+
+                <button type="button" id="bank-reset-btn" class="red-bg">
+                   Reset
+                </button>
+            </div>
+
+        </form>
 
             <table id="user-transaction-report-table" aria-describedby="table-instructions">
                 <thead>
@@ -48,142 +120,79 @@
                 </thead>
 
                 <tbody>
-
+                    {% for transaction in page_object %}
                     <tr>
-                        <td>1001</td>
-                        <td>Card payment</td>
-                        <td>Debit</td>
-                        <td class="negative">-£24.50</td>
-                        <td>£1,250.00</td>
-                        <td>£1,225.50</td>
-                        <td>Current</td>
-                        <td class="positive">Completed</td>
-                        <td>08 Sep 2026, 09:15</td>
-                    </tr>
+                        <td>{{ transaction.id }}</td>
+                        <td>{{ transaction.transaction_type|remove_under_score|title }}</td>
+                        <td>{{ transaction.movement|title }}</td>
 
-                    <tr>
-                        <td>1002</td>
-                        <td>Salary</td>
-                        <td>Credit</td>
-                        <td class="positive">+£2,500.00</td>
-                        <td>£1,225.50</td>
-                        <td>£3,725.50</td>
-                        <td>Current</td>
-                        <td class="positive">Completed</td>
-                        <td>07 Sep 2026, 08:30</td>
-                    </tr>
+                        {% if transaction.movement|title == "Debit" %}
+                            <td class="negative">-{{ transaction.amount|format_field_currency }}</td>
+                        {% else %}
+                            <td class="positive">+{{ transaction.amount|format_field_currency }}</td>
+                        {% endif %}
 
-                    <tr>
-                        <td>1003</td>
-                        <td>Transfer</td>
-                        <td>Debit</td>
-                        <td class="negative">-£150.00</td>
-                        <td>£3,725.50</td>
-                        <td>£3,575.50</td>
-                        <td>Savings</td>
-                        <td class="negative">Pending</td>
-                        <td>06 Sep 2026, 14:42</td>
-                    </tr>
+                        <td>{{ transaction.opening_balance|format_field_currency }}</td>
+                        <td>{{ transaction.closing_balance|format_field_currency }}</td>
 
-                    <tr>
-                        <td>1004</td>
-                        <td>Cash deposit</td>
-                        <td>Credit</td>
-                        <td class="positive">+£300.00</td>
-                        <td>£3,575.50</td>
-                        <td>£3,875.50</td>
-                        <td>Current</td>
-                        <td class="positive">Completed</td>
-                        <td>05 Sep 2026, 11:20</td>
-                    </tr>
 
-                    <tr>
-                        <td>1005</td>
-                        <td>Direct debit</td>
-                        <td>Debit</td>
-                        <td class="negative">-£72.99</td>
-                        <td>£3,875.50</td>
-                        <td>£3,802.51</td>
-                        <td>Current</td>
-                        <td class="positive">Completed</td>
-                        <td>04 Sep 2026, 16:05</td>
-                    </tr>
+                        {% if transaction.account_type == "basic" %}
+                            <td>Current</td>
+                        {% else %}
+                             <td>Savings</td>
+                        {% endif %}
 
-                    <tr>
-                        <td>1006</td>
-                        <td>Transfer</td>
-                        <td>Credit</td>
-                        <td class="positive">+£450.00</td>
-                        <td>£3,802.51</td>
-                        <td>£4,252.51</td>
-                        <td>Savings</td>
-                        <td class="positive">Completed</td>
-                        <td>03 Sep 2026, 10:12</td>
-                    </tr>
+                        {% if transaction.status|title == "Pending" %}
+                            <td class="negative">{{ transaction.status|title }}</td>
+                        {% else %}
+                            <td class="positive">{{ transaction.status|title }}</td>
+                        {% endif %}
 
-                    <tr>
-                        <td>1007</td>
-                        <td>Card payment</td>
-                        <td>Debit</td>
-                        <td class="negative">-£38.75</td>
-                        <td>£4,252.51</td>
-                        <td>£4,213.76</td>
-                        <td>Current</td>
-                        <td class="negative">Pending</td>
-                        <td>02 Sep 2026, 18:45</td>
+                        <td>{{ transaction.created_on|date:"d M Y, H:i" }}</td>
                     </tr>
+                    {% endfor %}
 
-                    <tr>
-                        <td>1008</td>
-                        <td>Refund</td>
-                        <td>Credit</td>
-                        <td class="positive">+£65.00</td>
-                        <td>£4,213.76</td>
-                        <td>£4,278.76</td>
-                        <td>Current</td>
-                        <td class="positive">Completed</td>
-                        <td>01 Sep 2026, 13:30</td>
-                    </tr>
 
-                    <tr>
-                        <td>1009</td>
-                        <td>Bill payment</td>
-                        <td>Debit</td>
-                        <td class="negative">-£120.00</td>
-                        <td>£4,278.76</td>
-                        <td>£4,158.76</td>
-                        <td>Current</td>
-                        <td class="positive">Completed</td>
-                        <td>31 Aug 2026, 09:50</td>
-                    </tr>
 
-                    <tr>
-                        <td>1010</td>
-                        <td>Transfer</td>
-                        <td>Credit</td>
-                        <td class="positive">+£200.00</td>
-                        <td>£4,158.76</td>
-                        <td>£4,358.76</td>
-                        <td>Savings</td>
-                        <td class="positive">Completed</td>
-                        <td>30 Aug 2026, 15:10</td>
-                    </tr>
+
 
                 </tbody>
             </table>
 
 
-            <div class="pagination flex flex-end mt-12 mb-12">
-              <a href="">1</a>
-              <a href="">2</a>
-              <a href="">3</a>
-              <a href="">4</a>
-              <a href="">5</a>
-              <a href="">6</a>
-            </div>
+            <div class="pagination flex flex-end mt-24 mb-24">
+            <span class="step-links">
+                {% if page_object.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_object.previous_page_number }}">previous</a>
+                {% endif %}
+
+                {% for page_number in page_object.paginator.page_range %}
+                    {% if page_number == page_object.number %}
+                        <span class="current">{{ page_number }}</span>
+                    {% else %}
+                        <a href="?page={{ page_number }}">{{ page_number }}</a>
+                    {% endif %}
+                {% endfor %}
+
+
+
+                {% if page_object.has_next %}
+                    <a href="?page={{ page_object.next_page_number }}">next</a>
+                    <a href="?page={{ page_object.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+
+
 
 
         </div>
+        {% else %}
+
+            <p>There are no transactions</p>
+
+        {% endif %}
 
     {% endif %}
 
