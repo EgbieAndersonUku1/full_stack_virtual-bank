@@ -445,19 +445,5 @@ DJANGO_AUTH_RECOVERY_CODE_EMAIL_SUCCESS_MSG = "Your recovery codes email has bee
 
 
 
-
-
-# Tell EmailSender where to find the templates dir
-
-import django_auth_recovery_codes
-from pathlib import Path
-
-# Get the path to the installed package
-PACKAGE_DIR = Path(django_auth_recovery_codes.__file__).parent
-
-# Define the templates directory within the package
-MYAPP_TEMPLATES_DIR = PACKAGE_DIR / "templates" / "django_auth_recovery_codes"
-
-
 from django_auth_recovery_codes.loggers.logger_config import DJANGO_AUTH_RECOVERY_CODES_LOGGING
 LOGGING = DJANGO_AUTH_RECOVERY_CODES_LOGGING
