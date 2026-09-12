@@ -66,3 +66,7 @@ class MissingAccountError(Exception):
 
 class DateTimeError(Exception):
     pass
+
+
+class SameAccountError(Exception):
+    pass

@@ -1,17 +1,23 @@
 from __future__ import annotations
+from decimal import Decimal
+from enum import Enum
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.db.models import F
 from django.utils.timezone import datetime
 from typing import TypedDict
 from django.core.paginator import Paginator
+from dataclasses import dataclass
 
-from bank.models import LedgerEntry
+
+from bank.models import LedgerEntry, BankAccount
 from bank.services.bank_services import BankAccountCacheService
+from utils.custom_errors import SameAccountError, BankAccountTypeError
 from utils.formatter import format_currency
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
 from utils.converter import convert_date_string_to_date_object
 from utils.utils import remove_under_score
+from utils.validators.validators import validate_amount, validate_datetime
 
 
 User = get_user_model()
@@ -24,6 +30,21 @@ class DataResponse(TypedDict):
     NUMBER_RETURNED: int
     ACTION: str
     TOTAL_BALANCE: str
+
+
+
+
+class Start(Enum):
+    IMMEDIATELY = "immediately"
+    SCHEDULED = "scheduled"
+
+
+class Recurrence(Enum):
+    NONE = None
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    BI_WEEKLY = "bi_weekly"
+    MONTHLY = "monthly"
 
 
 def _is_valid_date_range(from_date: datetime, to_date: datetime):
@@ -440,3 +461,66 @@ class TransactionService:
 
         paginator = Paginator(ledger_entry_qs, page_size)
         return paginator.get_page(page)
+
+    @classmethod
+    def transfer(
+            cls,
+            source_account: BankAccount,
+            recipient_account: BankAccount,
+            amount: Decimal,
+            start: Start.IMMEDIATELY,
+            recurrence: Recurrence.NONE,
+            schedule_date: datetime = None
+        ):
+
+        cls._validate_bank_accounts(source_account, recipient_account)
+        validate_amount(amount)
+
+        cls._validate_schedule(start, recurrence, schedule_date)
+
+       
+        raise NotImplementedError("Not yet implemented")
+
+    @classmethod
+    def _validate_bank_accounts(cls, account_1: BankAccount,  account_2: BankAccount) -> None:
+
+        if not isinstance(account_1, BankAccount):
+            error_msg="Expected bank instance for account_1, got type {}".format(type(account_1).__name__)
+            raise BankAccountTypeError( _(error_msg))
+
+        if not isinstance(account_2, BankAccount):
+            error_msg="Expected bank instance for account 2, got type {}".format(type(account_2).__name__)
+            raise BankAccountTypeError( _(error_msg))
+
+        if account_1 == account_2:
+            raise SameAccountError(_("Source account and recipient account cannot be the same"))
+
+    @classmethod
+    def _validate_schedule(cls, start: Start, recurrence: Recurrence, schedule_date: datetime = None) -> None:
+
+        if not isinstance(start, Start):
+            error_msg = "Start must be an instance of Start, got type {}".format(
+                type(start).__name__
+            )
+            raise TypeError(_(error_msg))
+
+        if not isinstance(recurrence, Recurrence):
+            error_msg = "Recurrence must be an instance of Recurrence, got type {}".format(
+                type(recurrence).__name__
+            )
+            raise TypeError(_(error_msg))
+
+        if start == Start.IMMEDIATELY and schedule_date is not None:
+            raise ValueError(
+                _("A schedule date must not be provided when the start is immediate.")
+            )
+
+        if start == Start.SCHEDULED and schedule_date is None:
+            raise ValueError(
+                _("A schedule date must be provided when the start is scheduled.")
+            )
+
+        if start == Start.SCHEDULED and schedule_date is not None:
+            validate_datetime(schedule_date)
+
+
