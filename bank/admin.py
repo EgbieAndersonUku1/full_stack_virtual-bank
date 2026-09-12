@@ -191,7 +191,7 @@ class BankAdmin(admin.ModelAdmin):
 
 
 class BankAccountAdmin(admin.ModelAdmin):
-    readonly_fields   = ["sort_code", "account_number",  "user_profile", "bank_name",
+    readonly_fields   = ["sort_code", "account_number",  "user_profile", "bank_name", "overdraft_limit",
                          "balance", "last_interest_run", "account_type", "status", "interest_enabled", "created_on", "last_updated"]
     list_display       = ["id", "bank_name", "user_profile", "sort_code", "account_number",
                          "balance", "last_interest_run", "account_type", "status", "created_on"]
@@ -219,6 +219,7 @@ class BankAccountAdmin(admin.ModelAdmin):
                     "account_number",
                     "balance",
                     "interest_enabled",
+                    "overdraft_limit",
                 ],
             },
         ),

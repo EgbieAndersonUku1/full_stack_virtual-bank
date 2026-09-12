@@ -308,6 +308,8 @@ class AccountService:
                 account_type=account_type,
             )
 
+            if bank_account.supports_overdraft:
+                bank_account.overdraft_limit = settings.DEFAULT_OVERDRAFT_LIMIT
 
             if user_profile:
                 bank_account.user_profile = user_profile

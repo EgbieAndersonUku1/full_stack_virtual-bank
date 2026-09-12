@@ -654,6 +654,7 @@ class BankAccount(models.Model):
     account_type      = models.CharField(max_length=20, choices=AccountType.choices, default=AccountType.BASIC)
     status            = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     interest_enabled  = models.BooleanField(default=False)
+    overdraft_limit   = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
     created_on        = models.DateTimeField(auto_now_add=True)
     last_updated      = models.DateTimeField(auto_now=True)
 
@@ -700,18 +701,58 @@ class BankAccount(models.Model):
         self.balance += amount
 
     @classmethod
+    def _get_base_query_set(cls):
+        """Return the base queryset with related objects loaded to avoid extra queries."""
+
+        return cls.objects.select_related(
+            "sort_code",
+            "sort_code__bank",
+            "user_profile",
+        )
+
+    @classmethod
+    def get_by_sort_code_and_account_number(cls, sort_code: str, account_number: str) -> BankAccount | None:
+        """
+        Return the bank account matching the sort code and account number, if found.
+
+        Args:
+            sort_code (str): The sort code associated with the bank account
+            account_number (str): The account number associated with the bank account
+
+        Returns:
+            Returns a BankAccount object if found or None
+
+        Raises:
+            Raises a TypeError if the sort code and account number are not strings.
+
+        """
+        if not isinstance(sort_code, str) or not isinstance(account_number, str):
+            error_msg = (
+                "Account number and sort code must be strings. "
+                "Sort code type: {}, account number type: {}"
+            ).format(
+                type(sort_code).__name__,
+                type(account_number).__name__,
+            )
+
+            raise TypeError(_(error_msg))
+
+        qs = cls._get_base_query_set()
+
+        return qs.filter(
+            sort_code__external_sort_code=sort_code,
+            account_number=account_number,
+        ).first()
+
+    @classmethod
     def get_all_account_by_user_profile(cls, user_profile: UserProfile):
 
         if not isinstance(user_profile, UserProfile):
             raise TypeError(_("User profile is not an instance of User profile. " \
             "Expected an instance but got type {}".format(type(user_profile).__name__)))
 
-        query_set = (
-            cls.objects.select_related("sort_code",
-                                       "sort_code__bank",
-                                       "user_profile"
-                                       )
-        )
+        query_set = cls._get_base_query_set()
+
         return query_set.filter(user_profile=user_profile).order_by(
             Case(
                 When(account_type=cls.AccountType.BASIC, then=Value(1)),
