@@ -153,7 +153,7 @@ function handleCodeInputField(e) {
 function handleRegisterForm(e) {
     e.preventDefault();
 
-    const SUBMIT_DELAY = 1000;
+    const SUBMIT_DELAY = 900;
 
     if (!registerForm) return;
 

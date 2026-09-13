@@ -70,3 +70,7 @@ class DateTimeError(Exception):
 
 class SameAccountError(Exception):
     pass
+
+
+class InsufficientFundsError(Exception):
+    pass

@@ -7,12 +7,13 @@ from django.db.models import F
 from django.utils.timezone import datetime
 from typing import TypedDict
 from django.core.paginator import Paginator
-from dataclasses import dataclass
+from django.conf import settings
+from django.db import transaction
 
 
 from bank.models import LedgerEntry, BankAccount
 from bank.services.bank_services import BankAccountCacheService
-from utils.custom_errors import SameAccountError, BankAccountTypeError
+from utils.custom_errors import InsufficientFundsError, SameAccountError, BankAccountTypeError
 from utils.formatter import format_currency
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
 from utils.converter import convert_date_string_to_date_object
@@ -468,8 +469,8 @@ class TransactionService:
             source_account: BankAccount,
             recipient_account: BankAccount,
             amount: Decimal,
-            start: Start.IMMEDIATELY,
-            recurrence: Recurrence.NONE,
+            start: Start = Start.IMMEDIATELY,
+            recurrence: Recurrence = Recurrence.NONE,
             schedule_date: datetime = None
         ):
 
@@ -478,8 +479,14 @@ class TransactionService:
 
         cls._validate_schedule(start, recurrence, schedule_date)
 
-       
-        raise NotImplementedError("Not yet implemented")
+        if not cls._has_sufficient_funds(source_account, amount):
+            error_msg = "The source account has insufficient funds"
+            raise InsufficientFundsError(_(error_msg))
+
+        if start == Start.IMMEDIATELY and recurrence is None:
+            pass
+
+
 
     @classmethod
     def _validate_bank_accounts(cls, account_1: BankAccount,  account_2: BankAccount) -> None:
@@ -524,3 +531,53 @@ class TransactionService:
             validate_datetime(schedule_date)
 
 
+    @classmethod
+    def _has_sufficient_funds(cls, account: BankAccount, amount: Decimal):
+
+       has_funds = account.balance >= amount
+
+       if has_funds:
+           return True
+
+       if not account.supports_overdraft:
+           return False
+
+       overdraft_limit = cls._get_overdraft_limit(account)
+
+       if account.balance + overdraft_limit >= amount:
+            return True
+
+       return False
+
+    @classmethod
+    def _get_overdraft_limit(cls, account: BankAccount):
+        """
+        Return the effective overdraft limit for the account.
+
+        The account's stored overdraft_limit is normally used. However, some
+        accounts may have been created before the overdraft_limit field was
+        introduced and may therefore have a zero value despite supporting
+        overdrafts. For backward compatibility, those accounts fall back to
+        the configured DEFAULT_OVERDRAFT_LIMIT.
+
+        This ensures existing overdraft-enabled accounts continue to have a
+        valid overdraft limit after the field was introduced.
+        """
+
+        if account.supports_overdraft:
+            overdraft_limit = account.overdraft_limit
+
+        if account.supports_overdraft and overdraft_limit == Decimal("0.00"):
+            overdraft_limit = Decimal(str(settings.DEFAULT_OVERDRAFT_LIMIT))
+
+        return overdraft_limit
+
+    @classmethod
+    def _handle_transfer(cls, source_account: BankAccount, recipient_account: BankAccount,  amount: Decimal):
+
+        with transaction.atomic():
+
+            source_account.debit(amount)
+            recipient_account.credit(amount)
+
+            LedgerEntry

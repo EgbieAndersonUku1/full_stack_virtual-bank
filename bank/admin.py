@@ -615,6 +615,7 @@ class LedgerEntryAdmin(admin.ModelAdmin):
         "created_on",
         "completed_on",
         "metadata",
+        "transfer_reference"
     ]
 
     list_display = ["id", "transaction_type", "movement", "amount", "currency", "status",  "risk_flag", "review_required",
@@ -640,6 +641,7 @@ class LedgerEntryAdmin(admin.ModelAdmin):
                     "id",
                     "reference",
                     "transaction_type",
+                    "transfer_reference",
                     "source",
                     "movement",
                 ],

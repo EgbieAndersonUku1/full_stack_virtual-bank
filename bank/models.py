@@ -700,6 +700,27 @@ class BankAccount(models.Model):
         validate_amount(amount)
         self.balance += amount
 
+    def debit(self, amount: Decimal) -> None:
+        """
+        Debit funds from the account balance.
+
+        The supplied amount must be a positive `Decimal` value.
+        The balance is updated in memory only; the caller is responsible
+        for saving the account instance within the appropriate database transaction.
+
+        Args: amount (Decimal): The positive amount to subtract from the account balance.
+
+         Raises: IncorrectAmountTypeError:
+                If `amount` is not a `Decimal`. IncorrectAmountError: If `amount` is less than
+                or equal to zero.
+
+        Note: Validation errors are raised by the `validate_amount` method.
+
+        """
+        validate_amount(amount)
+        self.balance -= amount
+
+
     @classmethod
     def _get_base_query_set(cls):
         """Return the base queryset with related objects loaded to avoid extra queries."""
@@ -884,6 +905,7 @@ class LedgerEntry(models.Model):
 
     reference        = models.CharField(max_length=50, unique=True)
     transaction_type = models.CharField(max_length=25, choices=TransactionType.choices)
+    transfer_reference = models.CharField(max_length=25, blank=True, null=True)
     source           = models.CharField(max_length=25, choices=Source.choices)
     status           = models.CharField(max_length=10,choices=Status.choices)
     opening_balance  = models.DecimalField(max_digits=12, decimal_places=2)
