@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 from bank.models import BankAccount, LedgerEntry
 from bank.services.bank_services import BankAccountCacheService
@@ -13,6 +14,7 @@ from utils.custom_errors import MissingAccountError
 from utils.security.generator import generate_secure_code as generate_reference
 from utils.validators.validators import validate_user
 from bank.services.transaction_services import UserRecentTransactionsCacheService
+
 
 User = get_user_model()
 
@@ -32,7 +34,7 @@ class FundingResponse(TypedDict):
 
 
 class FundingService:
-    RISK_THRESHOLD = Decimal("10000.00")
+    RISK_THRESHOLD = settings.RISK_THRESHOLD
 
     @classmethod
     def _get_bank_account_or_raise(
@@ -85,13 +87,12 @@ class FundingService:
 
         with transaction.atomic():
 
-            opening_balance = account.balance
-
             ledger_entry = LedgerEntry(
                 reference=f"TX_{generate_reference(code_length=35)}",
                 transaction_type=LedgerEntry.TransactionType.ADD_FUNDS,
                 source=LedgerEntry.Source.EXTERNAL,
-                opening_balance=opening_balance,
+                transfer_reference=generate_reference(code_length=25),
+                opening_balance=account.balance,
                 amount=amount,
                 currency="GBP",  # for now use GBP, later the currency will come from the account when implemented
                 description=f"The user {user} funded their account with the amount {amount}",
@@ -120,7 +121,11 @@ class FundingService:
                     account.status = BankAccount.Status.ACTIVE
 
                 account.save()
-                BankAccountCacheService.set(user)
+
+                transaction.on_commit(
+                   lambda: BankAccountCacheService.set(user)
+                )
+
 
                 ledger_entry.status = LedgerEntry.Status.COMPLETED
                 ledger_entry.completed_on = timezone.now()

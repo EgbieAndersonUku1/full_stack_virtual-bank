@@ -555,13 +555,13 @@ def build_application_response_data(application: CardRequestApplication) -> dict
             "TOTAL_ACCOUNTS": bank_accounts.count(),
             "TOTAL_CARDS": 0,  # keep as 0 since it hasn't been built yet
             "TOTAL_TRANSACTIONS": 0,  #  keep as 0 since it hasn't been built yet,
-            "ACCOUNT_BALANCE": current_account.balance,
+            "ACCOUNT_BALANCE": current_account.available_balance,
             "TOTAL_APPLICATIONS": application.get_user_applications(user).count(),
         },
         "ACCOUNT_DETAILS": {
             "SORT_CODE": sort_number,
             "ACCOUNT_NUMBER": account_number,
-            "BALANCE": current_account.balance,
+            "BALANCE": current_account.available_balance,
             "CAN_REQUEST_OVERDRAFT": format_boolean_as_text(
                 current_account.sort_code.bank.offer_overdraft
             ),

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from decimal import Decimal
 from enum import Enum
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.db.models import F
@@ -9,16 +10,19 @@ from typing import TypedDict
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.db import transaction
+from django.conf import settings
 
 
 from bank.models import LedgerEntry, BankAccount
 from bank.services.bank_services import BankAccountCacheService
-from utils.custom_errors import InsufficientFundsError, SameAccountError, BankAccountTypeError
+from utils.custom_errors import InsufficientFundsError, SameAccountError, BankAccountTypeError, CurrencyMismatchError
 from utils.formatter import format_currency
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
 from utils.converter import convert_date_string_to_date_object
 from utils.utils import remove_under_score
 from utils.validators.validators import validate_amount, validate_datetime
+from utils.security.generator import generate_secure_code as generate_reference
+
 
 
 User = get_user_model()
@@ -478,13 +482,19 @@ class TransactionService:
         validate_amount(amount)
 
         cls._validate_schedule(start, recurrence, schedule_date)
+        cls._validate_transfer_currencies(source_account, recipient_account)
 
         if not cls._has_sufficient_funds(source_account, amount):
             error_msg = "The source account has insufficient funds"
             raise InsufficientFundsError(_(error_msg))
 
         if start == Start.IMMEDIATELY and recurrence is None:
-            pass
+            cls._handle_transfer(
+                source_account=source_account,
+                recipient_account=recipient_account,
+                amount=amount,
+            )
+
 
 
 
@@ -530,11 +540,29 @@ class TransactionService:
         if start == Start.SCHEDULED and schedule_date is not None:
             validate_datetime(schedule_date)
 
+    @classmethod
+    def _validate_transfer_currencies(
+            cls,
+            source_account: BankAccount,
+            destination_account: BankAccount,
+        ):
+
+        """
+        Validate that both accounts use the same currency for the transfer.
+
+        Raises:
+            CurrencyMismatchError: If the source and destination accounts use different currencies.
+        """
+
+        if source_account.currency.lower() != destination_account.currency.lower():
+            raise CurrencyMismatchError(
+                "Source and destination accounts must use the same currency."
+            )
 
     @classmethod
     def _has_sufficient_funds(cls, account: BankAccount, amount: Decimal):
 
-       has_funds = account.balance >= amount
+       has_funds = account.available_balance >= amount
 
        if has_funds:
            return True
@@ -544,7 +572,7 @@ class TransactionService:
 
        overdraft_limit = cls._get_overdraft_limit(account)
 
-       if account.balance + overdraft_limit >= amount:
+       if account.available_balance + overdraft_limit >= amount:
             return True
 
        return False
@@ -575,9 +603,97 @@ class TransactionService:
     @classmethod
     def _handle_transfer(cls, source_account: BankAccount, recipient_account: BankAccount,  amount: Decimal):
 
+        source_account_user    = source_account.user_profile.user
+        recipient_account_user = recipient_account.user_profile.user
+        is_risk_triggered      = False
+
+        RISK_THRESHOLD_AMOUNT = settings.RISK_THRESHOLD
+
+
+        def update_caches():
+            BankAccountCacheService.set(source_account_user)
+            BankAccountCacheService.set(recipient_account_user)
+
+        def update_recent_transactions():
+             UserRecentTransactionsCacheService.set(source_account_user)
+             UserRecentTransactionsCacheService.set(recipient_account_user)
+
         with transaction.atomic():
 
-            source_account.debit(amount)
-            recipient_account.credit(amount)
+            transfer_reference = generate_reference(code_length=25)
+            source_ledger_entry = LedgerEntry(
+                            reference=f"TX_{generate_reference(code_length=35)}",
+                            transaction_type=LedgerEntry.TransactionType.TRANSFER_OUT,
+                            source=LedgerEntry.Source.BANK_TRANSFER,
+                            transfer_reference=transfer_reference,
+                            opening_balance=source_account.balance,
+                            amount=amount,
+                            currency=source_account.currency,
+                            description=f"The user {source_account_user} is transfer the amount {amount} to the account {recipient_account_user}",
+                            movement=LedgerEntry.Movement.DEBIT,
+                            user=source_account_user,
+                            account=source_account,
+                        )
 
-            LedgerEntry
+            recipient_ledger_entry = LedgerEntry(
+                                    reference=f"TX_{generate_reference(code_length=35)}",
+                                    transaction_type=LedgerEntry.TransactionType.TRANSFER_IN,
+                                    source=LedgerEntry.Source.BANK_TRANSFER,
+                                    transfer_reference=transfer_reference,
+                                    opening_balance=recipient_account.balance,
+                                    amount=amount,
+                                    currency=recipient_account.recipient,
+                                    description=f"The user {recipient_account_user} is being credited with the amount {amount}",
+                                    movement=LedgerEntry.Movement.CREDIT,
+                                    user=recipient_account_user,
+                                    account=recipient_account,
+                                )
+
+            transaction.on_commit(update_caches)
+
+            if amount >= RISK_THRESHOLD_AMOUNT:
+
+                risk_reason = f"Transfer amount {amount} meets or exceeds the configured risk threshold {RISK_THRESHOLD_AMOUNT}"
+
+                source_account.update_reserved_amount(amount)
+                source_ledger_entry.risk_flag   = True
+                source_ledger_entry.risk_reason = risk_reason
+
+                source_ledger_entry.status          = LedgerEntry.Status.PENDING
+                source_ledger_entry.review_required = True
+
+                # recipient ledger
+                recipient_ledger_entry.risk_flag = True
+                recipient_ledger_entry.risk_reason = risk_reason
+
+                recipient_ledger_entry.status          = LedgerEntry.Status.PENDING
+                recipient_ledger_entry.review_required = True
+
+                is_risk_triggered = True
+
+                source_account.save()
+
+            else:
+                source_account.debit(amount)
+                recipient_account.credit(amount)
+
+                source_account.save()
+                recipient_account.save()
+
+                completed_time                   = timezone.now()
+                source_ledger_entry.status       = LedgerEntry.Status.COMPLETED
+                source_ledger_entry.completed_on = completed_time
+
+                recipient_ledger_entry.status       = LedgerEntry.Status.COMPLETED
+                recipient_ledger_entry.completed_on = completed_time
+
+            source_ledger_entry.closing_balance    = source_account.balance
+            recipient_ledger_entry.closing_balance = recipient_account.balance
+
+            source_ledger_entry.save()
+            recipient_ledger_entry.save()
+
+            transaction.on_commit(update_recent_transactions)
+
+        if is_risk_triggered:
+            pass

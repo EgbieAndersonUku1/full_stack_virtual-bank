@@ -74,3 +74,7 @@ class SameAccountError(Exception):
 
 class InsufficientFundsError(Exception):
     pass
+
+
+class CurrencyMismatchError(Exception):
+    pass
