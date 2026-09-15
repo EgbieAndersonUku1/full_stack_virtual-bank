@@ -650,7 +650,9 @@ class BankAccount(models.Model):
     account_number    = models.CharField(max_length=8, editable=False)
     user_profile      = models.ForeignKey(UserProfile, on_delete=models.PROTECT, blank=True, null=True, related_name="bank_accounts", db_index=True)
     balance           = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
+    reserved_amount   = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
     last_interest_run = models.DateTimeField(null=True, blank=True)
+    currency          = models.CharField(max_length=3, default="GBP")
     account_type      = models.CharField(max_length=20, choices=AccountType.choices, default=AccountType.BASIC)
     status            = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     interest_enabled  = models.BooleanField(default=False)
@@ -669,6 +671,10 @@ class BankAccount(models.Model):
 
     def __str__(self):
         return f"{str(self.full_name)} has a {self.account_type} account"
+
+    @property
+    def available_balance(self):
+        return self.balance - self.reserved_amount
 
     @property
     def full_name(self):
@@ -720,6 +726,21 @@ class BankAccount(models.Model):
         validate_amount(amount)
         self.balance -= amount
 
+    def update_reserved_amount(self, amount: Decimal) -> None:
+        """
+        Updates the reserved amount
+
+        Args:
+            amount (Decimal): The positive amount to add to the account balance.
+
+            Raises:
+                IncorrectAmountTypeError: If `amount` is not a `Decimal`.
+                IncorrectAmountError: If `amount` is less than or equal to zero.
+
+                Note the error is raised from validate_amount method
+        """
+        validate_amount(amount)
+        self.reserved_amount += amount
 
     @classmethod
     def _get_base_query_set(cls):

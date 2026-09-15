@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+from decimal import Decimal
 import os
 
 from pathlib import Path
@@ -361,7 +362,7 @@ CKEDITOR_5_CONFIGS = {
 
 
 DEFAULT_OVERDRAFT_LIMIT = 500
-
+RISK_THRESHOLD = Decimal("10000.00")
 
 
 # setting up the flags for django 2fa recovery code

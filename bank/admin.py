@@ -192,7 +192,9 @@ class BankAdmin(admin.ModelAdmin):
 
 class BankAccountAdmin(admin.ModelAdmin):
     readonly_fields   = ["sort_code", "account_number",  "user_profile", "bank_name", "overdraft_limit",
-                         "balance", "last_interest_run", "account_type", "status", "interest_enabled", "created_on", "last_updated"]
+                         "balance", "last_interest_run", "account_type", "status", "interest_enabled",
+                         "created_on", "last_updated", "reserved_amount", "available_balance"
+                         ]
     list_display       = ["id", "bank_name", "user_profile", "sort_code", "account_number",
                          "balance", "last_interest_run", "account_type", "status", "created_on"]
     list_display_links = ["id", "sort_code", "bank_name", "account_number"]
@@ -204,6 +206,9 @@ class BankAccountAdmin(admin.ModelAdmin):
     list_per_page      =  20
     ordering           = [ "-created_on"]
 
+    @admin.display(description="Available balance")
+    def available_balance(self, obj):
+        return obj.available_balance
 
     fieldsets = [(
             "Bank Details",
@@ -218,6 +223,8 @@ class BankAccountAdmin(admin.ModelAdmin):
                     "sort_code",
                     "account_number",
                     "balance",
+                    "available_balance",
+                    "reserved_amount",
                     "interest_enabled",
                     "overdraft_limit",
                 ],
@@ -615,7 +622,8 @@ class LedgerEntryAdmin(admin.ModelAdmin):
         "created_on",
         "completed_on",
         "metadata",
-        "transfer_reference"
+        "transfer_reference",
+
     ]
 
     list_display = ["id", "transaction_type", "movement", "amount", "currency", "status",  "risk_flag", "review_required",
@@ -658,6 +666,7 @@ class LedgerEntryAdmin(admin.ModelAdmin):
                 "fields": [
                     "opening_balance",
                     "amount",
+                    "reserved_amount",
                     "closing_balance",
                     "currency",
                 ],
