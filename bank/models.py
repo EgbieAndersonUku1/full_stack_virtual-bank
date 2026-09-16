@@ -676,6 +676,45 @@ class BankAccount(models.Model):
     def available_balance(self):
         return self.balance - self.reserved_amount
 
+    def _get_effective_overdraft_limit(self) -> Decimal:
+        """
+        Return the effective overdraft limit for the account.
+
+        Accounts that do not support overdrafts have an effective limit of zero.
+        For overdraft-enabled accounts with a stored limit of zero, the
+        configured default overdraft limit is used for backward compatibility
+        with accounts created before the overdraft limit field was introduced.
+
+        Returns:
+            Decimal: The effective overdraft limit available to the account.
+        """
+        if not self.supports_overdraft:
+            return Decimal("0.00")
+
+        overdraft_limit = self.overdraft_limit
+
+        if overdraft_limit == Decimal("0.00"):
+            overdraft_limit = Decimal(str(settings.DEFAULT_OVERDRAFT_LIMIT))
+
+        return overdraft_limit
+
+    @property
+    def remaining_overdraft(self) -> Decimal:
+        """
+        Return the remaining overdraft capacity available on the account.
+        The remaining capacity is calculated from the account's overdraft limit and
+        the portion of the available balance currently using the overdraft.
+
+        Returns: Decimal: The remaining overdraft capacity.
+        Returns zero when the overdraft limit has been fully used.
+        """
+        overdraft_limit = self._get_effective_overdraft_limit()
+
+        return max(
+            Decimal("0.00"),
+            overdraft_limit - max(Decimal("0.00"), -self.available_balance)
+        )
+
     @property
     def full_name(self):
         full_name = [self.user_profile.first_name, self.user_profile.middle_name, self.user_profile.last_name]

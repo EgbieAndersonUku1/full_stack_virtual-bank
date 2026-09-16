@@ -495,8 +495,41 @@ class TransactionService:
                 amount=amount,
             )
 
+    @classmethod
+    def _apply_risk_hold(
+        cls,
+        amount,
+        source_account,
+        source_ledger_entry,
+        recipient_ledger_entry,
+    ):
+        """Apply a risk hold to a transfer that meets the configured threshold.
 
+        Reserves the transfer amount, flags both ledger entries for risk review,
+        records the reason for the review, and sets their status to pending.
 
+        Args:
+            amount: The transfer amount that triggered the risk threshold.
+            source_account: The account from which the transfer originated.
+            source_ledger_entry: The ledger entry for the source account.
+            recipient_ledger_entry: The ledger entry for the recipient account.
+        """
+        risk_reason = f"Transfer amount {amount} meets or exceeds the configured risk threshold {RISK_THRESHOLD_AMOUNT}"
+
+        source_account.update_reserved_amount(amount)
+        source_ledger_entry.risk_flag   = True
+        source_ledger_entry.risk_reason = risk_reason
+
+        source_ledger_entry.status          = LedgerEntry.Status.PENDING
+        source_ledger_entry.review_required = True
+
+        # recipient ledger
+        recipient_ledger_entry.risk_flag = True
+        recipient_ledger_entry.risk_reason = risk_reason
+
+        recipient_ledger_entry.status          = LedgerEntry.Status.PENDING
+        recipient_ledger_entry.review_required = True
+        source_account.save()
 
     @classmethod
     def _validate_bank_accounts(cls, account_1: BankAccount,  account_2: BankAccount) -> None:
@@ -570,35 +603,10 @@ class TransactionService:
        if not account.supports_overdraft:
            return False
 
-       overdraft_limit = cls._get_overdraft_limit(account)
-
-       if account.available_balance + overdraft_limit >= amount:
+       if account.available_balance + account.remaining_overdraft >= amount:
             return True
 
        return False
-
-    @classmethod
-    def _get_overdraft_limit(cls, account: BankAccount):
-        """
-        Return the effective overdraft limit for the account.
-
-        The account's stored overdraft_limit is normally used. However, some
-        accounts may have been created before the overdraft_limit field was
-        introduced and may therefore have a zero value despite supporting
-        overdrafts. For backward compatibility, those accounts fall back to
-        the configured DEFAULT_OVERDRAFT_LIMIT.
-
-        This ensures existing overdraft-enabled accounts continue to have a
-        valid overdraft limit after the field was introduced.
-        """
-
-        if account.supports_overdraft:
-            overdraft_limit = account.overdraft_limit
-
-        if account.supports_overdraft and overdraft_limit == Decimal("0.00"):
-            overdraft_limit = Decimal(str(settings.DEFAULT_OVERDRAFT_LIMIT))
-
-        return overdraft_limit
 
     @classmethod
     def _handle_transfer(cls, source_account: BankAccount, recipient_account: BankAccount,  amount: Decimal):
@@ -652,26 +660,14 @@ class TransactionService:
             transaction.on_commit(update_caches)
 
             if amount >= RISK_THRESHOLD_AMOUNT:
-
-                risk_reason = f"Transfer amount {amount} meets or exceeds the configured risk threshold {RISK_THRESHOLD_AMOUNT}"
-
-                source_account.update_reserved_amount(amount)
-                source_ledger_entry.risk_flag   = True
-                source_ledger_entry.risk_reason = risk_reason
-
-                source_ledger_entry.status          = LedgerEntry.Status.PENDING
-                source_ledger_entry.review_required = True
-
-                # recipient ledger
-                recipient_ledger_entry.risk_flag = True
-                recipient_ledger_entry.risk_reason = risk_reason
-
-                recipient_ledger_entry.status          = LedgerEntry.Status.PENDING
-                recipient_ledger_entry.review_required = True
-
                 is_risk_triggered = True
 
-                source_account.save()
+                cls._apply_risk_hold(
+                    amount=amount,
+                    source_account=source_account,
+                    source_ledger_entry=source_ledger_entry,
+                    recipient_ledger_entry=recipient_ledger_entry
+                )
 
             else:
                 source_account.debit(amount)
