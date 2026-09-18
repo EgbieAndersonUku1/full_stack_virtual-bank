@@ -589,7 +589,7 @@ class TransactionService:
 
         if source_account.currency.lower() != destination_account.currency.lower():
             raise CurrencyMismatchError(
-                "Source and destination accounts must use the same currency."
+                _("Source and destination accounts must use the same currency.")
             )
 
     @classmethod
@@ -650,7 +650,7 @@ class TransactionService:
                                     transfer_reference=transfer_reference,
                                     opening_balance=recipient_account.balance,
                                     amount=amount,
-                                    currency=recipient_account.recipient,
+                                    currency=recipient_account.currency,
                                     description=f"The user {recipient_account_user} is being credited with the amount {amount}",
                                     movement=LedgerEntry.Movement.CREDIT,
                                     user=recipient_account_user,
