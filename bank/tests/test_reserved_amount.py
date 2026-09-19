@@ -20,6 +20,7 @@ from authentication.models import User
 from bank.management.commands.seed_banks import BANK_SEED_DATA
 from bank.models import Bank, BankAccount
 from bank.services.bank_services import BankProvisioningService
+from bank.services.transaction_services import TransactionService
 from user_profile.models import UserProfile
 
 
@@ -56,9 +57,6 @@ USER_PROFILE_DATA_3 = {
     "postcode": "SW1A 1AA",
     "country": "GB",
 }
-
-
-
 
 
 class ReservedAmountTest(TestCase):
@@ -311,3 +309,65 @@ class ReservedAmountTest(TestCase):
             Decimal("0.00"),
             msg="Expected remaining overdraft to be 0 when overdraft is not supported"
         )
+
+    def test_has_sufficient_funds_method_when_balance_is_enough(self):
+        """Verify a transfer is allowed when the available balance covers the amount."""
+
+        EXPECTED_BALANCE           = Decimal("1000")
+        RESERVED_AMOUNT            = Decimal("200")
+        EXPECTED_AVAILABLE_BALANCE = EXPECTED_BALANCE - RESERVED_AMOUNT  # £800 available balance
+
+        self.source_current_account.update_reserved_amount(RESERVED_AMOUNT)
+        self.source_current_account.save()
+        self.source_current_account.refresh_from_db()
+
+        self.assertEqual(self.source_current_account.balance, EXPECTED_BALANCE)
+        self.assertEqual(self.source_current_account.available_balance, EXPECTED_AVAILABLE_BALANCE)
+
+        # Assume the user wants to transfer £700, which is within the £800 available balance.
+        TRANSFER_AMOUNT = Decimal("700")
+        self.assertTrue(TransactionService._has_sufficient_funds(account=self.source_current_account,
+                                                                 amount=TRANSFER_AMOUNT,
+                                                                 ),
+                                                                msg="User should be able to transfer money"
+                                                                 )
+
+    def test_has_sufficient_funds_method_when_balance_is_not_enough(self):
+        """Verify overdraft capacity is considered when the available balance is insufficient."""
+
+        EXPECTED_BALANCE           = Decimal("1000")
+        RESERVED_AMOUNT            = Decimal("1200")
+        EXPECTED_AVAILABLE_BALANCE = EXPECTED_BALANCE - RESERVED_AMOUNT  # -200
+
+        self.source_current_account.update_reserved_amount(RESERVED_AMOUNT)
+        self.source_current_account.save()
+
+        self.source_current_account.refresh_from_db()
+
+        self.assertEqual(self.source_current_account.balance, EXPECTED_BALANCE)
+        self.assertEqual(self.source_current_account.available_balance,
+                         EXPECTED_AVAILABLE_BALANCE,
+                         msg=f"Available balance the user can use should be {EXPECTED_AVAILABLE_BALANCE}" # -200
+                         )
+
+
+        # £500 overdraft limit - £200 already used = £300 remaining overdraft
+        # However the account can't spend £300 because its current available balance is already -£200.
+        # Therefore -£200 available + £300 remaining overdraft = £100 which is the spending capacity
+
+        # Assume the user wants to transfer £101 which exceeds spending capacity by 1
+        TRANSFER_AMOUNT = Decimal("101")
+        self.assertFalse(TransactionService._has_sufficient_funds(account=self.source_current_account,
+                                                                 amount=TRANSFER_AMOUNT,
+                                                                ),
+                                                                 msg="User shouldn't be able to transfer money since it exceeds spending capacity"
+                                                                )
+
+
+        # Test if the user wants to spend the exact spending capacity of £100.
+        SPENDING_CAPACITY = Decimal("100")
+        self.assertTrue(TransactionService._has_sufficient_funds(account=self.source_current_account,
+                                                                 amount=SPENDING_CAPACITY,
+                                                                ),
+                                                                 msg="User should be able to transfer money"
+                                                                )
