@@ -28,9 +28,9 @@ from user_profile.models import UserProfile
 
 from bank.services.funding_service import FundingService
 from setup.services.service import AccountOnboardingService
+from utils.custom_errors import InsufficientFundsError
 
 
-bank_data = BANK_SEED_DATA[0]
 
 RISK_THRESHOLD = settings.RISK_THRESHOLD
 
@@ -78,13 +78,12 @@ class TransferTest(TestCase):
         cls.user_2  = User.objects.create(username=cls.username_2, email="test_email2@test.com")
 
         # first bank created has overdraft functionalities
-        BankProvisioningService.create_bank(BANK_SEED_DATA[0], source=Bank.Source.SEEDED)
+        BankProvisioningService.create_bank(BANK_SEED_DATA[0].copy(), source=Bank.Source.SEEDED)
 
         # Second bank account does not provide overdraft functionalities
-        BankProvisioningService.create_bank(BANK_SEED_DATA[3], source=Bank.Source.SEEDED)
+        BankProvisioningService.create_bank(BANK_SEED_DATA[3].copy(), source=Bank.Source.SEEDED)
 
-        cls.bank                   = Bank.objects.filter(offer_overdraft=Bank.OverDraftOptions.YES).first()
-        cls.bank_with_no_overdraft = Bank.objects.filter(offer_overdraft=Bank.OverDraftOptions.NO).first()
+        cls.bank = Bank.objects.filter(offer_overdraft=Bank.OverDraftOptions.YES).first()
 
         # onboard account 1
         AccountOnboardingService.complete_onboarding(user=cls.user_1,
@@ -124,6 +123,19 @@ class TransferTest(TestCase):
     def test_if_source_account_is_funded(self):
         EXPECTED_AMOUNT   = Decimal("1000")
         self.assertEqual(self.source_current_account.balance, EXPECTED_AMOUNT, "Expected an amount of 1000")
+
+
+    def test_insufficient_funds_error_is_raised_when_account_has_insufficient_funds(self):
+        """Raise an insufficient funds error when the account lacks sufficient funds."""
+
+        AAMOUNT_EXCEEDS_AVAILABLE_BALANCE = Decimal("2000")
+
+        with self.assertRaises(InsufficientFundsError):
+
+            TransactionService.transfer(self.source_current_account,
+                                        self.recipient_current_account,
+                                        amount=AAMOUNT_EXCEEDS_AVAILABLE_BALANCE,
+                                        )
 
     def test_transfer_completes_immediately_when_amount_is_below_risk_threshold(self):
         """Verify a valid transfer below the risk threshold completes immediately."""

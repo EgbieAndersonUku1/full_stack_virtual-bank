@@ -72,10 +72,10 @@ class ReservedAmountTest(TestCase):
         cls.user_3  = User.objects.create(username=cls.username_3, email="test_email3@test.com")
 
         # first bank created has overdraft functionalities
-        BankProvisioningService.create_bank(BANK_SEED_DATA[0], source=Bank.Source.SEEDED)
+        BankProvisioningService.create_bank(BANK_SEED_DATA[0].copy(), source=Bank.Source.SEEDED)
 
         # Second bank account does not provide overdraft functionalities
-        BankProvisioningService.create_bank(BANK_SEED_DATA[3], source=Bank.Source.SEEDED)
+        BankProvisioningService.create_bank(BANK_SEED_DATA[3].copy(), source=Bank.Source.SEEDED)
 
         cls.bank                   = Bank.objects.filter(offer_overdraft=Bank.OverDraftOptions.YES).first()
         cls.bank_with_no_overdraft = Bank.objects.filter(offer_overdraft=Bank.OverDraftOptions.NO).first()
