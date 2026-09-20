@@ -10,7 +10,6 @@ from typing import TypedDict
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.db import transaction
-from django.conf import settings
 
 
 from bank.models import LedgerEntry, BankAccount
@@ -36,7 +35,23 @@ class DataResponse(TypedDict):
     ACTION: str
     TOTAL_BALANCE: str
 
+class TransferResponse(TypedDict):
+    SUCCESS: bool
+    MSG: str
+    ACTION: str
+    STATUS: str
+    AMOUNT: Decimal
+    TRANSFER_REFERENCE: str
 
+
+class Action(Enum):
+    ON_HOLD  = "On hold"
+    COMPLETED  = "Transfer completed"
+
+
+class Status(Enum):
+    PENDING  = "Pending"
+    SUCCESS  = "Successful transfer"
 
 
 class Start(Enum):
@@ -475,11 +490,13 @@ class TransactionService:
             amount: Decimal,
             start: Start = Start.IMMEDIATELY,
             recurrence: Recurrence = Recurrence.NONE,
-            schedule_date: datetime = None
-        ):
+            schedule_date: datetime = None,
+            threshold_limit: Decimal = settings.RISK_THRESHOLD,
+        ) -> TransferResponse:
 
         cls._validate_bank_accounts(source_account, recipient_account)
         validate_amount(amount)
+        validate_amount(threshold_limit)
 
         cls._validate_schedule(start, recurrence, schedule_date)
         cls._validate_transfer_currencies(source_account, recipient_account)
@@ -488,20 +505,24 @@ class TransactionService:
             error_msg = "The source account has insufficient funds"
             raise InsufficientFundsError(_(error_msg))
 
-        if start == Start.IMMEDIATELY and recurrence is None:
-            cls._handle_transfer(
+
+        if start == Start.IMMEDIATELY and recurrence.value is None:
+            return cls._handle_transfer(
                 source_account=source_account,
                 recipient_account=recipient_account,
                 amount=amount,
+                threshold_limit=threshold_limit,
             )
+
 
     @classmethod
     def _apply_risk_hold(
         cls,
-        amount,
-        source_account,
-        source_ledger_entry,
-        recipient_ledger_entry,
+        amount : Decimal,
+        source_account : BankAccount,
+        source_ledger_entry : LedgerEntry,
+        recipient_ledger_entry : LedgerEntry,
+        threshold_limit : Decimal,
     ):
         """Apply a risk hold to a transfer that meets the configured threshold.
 
@@ -513,22 +534,25 @@ class TransactionService:
             source_account: The account from which the transfer originated.
             source_ledger_entry: The ledger entry for the source account.
             recipient_ledger_entry: The ledger entry for the recipient account.
+            threshold_limit: The configured transfer amount at which the risk threshold is triggered.
         """
-        risk_reason = f"Transfer amount {amount} meets or exceeds the configured risk threshold {RISK_THRESHOLD_AMOUNT}"
+        risk_reason = f"Transfer amount {amount} meets or exceeds the configured risk threshold {threshold_limit}"
 
         source_account.update_reserved_amount(amount)
-        source_ledger_entry.risk_flag   = True
-        source_ledger_entry.risk_reason = risk_reason
 
+        source_ledger_entry.risk_flag       = True
+        source_ledger_entry.risk_reason     = risk_reason
         source_ledger_entry.status          = LedgerEntry.Status.PENDING
         source_ledger_entry.review_required = True
+        source_ledger_entry.completed_on    = None
 
         # recipient ledger
-        recipient_ledger_entry.risk_flag = True
-        recipient_ledger_entry.risk_reason = risk_reason
-
+        recipient_ledger_entry.risk_flag       = True
+        recipient_ledger_entry.risk_reason     = risk_reason
         recipient_ledger_entry.status          = LedgerEntry.Status.PENDING
         recipient_ledger_entry.review_required = True
+        recipient_ledger_entry.completed_on    = None
+
         source_account.save()
 
     @classmethod
@@ -609,14 +633,14 @@ class TransactionService:
        return False
 
     @classmethod
-    def _handle_transfer(cls, source_account: BankAccount, recipient_account: BankAccount,  amount: Decimal):
+    def _handle_transfer(cls, source_account: BankAccount,
+                         recipient_account: BankAccount,
+                         amount: Decimal,
+                         threshold_limit: Decimal,
+                         ) -> TransferResponse:
 
         source_account_user    = source_account.user_profile.user
         recipient_account_user = recipient_account.user_profile.user
-        is_risk_triggered      = False
-
-        RISK_THRESHOLD_AMOUNT = settings.RISK_THRESHOLD
-
 
         def update_caches():
             BankAccountCacheService.set(source_account_user)
@@ -632,12 +656,12 @@ class TransactionService:
             source_ledger_entry = LedgerEntry(
                             reference=f"TX_{generate_reference(code_length=35)}",
                             transaction_type=LedgerEntry.TransactionType.TRANSFER_OUT,
-                            source=LedgerEntry.Source.BANK_TRANSFER,
+                            source=LedgerEntry.Source.INTERNAL_TRANSFER,
                             transfer_reference=transfer_reference,
                             opening_balance=source_account.balance,
                             amount=amount,
                             currency=source_account.currency,
-                            description=f"The user {source_account_user} is transfer the amount {amount} to the account {recipient_account_user}",
+                            description=f"Internal transfer of {amount} to {recipient_account_user}",
                             movement=LedgerEntry.Movement.DEBIT,
                             user=source_account_user,
                             account=source_account,
@@ -646,28 +670,34 @@ class TransactionService:
             recipient_ledger_entry = LedgerEntry(
                                     reference=f"TX_{generate_reference(code_length=35)}",
                                     transaction_type=LedgerEntry.TransactionType.TRANSFER_IN,
-                                    source=LedgerEntry.Source.BANK_TRANSFER,
+                                    source=LedgerEntry.Source.INTERNAL_TRANSFER,
                                     transfer_reference=transfer_reference,
                                     opening_balance=recipient_account.balance,
                                     amount=amount,
                                     currency=recipient_account.currency,
-                                    description=f"The user {recipient_account_user} is being credited with the amount {amount}",
+                                    description=  f"Internal transfer of {amount} from {source_account_user}",
                                     movement=LedgerEntry.Movement.CREDIT,
                                     user=recipient_account_user,
                                     account=recipient_account,
                                 )
 
-            transaction.on_commit(update_caches)
-
-            if amount >= RISK_THRESHOLD_AMOUNT:
-                is_risk_triggered = True
+            if amount >= threshold_limit:
 
                 cls._apply_risk_hold(
                     amount=amount,
                     source_account=source_account,
                     source_ledger_entry=source_ledger_entry,
-                    recipient_ledger_entry=recipient_ledger_entry
+                    recipient_ledger_entry=recipient_ledger_entry,
+                    threshold_limit=threshold_limit,
                 )
+                response: TransferResponse = {
+                                "SUCCESS": True,
+                                "MSG": "The amount is pending since it exceeds the transfer threshold amount",
+                                "ACTION": Action.ON_HOLD.value,
+                                "STATUS": Status.PENDING.value,
+                                "AMOUNT": amount,
+                                "TRANSFER_REFERENCE": transfer_reference,
+                            }
 
             else:
                 source_account.debit(amount)
@@ -683,13 +713,25 @@ class TransactionService:
                 recipient_ledger_entry.status       = LedgerEntry.Status.COMPLETED
                 recipient_ledger_entry.completed_on = completed_time
 
+                response: TransferResponse = {
+                                        "SUCCESS": True,
+                                        "MSG":  (
+                                                f"Transfer of {amount} to {recipient_account_user}, "
+                                                f"account {recipient_account.account_last_four_digits} was successful."
+                                                ),
+                                        "ACTION": Action.COMPLETED.value,
+                                        "STATUS": Status.SUCCESS.value,
+                                        "AMOUNT": amount,
+                                        "TRANSFER_REFERENCE": transfer_reference,
+                                    }
+
             source_ledger_entry.closing_balance    = source_account.balance
             recipient_ledger_entry.closing_balance = recipient_account.balance
 
             source_ledger_entry.save()
             recipient_ledger_entry.save()
 
+            transaction.on_commit(update_caches)
             transaction.on_commit(update_recent_transactions)
 
-        if is_risk_triggered:
-            pass
+        return response
