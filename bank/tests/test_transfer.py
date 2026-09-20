@@ -248,3 +248,155 @@ class TransferTest(TestCase):
             transfer_completed_at,
         )
 
+    def test_transfer_is_pending_when_amount_meets_risk_threshold(self):
+
+        RISK_THRESHOLD_AMOUNT = Decimal(str(settings.RISK_THRESHOLD))
+        SOURCE_BALANCE = RISK_THRESHOLD_AMOUNT
+
+        # Set the source balance to the risk threshold so the transfer
+        # passes the sufficient-funds check and reaches the risk review flow.
+        self.source_current_account.balance = SOURCE_BALANCE
+        self.source_current_account.save()
+
+        source_account_balance_before_transfer   = self.source_current_account.balance
+        recipient_account_balance_before_transfer = self.recipient_current_account.balance
+
+
+        self.assertEqual(self.recipient_current_account.balance, 0)
+
+        response = TransactionService.transfer(
+                    source_account=self.source_current_account,
+                    recipient_account=self.recipient_current_account,
+                    amount=RISK_THRESHOLD_AMOUNT,
+                )
+
+        self.assertIsInstance(response, dict, msg="The returned response should be a dictionary")
+
+        EXPECTED_RESPONSE_KEYS = {
+                    "SUCCESS",
+                    "MSG",
+                    "ACTION",
+                    "STATUS",
+                    "AMOUNT",
+                    "TRANSFER_REFERENCE",
+                }
+
+        # test fetch response returned are correct
+        self.assertEqual(set(response.keys()), EXPECTED_RESPONSE_KEYS)
+        self.assertTrue(response["SUCCESS"])
+        self.assertEqual(response["STATUS"], Status.PENDING.value)
+        self.assertEqual(response["ACTION"], Action.ON_HOLD.value)
+        self.assertEqual(response["AMOUNT"], RISK_THRESHOLD_AMOUNT)
+        self.assertTrue(response["TRANSFER_REFERENCE"])
+
+
+        # verify that the source balance isn't changed
+        self.source_current_account.refresh_from_db()
+
+        source_account_balance_after_transfer = self.source_current_account.balance
+
+        self.assertEqual(source_account_balance_before_transfer,
+                         source_account_balance_after_transfer,
+                         msg="Source account balance shouldn't be changed, since transfer is pending"
+                         )
+
+
+        # verify that the recipient account balance isn't changed
+        self.recipient_current_account.refresh_from_db()
+        recipient_account_balance_after_transfer = self.recipient_current_account.balance
+
+        self.assertEqual(recipient_account_balance_before_transfer,
+                         recipient_account_balance_after_transfer,
+                         msg="Recipient balance shouldn't be changed, since transfer is pending"
+                        )
+
+        # verify that the balance is still 0 which signals that no money was received
+        self.assertEqual(self.recipient_current_account.balance, 0, msg="The balance should be 0")
+
+        # verify reserved amount
+        self.assertEqual(self.source_current_account.reserved_amount,
+                         RISK_THRESHOLD_AMOUNT,
+                         msg="Reserved amount for source account should not be empty") # 10000
+
+
+        # returns in the order source account first (debit) and recipient account (credit)
+        ledgers = get_ledger_by_transfer_reference(response["TRANSFER_REFERENCE"])
+
+
+        EXPECTED_LEDGER_CREATED = 2
+        self.assertEqual(len(ledgers), EXPECTED_LEDGER_CREATED)
+
+        source_account_ledger, recipient_account_ledger = ledgers
+
+        # test that the transfer reference share the same reference
+        self.assertEqual(source_account_ledger.transfer_reference,
+                        recipient_account_ledger.transfer_reference,
+                        msg="The transfer reference for both ledger must be the same"
+
+                        )
+
+        # Test if Ledger transfer reference matches the response transfer reference
+        self.assertEqual(
+                source_account_ledger.transfer_reference,
+                response["TRANSFER_REFERENCE"],
+            )
+
+
+        # source account ledger -> balances
+        self.assertEqual(source_account_ledger.opening_balance, source_account_balance_before_transfer)
+        self.assertEqual(source_account_ledger.closing_balance, source_account_balance_before_transfer)
+
+        # test recorded source account ledger types eg  eg transaction type, movement, status, risk_flag, risk_reaso
+        self.assertEqual(source_account_ledger.transaction_type,
+                         LedgerEntry.TransactionType.TRANSFER_OUT,
+                         msg="Source account ledger should record money as transfer out"
+                         )
+
+        self.assertEqual(source_account_ledger.movement,
+                        LedgerEntry.Movement.DEBIT,
+                        msg="Source account ledger should record movement as debit"
+                        )
+
+        self.assertEqual(source_account_ledger.status,
+                        LedgerEntry.Status.PENDING,
+                        msg="Source account should record status as pending"
+                        )
+
+        self.assertEqual(source_account_ledger.source,
+                        LedgerEntry.Source.INTERNAL_TRANSFER,
+                        msg="Source account transfer should be recorded as internal transfer"
+                         )
+
+        self.assertTrue(source_account_ledger.risk_flag, msg="The risk flag should be recorded as true")
+        self.assertTrue(source_account_ledger.review_required, msg="The review flag should be recorded as true")
+        self.assertIsNotNone(source_account_ledger.risk_reason)
+
+        # recipient ledger entry
+        # test recorded recipient ledger types eg transaction type, movement, status, risk_flag, risk_reason
+        self.assertEqual(recipient_account_ledger.transaction_type,
+                         LedgerEntry.TransactionType.TRANSFER_IN,
+                         msg="Recipient account ledger should record money as transfer in"
+                         )
+
+        self.assertEqual(recipient_account_ledger.movement,
+                        LedgerEntry.Movement.CREDIT,
+                        msg="Recipient account ledger should record movement as credit"
+                        )
+
+        self.assertEqual(recipient_account_ledger.status,
+                        LedgerEntry.Status.PENDING,
+                        msg="Recipient account should record status as pending"
+                        )
+
+        self.assertEqual(recipient_account_ledger.source,
+                        LedgerEntry.Source.INTERNAL_TRANSFER,
+                        msg="Recipient account transfer should be recorded as internal transfer"
+                         )
+
+        self.assertTrue(recipient_account_ledger.risk_flag, msg="The risk flag should be recorded as true")
+        self.assertTrue(recipient_account_ledger.review_required, msg="The review flag should be recorded as true")
+        self.assertIsNotNone(recipient_account_ledger.risk_reason)
+
+        # Assert the ledger completed date is none
+        self.assertIsNone(source_account_ledger.completed_on)
+        self.assertIsNone(recipient_account_ledger.completed_on)
