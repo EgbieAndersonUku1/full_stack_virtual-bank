@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 from human_seconds.converter import SecondsToTime
 from django.contrib import messages
@@ -78,7 +79,7 @@ def register_user(request):
 
             messages.info(request, _("We've sent a confirmation email. Please check your inbox to continue."))
 
-            return redirect("login_user")
+            return redirect(reverse("authentication_login_user"))
 
 
     context = {

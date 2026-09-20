@@ -66,3 +66,15 @@ class MissingAccountError(Exception):
 
 class DateTimeError(Exception):
     pass
+
+
+class SameAccountError(Exception):
+    pass
+
+
+class InsufficientFundsError(Exception):
+    pass
+
+
+class CurrencyMismatchError(Exception):
+    pass

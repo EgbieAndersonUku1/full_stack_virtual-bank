@@ -650,10 +650,13 @@ class BankAccount(models.Model):
     account_number    = models.CharField(max_length=8, editable=False)
     user_profile      = models.ForeignKey(UserProfile, on_delete=models.PROTECT, blank=True, null=True, related_name="bank_accounts", db_index=True)
     balance           = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
+    reserved_amount   = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
     last_interest_run = models.DateTimeField(null=True, blank=True)
+    currency          = models.CharField(max_length=3, default="GBP")
     account_type      = models.CharField(max_length=20, choices=AccountType.choices, default=AccountType.BASIC)
     status            = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     interest_enabled  = models.BooleanField(default=False)
+    overdraft_limit   = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0.00"))
     created_on        = models.DateTimeField(auto_now_add=True)
     last_updated      = models.DateTimeField(auto_now=True)
 
@@ -668,6 +671,49 @@ class BankAccount(models.Model):
 
     def __str__(self):
         return f"{str(self.full_name)} has a {self.account_type} account"
+
+    @property
+    def available_balance(self):
+        return self.balance - self.reserved_amount
+
+    def _get_effective_overdraft_limit(self) -> Decimal:
+        """
+        Return the effective overdraft limit for the account.
+
+        Accounts that do not support overdrafts have an effective limit of zero.
+        For overdraft-enabled accounts with a stored limit of zero, the
+        configured default overdraft limit is used for backward compatibility
+        with accounts created before the overdraft limit field was introduced.
+
+        Returns:
+            Decimal: The effective overdraft limit available to the account.
+        """
+        if not self.supports_overdraft:
+            return Decimal("0.00")
+
+        overdraft_limit = self.overdraft_limit
+
+        if overdraft_limit == Decimal("0.00"):
+            overdraft_limit = Decimal(str(settings.DEFAULT_OVERDRAFT_LIMIT))
+
+        return overdraft_limit
+
+    @property
+    def remaining_overdraft(self) -> Decimal:
+        """
+        Return the remaining overdraft capacity available on the account.
+        The remaining capacity is calculated from the account's overdraft limit and
+        the portion of the available balance currently using the overdraft.
+
+        Returns: Decimal: The remaining overdraft capacity.
+        Returns zero when the overdraft limit has been fully used.
+        """
+        overdraft_limit = self._get_effective_overdraft_limit()
+
+        return max(
+            Decimal("0.00"),
+            overdraft_limit - max(Decimal("0.00"), -self.available_balance)
+        )
 
     @property
     def full_name(self):
@@ -699,6 +745,86 @@ class BankAccount(models.Model):
         validate_amount(amount)
         self.balance += amount
 
+    def debit(self, amount: Decimal) -> None:
+        """
+        Debit funds from the account balance.
+
+        The supplied amount must be a positive `Decimal` value.
+        The balance is updated in memory only; the caller is responsible
+        for saving the account instance within the appropriate database transaction.
+
+        Args: amount (Decimal): The positive amount to subtract from the account balance.
+
+         Raises: IncorrectAmountTypeError:
+                If `amount` is not a `Decimal`. IncorrectAmountError: If `amount` is less than
+                or equal to zero.
+
+        Note: Validation errors are raised by the `validate_amount` method.
+
+        """
+        validate_amount(amount)
+        self.balance -= amount
+
+    def update_reserved_amount(self, amount: Decimal) -> None:
+        """
+        Updates the reserved amount
+
+        Args:
+            amount (Decimal): The positive amount to add to the account balance.
+
+            Raises:
+                IncorrectAmountTypeError: If `amount` is not a `Decimal`.
+                IncorrectAmountError: If `amount` is less than or equal to zero.
+
+                Note the error is raised from validate_amount method
+        """
+        validate_amount(amount)
+        self.reserved_amount += amount
+
+    @classmethod
+    def _get_base_query_set(cls):
+        """Return the base queryset with related objects loaded to avoid extra queries."""
+
+        return cls.objects.select_related(
+            "sort_code",
+            "sort_code__bank",
+            "user_profile",
+        )
+
+    @classmethod
+    def get_by_sort_code_and_account_number(cls, sort_code: str, account_number: str) -> BankAccount | None:
+        """
+        Return the bank account matching the sort code and account number, if found.
+
+        Args:
+            sort_code (str): The sort code associated with the bank account
+            account_number (str): The account number associated with the bank account
+
+        Returns:
+            Returns a BankAccount object if found or None
+
+        Raises:
+            Raises a TypeError if the sort code and account number are not strings.
+
+        """
+        if not isinstance(sort_code, str) or not isinstance(account_number, str):
+            error_msg = (
+                "Account number and sort code must be strings. "
+                "Sort code type: {}, account number type: {}"
+            ).format(
+                type(sort_code).__name__,
+                type(account_number).__name__,
+            )
+
+            raise TypeError(_(error_msg))
+
+        qs = cls._get_base_query_set()
+
+        return qs.filter(
+            sort_code__external_sort_code=sort_code,
+            account_number=account_number,
+        ).first()
+
     @classmethod
     def get_all_account_by_user_profile(cls, user_profile: UserProfile):
 
@@ -706,12 +832,8 @@ class BankAccount(models.Model):
             raise TypeError(_("User profile is not an instance of User profile. " \
             "Expected an instance but got type {}".format(type(user_profile).__name__)))
 
-        query_set = (
-            cls.objects.select_related("sort_code",
-                                       "sort_code__bank",
-                                       "user_profile"
-                                       )
-        )
+        query_set = cls._get_base_query_set()
+
         return query_set.filter(user_profile=user_profile).order_by(
             Case(
                 When(account_type=cls.AccountType.BASIC, then=Value(1)),
@@ -843,6 +965,7 @@ class LedgerEntry(models.Model):
 
     reference        = models.CharField(max_length=50, unique=True)
     transaction_type = models.CharField(max_length=25, choices=TransactionType.choices)
+    transfer_reference = models.CharField(max_length=25, blank=True, null=True)
     source           = models.CharField(max_length=25, choices=Source.choices)
     status           = models.CharField(max_length=10,choices=Status.choices)
     opening_balance  = models.DecimalField(max_digits=12, decimal_places=2)

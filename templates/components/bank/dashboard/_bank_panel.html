@@ -279,7 +279,11 @@ synchronise account balances and transaction histories.
         </div>
         <div class="balance-value">
             <span aria-hidden="true">£</span>
+            {% if saving_account.balance %}
             <span id="saving_account_balance">{{ saving_account.balance|format_field_currency }}</span>
+            {% else %}
+                 <span id="saving_account_balance">0.00</span>
+            {% endif %}
         </div>
     </div>
 
@@ -289,7 +293,12 @@ synchronise account balances and transaction histories.
         </div>
         <div class="balance-value">
             <span aria-hidden="true">£</span>
-            <span id="current_account_balance">{{ current_account.balance|format_field_currency }}</span>
+            {% if current_account.balance %}
+                 <span id="current_account_balance">{{ current_account.balance|format_field_currency }}</span>
+            {% else %}
+                <span id="current_account_balance">0.00</span>
+
+            {% endif %}
         </div>
     </div>
 

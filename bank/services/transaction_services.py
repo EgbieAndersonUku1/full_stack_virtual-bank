@@ -1,17 +1,27 @@
 from __future__ import annotations
+from decimal import Decimal
+from enum import Enum
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.db.models import F
 from django.utils.timezone import datetime
 from typing import TypedDict
 from django.core.paginator import Paginator
+from django.conf import settings
+from django.db import transaction
 
-from bank.models import LedgerEntry
+
+from bank.models import LedgerEntry, BankAccount
 from bank.services.bank_services import BankAccountCacheService
+from utils.custom_errors import InsufficientFundsError, SameAccountError, BankAccountTypeError, CurrencyMismatchError
 from utils.formatter import format_currency
 from utils.safe_cache import get_cache_or_set, set_cache_with_retry
 from utils.converter import convert_date_string_to_date_object
 from utils.utils import remove_under_score
+from utils.validators.validators import validate_amount, validate_datetime
+from utils.security.generator import generate_secure_code as generate_reference
+
 
 
 User = get_user_model()
@@ -24,6 +34,37 @@ class DataResponse(TypedDict):
     NUMBER_RETURNED: int
     ACTION: str
     TOTAL_BALANCE: str
+
+class TransferResponse(TypedDict):
+    SUCCESS: bool
+    MSG: str
+    ACTION: str
+    STATUS: str
+    AMOUNT: Decimal
+    TRANSFER_REFERENCE: str
+
+
+class Action(Enum):
+    ON_HOLD  = "On hold"
+    COMPLETED  = "Transfer completed"
+
+
+class Status(Enum):
+    PENDING  = "Pending"
+    SUCCESS  = "Successful transfer"
+
+
+class Start(Enum):
+    IMMEDIATELY = "immediately"
+    SCHEDULED = "scheduled"
+
+
+class Recurrence(Enum):
+    NONE = None
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    BI_WEEKLY = "bi_weekly"
+    MONTHLY = "monthly"
 
 
 def _is_valid_date_range(from_date: datetime, to_date: datetime):
@@ -440,3 +481,257 @@ class TransactionService:
 
         paginator = Paginator(ledger_entry_qs, page_size)
         return paginator.get_page(page)
+
+    @classmethod
+    def transfer(
+            cls,
+            source_account: BankAccount,
+            recipient_account: BankAccount,
+            amount: Decimal,
+            start: Start = Start.IMMEDIATELY,
+            recurrence: Recurrence = Recurrence.NONE,
+            schedule_date: datetime = None,
+            threshold_limit: Decimal = settings.RISK_THRESHOLD,
+        ) -> TransferResponse:
+
+        cls._validate_bank_accounts(source_account, recipient_account)
+        validate_amount(amount)
+        validate_amount(threshold_limit)
+
+        cls._validate_schedule(start, recurrence, schedule_date)
+        cls._validate_transfer_currencies(source_account, recipient_account)
+
+        if not cls._has_sufficient_funds(source_account, amount):
+            error_msg = "The source account has insufficient funds"
+            raise InsufficientFundsError(_(error_msg))
+
+
+        if start == Start.IMMEDIATELY and recurrence.value is None:
+            return cls._handle_transfer(
+                source_account=source_account,
+                recipient_account=recipient_account,
+                amount=amount,
+                threshold_limit=threshold_limit,
+            )
+
+
+    @classmethod
+    def _apply_risk_hold(
+        cls,
+        amount : Decimal,
+        source_account : BankAccount,
+        source_ledger_entry : LedgerEntry,
+        recipient_ledger_entry : LedgerEntry,
+        threshold_limit : Decimal,
+    ):
+        """Apply a risk hold to a transfer that meets the configured threshold.
+
+        Reserves the transfer amount, flags both ledger entries for risk review,
+        records the reason for the review, and sets their status to pending.
+
+        Args:
+            amount: The transfer amount that triggered the risk threshold.
+            source_account: The account from which the transfer originated.
+            source_ledger_entry: The ledger entry for the source account.
+            recipient_ledger_entry: The ledger entry for the recipient account.
+            threshold_limit: The configured transfer amount at which the risk threshold is triggered.
+        """
+        risk_reason = f"Transfer amount {amount} meets or exceeds the configured risk threshold {threshold_limit}"
+
+        source_account.update_reserved_amount(amount)
+
+        source_ledger_entry.risk_flag       = True
+        source_ledger_entry.risk_reason     = risk_reason
+        source_ledger_entry.status          = LedgerEntry.Status.PENDING
+        source_ledger_entry.review_required = True
+        source_ledger_entry.completed_on    = None
+
+        # recipient ledger
+        recipient_ledger_entry.risk_flag       = True
+        recipient_ledger_entry.risk_reason     = risk_reason
+        recipient_ledger_entry.status          = LedgerEntry.Status.PENDING
+        recipient_ledger_entry.review_required = True
+        recipient_ledger_entry.completed_on    = None
+
+        source_account.save()
+
+    @classmethod
+    def _validate_bank_accounts(cls, account_1: BankAccount,  account_2: BankAccount) -> None:
+
+        if not isinstance(account_1, BankAccount):
+            error_msg="Expected bank instance for account_1, got type {}".format(type(account_1).__name__)
+            raise BankAccountTypeError( _(error_msg))
+
+        if not isinstance(account_2, BankAccount):
+            error_msg="Expected bank instance for account 2, got type {}".format(type(account_2).__name__)
+            raise BankAccountTypeError( _(error_msg))
+
+        if account_1 == account_2:
+            raise SameAccountError(_("Source account and recipient account cannot be the same"))
+
+    @classmethod
+    def _validate_schedule(cls, start: Start, recurrence: Recurrence, schedule_date: datetime = None) -> None:
+
+        if not isinstance(start, Start):
+            error_msg = "Start must be an instance of Start, got type {}".format(
+                type(start).__name__
+            )
+            raise TypeError(_(error_msg))
+
+        if not isinstance(recurrence, Recurrence):
+            error_msg = "Recurrence must be an instance of Recurrence, got type {}".format(
+                type(recurrence).__name__
+            )
+            raise TypeError(_(error_msg))
+
+        if start == Start.IMMEDIATELY and schedule_date is not None:
+            raise ValueError(
+                _("A schedule date must not be provided when the start is immediate.")
+            )
+
+        if start == Start.SCHEDULED and schedule_date is None:
+            raise ValueError(
+                _("A schedule date must be provided when the start is scheduled.")
+            )
+
+        if start == Start.SCHEDULED and schedule_date is not None:
+            validate_datetime(schedule_date)
+
+    @classmethod
+    def _validate_transfer_currencies(
+            cls,
+            source_account: BankAccount,
+            destination_account: BankAccount,
+        ):
+
+        """
+        Validate that both accounts use the same currency for the transfer.
+
+        Raises:
+            CurrencyMismatchError: If the source and destination accounts use different currencies.
+        """
+
+        if source_account.currency.lower() != destination_account.currency.lower():
+            raise CurrencyMismatchError(
+                _("Source and destination accounts must use the same currency.")
+            )
+
+    @classmethod
+    def _has_sufficient_funds(cls, account: BankAccount, amount: Decimal):
+
+       has_funds = account.available_balance >= amount
+
+       if has_funds:
+           return True
+
+       if not account.supports_overdraft:
+           return False
+
+       if account.available_balance + account.remaining_overdraft >= amount:
+            return True
+
+       return False
+
+    @classmethod
+    def _handle_transfer(cls, source_account: BankAccount,
+                         recipient_account: BankAccount,
+                         amount: Decimal,
+                         threshold_limit: Decimal,
+                         ) -> TransferResponse:
+
+        source_account_user    = source_account.user_profile.user
+        recipient_account_user = recipient_account.user_profile.user
+
+        def update_caches():
+            BankAccountCacheService.set(source_account_user)
+            BankAccountCacheService.set(recipient_account_user)
+
+        def update_recent_transactions():
+             UserRecentTransactionsCacheService.set(source_account_user)
+             UserRecentTransactionsCacheService.set(recipient_account_user)
+
+        with transaction.atomic():
+
+            transfer_reference = generate_reference(code_length=25)
+            source_ledger_entry = LedgerEntry(
+                            reference=f"TX_{generate_reference(code_length=35)}",
+                            transaction_type=LedgerEntry.TransactionType.TRANSFER_OUT,
+                            source=LedgerEntry.Source.INTERNAL_TRANSFER,
+                            transfer_reference=transfer_reference,
+                            opening_balance=source_account.balance,
+                            amount=amount,
+                            currency=source_account.currency,
+                            description=f"Internal transfer of {amount} to {recipient_account_user}",
+                            movement=LedgerEntry.Movement.DEBIT,
+                            user=source_account_user,
+                            account=source_account,
+                        )
+
+            recipient_ledger_entry = LedgerEntry(
+                                    reference=f"TX_{generate_reference(code_length=35)}",
+                                    transaction_type=LedgerEntry.TransactionType.TRANSFER_IN,
+                                    source=LedgerEntry.Source.INTERNAL_TRANSFER,
+                                    transfer_reference=transfer_reference,
+                                    opening_balance=recipient_account.balance,
+                                    amount=amount,
+                                    currency=recipient_account.currency,
+                                    description=  f"Internal transfer of {amount} from {source_account_user}",
+                                    movement=LedgerEntry.Movement.CREDIT,
+                                    user=recipient_account_user,
+                                    account=recipient_account,
+                                )
+
+            if amount >= threshold_limit:
+
+                cls._apply_risk_hold(
+                    amount=amount,
+                    source_account=source_account,
+                    source_ledger_entry=source_ledger_entry,
+                    recipient_ledger_entry=recipient_ledger_entry,
+                    threshold_limit=threshold_limit,
+                )
+                response: TransferResponse = {
+                                "SUCCESS": True,
+                                "MSG": "The amount is pending since it exceeds the transfer threshold amount",
+                                "ACTION": Action.ON_HOLD.value,
+                                "STATUS": Status.PENDING.value,
+                                "AMOUNT": amount,
+                                "TRANSFER_REFERENCE": transfer_reference,
+                            }
+
+            else:
+                source_account.debit(amount)
+                recipient_account.credit(amount)
+
+                source_account.save()
+                recipient_account.save()
+
+                completed_time                   = timezone.now()
+                source_ledger_entry.status       = LedgerEntry.Status.COMPLETED
+                source_ledger_entry.completed_on = completed_time
+
+                recipient_ledger_entry.status       = LedgerEntry.Status.COMPLETED
+                recipient_ledger_entry.completed_on = completed_time
+
+                response: TransferResponse = {
+                                        "SUCCESS": True,
+                                        "MSG":  (
+                                                f"Transfer of {amount} to {recipient_account_user}, "
+                                                f"account {recipient_account.account_last_four_digits} was successful."
+                                                ),
+                                        "ACTION": Action.COMPLETED.value,
+                                        "STATUS": Status.SUCCESS.value,
+                                        "AMOUNT": amount,
+                                        "TRANSFER_REFERENCE": transfer_reference,
+                                    }
+
+            source_ledger_entry.closing_balance    = source_account.balance
+            recipient_ledger_entry.closing_balance = recipient_account.balance
+
+            source_ledger_entry.save()
+            recipient_ledger_entry.save()
+
+            transaction.on_commit(update_caches)
+            transaction.on_commit(update_recent_transactions)
+
+        return response
