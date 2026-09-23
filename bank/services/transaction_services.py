@@ -505,7 +505,6 @@ class TransactionService:
             error_msg = "The source account has insufficient funds"
             raise InsufficientFundsError(_(error_msg))
 
-
         if start == Start.IMMEDIATELY and recurrence.value is None:
             return cls._handle_transfer(
                 source_account=source_account,

@@ -234,6 +234,10 @@ html {
     padding: var(--space-8);
 }
 
+.p-12 {
+    padding: var(--space-12);
+}
+
 .p-16 {
     padding: var(--space-16);
 }
@@ -570,6 +574,11 @@ img:hover {
 
 .six-column-grid {
     grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: auto;
+}
+
+.seven-column-grid {
+    grid-template-columns: repeat(7, 1fr);
     grid-template-rows: auto;
 }
 

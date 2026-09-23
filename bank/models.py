@@ -867,13 +867,36 @@ class BankAccount(models.Model):
         if self.account_number:
             return f"*********{self.account_number[-4:]}"
 
-
     @property
     def sortcode_last_four_digits(self):
 
         sortcode = self.sort_code.external_sort_code
         if sortcode:
             return f"********{sortcode[-4:]}"
+
+    @classmethod
+    def does_account_exists(cls, sort_code: str, account_number: str, first_name: str, last_name: str) -> bool:
+
+        if (not isinstance(sort_code, str)
+            or not isinstance(account_number, str)
+            or not isinstance(first_name, str)
+            or not isinstance(last_name, str)
+            ):
+          error_msg = ("One or more of parameter is not a string "
+                       f"Sortcode is type {type(sort_code).__name__}"
+                       f"account number type {type(account_number).__name__}"
+                       f"First name type {type(first_name).__name__} "
+                       f"Surname type {type(last_name).__name__}"
+                       )
+          raise TypeError(_(error_msg))
+
+        return cls.objects.filter(
+
+            sort_code__external_sort_code=sort_code,
+            account_number=account_number,
+            user_profile__first_name__iexact=first_name,
+            user_profile__last_name__iexact=last_name,
+        ).exists()
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -1088,7 +1111,6 @@ class LedgerEntry(models.Model):
             qs = qs[:limit]
 
         return qs
-
 
     def __str__(self) -> str:
         return f"{self.reference} - {self.transaction_type} - {self.amount}"

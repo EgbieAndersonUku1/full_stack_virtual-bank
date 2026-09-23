@@ -1,9 +1,11 @@
+import logging
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_protect
-from django.core.paginator import Paginator
+from django.db import DatabaseError
 
+from bank.models import BankAccount
 from bank.services.bank_services import BankAccountCacheService
 from bank.services.transaction_services import DataResponse, TransactionService, UserRecentTransactionsCacheService
 from bank.utils import get_account_context
@@ -17,6 +19,8 @@ from bank.services.quick_funding_service import QuickFundingService
 from bank.services.transaction_services import TransactionSearchService
 from .view_helper import format_balance_fields, extract_pin_from_dict, extract_amount_from_dict
 
+
+logger = logging.Logger(__name__)
 
 
 # Create your views here.
@@ -233,3 +237,62 @@ def show_transactions(request):
                                                                 )
     }
     return render(request, "home/transactions/transactions.html", context=context)
+
+
+
+@onboarding_required
+@go_to_staff_page
+@is_email_verified
+@login_required
+@csrf_protect
+def verify_recipient(request):
+    """ Verify recipient account details and return the verification result. """
+
+    def handle_verify_recipient(data: dict):
+
+        try:
+            account_number = data["accountNumber"].strip()
+            sort_code      = data["sortCode"].strip()
+
+            is_found = BankAccount.does_account_exists(
+
+                sort_code=sort_code,
+                account_number=account_number,
+                first_name=data["firstName"].strip(),
+                last_name=data["surname"].strip()
+            )
+
+            if is_found:
+
+                request.session["recipient_details"] = {
+                    "account_number": account_number,
+                    "sort_code": sort_code,
+                }
+
+                return {
+                    "SUCCESS": True,
+                    "FOUND": True,
+                    "MSG": "Account recipient found",
+                    "ACTION": "Found",
+                    }
+
+
+            return {
+                    "SUCCESS": True,
+                    "FOUND": False,
+                     "MSG": "Account recipient not found",
+                     "ACTION": "Not found",
+                    }
+
+        except DatabaseError:
+
+            logger.critical(f"Something went wrong verify the recipient account. Attempt was made on behalf of user {request.user.id}")
+
+            return {
+                "SUCCESS": False,
+                "FOUND": False,
+                "MSG": "Unable to verify account recipient",
+                "ACTION": "Error",
+            }
+
+    return handle_json_post_request(request, func=handle_verify_recipient)
