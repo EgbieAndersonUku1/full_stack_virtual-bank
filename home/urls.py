@@ -20,5 +20,6 @@ urlpatterns = [
     path("dashboard/get/recent_transactions/", view=views.get_recent_transactions, name="get_recent_transactions"),
     path("dashboard/transactions/", view=views.show_transactions, name="show_transactions"),
     path("dashboard/verify/recipient/", view=views.verify_recipient, name="verify_recipient"),
+    path("dashbaord/transfer/funds/", view=views.transfer_funds, name="transfer_funds"),
 
 ]

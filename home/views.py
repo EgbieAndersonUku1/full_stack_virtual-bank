@@ -296,3 +296,17 @@ def verify_recipient(request):
             }
 
     return handle_json_post_request(request, func=handle_verify_recipient)
+
+
+@onboarding_required
+@go_to_staff_page
+@is_email_verified
+@login_required
+@csrf_protect
+def transfer_funds(request):
+
+    def handle_transfer_funds(data: dict):
+        pass
+    return handle_json_post_request(request, func=handle_transfer_funds)
+
+

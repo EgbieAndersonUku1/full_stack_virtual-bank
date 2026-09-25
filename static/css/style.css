@@ -4205,13 +4205,22 @@ clicks the button
 
 
 
-#transfer-to-user {
+#recipient-container {
     display: none;
 }
 
-#transfer-to-user.show {
-    display: grid;
+#recipient-container.show {
+
+    display: flex;
+    padding: var(--space-8);
+    font-size: 0.9rem;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    background: var(--green-600);
+    color: white;
 }
+
 
 
 
