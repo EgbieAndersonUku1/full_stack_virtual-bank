@@ -1,8 +1,35 @@
-import { selectElement, toggleSpinner, toTitle, formatCurrency, enableAutoFocusNavigation } from "../utils.js";
-import { warnError } from "../logger.js";
-import { parseFormData } from "../formUtils.js";
-import { AlertUtils } from "../alerts.js";
-import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js";
+import { selectElement,
+        toTitle,
+         formatCurrency,
+         enableAutoFocusNavigation,
+        dimBackground,
+        parseCharsFromObject,
+        clearElementField,
+        toggleSpinner
+      } from "../../utils.js";
+import { warnError } from "../../logger.js";
+import { parseFormData } from "../../formUtils.js";
+import { AlertUtils } from "../../alerts.js";
+import { getAccountDetailsFromData } from "./utils.js";
+
+import {handleRecipientSelectionClose,
+        handleRecipientSelection,
+        clearVerifiedRecipientPanel
+         } from "./recipient.js";
+
+import fetchData from "../../fetch.js";
+import { getCsrfToken } from "../../security/csrf.js";
+
+
+const state = {
+    IS_RECIPIENT_FOUND : null,
+    IS_SCHEDULE_DATE_SELECTED: false,
+}
+
+const pin = {
+    userPin: null,
+}
+
 
 // ---------------------------
 // Transfer Form Elements
@@ -12,23 +39,20 @@ import { minimumCharactersToUse } from "../utils/password/textboxCharEnforcer.js
 const transferSection                 = document.getElementById("dashboard-transfer");
 const addRecipient                    = document.getElementById("add-recipient-section");
 const futureScheduleDateContainer     = document.getElementById("future-schedule-date");
-const verifiedUserPanel               = document.getElementById("transfer-to-user");
-const pinPanel                        = document.getElementById("add-pin");
-const pinImg                          = document.getElementById("pin-lock-img");
 
+const pinPanel                        = document.getElementById("add-pin");
 
 // ----- Forms / Inputs -----
 const findRecipientForm               = document.getElementById("find-recipient-form");
 const scheduleDateTimeInputField      = document.getElementById("future-schedule-date-input");
 const amountInputField                = document.getElementById("amount");
-const noteTextArea                    = document.getElementById("transfer-recipient-note");
-const requestTextArea                 = document.getElementById("request-note");
+// const requestTextArea                 = document.getElementById("request-note");
 const recipientAccountInputs          = document.querySelectorAll(".recipient-account input");
 const requestRecipientAccountInputs   = document.querySelectorAll(".request-recipient-account input")
 const bankTransferForm                = document.getElementById("bank-transfer-to-form");
 const bankRequestForm                 = document.getElementById("bank-request-form");
 const pinForm                         = document.getElementById("add-pin-form");
-const firstPinInputField              = document.getElementById("pin_1");
+const inputFields                     = document.querySelectorAll(".request-recipient-account input");
 
 
 // ----- Select Elements -----
@@ -36,17 +60,18 @@ const recipientSelects                = document.getElementById("recipient");
 const transferSchedule                = document.getElementById("bank-transfer-schedule");
 const bankTransfersSelectsOptions     = document.getElementById("bank-transfer-type");
 const transferFromSelectOption        = document.getElementById("bank-transfer-selection");
+const transferAmountPreview           = document.getElementById("transfer-total");
 
 // ----- Display / Feedback Elements -----
 const transferTotal                   = document.getElementById("transfer-total");
 const transferFeeSpan                 = document.getElementById("transfer-fee-span");
-const verifiedUserName                = document.getElementById("verified-user-name");
+const navBankBalance                  = document.getElementById("nav-bank-balance");
+const navCurrency                     = document.querySelector(".virtual-bank_container__amount .currency")
 
 
 // ----- Buttons / Spinners -----
-const addRecipientSpinner             = document.getElementById("add-recipient__spinner");
-const findRecipientBtns               = document.getElementById("find-recipient-buttons");
 const pinSpinner                      = document.getElementById("add-pin__spinner");
+const pinButton                       = document.getElementById("addPinButton");
 
 
 // ----- transfer amount/labels -----
@@ -55,6 +80,10 @@ const transferringAccountAmountSpan   = document.getElementById("transfer-accoun
 
 // ----- tabs -----
 const tabLinks                       = document.querySelectorAll(".tab-link");
+
+//  ---- dim background ----
+const dimBackgroundElement = document.getElementById("dim");
+
 
 
 // todo add one time check if static elements abovie exists before calling them in functions
@@ -78,9 +107,10 @@ amountInputField.addEventListener("input", handleUpdateTotalTransferFee);
 
 
 // handle form submits
-findRecipientForm.addEventListener("submit", handleFindRecipientFormSubmission);
+// findRecipientForm.addEventListener("submit", handleFindRecipientFormSubmission);
 bankTransferForm.addEventListener("submit", handleBankTransferSubmission);
 bankRequestForm.addEventListener("submit", handleBankRequestSubmission);
+pinForm.addEventListener("submit", handlePinFormSubmission);
 
 
 
@@ -94,71 +124,12 @@ document.addEventListener("DOMContentLoaded", ()=> {
 
 const MAX_TRANSFER_AMOUNT = 1_000_000_000;
 
-// Manages the state and button visibility of the "Find Recipient" panel.
-// Prevents users from bypassing the workflow by manually hiding the panel in the inspector.
-const findRecipientPanel = {
-    // Tracks whether the panel is currently open
-    panelIsOpen: false,
-
-    /**
-     * Returns true if the panel is open, false otherwise.
-     * @returns {boolean}
-     */
-    isOpen() {
-        return this.panelIsOpen === true;
-    },
-
-    /**
-     * Sets the panel's open state.
-     * @param {boolean} value - true to open the panel, false to close it.
-     */
-    setOpen(value) {
-        this.panelIsOpen = value;
-    },
-
-    /**
-     * Hides the Find Recipient buttons by adding the 'hide' class.
-     * Usually called when the panel is open to enforce proper workflow.
-     */
-    hideButtons() {
-        findRecipientBtns.classList.add("hide");
-    },
-
-    /**
-     * Shows the Find Recipient buttons by removing the 'hide' class.
-     * Usually called when the panel is closed or workflow allows interaction.
-     */
-    showButtons() {
-        findRecipientBtns.classList.remove("hide");
-    }
-};
-
-
-
 
 // Displays the number of characters used or remaining in the text area for the transfer and request text area form
 
-const textAreaConfig = {
-    minCharClass: ".num-of-characters-remaining",
-    maxCharClass: ".num-of-characters-to-use",
-    minCharMessage: "Minimum characters to use: ",
-    maxCharMessage: "Number of characters remaining: ",
-    minCharsLimit: 50,
-    maxCharsLimit: 255,
-    disablePaste: true,
-};
-
-
-[noteTextArea, requestTextArea].forEach((textAreaElement) => {
-    minimumCharactersToUse(textAreaElement, textAreaConfig);
-});
-
-
-
-
-
 
 enableAutoFocusNavigation(requestRecipientAccountInputs);
+
 
 
 
@@ -175,22 +146,6 @@ function handleDelegation(e) {
 }
 
 
-/**
- * Handles closing the "Find Recipient" modal when the close button is clicked.
- *
- * This function listens for click events on the modal. If the target element
- * is the designated close button, it hides the modal by calling `toggleFindRecipient(false)`.
- *
- * @param {Event} e - The click event triggered by the user.
- *
- * @returns {void}
- */
-function handleRecipientSelectionClose(e) {
-    if (e.target.id !== "find-recipient-close-btn") return;
-
-    toggleFindRecipient(false)
-
-}
 
 
 
@@ -225,6 +180,8 @@ function handleUpdateTotalTransferFee(e) {
         transferTotal.classList.add("flash");
 
         const transferringAccountDetails = getSelectedAccountDetails(transferFromSelectOption);
+
+        console.log(transferringAccountDetails.accountType)
         updateAccountTransferDetails(transferringAccountDetails.accountType, transferringAccountDetails.accountAmount, amount)
 
     }
@@ -259,29 +216,16 @@ function handleTransferScheduleSelection(e) {
    if (selectValue === SCHEDULE_FOR_LATER) {
         scheduleDateTimeInputField.required = true;
         futureScheduleDateContainer.classList.remove("hide");
+        state.IS_SCHEDULE_DATE_SELECTED = true;
         return;
    }
 
    scheduleDateTimeInputField.required = false;
-   futureScheduleDateContainer.classList.add("hide")
+   futureScheduleDateContainer.classList.add("hide");
+   state.IS_SCHEDULE_DATE_SELECTED = false;
 
 }
 
-
-/**
- * Handles the add recipient option when it is selected from the select option.
- *
- * This function listens for events on elements that have `data-recipient="true"`.
- * When triggered, it calls `toggleFindRecipient()` to open or close the recipient search interface.
- *
- * @param {Event} e - The event triggered by user interaction (e.g., click).
- * @returns {void} - Does not return a value.
- *
- */
-function handleRecipientSelection(e) {
-    if (e.target.dataset.recipient !== "true") return;
-    toggleFindRecipient()
-}
 
 
 
@@ -360,69 +304,79 @@ function handleTransactionAccountBalanceDetails(e) {
 
 
 /**
- * Handles the submission of the "Find Recipient" form.
-
- * @param {Event} e - The submit event triggered by the form.
+ * togglePinPanel
  *
- * @returns {void}
+ * Shows or hides the PIN input panel and optionally applies a CSS class.
+ *
+ * This function also focuses the first PIN input field when showing the panel.
+ * If the panel is inside a modal or initially hidden, it uses requestAnimationFrame
+ * to ensure the element is visible before focusing. HTML 'autofocus' does NOT
+ * work in hidden elements.
+ *
+ * @param {boolean} [show=true] - Whether to show (true) or hide (false) the PIN panel.
+ * @param {string} [cssSelector="show"] - The CSS class to add/remove for visibility.
+ *
+ * @example
+ * // Show the PIN panel and focus the first input
+ * togglePinPanel(true);
+ *
+ * // Hide the PIN panel
+ * togglePinPanel(false);
  */
-function handleFindRecipientFormSubmission(e) {
-    e.preventDefault();
-    const MILL_SECONDS = 1000;
+function togglePinPanel(show=true, cssSelector="show") {
 
-    const requiredFields = [
-           "first_name",
-           "surname",
-           "sortcode_1",
-           "sortcode_2",
-           "sortcode_3",
-           "sortcode_4",
-           "sortcode_5",
-           "sortcode_6",
-           "account_digit_1",
-           "account_digit_2",
-           "account_digit_3",
-           "account_digit_4",
-           "account_digit_5",
-           "account_digit_6",
-           "account_digit_7",
-           "account_digit_8",
+    if (typeof show !== "boolean" && typeof cssSelector !== "string") {
+        warnError("togglePinPanel", {
+            showType: typeof show,
+            cssSelectorType: typeof cssSelector,
+            cssSelector: cssSelector,
+            show: show,
+            expected: "Expected 'show' to be a boolean and cssSelector to be string"
+        });
+        return;
+    }
 
-        ];
-    const parsedFormData = getParseFormData(findRecipientForm, requiredFields);
-    const accountDetails = getAccountDetailsFromData(parsedFormData)
+    if (show) {
 
-    toggleSpinner(addRecipientSpinner, true, true)
-    setTimeout(() => {
-    toggleSpinner(addRecipientSpinner, false, true);
+        selectElement(pinPanel, cssSelector);
+        enableAutoFocusNavigation(inputFields)
 
-          // When the backend is built it will verify the account via fetch.
-          const isAccountNumberCorrect = isAccountDetailsCorrect(accountDetails);
+        return;
+    }
 
-            //  console.log(isAccountNumberCorrect)
-            // Simulated response for testing.
+    pinPanel.classList.remove(cssSelector);
+    dimBackground(dimBackgroundElement, false)
+}
 
-            if (isAccountNumberCorrect) {
-                AlertUtils.showAlert({
-                    title: "Account recipient found",
-                    text: "The recipient account was found. You can proceed with the transfer.",
-                    icon: "success",
-                    confirmButtonText: "OK"
-                })
-                toggleFindRecipient(false, false);
-                showVerifiedUser(parsedFormData.firstName, parsedFormData.surname);
 
-                return
+async function confirmTransfer() {
+
+    const accountDetails = getSelectedAccountDetails(transferFromSelectOption);
+    const amount         = amountInputField.value;
+    const confirmed      = await AlertUtils.showConfirmationAlert({
+                            title: "Confirm Transfer",
+                            text: `You about to transfer ${formatCurrency(amount)}
+                                to your ${accountDetails.accountType} account. Do you want to proceed?`,
+                            icon: "info",
+                            cancelMessage: "No action taken",
+                            messageToDisplayOnSuccess: "Please enter your pin to begin transfer",
+                            confirmButtonText: "Transfer funds!",
+                            denyButtonText: "Don't transfer!"
+                        })
+
+                    if (confirmed) {
+                        togglePinPanel();
+
             } else {
-                AlertUtils.showAlert({
-                    title: "Account recipient not found",
-                    text: "No matching account was found. For this simulation the sort code must start with the digits 400.",
-                    icon: "error",
-                    confirmButtonText: "OK"
-                })
+                AlertUtils.showAlert(
+                    {
+                        title: "Something went wrong",
+                        text: "Unable to verify account recipient, so know transfer occurred",
+                        icon: "error",
+                        confirmButtonText: "ok!",
+                    }
+                )
             }
-    }, MILL_SECONDS)
-
 
 }
 
@@ -437,26 +391,15 @@ function handleFindRecipientFormSubmission(e) {
 async function handleBankTransferSubmission(e) {
     e.preventDefault();
 
-    const accountDetails = getSelectedAccountDetails(transferFromSelectOption);
-    const amount         = amountInputField.value;
-    const confirmed = await AlertUtils.showConfirmationAlert({
-        title: "Confirm Transfer",
-        text: `You about to transfer ${formatCurrency(amount)} to your ${accountDetails.accountType} account. Do you want to proceed?`,
-        icon: "info",
-        cancelMessage: "No action taken",
-        messageToDisplayOnSuccess: "Please enter your pin to begin transfer",
-        confirmButtonText: "Transfer funds!",
-        denyButtonText: "Don't transfer!"
-    })
+    if (bankTransferForm.checkValidity()) {
 
+       console.log("handling the data")
 
-    // when the backend is buit the form data will be submitted to the backend via fetch but for now we simply reset the form.
-    if (confirmed) {
-        // bankTransferForm.reset();
-        // verifiedUserName.classList.remove("show");
-        togglePinPanel()
-    }
+       confirmTransfer()
 
+  } else {
+     bankTransferForm.reportValidity()
+  }
 }
 
 
@@ -489,8 +432,11 @@ async function handleBankRequestSubmission(e) {
 
         ];
 
-    const parsedFormData = getParseFormData(bankRequestForm, requiredFields);
+
+    const formData       = new FormData(bankRequestForm);
+    const parsedFormData = parseFormData(formData, requiredFields);
     const accountDetails = getAccountDetailsFromData(parsedFormData);
+
 
     if (typeof accountDetails !== "object") {
         warnError("handleBankRequestSubmission", {
@@ -601,13 +547,13 @@ function handleTabs(e) {
  */
 function updateAccountTransferDetails(accountType, currentAccountAmount, newAmount) {
 
-    if (typeof accountType !== "string" && typeof amount !== "number" && typeof currentAccountAmount !== "number") {
+    if (typeof accountType !== "string" && typeof newAmount !== "number" && typeof currentAccountAmount !== "number") {
         warnError("updateTransferDetails", {
             error: "One or more of the parameters is invalid",
             accountType: typeof accountType,
             accountTypeValue: accountType,
-            amountType: typeof amount,
-            amountValue: amount,
+            amountType: typeof newAmount,
+            amountValue: newAmount,
             currentAccountAmountType: typeof currentAccountAmount,
             currentAccountAmountValue: currentAccountAmount,
             expected: "Account type must be a string, the new amount and the correct account must be a number or a float"
@@ -631,222 +577,6 @@ function updateAccountTransferDetails(accountType, currentAccountAmount, newAmou
         transferringAccountAmountSpan.textContent = formatCurrency(updatedAmount)
 
     }
-
-}
-
-
-
-/**
- * Toggle the "Find Recipient" modal in the transfer form.
- *
- * When `show` is true, the modal appears, allowing the user to enter recipient details.
- * When `show` is false, the modal hides. The recipient select field can optionally
- * reset to its default state depending on user interaction.
- *
- * @param {boolean} show - Whether to display the modal. Defaults to true.
- * @param {boolean} resetSelectOption - Determines if the recipient select field should be reset
- *                                      when hiding the modal. Defaults to true.
- * @param {string} cSSelectorName - The selector for opening or closing the panel
- *
- * Behaviour:
- *   - true: Clears the select field when the modal is closed. Use when the user cancels
- *           the action to start fresh.
- *   - false: Preserves the current selection. Use when the user has already interacted
- *            with the field and the selection should be maintained.
- *
- * @returns {void}
- */
-function toggleFindRecipient(show = true, resetSelectOption = true, cSSelectorName="show") {
-    const booleanType = typeof show;
-
-    if (booleanType !== "boolean") {
-        warnError("toggleFindRecipient", {
-            type: booleanType,
-            msg: "Expected a boolean",
-            received: `Received a value of ${show}`
-
-        })
-        return;
-    }
-
-
-    if (show) {
-        selectElement(addRecipient, cSSelectorName);
-
-        enableAutoFocusNavigation(recipientAccountInputs);
-        findRecipientPanel.setOpen(true);
-        if (findRecipientPanel.isOpen()) {
-            findRecipientPanel.hideButtons()
-        }
-        return;
-    }
-
-    addRecipient.classList.remove(cSSelectorName);
-    findRecipientPanel.setOpen(false);
-
-    if (!findRecipientPanel.isOpen()) {
-        findRecipientPanel.showButtons();
-    }
-    if (resetSelectOption) {
-         recipientSelects.value = "";
-    }
-
-}
-
-
-
-
-
-/**
- * Extracts and parses data from the "Find Recipient" form.
- *
- * This function collects all form fields using FormData and ensures that the
- * required fields are included. The resulting object is filtered and formatted
- * using the `parseFormData` helper function.
- *
- * @returns {Object} parsedFormData - An object containing the validated and parsed form data.
- *
- * Required fields:
- *   - first_name, surname
- *   - sortcode_1 to sortcode_6
- *   - account_digit_1 to account_digit_8
- *
- * Note: Ensure `findRecipientForm` is correctly selected in the DOM before calling.
- */
-function getParseFormData(formElement, requiredFields) {
-      const formData = new FormData(formElement);
-
-
-        const parsedFormData = parseFormData(formData, requiredFields);
-        return parsedFormData;
-}
-
-
-
-
-/**
- * Extracts and formats sort code and account number from form data.
- *
- * This function scans an object containing recipient form data and returns the
- * sort code and account number within an object
- *
- * @param {Object} data - The form data object, typically returned by `getParseFormData`.
- *
- * @returns {Object} account - An object containing:
- *   - sortCode {string} - Full 6-digit sort code.
- *   - accountNumber {string} - Full 8-digit account number.
- *
- * @throws Will warn if `data` is not an object.
- *
- * Example:
- *   Input: { sortcode_1: "4", sortcode_2: "0", ..., account_digit_1: "1", ... }
- *   Output: { sortCode: "400000", accountNumber: "12345678" }
- */
-function getAccountDetailsFromData(data){
-
-    if (typeof data !== "object") {
-        warnError("getAccountNumberFromData", {
-            type: typeof data,
-            expected: "Expected an object",
-            received: `Value received ${data}`
-        });
-        return;
-    }
-
-    const sortCode      = [];
-    const accountNumber = []
-    const account       = {}
-
-    for (const [key, value] of Object.entries(data)) {
-
-        if (key.startsWith("sort")) {
-            sortCode.push(value)
-        }
-
-        if (key.startsWith("account")) {
-            accountNumber.push(value)
-        }
-    }
-
-    account.sortCode = sortCode.join("");
-    account.accountNumber  = accountNumber.join("");
-    return account
-
-}
-
-
-
-
-/**
- * Verifies whether the given account details are valid.
- *
- * @param {Object} accountDetails - An object containing the account information.
- *   Expected properties:
- *     - sortCode {string} - The 6-digit sort code.
- *     - accountNumber {string} - The 8-digit account number.
- *
- * @returns {boolean} - Returns true if the account details pass validation, false otherwise.
- *
- * Example:
- *   const details = { sortCode: "400123", accountNumber: "12345678" };
- *   isAccountDetailsCorrect(details); // returns true
- */
-function isAccountDetailsCorrect(accountDetails) {
-    if (typeof accountDetails !== "object") {
-        warnError("verifyAccountDetails", {
-            type: typeof accountDetails,
-            expected: "Expected an object",
-            received: `Value received ${accountDetails}`
-        });
-        return;
-    }
-
-
-
-    // for now we simulate the authentication respoonse. Later the actually authentication response data will come from the backend
-    const isSortCodeValid = accountDetails.sortCode.startsWith("400");
-
-    return isSortCodeValid ? true : false;
-
-
-};
-
-
-
-/**
- * Displays the verified user panel with the user's full name.
-
- *
- * @param {string} firstName - The user's first name.
- * @param {string} surname - The user's surname.
- *
- * @returns {void}
- *
- * Behaviour:
- *   - If either `firstName` or `surname` is missing, the function exits without doing anything.
- *   - If either parameter is not a string, a warning is issued via `warnError` and the panel is not shown.
- *   - Otherwise, the panel is displayed and the name is formatted with proper capitalization.
- *
- * Example:
- *   showVerifiedUser("Doctor", "Who");
- *   // Verified user panel displays: "Doctor Who"
- */
-function showVerifiedUser(firstName, surname) {
-    if (!(firstName && surname)) return;
-
-    if (typeof firstName !== "string" && typeof surname !== "string") {
-        warnError("showVerifiedUser", {
-            firstName: firstName,
-            surname: surname,
-            firstNameType: typeof firstName,
-            surnameType: typeof surname,
-            expected: "Expected both values to be string"
-        })
-        return;
-    }
-    // console.log("I am here")
-    selectElement(verifiedUserPanel, "show");
-    verifiedUserName.textContent = `${toTitle(firstName)} ${toTitle(surname)}`
 
 }
 
@@ -921,3 +651,139 @@ function getSelectedAccountDetails(selectElement) {
 }
 
 
+async function handlePinFormSubmission(e) {
+    e.preventDefault();
+
+    if (pinForm.checkValidity()) {
+        const formData = new FormData(pinForm);
+
+        const parsedFormData = parseFormData(formData, [
+            "pin_1",
+            "pin_2",
+            "pin_3",
+            "pin_4",
+            "pin_5",
+            "pin_6"
+        ]);
+
+        const pin = parseCharsFromObject(parsedFormData);
+        const MILLI_SECONDS = 600;
+
+        toggleSpinner(pinSpinner);
+        pinButton.disabled = true;
+
+        setTimeout(() => {
+            handleTransfer(pin.values);
+            toggleSpinner(false);
+            pinButton.disabled = false;
+        }, MILLI_SECONDS)
+
+
+
+    } else {
+        pinForm.reportValidity()
+    }
+}
+
+
+
+function updateNavBankBalance(balance) {
+
+    if (!balance) {
+        warnError("updateNavBankBalance", {
+            balance: balance,
+            errorMsg: "Bank balance returned an incorrect value. Expected a decimal"
+        })
+        return;
+    }
+
+    navBankBalance.textContent = formatCurrency(balance);
+    clearElementField(navCurrency)
+
+}
+
+
+function clearTotalTransferPreview() {
+    // for now we use  a default currency, later when the currency is built it will be dynamic
+    transferAmountPreview.textContent = "£0.00";
+    transferAmountPreview.classList.remove("flash");
+}
+
+
+function resetTransferForm() {
+    togglePinPanel(false);
+    bankTransferForm.reset();
+    findRecipientForm.reset()
+    pinForm.reset()
+    clearVerifiedRecipientPanel();
+    clearTotalTransferPreview();
+    toggleSpinner(pinSpinner, false);
+
+    pinButton.disabled = false;
+}
+
+
+async function handleTransfer(pin) {
+    const formData = new FormData(bankTransferForm)
+
+    const required = [
+        "bank-transfer-selection",
+        "bank-transfer-type",
+        "recipient",
+        "amount",
+        "transfer-start",
+
+    ]
+
+    if (state.IS_SCHEDULE_DATE_SELECTED) {
+        required.push("future-schedule-date")
+    }
+
+    // note and save_recipient are optional, so only add them to required if there are used
+    const note = formData.get("transfer-note");
+
+    if (note.trim() !== "") {
+         required.push("transfer-note")
+    }
+
+
+    if (formData.has("save_recipient")) {
+         required.push("save_recipient")
+    }
+
+    const parsedFormData = parseFormData(formData, required);
+
+    console.log(parsedFormData);
+
+    const resp = await fetchData( {
+        url: "/dashbaord/transfer/funds/",
+        csrfToken: getCsrfToken(),
+        method: "POST",
+        body: {
+            bankTransferSelection: parsedFormData.bankTransferSelection,
+            bankTransferType: parsedFormData.bankTransferType,
+            amount: parsedFormData.amount,
+            transferStart: parsedFormData.transferStart,
+            pin: pin
+        }
+
+    });
+
+    const data = resp.data;
+
+    AlertUtils.showAlert({
+            title: data.ACTION,
+            text: data.MSG,
+            icon: data.SUCCESS ? "success" : "error",
+            confirmButtonText: "Ok!"
+        })
+
+    if (data.SUCCESS) {
+        resetTransferForm();
+        updateNavBankBalance(data.BALANCE);
+
+    } else {
+        toggleSpinner(pinSpinner, false);
+        pinButton.disabled = false;
+    }
+}

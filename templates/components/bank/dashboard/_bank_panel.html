@@ -260,6 +260,37 @@ synchronise account balances and transaction histories.
         </div>
     </div>
 
+
+    <div class="balance-highlight total" aria-live="polite" aria-label="Available balance for personal account">
+        <div class="balance-label">
+            Balance for personal current account
+        </div>
+        <div class="balance-value">
+            <span aria-hidden="true">£</span>
+            {% if current_account.balance %}
+                 <span id="current_account_balance">{{ current_account.balance|format_field_currency }}</span>
+            {% else %}
+                <span id="current_account_balance">0.00</span>
+            {% endif %}
+        </div>
+    </div>
+
+     <!-- Available Balance -->
+    <div class="balance-highlight total" aria-live="polite" aria-label="Total balance across accounts">
+        <div class="balance-label">
+            Available current account balance
+        </div>
+        <div class="balance-value">
+            <span aria-hidden="true">£</span>
+            {% if available_balance %}
+                 <span id="current_account_available_balance">{{ available_balance|format_field_currency }}</span>
+            {% else %}
+                <span id="current_account_available_balance">0.00</span>
+            {% endif %}
+
+        </div>
+    </div>
+
     <!-- Total Pending -->
     <div class="balance-highlight pending" aria-live="polite" aria-label="Total pending transactions">
         <div class="balance-label">
@@ -287,20 +318,7 @@ synchronise account balances and transaction histories.
         </div>
     </div>
 
-    <div class="balance-highlight" aria-live="polite" aria-label="Available balance for personal account">
-        <div class="balance-label">
-            Available balance for personal account
-        </div>
-        <div class="balance-value">
-            <span aria-hidden="true">£</span>
-            {% if current_account.balance %}
-                 <span id="current_account_balance">{{ current_account.balance|format_field_currency }}</span>
-            {% else %}
-                <span id="current_account_balance">0.00</span>
 
-            {% endif %}
-        </div>
-    </div>
 
     <!-- Action buttons -->
     <div class="dash-bank-account__footer flex">

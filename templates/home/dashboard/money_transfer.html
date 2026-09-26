@@ -4,6 +4,11 @@
 
 {% block title %}Main page{% endblock title %}
 
+{% block csrfToken %}
+<meta name="csrf-token" content="{{ csrf_token }}" id="csrf_token">
+{% endblock csrfToken %}
+
+
 
 {% block body %}
 
@@ -85,6 +90,7 @@
 
 {% block script %}
 
-<script src="{% static 'js/dashboard/money-transfer.js' %}" type="module"></script>
+<script src="{% static 'js/dashboard/transfer/money-transfer.js' %}" type="module"></script>
+<script src="{% static 'js/dashboard/transfer/request-money.js' %}" type="module"></script>
 
 {% endblock script %}

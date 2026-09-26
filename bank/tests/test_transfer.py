@@ -53,17 +53,17 @@ USER_PROFILE_DATA_2 = {
 
 
 def get_ledger_by_transfer_reference(transfer_referece: str):
-      return LedgerEntry.objects.filter(
-                transfer_reference=transfer_referece
-                ).alias(
+    return LedgerEntry.objects.filter(
+        transfer_reference=transfer_referece
+        ).alias(
 
-                # Assign custom sort numbers: 1 for DEBIT, 2 for CREDIT
-                entry_priority=Case (
-                        When(movement=LedgerEntry.Movement.DEBIT, then=Value(1)),
-                        When(movement=LedgerEntry.Movement.CREDIT, then=Value(2)),
-                        default=Value(3)
-                     )
-                ).order_by("entry_priority")
+        # Assign custom sort numbers: 1 for DEBIT, 2 for CREDIT
+        entry_priority=Case (
+            When(movement=LedgerEntry.Movement.DEBIT, then=Value(1)),
+            When(movement=LedgerEntry.Movement.CREDIT, then=Value(2)),
+            default=Value(3)
+            )
+    ).order_by("entry_priority")
 
 
 class TransferTest(TestCase):
@@ -112,8 +112,6 @@ class TransferTest(TestCase):
         self.recipient_current_account =  BankAccount.get_all_account_by_user_profile(
                                                             user_profile=UserProfile.get_profile_by_user(self.user_2)
                                                             )[0]
-
-
     def test_accounts_is_created(self):
         EXPECTED_COUNT = 4
         self.assertEqual(BankAccount.objects.count(),
@@ -132,7 +130,7 @@ class TransferTest(TestCase):
 
         with self.assertRaises(InsufficientFundsError):
 
-            TransactionService.transfer(self.source_current_account,
+            TransactionService._transfer(self.source_current_account,
                                         self.recipient_current_account,
                                         amount=AAMOUNT_EXCEEDS_AVAILABLE_BALANCE,
                                         )
@@ -144,7 +142,7 @@ class TransferTest(TestCase):
         opening_balance     = Decimal("1000")
         transfer_started_at = timezone.now()
 
-        response = TransactionService.transfer(
+        response = TransactionService._transfer(
             source_account=self.source_current_account,
             recipient_account=self.recipient_current_account,
             amount=transfer_amount,
@@ -161,6 +159,7 @@ class TransferTest(TestCase):
             "STATUS",
             "AMOUNT",
             "TRANSFER_REFERENCE",
+            "BALANCE"
         }
 
         # test fetch response returned
@@ -170,6 +169,7 @@ class TransferTest(TestCase):
         self.assertEqual(response["ACTION"], Action.COMPLETED.value)
         self.assertEqual(response["AMOUNT"], transfer_amount)
         self.assertTrue(response["TRANSFER_REFERENCE"])
+        self.assertGreaterEqual(response["BALANCE"], Decimal("0.00"))
 
         # Test the transfer balance
         EXPECTED_SOURCE_ACCOUNT_BALANCE     = 900
@@ -273,10 +273,9 @@ class TransferTest(TestCase):
         source_account_balance_before_transfer   = self.source_current_account.balance
         recipient_account_balance_before_transfer = self.recipient_current_account.balance
 
-
         self.assertEqual(self.recipient_current_account.balance, 0)
 
-        response = TransactionService.transfer(
+        response = TransactionService._transfer(
                     source_account=self.source_current_account,
                     recipient_account=self.recipient_current_account,
                     amount=RISK_THRESHOLD_AMOUNT,
@@ -291,6 +290,7 @@ class TransferTest(TestCase):
                     "STATUS",
                     "AMOUNT",
                     "TRANSFER_REFERENCE",
+                    "BALANCE"
                 }
 
         # test fetch response returned are correct
@@ -300,6 +300,7 @@ class TransferTest(TestCase):
         self.assertEqual(response["ACTION"], Action.ON_HOLD.value)
         self.assertEqual(response["AMOUNT"], RISK_THRESHOLD_AMOUNT)
         self.assertTrue(response["TRANSFER_REFERENCE"])
+        self.assertGreaterEqual(response["BALANCE"], Decimal("0.00"))
 
 
         # verify that the source balance isn't changed
@@ -334,7 +335,6 @@ class TransferTest(TestCase):
         # returns in the order source account first (debit) and recipient account (credit)
         ledgers = get_ledger_by_transfer_reference(response["TRANSFER_REFERENCE"])
 
-
         EXPECTED_LEDGER_CREATED = 2
         self.assertEqual(len(ledgers), EXPECTED_LEDGER_CREATED)
 
@@ -353,12 +353,11 @@ class TransferTest(TestCase):
                 response["TRANSFER_REFERENCE"],
             )
 
-
         # source account ledger -> balances
         self.assertEqual(source_account_ledger.opening_balance, source_account_balance_before_transfer)
         self.assertEqual(source_account_ledger.closing_balance, source_account_balance_before_transfer)
 
-        # test recorded source account ledger types eg  eg transaction type, movement, status, risk_flag, risk_reaso
+        # test recorded source account ledger types e.g transaction type, movement, status, risk_flag, risk_reaso
         self.assertEqual(source_account_ledger.transaction_type,
                          LedgerEntry.TransactionType.TRANSFER_OUT,
                          msg="Source account ledger should record money as transfer out"

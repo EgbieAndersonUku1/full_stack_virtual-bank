@@ -10,9 +10,16 @@
         <div class="spinner" id="add-recipient__spinner"></div>
         <h1 id="find-account-heading" class="mt-16 capitalise header-7">Find recipient</h1>
 
-        <p id="account-description" class="mt-8">
+
+        <small id="account-description" class="mt-8">
             Enter the details of the recipient you want to transfer to.
-        </p>
+        </small>
+
+          <div class="info p-12">
+            <small>A recipient is considered verified only when the supplied first name,
+                 last name, sort code, and account number identify the same account.
+            </small>
+        </div>
 
         <form id="find-recipient-form" method="post">
 
@@ -30,7 +37,7 @@
             <fieldset class="form-row">
                 <legend>Sort code</legend>
 
-                <div class="flex-grid six-column-grid sortcode-fields recipient-account">
+                <div class="flex-grid seven-column-grid sortcode-fields recipient-account">
                     <input type="text" name="sortcode_1" id="sortcode_1" maxlength="1" aria-label="Sort code digit 1"
                         required>
                     <input type="text" name="sortcode_2" id="sortcode_2" maxlength="1" aria-label="Sort code digit 2"
@@ -42,6 +49,8 @@
                     <input type="text" name="sortcode_5" id="sortcode_5" maxlength="1" aria-label="Sort code digit 5"
                         required>
                     <input type="text" name="sortcode_6" id="sortcode_6" maxlength="1" aria-label="Sort code digit 6"
+                        required>
+                   <input type="text" name="sortcode_7" id="sortcode_7" maxlength="1" aria-label="Sort code digit 7"
                         required>
                 </div>
 
