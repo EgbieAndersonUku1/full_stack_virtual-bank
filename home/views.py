@@ -4,20 +4,30 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_protect
 from django.db import DatabaseError
+from decimal import Decimal
+from django.utils.translation import gettext_lazy as _
 
 from bank.models import BankAccount
 from bank.services.bank_services import BankAccountCacheService
 from bank.services.transaction_services import DataResponse, TransactionService, UserRecentTransactionsCacheService
 from bank.utils import get_account_context
 from card.services import CardDashboardServiceCache
+from home.transfer.utils import map_transfer_start_to_enum, parse_transfer_amount, transfer_error_response, validate_required_keys
+from utils.custom_errors import CurrencyMismatchError, DateTimeError, IncorrectAmountTypeError, SameAccountError
 from utils.decorators import is_email_verified, go_to_staff_page
 from card.models import BankCard
 from user_profile.services import ProfileCacheService
 from authentication.view_helper import handle_json_post_request
 from setup.decorators import onboarding_required
 from bank.services.quick_funding_service import QuickFundingService
-from bank.services.transaction_services import TransactionSearchService
+from bank.services.transaction_services import (TransactionSearchService,
+                                                TransferResponse,
+                                                Status,
+                                                Action,
+                                                Start
+                                                )
 from .view_helper import format_balance_fields, extract_pin_from_dict, extract_amount_from_dict
+
 
 
 logger = logging.Logger(__name__)
@@ -68,7 +78,6 @@ def dashboard(request):
         "has_recent_transactions": num_of_transactions > 0,
         "num_of_transactions": num_of_transactions,
     }
-
 
 
     if bank_account:
@@ -298,6 +307,7 @@ def verify_recipient(request):
     return handle_json_post_request(request, func=handle_verify_recipient)
 
 
+
 @onboarding_required
 @go_to_staff_page
 @is_email_verified
@@ -306,7 +316,109 @@ def verify_recipient(request):
 def transfer_funds(request):
 
     def handle_transfer_funds(data: dict):
-        print(data)
+    
+        try:
+            validate_required_keys(data)
+        except KeyError as e:
+            data: TransferResponse = {
+                    "SUCCESS": False,
+                    "MSG": str(e),
+                    "ACTION": "Missing key",
+                    "STATUS": Status.UNSUCCESSFUL.value,
+                    "AMOUNT": Decimal("0.00"),
+                    "TRANSFER_REFERENCE": "",
+                    "BALANCE":  BankAccountCacheService.get_total_account_balance(request.user)
+                }
+            return data
+
+        try:
+            recipient_account_details = request.session["recipient_details"]
+        except KeyError:
+            logger.critical("Recipient account details not found in the session")
+            return {
+                "SUCCESS": False,
+                "MSG": "Recipient account details could not be found",
+                "ACTION": "Recipient not found",
+                "STATUS": Status.UNSUCCESSFUL.value,
+                "AMOUNT": Decimal("0.00"),
+                "TRANSFER_REFERENCE": "",
+                "BALANCE": BankAccountCacheService.get_total_account_balance(request.user),
+            }
+
+
+        recipient_bank_account = BankAccount.get_by_sort_code_and_account_number(
+                                                        sort_code=recipient_account_details["sort_code"],
+                                                        account_number=recipient_account_details["account_number"],
+                                                        )
+
+        source_account = BankAccountCacheService.get_current_account(user=request.user)
+
+        if recipient_bank_account is None or source_account is None:
+            return transfer_error_response(
+                "Unable to identify the transfer accounts",
+                "Account not found",
+                user=request.user,
+            )
+
+
+        if data["bankTransferSelection"] == "bank":
+
+            try:
+                response = TransactionService.process_transfer(
+                            pin=data["pin"],
+                            recipient_account=recipient_bank_account,
+                            source_account=source_account,
+                            amount=parse_transfer_amount(data),
+                            start=map_transfer_start_to_enum(data),
+
+                )
+
+                response["BALANCE"] = BankAccountCacheService.get_total_account_balance(request.user)
+
+                if response["SUCCESS"]:
+                    request.session.pop("recipient_details", None)
+
+                return response
+
+            except IncorrectAmountTypeError:
+                return transfer_error_response(
+                    "The transfer amount is invalid",
+                    "Invalid amount",
+                    user=request.user
+                )
+
+            except DateTimeError:
+                return transper_error_response(
+                    "The selected transfer date is invalid",
+                    "Invalid date",
+                    user=request.user
+                )
+
+            except SameAccountError:
+                return transfer_error_response(
+                    "You cannot transfer money to the same account",
+                    "Same account",
+                    user=request.user
+                )
+
+            except CurrencyMismatchError:
+                return transfer_error_response(
+                    "The source and recipient accounts must use the same currency",
+                    "Currency mismatch",
+                    user=request.user
+                )
+
+            except (TypeError, ValueError):
+                return transfer_error_response(
+                    "The transfer details are invalid",
+                    "Invalid transfer data",
+                    user=request.user
+                )
+
+
+
+        return response
+
     return handle_json_post_request(request, func=handle_transfer_funds)
 
 

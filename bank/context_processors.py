@@ -25,7 +25,7 @@ def bank_details(request):
             bank_details["bank_balance"]      = bank_account.balance
             bank_details["available_balance"] = bank_account.available_balance
         else:
-            bank_details["bank_balance"]           = 0.00
+            bank_details["bank_balance"]      = 0.00
             bank_details["available_balance"] = 0.00
 
 

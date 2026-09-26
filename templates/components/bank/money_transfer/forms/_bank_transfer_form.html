@@ -8,7 +8,8 @@
             <option value="wallet" data-account-amount="1000" data-account-type="wallet" disabled>
                 Wallet</option>
             <option value="bank" data-account-amount="{{available_balance}}" data-account-type="bank">
-                Available balance (£{{available_balance|format_field_currency}})</option>
+
+                Available balance (£{{available_balance}})</option>
         </select>
 
         <label for="bank-transfer-type">Transfer type *</label>
@@ -72,7 +73,7 @@
         <select name="transfer-start" id="bank-transfer-schedule" required data-transfer-type="true">
             <option value="" disabled selected>Select the transfer date</option>
             <option value="immediately">Send now</option>
-            <option value="future_date" disabled>Schedule for later</option>
+            <option value="schedule_date" disabled>Schedule for later</option>
         </select>
 
 

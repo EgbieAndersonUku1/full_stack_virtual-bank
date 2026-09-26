@@ -3,7 +3,9 @@ import { selectElement,
          formatCurrency,
          enableAutoFocusNavigation,
         dimBackground,
-        parseCharsFromObject
+        parseCharsFromObject,
+        clearElementField,
+        toggleSpinner
       } from "../../utils.js";
 import { warnError } from "../../logger.js";
 import { parseFormData } from "../../formUtils.js";
@@ -12,6 +14,7 @@ import { getAccountDetailsFromData } from "./utils.js";
 
 import {handleRecipientSelectionClose,
         handleRecipientSelection,
+        clearVerifiedRecipientPanel
          } from "./recipient.js";
 
 import fetchData from "../../fetch.js";
@@ -39,7 +42,6 @@ const futureScheduleDateContainer     = document.getElementById("future-schedule
 
 const pinPanel                        = document.getElementById("add-pin");
 
-
 // ----- Forms / Inputs -----
 const findRecipientForm               = document.getElementById("find-recipient-form");
 const scheduleDateTimeInputField      = document.getElementById("future-schedule-date-input");
@@ -58,15 +60,18 @@ const recipientSelects                = document.getElementById("recipient");
 const transferSchedule                = document.getElementById("bank-transfer-schedule");
 const bankTransfersSelectsOptions     = document.getElementById("bank-transfer-type");
 const transferFromSelectOption        = document.getElementById("bank-transfer-selection");
+const transferAmountPreview           = document.getElementById("transfer-total");
 
 // ----- Display / Feedback Elements -----
 const transferTotal                   = document.getElementById("transfer-total");
 const transferFeeSpan                 = document.getElementById("transfer-fee-span");
-const verifiedUserName                = document.getElementById("verified-user-name");
+const navBankBalance                  = document.getElementById("nav-bank-balance");
+const navCurrency                     = document.querySelector(".virtual-bank_container__amount .currency")
 
 
 // ----- Buttons / Spinners -----
 const pinSpinner                      = document.getElementById("add-pin__spinner");
+const pinButton                       = document.getElementById("addPinButton");
 
 
 // ----- transfer amount/labels -----
@@ -175,6 +180,8 @@ function handleUpdateTotalTransferFee(e) {
         transferTotal.classList.add("flash");
 
         const transferringAccountDetails = getSelectedAccountDetails(transferFromSelectOption);
+
+        console.log(transferringAccountDetails.accountType)
         updateAccountTransferDetails(transferringAccountDetails.accountType, transferringAccountDetails.accountAmount, amount)
 
     }
@@ -357,7 +364,6 @@ async function confirmTransfer() {
                             denyButtonText: "Don't transfer!"
                         })
 
-                    // when the backend is buit the form data will be submitted to the backend via fetch but for now we simply reset the form.
                     if (confirmed) {
                         togglePinPanel();
 
@@ -441,7 +447,6 @@ async function handleBankRequestSubmission(e) {
         })
         return;
     }
-
 
 
     // Before the confirmation block, the account details will be sent via fetch to verify if it is exists.
@@ -662,15 +667,60 @@ async function handlePinFormSubmission(e) {
         ]);
 
         const pin = parseCharsFromObject(parsedFormData);
+        const MILLI_SECONDS = 600;
 
-        console.log(pin)
-        handleTransfer(pin)
+        toggleSpinner(pinSpinner);
+        pinButton.disabled = true;
+
+        setTimeout(() => {
+            handleTransfer(pin.values);
+            toggleSpinner(false);
+            pinButton.disabled = false;
+        }, MILLI_SECONDS)
+
+
 
     } else {
         pinForm.reportValidity()
     }
 }
 
+
+
+function updateNavBankBalance(balance) {
+
+    if (!balance) {
+        warnError("updateNavBankBalance", {
+            balance: balance,
+            errorMsg: "Bank balance returned an incorrect value. Expected a decimal"
+        })
+        return;
+    }
+
+    navBankBalance.textContent = formatCurrency(balance);
+    clearElementField(navCurrency)
+
+}
+
+
+function clearTotalTransferPreview() {
+    // for now we use  a default currency, later when the currency is built it will be dynamic
+    transferAmountPreview.textContent = "£0.00";
+    transferAmountPreview.classList.remove("flash");
+}
+
+
+function resetTransferForm() {
+    togglePinPanel(false);
+    bankTransferForm.reset();
+    findRecipientForm.reset()
+    pinForm.reset()
+    clearVerifiedRecipientPanel();
+    clearTotalTransferPreview();
+    toggleSpinner(pinSpinner, false);
+
+    pinButton.disabled = false;
+}
 
 
 async function handleTransfer(pin) {
@@ -689,7 +739,7 @@ async function handleTransfer(pin) {
         required.push("future-schedule-date")
     }
 
-    // note and save_recipient is option, so only add them to required if note is used
+    // note and save_recipient are optional, so only add them to required if there are used
     const note = formData.get("transfer-note");
 
     if (note.trim() !== "") {
@@ -711,7 +761,7 @@ async function handleTransfer(pin) {
         method: "POST",
         body: {
             bankTransferSelection: parsedFormData.bankTransferSelection,
-            bankTransferType: parsedFormData.ankTransferType,
+            bankTransferType: parsedFormData.bankTransferType,
             amount: parsedFormData.amount,
             transferStart: parsedFormData.transferStart,
             pin: pin
@@ -719,9 +769,21 @@ async function handleTransfer(pin) {
 
     });
 
-    
+    const data = resp.data;
 
-    console.log(resp);
+    AlertUtils.showAlert({
+            title: data.ACTION,
+            text: data.MSG,
+            icon: data.SUCCESS ? "success" : "error",
+            confirmButtonText: "Ok!"
+        })
 
+    if (data.SUCCESS) {
+        resetTransferForm();
+        updateNavBankBalance(data.BALANCE);
 
+    } else {
+        toggleSpinner(pinSpinner, false);
+        pinButton.disabled = false;
+    }
 }

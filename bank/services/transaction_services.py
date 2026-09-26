@@ -48,6 +48,7 @@ class TransferResponse(TypedDict):
     STATUS: str
     AMOUNT: Decimal
     TRANSFER_REFERENCE: str
+    BALANCE: Decimal
 
 
 class Action(Enum):
@@ -60,6 +61,7 @@ class Status(Enum):
     PENDING  = "Pending"
     SUCCESS  = "Successful transfer"
     INVALID    = "The pin is invalid"
+    UNSUCCESSFUL = "The transfer was unsucessful"
 
 
 class Start(Enum):
@@ -500,6 +502,7 @@ class TransactionService:
                          recurrence: Recurrence = Recurrence.NONE,
                          schedule_date: datetime = None,
                          threshold_limit: Decimal = settings.RISK_THRESHOLD,
+                         notes=None
                          ) -> TransferResponse:
 
         """
@@ -566,6 +569,7 @@ class TransactionService:
                     "STATUS": Status.INVALID.value,
                     "AMOUNT": Decimal("0.00"),
                     "TRANSFER_REFERENCE": "",
+                    "BALANCE": source_account.balance,
                     }
             return response
 
@@ -578,6 +582,7 @@ class TransactionService:
                  "STATUS": Status.INVALID.value,
                 "AMOUNT": Decimal("0.00"),
                 "TRANSFER_REFERENCE": "",
+                "BALANCE": source_account.balance,
                 }
             return response
 
@@ -588,13 +593,14 @@ class TransactionService:
         cls._validate_transfer_currencies(source_account, recipient_account)
 
         # call the transfer once everything is verified
-        cls._transfer(source_account=source_account,
+        return cls._transfer(source_account=source_account,
                      recipient_account=recipient_account,
                      amount=amount,
                      start=start,
                      recurrence=recurrence,
                      schedule_date=schedule_date,
-                     threshold_limit=threshold_limit
+                     threshold_limit=threshold_limit,
+                     notes=notes,
             )
 
     @classmethod
@@ -606,7 +612,8 @@ class TransactionService:
             start: Start = Start.IMMEDIATELY,
             recurrence: Recurrence = Recurrence.NONE,
             schedule_date: datetime = None,
-            threshold_limit: Decimal = settings.RISK_THRESHOLD
+            threshold_limit: Decimal = settings.RISK_THRESHOLD,
+            notes: str = None
         ) -> TransferResponse:
 
         """
@@ -666,8 +673,8 @@ class TransactionService:
                 recipient_account=recipient_account,
                 amount=amount,
                 threshold_limit=threshold_limit,
+                notes=notes,
             )
-
 
     @classmethod
     def _apply_risk_hold(
@@ -791,6 +798,7 @@ class TransactionService:
                          recipient_account: BankAccount,
                          amount: Decimal,
                          threshold_limit: Decimal,
+                         notes: str
                          ) -> TransferResponse:
 
         source_account_user    = source_account.user_profile.user
@@ -819,6 +827,7 @@ class TransactionService:
                             movement=LedgerEntry.Movement.DEBIT,
                             user=source_account_user,
                             account=source_account,
+                            notes=notes
                         )
 
             recipient_ledger_entry = LedgerEntry(
@@ -851,6 +860,7 @@ class TransactionService:
                                 "STATUS": Status.PENDING.value,
                                 "AMOUNT": amount,
                                 "TRANSFER_REFERENCE": transfer_reference,
+                                "BALANCE": source_account.balance,
                             }
 
             else:
@@ -868,16 +878,17 @@ class TransactionService:
                 recipient_ledger_entry.completed_on = completed_time
 
                 response: TransferResponse = {
-                                        "SUCCESS": True,
-                                        "MSG":  (
-                                                f"Transfer of {amount} to {recipient_account_user}, "
-                                                f"account {recipient_account.account_last_four_digits} was successful."
-                                                ),
-                                        "ACTION": Action.COMPLETED.value,
-                                        "STATUS": Status.SUCCESS.value,
-                                        "AMOUNT": amount,
-                                        "TRANSFER_REFERENCE": transfer_reference,
-                                    }
+                    "SUCCESS": True,
+                    "MSG":  (
+                             f"Transfer of {amount} to {recipient_account_user}, "
+                            f"account {recipient_account.account_last_four_digits} was successful."
+                            ),
+                    "ACTION": Action.COMPLETED.value,
+                    "STATUS": Status.SUCCESS.value,
+                    "AMOUNT": amount,
+                    "TRANSFER_REFERENCE": transfer_reference,
+                    "BALANCE": source_account.balance,
+                }
 
             source_ledger_entry.closing_balance    = source_account.balance
             recipient_ledger_entry.closing_balance = recipient_account.balance

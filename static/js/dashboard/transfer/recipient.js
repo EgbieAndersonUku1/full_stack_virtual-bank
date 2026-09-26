@@ -3,7 +3,7 @@ import fetchData from "../../fetch.js";
 import { parseFormData } from "../../formUtils.js";
 import { warnError } from "../../logger.js";
 import { getCsrfToken } from "../../security/csrf.js";
-import { enableAutoFocusNavigation, selectElement, toggleSpinner, toTitle } from "../../utils.js";
+import { clearElementField, enableAutoFocusNavigation, selectElement, toggleSpinner, toTitle } from "../../utils.js";
 import { getAccountDetailsFromData } from "./utils.js";
 
 
@@ -207,6 +207,9 @@ function showVerifiedRecipient(firstName, surname, msg = null) {
 }
 
 
+export function clearVerifiedRecipientPanel() {
+    verifiedRecipientPanel.classList.remove("show");
+}
 
 
 
@@ -281,19 +284,17 @@ export async function handleFindRecipientFormSubmission(e) {
             accountNumber: accountDetails.accountNumber || "",
         }
 
-
     })
 
+    toggleSpinner(addRecipientSpinner, true, true);
 
-    toggleSpinner(addRecipientSpinner, true, true)
     setTimeout(() => {
         toggleSpinner(addRecipientSpinner, false, true);
 
         const data = response.data;
-        console.log(data)
 
         const isRecipientFound = data.SUCCESS && data.FOUND;
-        //  state.IS_RECIPIENT_FOUND = isRecipientFound;
+
         console.log(isRecipientFound)
         AlertUtils.showAlert({
             title: data.ACTION,

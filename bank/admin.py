@@ -623,6 +623,8 @@ class LedgerEntryAdmin(admin.ModelAdmin):
         "completed_on",
         "metadata",
         "transfer_reference",
+        "notes",
+        "reserved_amount"
 
     ]
 
@@ -636,6 +638,10 @@ class LedgerEntryAdmin(admin.ModelAdmin):
     search_fields      = ["reference",  "user__username", "user__email", "account__account_number"]
     ordering           = ["-created_on"]
     list_per_page      = 20
+
+    @admin.display(description="Reserved amount")
+    def reserved_amount(self, obj):
+        return obj.account.reserved_amount
 
     fieldsets = [
         (
@@ -669,6 +675,7 @@ class LedgerEntryAdmin(admin.ModelAdmin):
                     "reserved_amount",
                     "closing_balance",
                     "currency",
+                    "notes",
                 ],
             },
         ),

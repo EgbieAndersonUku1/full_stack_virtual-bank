@@ -159,6 +159,7 @@ class TransferTest(TestCase):
             "STATUS",
             "AMOUNT",
             "TRANSFER_REFERENCE",
+            "BALANCE"
         }
 
         # test fetch response returned
@@ -168,6 +169,7 @@ class TransferTest(TestCase):
         self.assertEqual(response["ACTION"], Action.COMPLETED.value)
         self.assertEqual(response["AMOUNT"], transfer_amount)
         self.assertTrue(response["TRANSFER_REFERENCE"])
+        self.assertGreaterEqual(response["BALANCE"], Decimal("0.00"))
 
         # Test the transfer balance
         EXPECTED_SOURCE_ACCOUNT_BALANCE     = 900
@@ -288,6 +290,7 @@ class TransferTest(TestCase):
                     "STATUS",
                     "AMOUNT",
                     "TRANSFER_REFERENCE",
+                    "BALANCE"
                 }
 
         # test fetch response returned are correct
@@ -297,6 +300,7 @@ class TransferTest(TestCase):
         self.assertEqual(response["ACTION"], Action.ON_HOLD.value)
         self.assertEqual(response["AMOUNT"], RISK_THRESHOLD_AMOUNT)
         self.assertTrue(response["TRANSFER_REFERENCE"])
+        self.assertGreaterEqual(response["BALANCE"], Decimal("0.00"))
 
 
         # verify that the source balance isn't changed
