@@ -69,19 +69,21 @@
 
 
         <label for="bank-transfer-when">Payment time *</label>
-        <select name="bank-transfer-form" id="bank-transfer-schedule" required data-transfer-type="true">
+        <select name="transfer-start" id="bank-transfer-schedule" required data-transfer-type="true">
             <option value="" disabled selected>Select the transfer date</option>
             <option value="immediately">Send now</option>
             <option value="future_date" disabled>Schedule for later</option>
         </select>
 
+
+        <!-- when schedule for later is selected the one is displayed -->
         <div id="future-schedule-date" class="mt-12 hide">
             <input type="datetime-local" name="future-schedule-date" id="future-schedule-date-input">
         </div>
 
         <div class="flex-grid text-area-wrapper">
-            <label for="note">Note</label>
-            <textarea name="note" id="transfer-recipient-note" rows="5" maxlength="250"></textarea>
+            <label for="transfer-note">Note</label>
+            <textarea name="transfer-note" id="transfer-recipient-note" rows="5" maxlength="250"></textarea>
 
         </div>
 

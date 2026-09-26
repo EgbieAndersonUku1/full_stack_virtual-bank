@@ -130,7 +130,7 @@ class TransferTest(TestCase):
 
         with self.assertRaises(InsufficientFundsError):
 
-            TransactionService.transfer(self.source_current_account,
+            TransactionService._transfer(self.source_current_account,
                                         self.recipient_current_account,
                                         amount=AAMOUNT_EXCEEDS_AVAILABLE_BALANCE,
                                         )
@@ -142,7 +142,7 @@ class TransferTest(TestCase):
         opening_balance     = Decimal("1000")
         transfer_started_at = timezone.now()
 
-        response = TransactionService.transfer(
+        response = TransactionService._transfer(
             source_account=self.source_current_account,
             recipient_account=self.recipient_current_account,
             amount=transfer_amount,
@@ -273,7 +273,7 @@ class TransferTest(TestCase):
 
         self.assertEqual(self.recipient_current_account.balance, 0)
 
-        response = TransactionService.transfer(
+        response = TransactionService._transfer(
                     source_account=self.source_current_account,
                     recipient_account=self.recipient_current_account,
                     amount=RISK_THRESHOLD_AMOUNT,

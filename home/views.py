@@ -306,7 +306,7 @@ def verify_recipient(request):
 def transfer_funds(request):
 
     def handle_transfer_funds(data: dict):
-        pass
+        print(data)
     return handle_json_post_request(request, func=handle_transfer_funds)
 
 

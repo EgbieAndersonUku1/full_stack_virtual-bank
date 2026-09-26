@@ -14,9 +14,13 @@ import {handleRecipientSelectionClose,
         handleRecipientSelection,
          } from "./recipient.js";
 
+import fetchData from "../../fetch.js";
+import { getCsrfToken } from "../../security/csrf.js";
+
 
 const state = {
     IS_RECIPIENT_FOUND : null,
+    IS_SCHEDULE_DATE_SELECTED: false,
 }
 
 const pin = {
@@ -119,9 +123,8 @@ const MAX_TRANSFER_AMOUNT = 1_000_000_000;
 // Displays the number of characters used or remaining in the text area for the transfer and request text area form
 
 
-
-
 enableAutoFocusNavigation(requestRecipientAccountInputs);
+
 
 
 
@@ -206,11 +209,13 @@ function handleTransferScheduleSelection(e) {
    if (selectValue === SCHEDULE_FOR_LATER) {
         scheduleDateTimeInputField.required = true;
         futureScheduleDateContainer.classList.remove("hide");
+        state.IS_SCHEDULE_DATE_SELECTED = true;
         return;
    }
 
    scheduleDateTimeInputField.required = false;
-   futureScheduleDateContainer.classList.add("hide")
+   futureScheduleDateContainer.classList.add("hide");
+   state.IS_SCHEDULE_DATE_SELECTED = false;
 
 }
 
@@ -337,7 +342,7 @@ function togglePinPanel(show=true, cssSelector="show") {
 }
 
 
-async function initiateTransfer() {
+async function confirmTransfer() {
 
     const accountDetails = getSelectedAccountDetails(transferFromSelectOption);
     const amount         = amountInputField.value;
@@ -384,7 +389,7 @@ async function handleBankTransferSubmission(e) {
 
        console.log("handling the data")
 
-       initiateTransfer()
+       confirmTransfer()
 
   } else {
      bankTransferForm.reportValidity()
@@ -659,8 +664,64 @@ async function handlePinFormSubmission(e) {
         const pin = parseCharsFromObject(parsedFormData);
 
         console.log(pin)
+        handleTransfer(pin)
 
     } else {
         pinForm.reportValidity()
     }
+}
+
+
+
+async function handleTransfer(pin) {
+    const formData = new FormData(bankTransferForm)
+
+    const required = [
+        "bank-transfer-selection",
+        "bank-transfer-type",
+        "recipient",
+        "amount",
+        "transfer-start",
+
+    ]
+
+    if (state.IS_SCHEDULE_DATE_SELECTED) {
+        required.push("future-schedule-date")
+    }
+
+    // note and save_recipient is option, so only add them to required if note is used
+    const note = formData.get("transfer-note");
+
+    if (note.trim() !== "") {
+         required.push("transfer-note")
+    }
+
+
+    if (formData.has("save_recipient")) {
+         required.push("save_recipient")
+    }
+
+    const parsedFormData = parseFormData(formData, required);
+
+    console.log(parsedFormData);
+
+    const resp = await fetchData( {
+        url: "/dashbaord/transfer/funds/",
+        csrfToken: getCsrfToken(),
+        method: "POST",
+        body: {
+            bankTransferSelection: parsedFormData.bankTransferSelection,
+            bankTransferType: parsedFormData.ankTransferType,
+            amount: parsedFormData.amount,
+            transferStart: parsedFormData.transferStart,
+            pin: pin
+        }
+
+    });
+
+    
+
+    console.log(resp);
+
+
 }

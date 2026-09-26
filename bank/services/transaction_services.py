@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+import logging
+
 from decimal import Decimal
 from enum import Enum
 from django.utils import timezone
@@ -13,6 +16,7 @@ from django.db import transaction
 
 
 from bank.models import LedgerEntry, BankAccount
+from setup.models import Pin
 from bank.services.bank_services import BankAccountCacheService
 from utils.custom_errors import InsufficientFundsError, SameAccountError, BankAccountTypeError, CurrencyMismatchError
 from utils.formatter import format_currency
@@ -22,6 +26,8 @@ from utils.utils import remove_under_score
 from utils.validators.validators import validate_amount, validate_datetime
 from utils.security.generator import generate_secure_code as generate_reference
 
+
+logger = logging.Logger(__name__)
 
 
 User = get_user_model()
@@ -45,13 +51,15 @@ class TransferResponse(TypedDict):
 
 
 class Action(Enum):
-    ON_HOLD  = "On hold"
-    COMPLETED  = "Transfer completed"
+    ON_HOLD      = "On hold"
+    COMPLETED    = "Transfer completed"
+    UNCOMPLETED  = "Transfer not complete"
 
 
 class Status(Enum):
     PENDING  = "Pending"
     SUCCESS  = "Successful transfer"
+    INVALID    = "The pin is invalid"
 
 
 class Start(Enum):
@@ -483,7 +491,114 @@ class TransactionService:
         return paginator.get_page(page)
 
     @classmethod
-    def transfer(
+    def process_transfer(cls,
+                         pin: str,
+                         source_account: BankAccount,
+                         recipient_account: BankAccount,
+                         amount: Decimal,
+                         start: Start = Start.IMMEDIATELY,
+                         recurrence: Recurrence = Recurrence.NONE,
+                         schedule_date: datetime = None,
+                         threshold_limit: Decimal = settings.RISK_THRESHOLD,
+                         ) -> TransferResponse:
+
+        """
+        Authorise and process a user-initiated account transfer. This method is the
+        entry point for transfer requests that originate from the user-facing transfer flow.
+
+        It verifies the user's PIN before allowing the transfer to proceed, then delegates the
+        actual transfer operation to `transfer()`.
+
+        The PIN verification is delibately kept here to prevent the view layer from
+        handling transfer authorisation logic while allowing `transfer()` to remain focused
+        on the transfer business rules, validation, ledger updates, risk handling,
+        and account balance changes.
+
+        Callers should use this method when processing a transfer initiated by a
+        user and requiring PIN authorisation.
+
+        The lower-level `transfer()` method should be used internally after authorisation
+         has been completed.
+
+        Args:
+        source_account (BankAccount): The account from which the funds will be
+            transferred.
+
+        recipient_account (BankAccount): The account that will receive the
+            transferred funds.
+
+        amount (Decimal): The amount to transfer from the source account to the
+            recipient account.
+
+        start (Start): Determines when the transfer should begin, such as
+            immediately or on a scheduled date.
+
+        recurrence (Recurrence): Determines whether the transfer is a one-time
+            transfer or follows a recurring schedule.
+
+        schedule_date (datetime): The date and time on which a scheduled transfer
+            should begin. This should be `None` when the transfer starts
+            immediately.
+
+        threshold_limit (Decimal): The configured amount at which the
+                        transfer requires additional risk review and may be
+                        placed on hold.
+
+        pin (str): The user's PIN used to authorize the transfer before
+                   the transfer operation is executed.
+
+        Returns: TransferResponse: The result of the transfer operation.
+
+        """
+        cls._validate_bank_accounts(source_account, recipient_account)
+
+        user     = source_account.user_profile.user
+        user_pin = Pin.get_pin_by_user(user)
+
+        if user_pin is None:
+
+            logging.critical(f"The pin model wasn't found for user with id {user.id}")
+
+            response: TransferResponse = {
+                    "SUCCESS": False,
+                    "MSG": "Something went wrong, please try again later",
+                    "ACTION": Action.UNCOMPLETED.value,
+                    "STATUS": Status.INVALID.value,
+                    "AMOUNT": Decimal("0.00"),
+                    "TRANSFER_REFERENCE": "",
+                    }
+            return response
+
+        if not user_pin.verify_pin(pin):
+
+            response: TransferResponse = {
+                "SUCCESS": False,
+                "MSG": "The pin is invalid",
+                "ACTION": Action.UNCOMPLETED.value,
+                 "STATUS": Status.INVALID.value,
+                "AMOUNT": Decimal("0.00"),
+                "TRANSFER_REFERENCE": "",
+                }
+            return response
+
+        validate_amount(amount)
+        validate_amount(threshold_limit)
+
+        cls._validate_schedule(start, recurrence, schedule_date)
+        cls._validate_transfer_currencies(source_account, recipient_account)
+
+        # call the transfer once everything is verified
+        cls._transfer(source_account=source_account,
+                     recipient_account=recipient_account,
+                     amount=amount,
+                     start=start,
+                     recurrence=recurrence,
+                     schedule_date=schedule_date,
+                     threshold_limit=threshold_limit
+            )
+
+    @classmethod
+    def _transfer(
             cls,
             source_account: BankAccount,
             recipient_account: BankAccount,
@@ -491,15 +606,55 @@ class TransactionService:
             start: Start = Start.IMMEDIATELY,
             recurrence: Recurrence = Recurrence.NONE,
             schedule_date: datetime = None,
-            threshold_limit: Decimal = settings.RISK_THRESHOLD,
+            threshold_limit: Decimal = settings.RISK_THRESHOLD
         ) -> TransferResponse:
 
-        cls._validate_bank_accounts(source_account, recipient_account)
-        validate_amount(amount)
-        validate_amount(threshold_limit)
+        """
+        Execute the internal account transfer operation.
 
-        cls._validate_schedule(start, recurrence, schedule_date)
-        cls._validate_transfer_currencies(source_account, recipient_account)
+        This method contains the core transfer business logic, including transfer
+        validation, sufficient-funds checks, risk handling, fund reservations,
+        account balance updates, and ledger entry creation.
+
+        `_transfer()` does not perform user authorisation such as PIN
+        verification. authorisation is handled by `process_transfer()` before
+        this method is called.
+
+        Callers should use `process_transfer()` for user-initiated transfers
+        rather than calling this method directly. This method is intended to be
+        an internal operation used after the transfer request has been authorized.
+
+        The transfer operation is performed atomically so that account balances
+        and ledger entries cannot be left in a partially completed state.
+
+
+        Args:
+            source_account (BankAccount): The account from which the funds will be
+                transferred.
+
+            recipient_account (BankAccount): The account that will receive the
+                transferred funds.
+
+            amount (Decimal): The amount to transfer from the source account to the
+                recipient account.
+
+            start (Start): Determines when the transfer should begin, such as
+                immediately or on a scheduled date.
+
+            recurrence (Recurrence): Determines whether the transfer is a one-time
+                transfer or follows a recurring schedule.
+
+            schedule_date (datetime): The date and time on which a scheduled transfer
+                should begin. This should be `None` when the transfer starts
+                immediately.
+
+            threshold_limit (Decimal): The configured amount at which the transfer
+                requires additional risk review and may be placed on hold.
+
+
+        Returns:
+            TransferResponse: The result of the completed or pending transfer.
+        """
 
         if not cls._has_sufficient_funds(source_account, amount):
             error_msg = "The source account has insufficient funds"
