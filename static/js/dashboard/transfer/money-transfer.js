@@ -753,8 +753,6 @@ async function handleTransfer(pin) {
 
     const parsedFormData = parseFormData(formData, required);
 
-    console.log(parsedFormData);
-
     const resp = await fetchData( {
         url: "/dashbaord/transfer/funds/",
         csrfToken: getCsrfToken(),

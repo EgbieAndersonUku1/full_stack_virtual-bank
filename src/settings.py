@@ -289,8 +289,9 @@ LOGGING = {
 }
 
 LOGIN_REDIRECT_URL = '/'
-LOGIN_URL           = "login_user"
-LOGOUT_REDIRECT_URL = "login_user"
+LOGIN_URL           = "authentication_login_user"
+LOGOUT_REDIRECT_URL = "authentication_login_user"
+
 
 
 

@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from datetime import timedelta
 from django.core.exceptions import ValidationError
-from django_email_sender.models import EmailBaseLog 
+from django_email_sender.models import EmailBaseLog
 from django.conf import settings
 
 
@@ -42,7 +42,7 @@ class BaseUser(BaseUserManager):
             raise ValueError(_("is_superuser must be set to True"))
         if not extra_fields.get("is_active"):
             raise ValueError(_("is_active must be set to True"))
-        
+
         return self.create_user(email, username, password, **extra_fields)
 
     def _validate_user_details(self, username, email):
@@ -51,7 +51,7 @@ class BaseUser(BaseUserManager):
             raise ValueError(_("The username cannot be blank"))
         if not email:
             raise ValueError(_("The email cannot be blank"))
-    
+
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -66,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_locked         = models.BooleanField(default=False)
     created_on        = models.DateTimeField(auto_now_add=True)
     last_updated      = models.DateTimeField(auto_now=True)
-  
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
     objects = BaseUser()
@@ -80,7 +80,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def is_user_email_verified(self):
         return self.is_email_verified == True
-    
+
     def mark_email_as_verified(self, commit: bool = True) -> User | None:
         """
         Marks the user's email as verified.
@@ -88,7 +88,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         This method updates the `is_email_verified` flag on the user instance.
         It can either immediately persist the change to the database or defer, this
         is useful if you want to perform multiple actions before saving.
-     
+
         Args:
             commit (bool): If True, the change is immediately saved to the database.
                         If False, the change is only applied in memory and must
@@ -102,10 +102,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             performed together, allowing a single database write for efficiency.
         """
         self.is_email_verified = True
-       
+
         if commit:
             return self._update_fields(fields=[self._IS_EMAIL_VERIFIED_FLAG])
-                
+
     def mark_email_as_unverified(self, commit: bool = True) -> User | None:
         """
         Marks the user's email as unverified.
@@ -113,7 +113,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         This method updates the `is_email_verified` flag on the user instance.
         It can either immediately persist the change to the database or defer, this
         is useful if you want to perform multiple actions before saving.
-     
+
         Args:
             commit (bool): If True, the change is immediately saved to the database.
                         If False, the change is only applied in memory and must
@@ -159,11 +159,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             return cls.objects.get(email=field_value)
         except cls.DoesNotExist:
             return None
-    
+
     @classmethod
     def get_all_users(cls, active:bool=True, is_locked:bool=False, order_by:str="email"):
         return cls.objects.filter(is_active=active, is_locked=is_locked).order_by(order_by)
-    
+
     def save(self, *args, **kwargs):
 
         if self.email:
@@ -173,7 +173,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             self.username = self.username.lower().strip()
 
         super().save(*args, **kwargs)
-        
+
 
 
 class VerificationStatus(Enum):
@@ -182,20 +182,20 @@ class VerificationStatus(Enum):
     COOLDOWN = "cooldown"
     RESENT   = "resent"
 
-    
+
 class Verification(models.Model):
 
     class VerificationType(models.TextChoices):
         EMAIL_VERIFICATION        = "EV", _("Email Verification")
         PASSWORD_VERIFICATION     = "PV", _("Password Verification")
         PASSWORD_RESET            = "PR", _("Password Reset")
-    
+
     class Status(models.TextChoices):
         PENDING  = "P", _("Pending")
         VERIFIED = "S", _("Verified")
         EXPIRED  = "E", _("Expired")
         BLOCKED  = "B", _("Blocked")
-     
+
     user                   = models.ForeignKey(User, on_delete=models.CASCADE)
     verification_code      = models.CharField(max_length=32)
     description            = models.CharField(max_length=255)
@@ -206,11 +206,11 @@ class Verification(models.Model):
     last_updated           = models.DateTimeField(auto_now=True)
     is_used                = models.BooleanField(default=False, blank=True, null=True)
     used_at                = models.DateTimeField(blank=True, null=True)
-    verification_type      = models.CharField(max_length=2, choices=VerificationType, 
+    verification_type      = models.CharField(max_length=2, choices=VerificationType,
                                              default=VerificationType.EMAIL_VERIFICATION)
     status                = models.CharField(max_length=1, choices=Status, default=Status.PENDING)
     deletion_scheduled_at = models.DateTimeField(blank=True, null=True)
-    
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -221,12 +221,12 @@ class Verification(models.Model):
 
     def __str__(self):
         return f"Verification for {self.user}"
-        
+
     @classmethod
     def get_by_user_and_type(cls, user: User, verification_type: str) -> User | None:
         """"""
         return cls.objects.filter(user=user, verification_type=verification_type).first()
-    
+
     @classmethod
     def get_by_user_and_code(cls, user: User, verification_code: str) -> User | None:
         """"""
@@ -234,7 +234,7 @@ class Verification(models.Model):
            return cls.objects.get(user=user, verification_code=verification_code)
         except cls.DoesNotExist:
             return None
-    
+
     def set_expiry(self, minutes: int = 10, hours: int = 0, days: int = 0) -> None:
         if not all(isinstance(value, int) for value in (minutes, hours, days)):
               raise ValueError(
@@ -245,7 +245,7 @@ class Verification(models.Model):
                     f"days={type(days).__name__}"
                 )
             )
-        
+
         if (minutes < 0 or hours < 0 or days < 0):
              raise ValueError(
                 _(
@@ -258,21 +258,21 @@ class Verification(models.Model):
 
         self.expiry_date = timezone.now() + timedelta(minutes=minutes, hours=hours, days=days)
 
-    @property  
+    @property
     def is_code_expired(self) -> bool:
         """"""
         return timezone.now() >= self.expiry_date
-    
+
     def get_expiry_seconds(self) -> int:
         if not self.expiry_date:
             return 0
         delta = self.expiry_date - timezone.now()
         return int(delta.total_seconds())
-    
+
     def is_resend_limit_exceeded(self):
         """"""
         return self.num_of_resend_requests >= settings.MAX_VERIFICATION_CODE_RESENDS_PER_USER
-    
+
     @property
     def cooldown_ends_at(self):
         return self.sent_at + timedelta(
@@ -297,7 +297,7 @@ class Verification(models.Model):
             return False
 
         return True
-        
+
     def increment_resend(self, commit: bool = True) -> Verification | None:
 
         if not self.can_resend():
@@ -314,7 +314,7 @@ class Verification(models.Model):
         if commit:
              self.save(update_fields=fields_to_update)
              return self
-    
+
     def mark_as_used(self, commit: bool = True) -> Verification | None:
 
         now              = timezone.now()
@@ -322,13 +322,14 @@ class Verification(models.Model):
         self.used_at     = now
         self.status      = self.Status.VERIFIED
         self.description = "Verification code successfully used and verified"
- 
+
         self.deletion_scheduled_at = now + timedelta(seconds=self.get_expiry_seconds())
 
         if commit:
             self.save()
             return self
-    
+        return self
+
     def mark_as_expired(self, commit = True) -> Verification | None:
         """"""
         self.deletion_scheduled_at = timezone.now() + timedelta(seconds=self.get_expiry_seconds())
@@ -338,7 +339,7 @@ class Verification(models.Model):
         if commit:
             self.save()
             return self
-    
+
     def mark_as_blocked(self, commit = True) -> Verification | None:
         """"""
         self.status      = self.Status.BLOCKED
@@ -347,11 +348,11 @@ class Verification(models.Model):
         if commit:
             self.save()
             return self
-        
+
     @property
     def is_blocked(self) -> bool:
         return self.status == self.Status.BLOCKED
-    
+
     def get_status(self) -> str:
         if self.is_used:
             return VerificationStatus.USED
@@ -363,16 +364,16 @@ class Verification(models.Model):
             return VerificationStatus.COOLDOWN
 
         return VerificationStatus.RESENT
-    
+
     def save(self, *args, **kwargs):
         if not self.expiry_date:
             self.set_expiry(minutes=settings.DEFAULT_CODE_EXPIRY_IN_MINUTES)
-        
+
         if not self.pk:
             self.sent_at = timezone.now()
 
         return super().save(*args, **kwargs)
-    
+
 
 
 class VerificationPending(Verification):
@@ -380,7 +381,7 @@ class VerificationPending(Verification):
     Proxy model for admin use.
 
     Provides a filtered view of Verification objects
-    with status = PENDING in the admin page, making it 
+    with status = PENDING in the admin page, making it
     easier to manage pending verifications without manual filtering.
     """
     class Meta:
@@ -394,7 +395,7 @@ class VerificationBlock(Verification):
     Proxy model for admin use.
 
     Provides a filtered view of Verification objects
-    with status = BLOCKED in the admin page, making it 
+    with status = BLOCKED in the admin page, making it
     easier to manage blocked verifications without manual filtering.
     """
     class Meta:
@@ -408,7 +409,7 @@ class VerificationUsed(Verification):
     Proxy model for admin use.
 
     Provides a filtered view of Verification objects
-    with status = USED in the admin page, making it 
+    with status = USED in the admin page, making it
     easier to manage used verifications without manual filtering.
     """
     class Meta:
@@ -422,7 +423,7 @@ class VerificationExpired(Verification):
     Proxy model for admin use.
 
     Provides a filtered view of Verification objects
-    with status = EXPIRED in the admin page, making it 
+    with status = EXPIRED in the admin page, making it
     easier to manage expired verifications without manual filtering.
     """
     class Meta:
@@ -435,10 +436,10 @@ class VerificationExpired(Verification):
 
 class EmailLog(EmailBaseLog):
     sent_at = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return f"To email: {self.to_email} from {self.from_email}"
-  
+
 
 
 
