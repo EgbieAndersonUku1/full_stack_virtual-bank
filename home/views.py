@@ -316,40 +316,32 @@ def verify_recipient(request):
 def transfer_funds(request):
 
     def handle_transfer_funds(data: dict):
-    
+
         try:
             validate_required_keys(data)
         except KeyError as e:
-            data: TransferResponse = {
-                    "SUCCESS": False,
-                    "MSG": str(e),
-                    "ACTION": "Missing key",
-                    "STATUS": Status.UNSUCCESSFUL.value,
-                    "AMOUNT": Decimal("0.00"),
-                    "TRANSFER_REFERENCE": "",
-                    "BALANCE":  BankAccountCacheService.get_total_account_balance(request.user)
-                }
-            return data
+            error_msg = str(e)
+            logger.debug(error_msg)
+            return transfer_error_response(
+                                        error_msg,
+                                        "Missing key",
+                                        user=request.user,
+                                    )
 
         try:
             recipient_account_details = request.session["recipient_details"]
         except KeyError:
             logger.critical("Recipient account details not found in the session")
-            return {
-                "SUCCESS": False,
-                "MSG": "Recipient account details could not be found",
-                "ACTION": "Recipient not found",
-                "STATUS": Status.UNSUCCESSFUL.value,
-                "AMOUNT": Decimal("0.00"),
-                "TRANSFER_REFERENCE": "",
-                "BALANCE": BankAccountCacheService.get_total_account_balance(request.user),
-            }
-
+            return transfer_error_response(
+                            "Recipient account details could not be found",
+                            "Recipient not found",
+                            user=request.user,
+                        )
 
         recipient_bank_account = BankAccount.get_by_sort_code_and_account_number(
-                                                        sort_code=recipient_account_details["sort_code"],
-                                                        account_number=recipient_account_details["account_number"],
-                                                        )
+                                                sort_code=recipient_account_details["sort_code"],
+                                                account_number=recipient_account_details["account_number"],
+                                                )
 
         source_account = BankAccountCacheService.get_current_account(user=request.user)
 
@@ -359,7 +351,6 @@ def transfer_funds(request):
                 "Account not found",
                 user=request.user,
             )
-
 
         if data["bankTransferSelection"] == "bank":
 
@@ -388,7 +379,7 @@ def transfer_funds(request):
                 )
 
             except DateTimeError:
-                return transper_error_response(
+                return transfer_error_response(
                     "The selected transfer date is invalid",
                     "Invalid date",
                     user=request.user
@@ -414,10 +405,6 @@ def transfer_funds(request):
                     "Invalid transfer data",
                     user=request.user
                 )
-
-
-
-        return response
 
     return handle_json_post_request(request, func=handle_transfer_funds)
 
