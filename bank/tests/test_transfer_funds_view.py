@@ -5,7 +5,10 @@ from decimal import Decimal
 import json
 
 from django.contrib.auth import get_user_model
+
 from django.test import TestCase
+from django.contrib.sessions.backends.base import SessionBase
+
 from unittest.mock import patch
 
 from django.urls import reverse
@@ -19,6 +22,7 @@ from bank.services.bank_services import  BankProvisioningService
 from user_profile.models import UserProfile
 from setup.services.service import AccountOnboardingService
 from bank.services.transaction_services import Start, Action, Status
+
 
 
 User = get_user_model()
@@ -40,6 +44,18 @@ USER_PROFILE_DATA_2 = {
     "country": "GB",
 }
 
+
+URL = reverse("transfer_funds")
+
+
+def simulate_successful_verified_client(session: SessionBase, sort_code: str, account_number: str):
+    # Simulate a successfully verified recipient from the previous view flow.
+    client_session = session
+    client_session["recipient_details"] = {
+                "sort_code": sort_code,
+                "account_number": account_number,
+            }
+    client_session.save()
 
 
 class TransferFundsTest(TestCase):
@@ -141,17 +157,13 @@ class TransferFundsTest(TestCase):
 
         TRANSFER_AMOUNT = Decimal("100")
 
-        url = reverse("transfer_funds")
+        simulate_successful_verified_client(
+            session=self.client.session,
+            sort_code=self.recipient_account.sort_code.external_sort_code,
+            account_number=self.recipient_account.account_number
+        )
 
-        # Simulate a successfully verified recipient from the previous view flow.
-        session = self.client.session
-        session["recipient_details"] = {
-            "sort_code": self.recipient_account.sort_code.external_sort_code,
-            "account_number": self.recipient_account.account_number,
-        }
-        session.save()
-
-        response = self.client.post(url, data=json.dumps({
+        response = self.client.post(URL, data=json.dumps({
             "bankTransferSelection": "bank",
             "amount": str(TRANSFER_AMOUNT),
             "transferStart": Start.IMMEDIATELY.value,
@@ -189,3 +201,48 @@ class TransferFundsTest(TestCase):
             amount=TRANSFER_AMOUNT,
             start=Start.IMMEDIATELY,
         )
+
+    @patch("home.views.TransactionService.process_transfer")
+    def test_missing_required_keys(self, mock_process_transfer):
+        """
+        Verify that the transfer view rejects requests missing required fields.
+
+        Each required transfer field is removed individually to confirm that the
+        view returns an unsuccessful response without calling the transaction
+        service.
+        """
+        payload = {
+            "bankTransferSelection": "bank",
+            "amount": "100.00",
+            "transferStart": Start.IMMEDIATELY.value,
+            "pin": "123456",
+        }
+
+        for missing_key in payload:
+            with self.subTest(missing_key=missing_key):
+                request_data = payload.copy()
+                request_data.pop(missing_key)
+
+                response = self.client.post(
+                    reverse("transfer_funds"),
+                    data=json.dumps(request_data),
+                    content_type="application/json",
+                )
+
+                self.assertEqual(response.status_code, 200)
+
+                data = response.json()["data"]
+
+                self.assertFalse(data["SUCCESS"])
+                self.assertEqual(data["ACTION"], "Missing key")
+                self.assertEqual(data["STATUS"], Status.UNSUCCESSFUL.value)
+                self.assertIn(missing_key, data["MSG"])
+                self.assertEqual(data["AMOUNT"], "0.00")
+                self.assertEqual(data["TRANSFER_REFERENCE"], "")
+                self.assertEqual(data["BALANCE"], "1000.00")
+
+        mock_process_transfer.assert_not_called()
+
+
+
+
