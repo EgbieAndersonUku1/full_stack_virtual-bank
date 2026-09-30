@@ -243,6 +243,39 @@ class TransferFundsTest(TestCase):
 
         mock_process_transfer.assert_not_called()
 
+    @patch("home.views.TransactionService.process_transfer")
+    def test_missing_session(self, mock_process_transfer):
+        """
+        Verify that the view returns the appropriate response when no
+        verified recipient details are present in the session.
+        """
 
+        payload = {
+            "bankTransferSelection": "bank",
+            "amount": "100.00",
+            "transferStart": Start.IMMEDIATELY.value,
+            "pin": "123456",
+        }
 
+        response = self.client.post(
+            reverse("transfer_funds"),
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
 
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()["data"]
+
+        self.assertFalse(data["SUCCESS"])
+        self.assertEqual(data["ACTION"], "Recipient not found")
+        self.assertEqual(data["STATUS"], Status.UNSUCCESSFUL.value)
+        self.assertEqual(
+            data["MSG"],
+            "Recipient account details could not be found",
+        )
+        self.assertEqual(data["AMOUNT"], "0.00")
+        self.assertEqual(data["TRANSFER_REFERENCE"], "")
+        self.assertEqual(data["BALANCE"], "1000.00")
+
+        mock_process_transfer.assert_not_called()
