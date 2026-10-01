@@ -44,6 +44,12 @@ USER_PROFILE_DATA_2 = {
     "country": "GB",
 }
 
+payload = {
+         "bankTransferSelection": "bank",
+            "amount": "100.00",
+            "transferStart": Start.IMMEDIATELY.value,
+            "pin": "123456",
+        }
 
 URL = reverse("transfer_funds")
 
@@ -250,13 +256,6 @@ class TransferFundsTest(TestCase):
         verified recipient details are present in the session.
         """
 
-        payload = {
-            "bankTransferSelection": "bank",
-            "amount": "100.00",
-            "transferStart": Start.IMMEDIATELY.value,
-            "pin": "123456",
-        }
-
         response = self.client.post(
             reverse("transfer_funds"),
             data=json.dumps(payload),
@@ -279,3 +278,82 @@ class TransferFundsTest(TestCase):
         self.assertEqual(data["BALANCE"], "1000.00")
 
         mock_process_transfer.assert_not_called()
+
+    @patch("home.views.TransactionService.process_transfer")
+    def test_transfer_funds_when_recipient_account_not_found(self, mock_process_transfer):
+        """
+        Verify that the transfer view returns an unsuccessful response when
+        the recipient account cannot be identified.
+        """
+
+        simulate_successful_verified_client(
+            session=self.client.session,
+            sort_code="missing account",
+            account_number="missing account number"
+        )
+
+        response = self.client.post(
+                           URL,
+                            data=json.dumps(payload),
+                            content_type="application/json",
+                        )
+
+
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()["data"]
+
+        self.assertFalse(data["SUCCESS"])
+        self.assertEqual(data["MSG"], "Unable to identify the transfer accounts")
+        self.assertEqual(data["ACTION"], "Account not found")
+        self.assertEqual(data["STATUS"], Status.UNSUCCESSFUL.value)
+
+        self.assertEqual(data["AMOUNT"], "0.00")
+        self.assertEqual(data["TRANSFER_REFERENCE"], "")
+        self.assertEqual(data["BALANCE"], "1000.00")
+
+        mock_process_transfer.assert_not_called()
+
+
+    @patch("home.transfer.utils.BankAccountCacheService.get_total_account_balance", return_value=Decimal("1000.00"))
+    @patch("home.views.BankAccountCacheService.get_current_account", return_value=None)
+    @patch("home.views.TransactionService.process_transfer")
+    def test_transfer_funds_when_source_account_not_found(self, mock_process_transfer,
+                                                   mock_get_current_account,
+                                                   mock_get_total_balance,
+                                                   ):
+        """
+        Verify that the transfer view returns an unsuccessful response when
+        the source account cannot be identified.
+        """
+
+        simulate_successful_verified_client(
+             session=self.client.session,
+             sort_code=self.recipient_account.sort_code.external_sort_code,
+             account_number=self.recipient_account.account_number,
+        )
+
+        response = self.client.post(
+                           URL,
+                            data=json.dumps(payload),
+                            content_type="application/json",
+                        )
+
+
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()["data"]
+
+        self.assertFalse(data["SUCCESS"])
+        self.assertEqual(data["MSG"], "Unable to identify the transfer accounts")
+        self.assertEqual(data["ACTION"], "Account not found")
+        self.assertEqual(data["STATUS"], Status.UNSUCCESSFUL.value)
+
+        self.assertEqual(data["AMOUNT"], "0.00")
+        self.assertEqual(data["TRANSFER_REFERENCE"], "")
+        self.assertEqual(data["BALANCE"], "1000.00")
+
+        mock_process_transfer.assert_not_called()
+        mock_get_current_account.assert_called_once_with(
+                     user=self.source_account.user_profile.user
+       )
