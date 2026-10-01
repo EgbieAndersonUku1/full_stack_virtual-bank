@@ -314,7 +314,6 @@ class TransferFundsTest(TestCase):
 
         mock_process_transfer.assert_not_called()
 
-
     @patch("home.transfer.utils.BankAccountCacheService.get_total_account_balance", return_value=Decimal("1000.00"))
     @patch("home.views.BankAccountCacheService.get_current_account", return_value=None)
     @patch("home.views.TransactionService.process_transfer")
@@ -357,3 +356,39 @@ class TransferFundsTest(TestCase):
         mock_get_current_account.assert_called_once_with(
                      user=self.source_account.user_profile.user
        )
+
+    @patch("home.views.TransactionService.process_transfer")
+    def test_transfer_funds_when_transfer_type_not_supported(self, mock_process_transfer):
+        """
+        Verify that the transfer view rejects unsupported transfer types
+        without calling the transaction service.
+        """
+        simulate_successful_verified_client(
+            session=self.client.session,
+            sort_code=self.recipient_account.sort_code.external_sort_code,
+            account_number=self.recipient_account.account_number
+            )
+
+        response = self.client.post(URL, data=json.dumps({
+            "bankTransferSelection": "something not on the list",
+            "amount": "100.0",
+            "transferStart": Start.IMMEDIATELY.value,
+            "pin" : "123456",
+            }),
+             content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()["data"]
+
+        self.assertFalse(data["SUCCESS"])
+        self.assertEqual(data["MSG"], "The selected transfer type is not supported")
+        self.assertEqual(data["ACTION"], "Invalid transfer type")
+        self.assertEqual(data["STATUS"], Status.UNSUCCESSFUL.value)
+
+        self.assertEqual(data["AMOUNT"], "0.00")
+        self.assertEqual(data["TRANSFER_REFERENCE"], "")
+        self.assertEqual(data["BALANCE"], "1000.00")
+
+        mock_process_transfer.assert_not_called()
