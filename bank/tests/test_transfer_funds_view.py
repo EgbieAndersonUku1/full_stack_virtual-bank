@@ -22,6 +22,7 @@ from bank.services.bank_services import  BankProvisioningService
 from user_profile.models import UserProfile
 from setup.services.service import AccountOnboardingService
 from bank.services.transaction_services import Start, Action, Status
+from utils.custom_errors import IncorrectAmountTypeError
 
 
 
@@ -392,3 +393,51 @@ class TransferFundsTest(TestCase):
         self.assertEqual(data["BALANCE"], "1000.00")
 
         mock_process_transfer.assert_not_called()
+
+    @patch("home.views.TransactionService.process_transfer")
+    def test_transfer_funds_when_amount_is_invalid(self, mock_process_transfer):
+        """
+        Verify that the transfer view returns an unsuccessful response when
+        the transaction service raises an invalid amount error.
+        """
+        simulate_successful_verified_client(
+                session=self.client.session,
+                sort_code=self.recipient_account.sort_code.external_sort_code,
+                account_number=self.recipient_account.account_number
+                )
+
+        mock_process_transfer.side_effect = IncorrectAmountTypeError
+
+        amounts_to_test = ["0", "-1"]
+
+        for amount in amounts_to_test:
+            with self.subTest(amount=amount):
+                response = self.client.post(URL, data=json.dumps({
+                        "bankTransferSelection": "bank",
+                        "amount": amount,
+                        "transferStart": Start.IMMEDIATELY.value,
+                        "pin" : "123456",
+                        }),
+                        content_type="application/json",
+                        )
+
+                self.assertEqual(response.status_code, 200)
+
+                data = response.json()["data"]
+
+                self.assertFalse(data["SUCCESS"])
+                self.assertEqual(data["MSG"], "The transfer amount is invalid")
+                self.assertEqual(data["ACTION"], "Invalid amount")
+                self.assertEqual(data["STATUS"], Status.UNSUCCESSFUL.value)
+
+                self.assertEqual(data["AMOUNT"], "0.00")
+                self.assertEqual(data["TRANSFER_REFERENCE"], "")
+                self.assertEqual(data["BALANCE"], "1000.00")
+
+        self.assertEqual(mock_process_transfer.call_count, 2)
+
+        calls = mock_process_transfer.call_args_list
+
+        self.assertEqual(calls[0].kwargs["amount"], Decimal("0"))
+        self.assertEqual(calls[1].kwargs["amount"], Decimal("-1"))
+
