@@ -37,7 +37,6 @@ const pin = {
 
 // ----- Containers / Sections -----
 const transferSection                 = document.getElementById("dashboard-transfer");
-const addRecipient                    = document.getElementById("add-recipient-section");
 const futureScheduleDateContainer     = document.getElementById("future-schedule-date");
 
 const pinPanel                        = document.getElementById("add-pin");
@@ -211,7 +210,7 @@ function handleTransferScheduleSelection(e) {
    if (e.target.dataset.transferType !== "true") return;
 
    const selectValue = e.target.value;
-   const SCHEDULE_FOR_LATER = "future_date"
+   const SCHEDULE_FOR_LATER = "schedule_date"
 
    if (selectValue === SCHEDULE_FOR_LATER) {
         scheduleDateTimeInputField.required = true;

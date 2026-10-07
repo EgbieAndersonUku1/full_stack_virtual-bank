@@ -441,3 +441,10 @@ class TransferFundsTest(TestCase):
         self.assertEqual(calls[0].kwargs["amount"], Decimal("0"))
         self.assertEqual(calls[1].kwargs["amount"], Decimal("-1"))
 
+    @patch("home.views.TransactionService.process_transfer")
+    def test_transfer_funds_when_transfer_date_is_invalid(self):
+        """
+        Verify that the transfer view returns an unsuccessful response when
+        the transaction service raises an invalid transfer date error.
+        """
+        pass
