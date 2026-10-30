@@ -1,0 +1,52 @@
+{% extends "partials/dashboard/base.html" %}
+
+{% load static %}
+
+{% block title %}Notification Centre{% endblock title %}
+
+
+
+{% block body %}
+
+
+<section id="dashboard-notification-centere" aria-label="User dashboard notification-centre">
+
+    <div class="dashboard__container">
+
+        <!-- Sidebar navigation -->
+
+
+        <!-- Main content -->
+        <section class="dashboard__container__main" tabindex="-1">
+
+            {% include "partials/header/header.html" %}
+
+            {% include "components/notifications/greetings.html" %}
+
+            {% include "components/notifications/status_cards.html" %}
+            <!-- notfication center -->
+
+            {% include "components/notifications/notification_main_body.html" %}
+
+
+
+
+        </section>
+
+
+
+    </div>
+
+</section>
+
+
+
+{% endblock body %}
+
+
+{% block script %}
+
+
+<script src="{% static 'js/notifications/notification.js' %}" type="module"></script>
+
+{% endblock script %}
