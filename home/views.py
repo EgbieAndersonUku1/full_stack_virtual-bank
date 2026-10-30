@@ -406,6 +406,14 @@ def transfer_funds(request):
                     user=request.user
                 )
 
+        else:
+              return transfer_error_response(
+                "The selected transfer type is not supported",
+                "Invalid transfer type",
+               user=request.user,
+             )
+
+
     return handle_json_post_request(request, func=handle_transfer_funds)
 
 

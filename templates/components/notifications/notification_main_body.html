@@ -1,0 +1,82 @@
+{% load static %}
+
+<section id="notification-inbox" class="ml-16 mr-16" aria-label="Notification inbox">
+  <div class="notification-inbox__container">
+    <div id="notification-inbox__tabs" class="flex flex-space-between">
+      <!-- Notification filters -->
+      <div
+        class="notification-inbox__filters flex three-column-grid"
+        role="group"
+        aria-label="Filter notifications"
+      >
+        <button
+          type="button"
+          class="tab notification-active"
+          aria-pressed="false"
+          data-info="all"
+        >
+          All
+        </button>
+        <button
+          id="unread-button"
+          type="button"
+          aria-pressed="false"
+          class="tab"
+          data-info="unread"
+        >
+          Unread
+        </button>
+        <button
+          id="read-button"
+          type="button"
+          aria-pressed="false"
+          class="tab"
+          data-info="read"
+        >
+          Read
+        </button>
+        <button
+          type="button"
+          aria-pressed="false"
+          class="tab"
+          data-info="mark-all-as-read"
+        >
+          Mark all as read
+        </button>
+        <button
+          type="button"
+          aria-pressed="false"
+          class="tab"
+          data-info="mark-all-as-unread"
+        >
+          Mark all as unread
+        </button>
+      </div>
+
+      <!-- Notification sorting -->
+      <div class="notification-sortby flex two-column-grid">
+        <span
+          ><i class="fa-solid fa-arrow-down-wide-short" aria-hidden="true"></i
+        ></span>
+
+        <label for="sort-by" class="sr-only"> Sort notifications </label>
+
+        <select name="sort-by" id="sort-by">
+          <option value="newest">Sort by Newest first</option>
+          <option value="oldest">Sort by Oldest first</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- For now the rows are static later it will be changed to dynamically -->
+    <!-- Notification 1: Transfer complete (Unread) -->
+
+    {% include "components/notifications/all_notifications.html" %}
+
+    <!-- The unread msg -->
+    {% include "components/notifications/unread_messages.html" %}
+
+    <!-- the read message -->
+    {% include "components/notifications/read_messages.html" %}
+  </div>
+</section>

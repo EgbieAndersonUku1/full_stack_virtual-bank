@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'platform_employee.apps.PlatformEmployeeConfig',
     'card_request.apps.CardRequestConfig',
     'card.apps.CardConfig',
+    'notification.apps.NotificationConfig',
 
 
 

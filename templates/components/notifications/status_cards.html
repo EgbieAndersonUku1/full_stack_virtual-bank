@@ -1,0 +1,104 @@
+{% load static %}
+
+<!-- The notification cards -->
+<section
+  id="notification-section"
+  class="ml-16 mr-16"
+  aria-labelledby="notification-section-heading"
+>
+  <h2 id="notification-section-heading" class="sr-only">
+    Notification summary
+  </h2>
+
+  <div
+    class="notification-section__notification-cards flex-grid four-column-grid"
+  >
+    <!-- Total notifications card -->
+    <div
+      class="notification-card flex two-column-grid"
+      id="notifications__card_all"
+    >
+      <div class="icon">
+        <img
+          src="{% static '/images/notification_icons/notifications.png' %}"
+          alt=""
+          class="notification-icon-img notification-card-header"
+        />
+      </div>
+
+      <div class="notification-card__msg flex-grid">
+        <p class="small-text balance-label bold">Total notifications</p>
+
+        <p class="balance-value" aria-label="6 total notifications">6</p>
+
+        <p class="subtitles">All your notifications</p>
+      </div>
+    </div>
+
+    <!-- Unread notifications card -->
+    <div
+      class="notification-card flex two-column-grid"
+      id="notifications__card_unread"
+    >
+      <div class="icon">
+        <img
+          src="{% static '/images/notification_icons/unread_notifications.png' %}"
+          alt=""
+          class="notification-icon-img notification-card-header"
+        />
+      </div>
+
+      <div class="notification-card__msg flex-grid">
+        <p class="small-text balance-label bold">Unread notifications</p>
+
+        <p class="balance-value" aria-label="6 unread notifications">4</p>
+
+        <p class="subtitles">Require your attention</p>
+      </div>
+    </div>
+
+    <!-- Read notifications card -->
+    <div
+      class="notification-card flex two-column-grid"
+      id="notifications__card_read"
+    >
+      <div class="icon">
+        <img
+          src="{% static '/images/notification_icons/read_notifications.png' %}"
+          alt=""
+          class="notification-icon-img notification-card-header"
+        />
+      </div>
+
+      <div class="notification-card__msg flex-grid">
+        <p class="small-text balance-label bold">Read notifications</p>
+
+        <p class="balance-value" aria-label="6 read notifications">2</p>
+
+        <p class="subtitles">You are up to date</p>
+      </div>
+    </div>
+
+    <!-- Today's notifications card -->
+    <div
+      class="notification-card flex two-column-grid"
+      id="notifications__card_today"
+    >
+      <div class="icon">
+        <img
+          src="{%static '/images/notification_icons/notifications_today.png' %}"
+          alt=""
+          class="notification-icon-img notification-card-header"
+        />
+      </div>
+
+      <div class="notification-card__msg flex-grid">
+        <p class="small-text balance-label bold">Today</p>
+
+        <p class="balance-value" aria-label="6 notifications today">2</p>
+
+        <p class="subtitles">New notifications today</p>
+      </div>
+    </div>
+  </div>
+</section>

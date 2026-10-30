@@ -1,0 +1,110 @@
+{% load static %}
+
+{% load static %}
+
+<div id="notifications__read">
+
+  <div
+    class="notification-row flex flex-space-between ml-16 mr-16 mb-16 mt-16"
+  >
+    <div class="notifcation-checkbox">
+      <input
+        type="checkbox"
+        name="selected_notifications"
+        id="notification-account-created-1"
+        value="notification-account-created-1"
+        aria-label="Select notification: Account created"
+      />
+    </div>
+
+    <div class="notifications-row-icon">
+      <img
+        src="{% static 'images/notification_icons/account_created.png' %}"
+        alt=""
+        class="notification-row-icon-img"
+      />
+    </div>
+
+    <div class="notification-row__head">
+      <h2 class="small-text">Account created</h2>
+
+      <p class="text-muted">
+        Your new current account has been created successfully. You can now
+        view your account details from your dashboard.
+      </p>
+
+      <a
+        href="#"
+        class="small-text"
+        aria-label="View details for account creation"
+      >
+        View details &gt;
+      </a>
+    </div>
+
+    <div class="notification-row__footer flex">
+      <p class="small-text">
+        <span class="sr-only">Received: </span>
+        Yesterday 16:45
+      </p>
+
+      <p class="small-text notification-label">
+        <span class="sr-only">Notification status: </span>
+        Read
+      </p>
+    </div>
+  </div>
+
+  <div
+    class="notification-row flex flex-space-between ml-16 mr-16 mb-16 mt-16"
+  >
+    <div class="notifcation-checkbox">
+      <input
+        type="checkbox"
+        name="selected_notifications"
+        id="notification-bank-update-1"
+        value="notification-bank-update-1"
+        aria-label="Select notification: Bank update"
+      />
+    </div>
+
+    <div class="notifications-row-icon">
+      <img
+        src="{% static '/images/notification_icons/bank_update.png' %}"
+        alt=""
+        class="notification-row-icon-img"
+      />
+    </div>
+
+    <div class="notification-row__head">
+      <h2 class="small-text">Bank update</h2>
+
+      <p class="text-muted">
+        We have updated our banking services to improve your account
+        experience. Visit your dashboard to review the latest service
+        information.
+      </p>
+
+      <a
+        href="#"
+        class="small-text"
+        aria-label="View details for bank update"
+      >
+        View details &gt;
+      </a>
+    </div>
+
+    <div class="notification-row__footer flex">
+      <p class="small-text">
+        <span class="sr-only">Received: </span>
+        14 October 10:30
+      </p>
+
+      <p class="small-text notification-label">
+        <span class="sr-only">Notification status: </span>
+        Read
+      </p>
+    </div>
+  </div>
+
+</div>
