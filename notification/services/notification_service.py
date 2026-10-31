@@ -19,6 +19,9 @@ class NotificationService:
     Uses PostgreSQL as the source of truth and Django's cache framework
     to reduce repeated database queries when retrieving notification
     statistics for users.
+
+    Uses the application's current local date to generate cache keys,
+    ensuring a new cache entry is used when the date changes.
     """
 
     @classmethod
