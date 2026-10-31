@@ -1,10 +1,13 @@
 from __future__ import annotations
+from datetime import timedelta
 
+from django.db.models import Count, Q
+from django.utils import timezone
+from uuid import uuid4
 from django.db import models
 from django.db.models.query import QuerySet
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
-from enum import Enum
 
 
 from utils.validators.validators import validate_user
@@ -42,7 +45,7 @@ class Notification(models.Model):
 
         ACCOUNT_CREATED = "account_created", "Account created"
 
-    notification_id   = models.CharField(max_length=32)
+    notification_id   = models.UUIDField(max_length=32)
     user              = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
     notification_type = models.CharField(max_length=32, choices=NotificationType.choices)
     title             = models.CharField(max_length=80)
@@ -51,15 +54,9 @@ class Notification(models.Model):
     read_at           = models.DateTimeField(blank=True, null=True)
     created_at        = models.DateTimeField(auto_now_add=True)
     updated_at        = models.DateTimeField(auto_now=True)
-
+    action_url        = models.CharField(max_length=255, blank=True)
     class Meta:
-        constraints = [
 
-            models.UniqueConstraint(
-                fields=["notification_id", "user"],
-                name="unique_notification_per_user",
-            ),
-        ]
         indexes = [
             # Optimizes queries for a user's read/unread notifications.
             models.Index(
@@ -124,5 +121,54 @@ class Notification(models.Model):
     def get_unread_notification_count(cls, user: User) -> int:
         """Return the number of unread notifications belonging to the user."""
         return cls.get_unread_notifications(user=user).count()
+
+    @classmethod
+    def get_notifications_by_user(cls, user: User) -> QuerySet["Notification"]:
+        """Retrieves all notifications for a specific user.
+
+        Args:
+            user (User): The user object belong to the user. This will be
+                         used to retreive all the user's notifications.
+
+        Raises:
+            Raises an error if the user is not a User instance
+
+        """
+        validate_user(user)
+        return cls.objects.filter(user=user)
+
+    @classmethod
+    def get_notification_stats(cls, user: User) -> dict:
+        """
+        
+        """
+
+        # Get the start of today in the user's current timezone
+        today_start = timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
+
+        tomorrow_start = timezone.localtime().replace(hour=0,
+                                                      minute=0,
+                                                      second=0,
+                                                      microsecond=0
+                                                    ) + timedelta(days=1)
+
+        stats = Notification.objects.filter(user=user).aggregate(
+            total=Count('id'),
+            read=Count('id', filter=Q(is_read=True)),
+            unread=Count('id', filter=Q(is_read=False)),
+            today=Count(
+                'id',
+                filter=Q(created_at__gte=today_start) & Q(created_at__lt=tomorrow_start)
+            )
+        )
+
+        return stats
+
+    def save(self, *args, **kwargs):
+
+        if self.notification_id is None:
+            self.notification_id = uuid4()
+
+        super().save(*args, **kwargs)
 
 
