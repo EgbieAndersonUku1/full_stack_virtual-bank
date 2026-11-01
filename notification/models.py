@@ -27,25 +27,28 @@ class Notification(models.Model):
     """
 
     class NotificationType(models.TextChoices):
-
-        TRANSFER_SENT = "transfer_sent", "Transfer sent"
-        TRANSFER_RECEIVED = (
-            "transfer_received",
-            "Transfer amount has been received",
-        )
-
-        CARD_REQUEST_APPROVED = (
-            "card_request_approved",
-            "Card request was approved",
-        )
-        CARD_REQUEST_REJECTED = (
-            "card_request_rejected",
-            "Card request was rejected",
-        )
-
         ACCOUNT_CREATED = "account_created", "Account created"
+        TRANSFER_SENT = "transfer_sent", "Transfer sent"
+        TRANSFER_RECEIVED = "transfer_received", "Transfer received"
+        CARD_REQUEST_APPROVED = "card_request_approved", "Card request approved"
+        CARD_REQUEST_REJECTED = "card_request_rejected", "Card request rejected"
 
-    notification_id   = models.UUIDField(max_length=32)
+    class NotificationTitle(models.TextChoices):
+        ACCOUNT_CREATED = "account_created", "Welcome aboard!"
+        TRANSFER_SENT = "transfer_sent", "Money Sent Successfully"
+        TRANSFER_RECEIVED = "transfer_received", "Funds Received"
+        CARD_REQUEST_APPROVED = "card_request_approved", "Card Approved"
+        CARD_REQUEST_REJECTED = "card_request_rejected", "Card Update"
+
+    class NotificationMessage(models.TextChoices):
+        ACCOUNT_CREATED = "account_created", "Your account has been successfully created. Welcome to our platform!"
+        TRANSFER_SENT = "transfer_sent", "Your transfer of funds has been completed successfully."
+        TRANSFER_RECEIVED = "transfer_received", "A transfer amount has been successfully credited to your account."
+        CARD_REQUEST_APPROVED = "card_request_approved", "Great news! Your card request has been approved and is being processed."
+        CARD_REQUEST_REJECTED = "card_request_rejected", "Unfortunately, your recent card request could not be approved at this time."
+
+
+    notification_id   = models.UUIDField(max_length=32, unique=True)
     user              = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
     notification_type = models.CharField(max_length=32, choices=NotificationType.choices)
     title             = models.CharField(max_length=80)
@@ -58,7 +61,7 @@ class Notification(models.Model):
     class Meta:
 
         indexes = [
-            # Optimizes queries for a user's read/unread notifications.
+            # Optimises queries for a user's read/unread notifications so queries become faster.
             models.Index(
                 fields=["user", "is_read"],
                 name="notification_user_read_idx",
@@ -66,7 +69,7 @@ class Notification(models.Model):
         ]
 
     @classmethod
-    def _get_notifications(cls, is_read: bool, user: User) -> QuerySet["Notification"]:
+    def _get_base_notifications(cls, is_read: bool, user: User) -> QuerySet["Notification"]:
         """
         Return notifications for a user filtered by read status.
         """
@@ -81,14 +84,14 @@ class Notification(models.Model):
 
         return cls.objects.filter(
             user=user,
-            is_read=is_read,
-        )
+            is_read=is_read
+        ).select_related('user').order_by('-read_at')
 
     @classmethod
     def get_read_notifications(cls, user: User) -> QuerySet["Notification"]:
         """Return all read notifications belonging to the user."""
 
-        return cls._get_notifications(
+        return cls._get_base_notifications(
             user=user,
             is_read=True,
         )
@@ -96,8 +99,7 @@ class Notification(models.Model):
     @classmethod
     def get_unread_notifications(cls, user: User) -> QuerySet["Notification"]:
         """Return all unread notifications belonging to the user."""
-
-        return cls._get_notifications(
+        return cls._get_base_notifications(
             user=user,
             is_read=False,
         )
@@ -123,6 +125,11 @@ class Notification(models.Model):
         return cls.get_unread_notifications(user=user).count()
 
     @classmethod
+    def get_read_notification_count(cls, user: User) -> int:
+        """Return the number of read notifications belonging to the user."""
+        return cls.get_read_notifications(user=user).count()
+
+    @classmethod
     def get_notifications_by_user(cls, user: User) -> QuerySet["Notification"]:
         """Retrieves all notifications for a specific user.
 
@@ -139,10 +146,7 @@ class Notification(models.Model):
 
     @classmethod
     def get_notification_stats(cls, user: User) -> dict:
-        """
-        
-        """
-
+       
         # Get the start of today in the user's current timezone
         today_start = timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
 
