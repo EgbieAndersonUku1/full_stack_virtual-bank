@@ -12,6 +12,7 @@ from bank.models import AccountSecuritySettings, Bank, BankAccount
 from card.services import BankCardService
 from setup.models import Pin
 from card.models import CardDashboard
+from notification.services.notification_service import NotificationService
 
 from user_profile.models import UserProfile
 from utils.utils import validate_params_are_strings
@@ -117,19 +118,21 @@ class AccountOnboardingService:
 
             cls._create_pin(pin=pin, user=user, user_profile=user_profile)
 
+            NotificationService.create_account_notification(user=user)
+
             if bank.offer_saving_account == Bank.OfferSavingAccountOptions.YES:
                  AccountService.open_bank_account(bank=bank, user_profile=user_profile, account_type=BankAccount.AccountType.SAVINGS)
 
-        instances_to_validate = [
-                                ("User profile creation failed during onboarding process", user_profile),
-                                ("Bank account creation failed during onboarding process", bank_account),
-                                ("Default bank creation failed during onboarding process", bank_card),
-                                ("Default user card dashboard failed during onboarding process", card_dashboard),
-                                ( "Account settings for user not created during onboarding", account_security_settings)
+            instances_to_validate = [
+                                    ("User profile creation failed during onboarding process", user_profile),
+                                    ("Bank account creation failed during onboarding process", bank_account),
+                                    ("Default bank creation failed during onboarding process", bank_card),
+                                    ("Default user card dashboard failed during onboarding process", card_dashboard),
+                                    ( "Account settings for user not created during onboarding", account_security_settings)
 
-                                 ]
+                                    ]
 
-        cls._validate_instances_or_raise_error(instances_to_validate)
+            cls._validate_instances_or_raise_error(instances_to_validate)
 
         cls._send_welcome_email(bank_account=bank_account,
                                 user_profile=user_profile
