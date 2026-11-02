@@ -1,6 +1,8 @@
-
+from uuid import uuid4
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from django.utils import timezone
+from django.db import transaction
 
 from notification.models import Notification
 from utils.validators.validators import validate_user
@@ -84,6 +86,44 @@ class NotificationService:
     def get_user_notification_summary(cls, user: User) -> dict:
         validate_user(user)
         return cls._get_from_cache_or_from_db(user)
+
+    @classmethod
+    def create_account_notification(cls, user: User) -> Notification:
+        """
+        Create an account-created notification for the specified user.
+
+        The notification is generated during account onboarding and includes
+        a link to the relevant destination within the application.
+
+        Args:
+            user (User): The user who will receive the notification.
+
+        Returns:
+            Notification: The newly created account notification.
+
+        Raises:
+            TypeError: If the supplied user is invalid.
+        """
+
+        validate_user(user)
+
+        notification_id = uuid4()
+        action_url      = reverse("notification_message", kwargs={"notification_id": notification_id})
+
+        notification = Notification.objects.create(
+            user=user,
+            notification_id=notification_id,
+            notification_type=Notification.NotificationType.ACCOUNT_CREATED,
+            title=Notification.NotificationTitle.ACCOUNT_CREATED.label,
+            message=Notification.NotificationMessage.ACCOUNT_CREATED.label,
+            action_url=action_url
+        )
+
+        transaction.on_commit(
+            lambda: cls._invalidate_user_notification_cache(user)
+        )
+        
+        return notification
 
 
 

@@ -26,7 +26,8 @@
             {% include "components/notifications/status_cards.html" %}
             <!-- notfication center -->
 
-            {% include "components/notifications/notification_main_body.html" %}
+            {% block notification_body %}{% endblock notification_body %}
+            {% comment %} {% include "components/notifications/notification_main_body.html" %} {% endcomment %}
 
 
 

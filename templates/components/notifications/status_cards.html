@@ -29,7 +29,7 @@
       <div class="notification-card__msg flex-grid">
         <p class="small-text balance-label bold">Total notifications</p>
 
-        <p class="balance-value" aria-label="6 total notifications">6</p>
+        <p class="balance-value" aria-label="6 total notifications">{{ total }}</p>
 
         <p class="subtitles">All your notifications</p>
       </div>
@@ -51,7 +51,7 @@
       <div class="notification-card__msg flex-grid">
         <p class="small-text balance-label bold">Unread notifications</p>
 
-        <p class="balance-value" aria-label="6 unread notifications">4</p>
+        <p class="balance-value" aria-label="6 unread notifications">{{ unread }}</p>
 
         <p class="subtitles">Require your attention</p>
       </div>
@@ -73,7 +73,7 @@
       <div class="notification-card__msg flex-grid">
         <p class="small-text balance-label bold">Read notifications</p>
 
-        <p class="balance-value" aria-label="6 read notifications">2</p>
+        <p class="balance-value" aria-label="6 read notifications">{{ read }}</p>
 
         <p class="subtitles">You are up to date</p>
       </div>
@@ -95,7 +95,7 @@
       <div class="notification-card__msg flex-grid">
         <p class="small-text balance-label bold">Today</p>
 
-        <p class="balance-value" aria-label="6 notifications today">2</p>
+        <p class="balance-value" aria-label="6 notifications today">{{ today }}</p>
 
         <p class="subtitles">New notifications today</p>
       </div>
