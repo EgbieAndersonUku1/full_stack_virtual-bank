@@ -45,7 +45,7 @@ class NotificationService:
             return cached_value
 
         notification_stats = Notification.get_notification_stats(user)
-        set_cache_with_retry(cache_key, value=notification_stats,  ttl=NOTIFICATION_SUMMARY_CACHE_TTL)
+        set_cache_with_retry(cache_key, value=notification_stats, ttl=NOTIFICATION_SUMMARY_CACHE_TTL)
         return notification_stats
 
     @classmethod
@@ -81,7 +81,7 @@ class NotificationService:
         delete_cache_with_retry(cache_key)
 
     @classmethod
-    def get_user_notification_summary(cls, user: User):
+    def get_user_notification_summary(cls, user: User) -> dict:
         validate_user(user)
         return cls._get_from_cache_or_from_db(user)
 
