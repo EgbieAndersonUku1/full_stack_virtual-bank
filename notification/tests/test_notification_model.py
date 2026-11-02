@@ -1,11 +1,15 @@
-from datetime import datetime, timedelta
 import uuid
+from datetime import datetime, timedelta
 from django.test import TestCase
+from unittest.mock import patch
 from notification.models import Notification
 from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 from django.utils import timezone
 from django.db import IntegrityError, transaction
+
+from notification.models import Notification
+from notification.services.notification_service import NotificationService, NOTIFICATION_SUMMARY_CACHE_TTL
 
 
 User = get_user_model()
@@ -592,11 +596,115 @@ class NotificationModelMethodTest(TestCase):
         )
 
 
+class NotificationServiceTest(TestCase):
 
+    def test_get_user_notification_summary_retrieves_and_caches_stats_on_cache_miss(self):
+        """Test that notification statistics are retrieved and cached on a cache miss."""
 
+        user = create_user(username="notification_test_user")
+        expected_stats = {
+            "total": 0,
+            "read": 0,
+            "unread": 0,
+            "today": 0,
+        }
 
+        with (
+            patch("notification.services.notification_service.get_cache_with_retry", return_value=None) as mock_get_cache,
+            patch("notification.services.notification_service.set_cache_with_retry") as mock_set_cache,
+            patch.object(Notification, "get_notification_stats", return_value=expected_stats) as mock_get_stats,
+        ):
 
+            notification_stats = NotificationService.get_user_notification_summary(user)
+            self.assertEqual(notification_stats, expected_stats)
 
+            now = timezone.localdate()
+
+            expected_cache_key = (
+                f"notification_summary_{user.pk}_{now.year}_{now.month}_{now.day}"
+            )
+            mock_set_cache.assert_called_once_with(
+                expected_cache_key,
+                value=expected_stats,
+                ttl=NOTIFICATION_SUMMARY_CACHE_TTL
+            )
+            mock_get_cache.assert_called_once()
+            mock_get_stats.assert_called_once_with(user)
+
+    def test_get_user_notification_summary_returns_cached_stats_on_cache_hit(self):
+        """Test that cached notification statistics are returned without querying the database."""
+
+        user = create_user(username="notification_cache_hit_user")
+
+        expected_stats = {
+            "total": 5,
+            "read": 3,
+            "unread": 2,
+            "today": 5,
+        }
+
+        with (patch("notification.services.notification_service.get_cache_with_retry", return_value=expected_stats) as mock_get_cache,
+            patch.object(Notification,"get_notification_stats") as mock_get_stats,
+            patch("notification.services.notification_service.set_cache_with_retry") as mock_set_cache,
+        ):
+
+            notification_stats = NotificationService.get_user_notification_summary(user)
+            self.assertEqual(notification_stats, expected_stats)
+
+            mock_get_cache.assert_called_once()
+            mock_get_stats.assert_not_called()
+            mock_set_cache.assert_not_called()
+
+    def test_get_user_notification_cache_key_returns_expected_key(self):
+        """Test that the notification cache key contains the user's ID and current date."""
+
+        user = create_user(username="notification_cache_key_user")
+        now = timezone.localdate()
+
+        expected_cache_key = (f"notification_summary_{user.pk}_{now.year}_{now.month}_{now.day}")
+
+        cache_key = NotificationService._get_user_notification_cache_key(user)
+        self.assertEqual(cache_key, expected_cache_key)
+
+    def test_invalidate_user_notification_cache_deletes_user_cache(self):
+        """Test that the user's notification summary cache is invalidated."""
+
+        user               = create_user(username="notification_cache_invalidation_user")
+        now                = timezone.localdate()
+        expected_cache_key = (f"notification_summary_{user.pk}_{now.year}_{now.month}_{now.day}")
+
+        with patch("notification.services.notification_service.delete_cache_with_retry") as mock_delete_cache:
+
+            NotificationService._invalidate_user_notification_cache(user)
+            mock_delete_cache.assert_called_once_with(expected_cache_key)
+
+    def test_get_user_notification_summary_rejects_invalid_user(self):
+        """Test that an invalid user is rejected when retrieving notification statistics."""
+
+        invalid_user = "not_a_user"
+
+        with self.assertRaises(TypeError):
+            NotificationService.get_user_notification_summary(invalid_user)
+
+    def test_get_user_notification_summary_returns_empty_stats_for_user_without_notifications(self):
+        """Test that an empty notification summary is returned when the user has no notifications."""
+
+        expected_stats = {'total': 0,
+                          'read': 0,
+                          'unread': 0,
+                          'today': 0
+                         }
+
+        user = create_user(
+            username="notification_empty_summary_user",
+            email="notification_empty_summaary@example.com"
+        )
+
+        with patch("notification.services.notification_service.get_cache_with_retry", return_value=None) as mock_get_cache:
+
+            notification_stats = NotificationService.get_user_notification_summary(user)
+            self.assertEqual(notification_stats, expected_stats)
+            mock_get_cache.assert_called_once()
 
 
 
