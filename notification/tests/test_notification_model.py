@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import uuid
 from django.test import TestCase
 from notification.models import Notification
@@ -470,5 +471,132 @@ class NotificationModelMethodTest(TestCase):
                              )
 
         self.assertIsNone(notification)
+
+    def test_get_notification_stats_method_returns_empty_stats_on_default(self):
+        """Test that empty notification statistics return zero values."""
+
+        # no notifications have been sent
+        notification_stats = Notification.get_notification_stats(self.user)
+
+        self.assertIsNotNone(notification_stats, "The notificaton stats should not be None")
+        self.assertIsInstance(notification_stats, dict, "The returned value should be a dictionary")
+
+        expected_stats = {
+            "total": 0,
+            "read": 0,
+            "unread": 0,
+            "today": 0,
+        }
+
+        self.assertEqual(notification_stats, expected_stats, "returned dictionary doesn't match expected dictionary")
+
+    def test_get_notification_stats_method_only_returns_current_users_stats(self):
+        """Test that notification statistics are isolated to the current user."""
+
+        user_1 = create_user(username="first_username", email="first_user@example.com")
+        user_2 = create_user(username="second_username", email="second_user@example.com")
+
+        # Create notifications for user 1
+        create_user_notifications(user_1)
+
+        # Retrieve user 1's notification statistics
+        user_1_notification_stats = Notification.get_notification_stats(user_1)
+
+        # Verify user 1's notification statistics.
+        self.assertEqual(user_1_notification_stats["total"], len(test_cases))
+        self.assertEqual(user_1_notification_stats["read"], 3)
+        self.assertEqual(user_1_notification_stats["unread"], 2)
+        self.assertEqual(user_1_notification_stats["today"], 5)
+
+        user_2_notification_stats = Notification.get_notification_stats(user_2)
+
+        # Verify user 2's statistics remain zero.
+        expected_stats = {
+                    "total": 0,
+                    "read": 0,
+                    "unread": 0,
+                    "today": 0,
+                }
+
+        self.assertEqual(
+            user_2_notification_stats,
+            expected_stats,
+            "User 2's notification statistics should all be zero."
+        )
+
+    def test_get_notification_stats_method_only_counts_notifications_created_today(self):
+        """Test that today's notification count excludes notifications from other dates."""
+
+        today     = timezone.localdate()
+        yesterday = today - timedelta(days=1)
+        tomorrow  = today + timedelta(days=1)
+
+        today_start = timezone.make_aware(
+            datetime.combine(today, datetime.min.time())
+        )
+
+        yesterday_start = timezone.make_aware(
+            datetime.combine(yesterday, datetime.min.time())
+        )
+
+        tomorrow_start = timezone.make_aware(
+            datetime.combine(tomorrow, datetime.min.time())
+        )
+
+        # create notificaton for today
+        today_notification = Notification.objects.create(
+                                    user=self.user,
+                                    notification_type=Notification.NotificationType.CARD_REQUEST_APPROVED,
+                                    title=Notification.NotificationTitle.CARD_REQUEST_APPROVED,
+                                    message=Notification.NotificationMessage.CARD_REQUEST_APPROVED,
+                                    )
+
+        # create a notificaton in the past (yesterday)
+        yesterday_notification = Notification.objects.create(
+                                    user=self.user,
+                                    notification_type=Notification.NotificationType.TRANSFER_RECEIVED,
+                                    title=Notification.NotificationTitle.TRANSFER_RECEIVED,
+                                    message=Notification.NotificationMessage.TRANSFER_RECEIVED,
+                                    )
+
+        # create a notification for tomorrow (1 day)
+        tomorrow_notification = Notification.objects.create(
+                                    user=self.user,
+                                    notification_type=Notification.NotificationType.TRANSFER_SENT,
+                                    title=Notification.NotificationTitle.TRANSFER_SENT,
+                                    message=Notification.NotificationMessage.TRANSFER_SENT,
+
+                                    )
+
+        today_notification.created_at     = today_start
+        yesterday_notification.created_at = yesterday_start
+        tomorrow_notification.created_at  = tomorrow_start
+
+        today_notification.save()
+        yesterday_notification.save()
+        tomorrow_notification.save()
+
+        notification_stats = Notification.get_notification_stats(self.user)
+
+        expected_stats = {
+            "total": 3,
+            "read": 0,
+            "unread": 3,
+            "today": 1,
+        }
+
+        self.assertEqual(
+            notification_stats,
+            expected_stats,
+            "Notification statistics should only count notifications created today."
+        )
+
+
+
+
+
+
+
+
 
 
