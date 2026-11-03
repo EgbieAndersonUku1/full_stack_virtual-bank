@@ -111,6 +111,8 @@ TEMPLATES = [
                 'card_request.context_processors.display_bank_details_on_card',
                 'card_request.context_processors.display_application_summary_details',
                 'card_request.context_processors.get_application_status_count',
+                'notification.context_processors.get_notification_cards_status'
+
             ],
         },
     },

@@ -1,0 +1,18 @@
+{% load static %}
+
+<img
+
+{% if notification.notification_type == notification_types.ACCOUNT_CREATED %}
+    src="{% static '/images/notification_icons/cardTransfer Icon.png' %}"
+{% elif notification.notification_type == notification_types.TRANSFER_SENT %}
+    src="{% static '/images/notification_icons/cardTransfer Icon.png' %}"
+{% elif notification.notification_type == notification_types.TRANSFER_RECEIVED %}
+    src="{% static '/images/notification_icons/cardTransfer Icon.png' %}"
+{% elif notification.notification_type == notification_types.CARD_REQUEST_APPROVED %}
+    src="{% static '/images/notification_icons/cardTransfer Icon.png' %}"
+{% elif notification.notification_type == notification_types.CARD_REQUEST_REJECTED %}
+    src="{% static '/images/notification_icons/cardTransfer Icon.png' %}"
+{% endif %}
+    alt=""
+    class="notification-row-icon-img"
+/>

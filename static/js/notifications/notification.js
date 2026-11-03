@@ -22,6 +22,17 @@ const notificationCardReadSummary   = new NotificationSummaryCard(notificationCa
 notificationCardReadSummary.init();
 notificationCardUnreadSummary.init();
 
+document.addEventListener("DOMContentLoaded", () => {
+
+    // ensure when the page loads that all tab contents are hidden
+    
+    const firstTab = notificationTabs[0];
+
+    activateNotificationTab(firstTab);
+    handleNotificationAll(firstTab);
+    highlightTab(firstTab, "notification-active");
+});
+
 
 document.addEventListener("click", handleDelegation);
 
@@ -66,7 +77,7 @@ function hideAllTabInformation() {
     const notificationTabsElement = [
         notificationAll,
         notificationRead,
-        notificationRead
+        notificationUnread
     ]
 
     if (notificationSections.length !== notificationTabsElement.length){

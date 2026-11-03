@@ -50,10 +50,28 @@
         <!--notification side bar-->
           <li class="sidebar-nav__item">
             <a href="{% url 'notification_centre' %}" class="sidebar-nav__link">
-                <span class="sidebar-nav__icon" aria-hidden="true">
+
+                {% if unread %}
+
+                <div class="notification-sidebar-nav">
+                    <span class="sidebar-nav__icon" aria-hidden="true">
+                        <i class="fa-solid fa-gear"></i>
+                    </span>
+                     <span class="sidebar-nav__label">Notifications centre </span>
+
+                     {% if unread > 10 %}
+                        <span class="read-count-span">10+</span>
+                    {% elif unread > 0 %}
+                        <span class="read-count-span">{{ unread }}</span>
+                    {% endif %}
+                </div>
+
+                {% else %}
+                  <span class="sidebar-nav__icon" aria-hidden="true">
                     <i class="fa-solid fa-gear"></i>
-                </span>
-                <span class="sidebar-nav__label">Notifications centre</span>
+                  </span>
+                  <span class="sidebar-nav__label">Notifications centre</span>
+                {% endif %}
             </a>
         </li>
 

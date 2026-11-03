@@ -23,6 +23,7 @@ class NotificationAdmin(admin.ModelAdmin):
         "title",
         "notification_type",
         "message",
+        "user",
         "is_read",
         "read_at",
         "action_url",

@@ -2,6 +2,12 @@
 
 <div class="dashboard__container__notification-bell">
     <div class="notifications">
+
         <img src="{% static 'images/icons/notification_smartphone_icon.png' %}" class="dashboard-notification-bell-img">
+        {% if unread > 10 %}
+            <span class="read-count-span"> 10+</span>
+        {% elif unread > 0 %}
+            <span class="read-count-span">{{ unread }}</span>
+        {% endif %}
     </div>
 </div>
