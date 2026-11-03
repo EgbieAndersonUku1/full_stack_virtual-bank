@@ -4,107 +4,62 @@
 
 <div id="notifications__read">
 
-  <div
-    class="notification-row flex flex-space-between ml-16 mr-16 mb-16 mt-16"
-  >
-    <div class="notifcation-checkbox">
-      <input
-        type="checkbox"
-        name="selected_notifications"
-        id="notification-account-created-1"
-        value="notification-account-created-1"
-        aria-label="Select notification: Account created"
-      />
-    </div>
+      {% if not read_notifications_page_object %}
 
-    <div class="notifications-row-icon">
-      <img
-        src="{% static 'images/notification_icons/account_created.png' %}"
-        alt=""
-        class="notification-row-icon-img"
-      />
-    </div>
+          <div class="info pt-24 pb-24 mb-8 center">
+            <p>You have no read messages</p>
+          </div>
 
-    <div class="notification-row__head">
-      <h2 class="small-text">Account created</h2>
+      {% else %}
 
-      <p class="text-muted">
-        Your new current account has been created successfully. You can now
-        view your account details from your dashboard.
-      </p>
+        {% for notification in read_notifications_page_object %}
 
-      <a
-        href="#"
-        class="small-text"
-        aria-label="View details for account creation"
-      >
-        View details &gt;
-      </a>
-    </div>
+              <div class="notification-row flex flex-space-between ml-16 mr-16 mb-16 mt-16">
+                <div class="notifcation-checkbox">
+                  <input
+                    type="checkbox"
+                    name="selected_notifications"
+                    id="notification-transfer-1"
+                    value="notification-transfer-1"
+                    aria-label="Select notification: Transfer complete"
+                  />
+                </div>
 
-    <div class="notification-row__footer flex">
-      <p class="small-text">
-        <span class="sr-only">Received: </span>
-        Yesterday 16:45
-      </p>
+                <div class="notifications-row-icon">
 
-      <p class="small-text notification-label">
-        <span class="sr-only">Notification status: </span>
-        Read
-      </p>
-    </div>
-  </div>
+                  {% include "components/notifications/notification_message_icons.html" %}
+                </div>
 
-  <div
-    class="notification-row flex flex-space-between ml-16 mr-16 mb-16 mt-16"
-  >
-    <div class="notifcation-checkbox">
-      <input
-        type="checkbox"
-        name="selected_notifications"
-        id="notification-bank-update-1"
-        value="notification-bank-update-1"
-        aria-label="Select notification: Bank update"
-      />
-    </div>
+                <div class="notification-row__head">
+                  <h2 class="small-text">{{ notification.title | title }}</h2>
 
-    <div class="notifications-row-icon">
-      <img
-        src="{% static '/images/notification_icons/bank_update.png' %}"
-        alt=""
-        class="notification-row-icon-img"
-      />
-    </div>
+                  <p class="text-muted">
+                    {{ notification.message }}
+                  </p>
 
-    <div class="notification-row__head">
-      <h2 class="small-text">Bank update</h2>
+                    {% include "components/notifications/notification-link.html" %}
+                </div>
 
-      <p class="text-muted">
-        We have updated our banking services to improve your account
-        experience. Visit your dashboard to review the latest service
-        information.
-      </p>
+                <div class="notification-row__footer flex">
+                  <p class="small-text">
+                    <span class="sr-only">Received: </span>
+                    {{ notification.created_at }}
+                  </p>
 
-      <a
-        href="#"
-        class="small-text"
-        aria-label="View details for bank update"
-      >
-        View details &gt;
-      </a>
-    </div>
+                  <p class="small-text notification-label">
+                    <span class="sr-only">Notification status: </span>
+                    Unread
+                  </p>
+                </div>
+              </div>
+        {% endfor %}
 
-    <div class="notification-row__footer flex">
-      <p class="small-text">
-        <span class="sr-only">Received: </span>
-        14 October 10:30
-      </p>
+            {% include "components/notifications/notification_pagination.html" with page_object=read_notifications_page_object page_param="read_page" %}
 
-      <p class="small-text notification-label">
-        <span class="sr-only">Notification status: </span>
-        Read
-      </p>
-    </div>
-  </div>
+
+      {% endif %}
+
+
+
 
 </div>

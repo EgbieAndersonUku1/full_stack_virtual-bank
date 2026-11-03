@@ -53,7 +53,7 @@
                 <div class="virtual-bank_container__amount">
 
                     {% if total_account_balances != None %}
-                    
+
                          <span class="bold"><span class="currency">£</span>
 
                            <span id="nav-bank-balance">
@@ -160,16 +160,8 @@
 
                 </div>
 
-                <div class="dashboard__container__notification-bell">
-                    <div class="notifications">
-                        <img src="{% static 'images/icons/notification_smartphone_icon.png' %}" alt=""
-                            class="dashboard-notification-bell-img">
-                    </div>
-
-
-                </div>
-
-
+                {% include "partials/header/notifications.html" %}
+                
                 {% endif %}
             </div>
 

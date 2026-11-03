@@ -1,0 +1,15 @@
+ <a href="{{ notification.action_url }}" class="small-text"
+    {% if notification.notification_type == notification_types.ACCOUNT_CREATED %}
+        aria-label="View details of newly created account"
+    {% elif notification.notification_type == notification_types.TRANSFER_SENT %}
+        aria-label="View details of transfer sent"
+    {% elif notification.notification_type == notification_types.TRANSFER_RECEIVED %}
+        aria-label="View details of transfer received"
+    {% elif notification.notification_type == notification_types.CARD_REQUEST_APPROVED %}
+        aria-label="View details of approved card request"
+    {% elif notification.notification_type == notification_types.CARD_REQUEST_REJECTED %}
+        aria-label="View details of rejected card request"
+    {% endif %}
+>
+    View details &gt;
+</a>
