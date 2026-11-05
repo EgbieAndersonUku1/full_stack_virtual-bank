@@ -78,3 +78,7 @@ class InsufficientFundsError(Exception):
 
 class CurrencyMismatchError(Exception):
     pass
+
+
+class InvalidNotificationTypeError(TypeError):
+    pass

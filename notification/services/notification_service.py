@@ -1,9 +1,11 @@
-from uuid import uuid4
+from uuid import uuid4, UUID
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 from django.db import transaction
+from django.utils.translation import gettext_lazy as _
 
+from utils.custom_errors import InvalidNotificationTypeError
 from notification.models import Notification
 from utils.validators.validators import validate_user
 from utils.safe_cache import get_cache_with_retry, set_cache_with_retry, delete_cache_with_retry
@@ -122,10 +124,49 @@ class NotificationService:
         transaction.on_commit(
             lambda: cls._invalidate_user_notification_cache(user)
         )
-        
+
         return notification
 
+    @classmethod
+    def update_unread_notification_to_read(cls, notification: Notification) -> Notification | None:
+        """
+        Mark an unread notification as read and invalidate the user's notification cache.
 
+        If the notification is already marked as read, it is returned without
+        modification. Otherwise, its read status and timestamp are updated,
+        the changes are saved, and the user's notification cache is invalidated
+        to ensure subsequent requests retrieve fresh data.
+
+        Args:
+            notification (Notification): The notification instance to mark as read.
+
+        Returns:
+            Notification | None: The updated notification instance, or None if
+                the save operation does not return a notification.
+
+        Raises:
+            InvalidNotificationTypeError: If the provided notification is not
+                an instance of Notification.
+        """
+
+        if not isinstance(notification, Notification):
+            error_msg = _(
+                f"notification is not an instance of Notification",
+                f"Expected type notification got {type(notification).__name__}"
+            )
+            raise InvalidNotificationTypeError(error_msg)
+
+        if notification.is_read:
+            return notification
+
+        notification.is_read = True
+        notification.read_at = timezone.now()
+        notification.save()
+
+        # invalidate the cache, this will force it to get/create a new cache entry when the app calls `get_user_notification_summary(...)`
+        cls._invalidate_user_notification_cache(notification.user)
+
+        return notification
 
 
 

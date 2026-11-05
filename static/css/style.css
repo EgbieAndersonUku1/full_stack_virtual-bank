@@ -6715,3 +6715,136 @@ textarea::placeholder {
     font-weight: 500;
 
 }
+
+
+
+/* the notification for individual messages */
+
+.tips__container {
+    border: 1px solid lavender;
+    background: ghostwhite;
+    padding: var(--space-24);
+}
+
+.tips__container .account-icon,
+.notification-message_card-head .account-icon {
+    position: relative;
+
+}
+
+#help-notification-img,
+#security-notification-msg,
+#notification-message-img {
+    position: absolute;
+    height: 90%;
+    width: 90%;
+}
+
+
+.notification__account-display,
+.notification-account-information dl {
+    margin: 0;
+}
+
+.notification-message__side-related h1,
+.notification-message__side-related h2 {
+   font-size: 0.95rem;
+}
+
+.security-tips__message h1,
+.security-tips__message h2 {
+   font-size: 0.90rem;
+}
+
+.notification-message_card-head {
+    display: grid;
+    grid-template-columns: 10% 50% 40%;
+    grid-template-rows: auto;
+}
+
+.notification-message__container {
+    display: grid;
+    grid-template-columns: 58% 40%;
+    grid-template-rows: auto;
+    column-gap: 2%;
+}
+
+.notification-message__container h1 {
+    font-size: 1.1rem;
+}
+
+.notification-message__container p {
+    font-size: 0.9rem;
+}
+
+
+.notification-message_card-head {
+    column-gap: var(--space-24);
+}
+
+
+.notification-message__main {
+    box-shadow: var(--box-shadow-primary);
+    background: white;
+}
+
+.notification-message__side-related {
+    background: white;
+}
+
+
+
+.notification-message__main,
+.notification-message__side-related {
+    padding: var(--space-24);
+}
+
+.notification-account-information div dt,
+.notification-account-information div dd,
+.notification__account-display div dt,
+.notification__account-display div dd {
+    font-size: 0.85rem;
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.notification__account-display div dt {
+
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+
+.security-tips {
+    border: 2px solid lavender;
+    padding: var(--space-16);
+    background: white;
+}
+
+.notification-message__side-related,
+.security-tips {
+    border: 2px solid lavender;
+    background: white;
+}
+
+
+.status-badge {
+    border: 1px solid;
+    border-radius: 999px;
+    background: var(--green-600);
+    color: white;
+    text-align: center;
+}
+
+
+.help {
+    border: 2px solid lavender;
+    padding: var(--space-32);
+}
+
+#need-help{
+    border: 1px solid white;
+    padding: var(--space-12);
+    background: white;
+}
+
