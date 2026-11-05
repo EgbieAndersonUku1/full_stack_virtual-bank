@@ -1,14 +1,270 @@
 {% extends "home/notifications/base.html" %}
 
-{% block title %}Notification centre{% endblock title %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Notification message {% endblock title %}
 
 
 {% block notification_body %}
 
+    <a href="{% url 'notification_centre' %}" class="ml-16"> &larr; Back to notifications </a>
 
-     The page has been built yet come back later
+     <section id="notifcation-message" class="ml-16 mr-16 mb-48 mt-16" aria-labelledby="notification-title">
+          <div class="notification-message__container">
 
-     <a href="{% url 'notification_centre' %}">Go back</a>
+               <!-- Main notification content -->
+               <div class="notification-message__main">
+                  <div class="notification-message_card-head">
+                    <div class="account-icon">
+                      <img src="{% static '/images/notification_icons/bank_update.png' %}"
+                        alt="account image"
+                        id="notification-message-img"
+                        aria-hidden="true"
+                      />
+                    </div>
+
+                    <div class="account-icon flex-grid">
+                      <h1 id="notification-title">{{ notification.notification_type | remove_under_score | title }}</h1>
+                      <p class="mt-4">{{ notification.title | title }}</p>
+                      <span aria-label="Notification status: Read" class="status-badge text-muted"> Read </span>
+                    </div>
+
+                    <div class="time-notification-read">
+                      <p>Read at</p>
+                      <p class="text-muted">
+                        <time datetime="{{ notification.read_at }}"> {{ notification.read_at }} </time>
+                      </p>
+                    </div>
+                  </div>
+
+                  <hr class="dividor" />
+
+                  <p class="mt-4">{{ notification.message }}</p>
+
+                  <!-- Account information -->
+                  <dl class="notification__account-display mt-16" aria-label="New account details">
+                    <div class="row flex-grid two-column-30_70_grid mt-16">
+                      <dt>Account type</dt>
+                      <dd>Current Account</dd>
+                    </div>
+
+                    <div class="row flex-grid two-column-30_70_grid">
+                      <dt>Account number</dt>
+                      <dd>{{ current_account.account_number }}</dd>
+                    </div>
+
+                    <div class="row flex-grid two-column-30_70_grid">
+                      <dt>Sort code</dt>
+                      <dd>{{ current_account.sort_code }}</dd>
+                    </div>
+
+                    <div class="row flex-grid two-column-30_70_grid">
+                      <dt>Account holder</dt>
+                      <dd>{{ current_account.user_profile.full_name | title }}</dd>
+                    </div>
+
+                    <div class="row flex-grid two-column-30_70_grid">
+                        <dt>Currency</dt>
+
+                        <dd>{{ current_account.currency }}</dd>
+                    </div>
+
+                    <div class="row flex-grid two-column-30_70_grid">
+                      <dt>Created</dt>
+                      <dd>
+                        <time datetime="{{ current_account.created_on }}">
+                           {{ current_account.created_on }}
+                        </time>
+                      </dd>
+                    </div>
+                  </dl>
+
+                  <hr class="dividor" />
 
 
+                  <p>
+                    You can view your account, make transfers, and manage
+                    your account settings.
+                  </p>
+
+                </div>
+
+                <!-- Related information sidebar -->
+                <aside class="notification-message__side"  aria-label="Additional account information">
+                  <!-- Related account -->
+
+                  {% if saving_account %}
+                  <section
+                    class="notification-message__side-related"
+                    aria-labelledby="related-account-title"
+                  >
+                    <div class="flex-grid two-column-grid">
+                      <h2 id="related-account-title">Related Account</h2>
+                    </div>
+
+                    <hr class="dividor" />
+
+                    <dl
+                      class="notification-account-information"
+                      aria-label="Related account details"
+                    >
+
+                     <div class="row flex-grid two-column-grid">
+                        <dt>Account type</dt>
+                        <dd class="status-badge">Savings Account</dd>
+                      </div>
+
+                      <div class="row flex-grid two-column-grid">
+                        <dt>Account number</dt>
+                        <dd>{{ saving_account.account_number }}</dd>
+                      </div>
+
+                      <div class="row flex-grid two-column-grid">
+                        <dt>Sort code</dt>
+                        <dd>{{ saving_account.sort_code }}</dd>
+                      </div>
+
+                      <div class="row flex-grid two-column-grid">
+                        <dt>Status</dt>
+                        <dd  class="bold active-text">Active</dd>
+                      </div>
+
+                      <div class="row flex-grid two-column-grid">
+                        <dt>Created on</dt>
+                        <dd>
+                          <time datetime="{{ saving_account.created_on }}">
+                            {{ saving_account.created_on }}
+                          </time>
+                        </dd>
+                      </div>
+                    </dl>
+                  </section>
+
+                  {% endif %}
+
+                  <!-- Account holder details -->
+                  <section
+                    class="notification-message__side-related mt-16"
+                    aria-labelledby="account-holder-title"
+                  >
+                    <div class="flex">
+                      <h2 id="account-holder-title">Account Holder Details</h2>
+                    </div>
+
+                    <hr class="dividor" />
+
+                    <div class="notification-account-information">
+                      <dl aria-label="Account holder contact details">
+                        <div class="row flex-grid two-column-grid">
+                          <dt>Name</dt>
+                          <dd>{{ saving_account.user_profile.full_name | title }}</dd>
+                        </div>
+
+                        <div class="row flex-grid two-column-grid">
+                          <dt>Email</dt>
+                          <dd>{{ current_account.user_profile.email | lower }}</dd>
+                        </div>
+
+                        <div class="row flex-grid two-column-grid">
+                          <dt>Phone number</dt>
+                          <dd>{{ current_account.user_profile.phone_number }}</dd>
+                        </div>
+                      </dl>
+
+                      <div class="row center mt-14">
+                        <button type="button" class="btn-large text-muted blue-bg white-text capitalise">
+                          View profile
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+
+                  <!-- Bank information -->
+                  <section
+                    class="notification-message__side-related mt-16"
+                    aria-labelledby="bank-information-title"
+                  >
+                    <div class="flex">
+                      <h2 id="bank-title">Bank information</h2>
+                    </div>
+
+                    <hr class="dividor" />
+
+                    <div class="notification-account-information">
+                      <dl aria-label="Account holder contact details">
+                        <div class="row flex-grid two-column-grid">
+                          <dt>Name</dt>
+                          <dd>{{ current_account.bank_name | title }}</dd>
+                        </div>
+
+                        <div class="row flex-grid two-column-grid">
+                          <dt>Description</dt>
+                          <dd>{{ current_account.bank_description }}</dd>
+                        </div>
+
+                        <div class="row flex-grid two-column-grid">
+                          <dt>Address</dt>
+                          <dd>{{ current_account.bank_address | title }}</dd>
+                        </div>
+
+                        <div class="row flex-grid two-column-grid">
+                          <dt>Phone number</dt>
+                          <dd>{{ current_account.bank_phone_number }}</dd>
+                        </div>
+                      </dl>
+
+                    </div>
+                  </section>
+
+                  <!-- Security information -->
+                  <section class="security-tips mt-16" aria-labelledby="security-tips-title">
+                    <div class="tips__container flex-grid two-column-30_70_grid">
+                      <div class="account-icon" id="help">
+                        <img src="{% static '/images/notification_icons/Blue Shield Keyhole Icon.png' %}"
+                          alt="Shield icon for protection"
+                          id="security-notification-msg"
+                          aria-hidden="true"
+                          class="notification-icon"
+                        />
+                      </div>
+
+                      <div class="security-tips__message flex-grid">
+                        <h2 id="security-tips-title">Your security matters</h2>
+
+                        <hr class="dividor" />
+
+                        <p>
+                          Never share your account number, sort code, PIN, or
+                          verification codes with anyone, even if they claim to
+                          be from your bank.
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <!-- need help -->
+                   <section id="need-help" class="mt-16">
+                        <div class="tips__container flex-grid two-column-30_70_grid">
+                            <div class="account-icon">
+                                <img src="{% static '/images/notification_icons/Blue Question Mark Badge.png' %}"
+                                alt=""
+                                id="help-notification-img"
+                                aria-hidden="true"
+                                class="notification-icon"
+                                />
+                            </div>
+
+                            <div class="security-tips__message flex-grid">
+                                <h2 id="need-help-title">Need help</h2>
+                                <hr class="dividor" />
+                                <p> If you have any questions about your account, please contact us through our account centre </p>
+                            </div>
+                        </div>
+                   </section>
+
+                </aside>
+              </div>
+          </section>
+          
 {% endblock notification_body %}

@@ -146,7 +146,7 @@ class Notification(models.Model):
 
     @classmethod
     def get_notification_stats(cls, user: User) -> dict:
-       
+
         # Get the start of today in the user's current timezone
         today_start = timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
 
@@ -168,7 +168,7 @@ class Notification(models.Model):
 
         return stats
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
 
         if self.notification_id is None:
             self.notification_id = uuid4()

@@ -724,6 +724,18 @@ class BankAccount(models.Model):
     def bank_name(self):
         return self.sort_code.bank.name
 
+    @property
+    def bank_address(self):
+        return self.sort_code.bank.full_address
+
+    @property
+    def bank_description(self):
+        return self.sort_code.bank.description
+
+    @property
+    def bank_phone_number(self):
+        return self.sort_code.bank.phone_number
+    
     def credit(self, amount: Decimal) -> None:
         """
         Credit funds to the account balance.

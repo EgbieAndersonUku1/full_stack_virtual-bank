@@ -113,8 +113,8 @@ class AccountOnboardingService:
             user_profile              = cls._create_profile(user=user, profile_data=profile_data)
             bank_account              = AccountService.open_bank_account(bank=bank, user_profile=user_profile)
             bank_card                 = BankCardService.create_default_bank_card(bank_account)
-            card_dashboard            = CardDashboard.objects.get_or_create(bank_account=bank_account)
-            account_security_settings = AccountSecuritySettings.objects.get_or_create(user=user_profile.user)
+            card_dashboard, _         = CardDashboard.objects.get_or_create(bank_account=bank_account)
+            account_security_settings, _ = AccountSecuritySettings.objects.get_or_create(user=user_profile.user)
 
             cls._create_pin(pin=pin, user=user, user_profile=user_profile)
 

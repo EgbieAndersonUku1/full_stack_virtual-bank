@@ -1,9 +1,10 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from uuid import UUID
 from django.core.paginator import Paginator
 
+from bank.services.bank_services import BankAccountCacheService
 from setup.decorators import onboarding_required
 from utils.decorators import go_to_staff_page, is_email_verified
 from notification.services.notification_service import NotificationService
@@ -44,7 +45,7 @@ def notifications_centre(request):
         "notification_types": Notification.NotificationType,
     }
 
-   
+
     return render(request, "home/notifications/notification_centre.html", context=context)
 
 
@@ -54,8 +55,19 @@ def notifications_centre(request):
 @go_to_staff_page
 def view_notification(request, notification_id: UUID) -> HttpResponse:
 
-    # placeholder for now, notification message will go here
+    notification = get_object_or_404(Notification, notification_id=notification_id, user=request.user)
+
+    user = request.user
+
+    current_account = BankAccountCacheService.get_current_account(user)
+    saving_account  = BankAccountCacheService.get_saving_account(user)
+    updated_notification    = NotificationService.update_unread_notification_to_read(notification)
+
     context = {
-        "notification_message": "This page hasn't been build yet, please coming back later"
+        "notification": updated_notification,
+        "user": user,
+        "current_account": current_account,
+        "saving_account": saving_account
+
     }
     return render(request, "home/notifications/notification_message.html", context=context)
