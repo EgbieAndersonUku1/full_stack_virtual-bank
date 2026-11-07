@@ -82,3 +82,7 @@ class CurrencyMismatchError(Exception):
 
 class InvalidNotificationTypeError(TypeError):
     pass
+
+
+class SavingAccountNotOfferedError(ValueError):
+    pass

@@ -126,11 +126,11 @@ def update_card_dashboard_display(request):
                     "was introduced. Recreating record.",
                     bank_account.pk
                 )
-                CardDashboard.objects.create(bank_account=bank_account)
+                card_dashboard = CardDashboard.objects.create(bank_account=bank_account)
 
 
             # Count current dashboard cards to enforce the maximum.
-            displayed_card_count = BankCard.get_num_of_cards_in_dashboard(bank_account)
+            displayed_card_count = card_dashboard.displayed_card_count
 
             if (add_user_card_to_dashboard and displayed_card_count >= card_dashboard.max_cards_to_show):
                 data["ERROR_MSG"] = (
@@ -142,7 +142,7 @@ def update_card_dashboard_display(request):
             card.save(update_fields=["show_in_dashboard", "last_modified_on"])
 
             # Recount after the update so the response contains the current total.
-            displayed_card_count = BankCard.get_num_of_cards_in_dashboard(bank_account)
+            displayed_card_count = card_dashboard.displayed_card_count
 
             data["SUCCESS"]                   = True
             data["SUCCESS_MSG"]               = construction_frontend_message(add_user_card_to_dashboard)
