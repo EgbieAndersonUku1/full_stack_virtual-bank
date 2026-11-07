@@ -1,0 +1,84 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static '/css/style.css' %}" />
+    <link rel="shortcut icon" href="{% static '/images/virtual-bank-logo.png' %}" type="image/x-icon"/>
+    <link rel="stylesheet" href="{% static '/vendor/fontawesome/css/all.min.css' %}" />
+    <title>404 page not found</title>
+  </head>
+
+  <body>
+<main id="main-content">
+
+    <!-- Virtual Bank branding -->
+    <div class="flex two-column-grid center mb-48" id="virtual-bank-not-found-logo">
+        <div class="icon">
+            <img src="{% static '/images/icons/bank-icon.png' %}" alt="" aria-hidden="true">
+        </div>
+
+        <div class="header-7 bold">
+            Virtual Bank
+        </div>
+    </div>
+
+    <!-- 404 error page -->
+    <section id="not-found" class="mt-48" aria-labelledby="not-found-title">
+
+        <div class="not-found__container center">
+            <div class="not-found__body">
+
+                <!-- Decorative error icon -->
+                <div id="not-found-icon-container" class="center">
+                    <img src="{% static '/images/notification_icons/Blue Magnifying Glass with X.png' %}" alt="Not found image" aria-hidden="true" >
+                </div>
+
+                <!-- Error message -->
+                <div class="not-found__body-text">
+
+                    <p aria-hidden="true" class="not-found-error-code">
+                        404
+                    </p>
+
+                    <h1 id="not-found-title" class="mb-24">
+                        Page not found
+                    </h1>
+
+                    <p class="mt-48 mb-48">
+                        Sorry, we couldn't find the page you're looking for. It may have been moved,
+                        removed, or the address might be incorrect.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Navigation actions -->
+            <nav class="not-found__footer flex-grid two-column-grid" aria-label="Error page navigation">
+
+                <a href="{% url 'dashboard'  %}" class="btn-large blue-bg white-text" id="back-to-dashboard-button">
+                    Back to dashboard
+                </a>
+
+                <button type="button" class="btn-large" id="go-back-button" onclick="window.history.back()">
+                    Go back
+                </button>
+
+            </nav>
+
+        </div>
+
+        <!-- Branding tagline -->
+        <p class="center text-muted">
+            Virtual Bank • Safe • Secure • Yours
+        </p>
+
+    </section>
+
+</main>
+
+</body>
+</html>

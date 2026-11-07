@@ -16,6 +16,21 @@ from utils.validators.validators import validate_amount
 # Create your models here.
 
 
+def _validate_type(parameter_name: str,
+                       parameter_value: Any,
+                       expected_type: Type[Any]
+                       ) -> None:
+
+    if not isinstance(parameter_value, expected_type):
+        message = ("Expected {parameter_name} of type {expected_type}, "
+                    "but got {received_type}."
+                    ).format(
+                        parameter_name=parameter_name,
+                        expected_type=expected_type.__name__,
+                        received_type=type(parameter_value).__name__,
+                    )
+        error_msg = _(message)
+        raise BankAccountTypeError(error_msg)
 
 class BankCard(models.Model):
     class Meta:
@@ -86,19 +101,20 @@ class BankCard(models.Model):
         Returns:
             The bank card instance associated with bank account.
         """
-        cls._validate_type(parameter_name="bank account",
+        _validate_type(parameter_name="bank account",
                             parameter_value=bank_account,
                             expected_type=BankAccount
                             )
 
         return cls._base_queryset().filter(
-                                        bank_account=bank_account,
-                                        is_active=True
-                                         ).first()
+            bank_account=bank_account,
+            is_active=True,
+            default_card=True,
+            ).first()
 
     @classmethod
     def get_by_card_type(cls, bank_account: BankAccount, card_type: card_type) -> BankCard:
-        cls._validate_type(parameter_name="bank account",
+        _validate_type(parameter_name="bank account",
                             parameter_value=bank_account,
                             expected_type=BankAccount
                             )
@@ -113,37 +129,11 @@ class BankCard(models.Model):
             card_type=card_type
         ).order_by("created_on", "id").first()
 
-
-
-
-    @classmethod
-    def get_num_of_cards_in_dashboard(cls, bank_account: BankAccount) -> int:
-        """Displays the number of cards that bank account has on display in the dashboard"""
-        return cls.get_dashboard_cards(bank_account).count()
-
-    @classmethod
-    def get_dashboard_cards(cls, bank_account: BankAccount) -> QuerySet["BankCard"]:
-        """
-        Return cards for the bank account configured to be displayed on the dashboard.
-        Only returns cards that are active.
-        """
-
-        cls._validate_type(parameter_name="bank account",
-                           parameter_value=bank_account,
-                           expected_type=BankAccount
-                           )
-
-        return cls._base_queryset().filter(
-            bank_account=bank_account,
-            show_in_dashboard=True,
-            is_active=True,
-        )
-
     @classmethod
     def get_by_bank_account(cls, bank_account: BankAccount) -> QuerySet["BankCard"]:
         """Return all bank cards associated with the given bank account."""
 
-        cls._validate_type(
+        _validate_type(
             parameter_name="Bank account",
             parameter_value=bank_account,
             expected_type=BankAccount,
@@ -155,7 +145,7 @@ class BankCard(models.Model):
     def get_by_bank_account_and_card_number(cls, card_number: str, bank_account: BankAccount) -> BankCard | None:
         """Return the bank card with the given card number, or None if not found."""
 
-        cls._validate_type(
+        _validate_type(
             parameter_name="Card number",
             parameter_value=card_number,
             expected_type=str,
@@ -165,23 +155,6 @@ class BankCard(models.Model):
             bank_account=bank_account,
             card_number=card_number,
         ).first()
-
-    @staticmethod
-    def _validate_type(parameter_name: str,
-                       parameter_value: Any,
-                       expected_type: Type[Any]
-                       ) -> None:
-
-         if not isinstance(parameter_value, expected_type):
-            message = ("Expected {parameter_name} of type {expected_type}, "
-                    "but got {received_type}."
-                    ).format(
-                        parameter_name=parameter_name,
-                        expected_type=expected_type.__name__,
-                        received_type=type(parameter_value).__name__,
-                    )
-            error_msg = _(message)
-            raise BankAccountTypeError(error_msg)
 
     def __str__(self) -> str:
         return self.full_name
@@ -194,25 +167,24 @@ class BankCard(models.Model):
 
 
 class CardDashboard(models.Model):
-    bank_account      = models.OneToOneField(BankAccount, on_delete=models.CASCADE, related_name="dashboard_cards")
-    max_cards_to_show = models.PositiveSmallIntegerField(default=3)
+    bank_account       = models.OneToOneField(BankAccount, on_delete=models.CASCADE, related_name="card_dashboard")
+    max_cards_to_show  = models.PositiveSmallIntegerField(default=3)
     created_on         = models.DateTimeField(auto_now_add=True)
     last_modified_on   = models.DateTimeField(auto_now=True)
 
-    @property
-    def displayed_card_count(self) -> int:
-        return len(self.bank_account.dashboard_cards)
 
     @property
-    def can_add_card_to_dashboard(self):
-        return self.displayed_card_count >= self.max_cards_to_show
+    def can_add_card_to_dashboard(self) -> bool:
+        return self.displayed_card_count < self.max_cards_to_show
 
     @classmethod
     def get_by_bank_account(cls, bank_account: BankAccount) -> CardDashboard | None:
 
-        if not isinstance(bank_account, BankAccount):
-            error_msg = _("Expected a bank account object. Got type {}".format(type(bank_account).__name__))
-            raise BankAccountTypeError(error_msg)
+        _validate_type(
+            parameter_name="bank account",
+            parameter_value=bank_account,
+            expected_type=BankAccount
+            )
 
         try:
             return (
@@ -221,14 +193,45 @@ class CardDashboard(models.Model):
                 .prefetch_related(
                     Prefetch(
                         "bank_account__cards",
-                        queryset=BankCard.objects.filter(show_in_dashboard=True),
-                        to_attr="dashboard_cards",
+                            queryset=BankCard.objects.filter(
+                            is_active=True,
+                            show_in_dashboard=True
+                        ),
+                            to_attr="dashboard_cards",
                     )
                 )
                 .get(bank_account=bank_account)
             )
         except cls.DoesNotExist:
             return None
+
+    @property
+    def displayed_card_count(self) -> int:
+        """Return the number of active cards configured for dashboard display.
+
+        Requires the bank account's dashboard cards to have been prefetched
+        using get_by_bank_account().
+        """
+        return self.get_dashboard_cards(self.bank_account).count()
+
+    @classmethod
+    def get_dashboard_cards(cls, bank_account: BankAccount) -> QuerySet["BankCard"]:
+
+        _validate_type(
+            parameter_name="bank account",
+            parameter_value=bank_account,
+            expected_type=BankAccount
+        )
+
+        return BankCard.objects.select_related(
+            "bank_account",
+            "bank_account__sort_code__bank",
+            "bank_account__user_profile__user"
+        ).filter(
+            bank_account=bank_account,
+            is_active=True,
+            show_in_dashboard=True
+        )
 
     def __str__(self) -> str:
         return self.bank_account.full_name

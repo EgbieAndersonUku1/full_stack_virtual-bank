@@ -140,7 +140,7 @@ class CardDashboardServiceCache:
         cards        = get_cache_with_retry(session_key)
 
         if not cards:
-            dashboard_cards = BankCard.get_dashboard_cards(bank_account)
+            dashboard_cards = CardDashboard.get_dashboard_cards(bank_account)
 
             if dashboard_cards is not None:
                 cards = list(dashboard_cards)

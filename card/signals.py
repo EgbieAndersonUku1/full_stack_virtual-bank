@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, post_delete, pre_save, pre_delet
 from django.dispatch import receiver
 
 from bank.services.bank_services import BankAccountCacheService
-from card.models import BankCard
+from card.models import BankCard, CardDashboard
 from card.services import CardDashboardServiceCache
 from utils.safe_cache import delete_cache_with_retry, set_cache_with_retry
 
@@ -46,7 +46,7 @@ def refesh_cache(user, id):
     current_account    = BankAccountCacheService.get_current_account(user=user)
     session_key        = CardDashboardServiceCache.construct_session_key(unique_id=user.id)
 
-    dashboard_card_qs = BankCard.get_dashboard_cards(current_account)
+    dashboard_card_qs = CardDashboard.get_dashboard_cards(current_account)
     cards = list(dashboard_card_qs)
 
     set_cache_with_retry(session_key, cards)

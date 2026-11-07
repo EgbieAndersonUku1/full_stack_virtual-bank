@@ -15,9 +15,6 @@ from django.conf import settings
 from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 
-
-from utils.currencies import get_currencies
-from utils.custom_errors import IncorrectAmountError, IncorrectAmountTypeError
 from utils.utils import format_full_address
 from user_profile.models import UserProfile
 from bank.errors import SortCodeRangeExhaustedError
@@ -735,7 +732,11 @@ class BankAccount(models.Model):
     @property
     def bank_phone_number(self):
         return self.sort_code.bank.phone_number
-    
+
+    @property
+    def bank(self):
+        return self.sort_code.bank
+
     def credit(self, amount: Decimal) -> None:
         """
         Credit funds to the account balance.

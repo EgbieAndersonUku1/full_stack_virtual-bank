@@ -17,7 +17,7 @@ from bank.models import (SortCodeRangePool,
                           SortCode)
 from user_profile.models import UserProfile
 from user_profile.services import ProfileCacheService
-from utils.custom_errors import ProfileNotFoundError
+from utils.custom_errors import ProfileNotFoundError, SavingAccountNotOfferedError
 from utils.safe_cache import get_cache_with_retry, set_cache_with_retry, get_cache_or_set
 from utils.security.generator import generate_secure_code
 
@@ -313,6 +313,10 @@ class AccountService:
 
             if user_profile:
                 bank_account.user_profile = user_profile
+
+            if bank.offer_saving_account != Bank.OfferSavingAccountOptions.YES and account_type == BankAccount.AccountType.SAVINGS:
+                msg = _("Saving account is not offerred with this bank")
+                raise SavingAccountNotOfferedError(msg)
 
             bank_account.save()
             return bank_account

@@ -6848,3 +6848,204 @@ textarea::placeholder {
     background: white;
 }
 
+
+
+/* Virtual Bank - 404 Error Page */
+
+/* Virtual Bank logo */
+
+#virtual-bank-not-found-logo .icon {
+    position: relative;
+    height: 100px;
+    width: 100px;
+}
+
+#virtual-bank-not-found-logo .icon img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+#virtual-bank-not-found-logo {
+    column-gap: var(--space-48);
+}
+
+
+/* Error Page Container  */
+
+.not-found__container {
+    box-shadow: var(--box-shadow-tietary);
+    border: 3px solid lavender;
+    border-radius: 16px;
+    background: white;
+
+    width: 600px;
+    max-width: calc(100% - 32px);
+    margin: auto;
+
+    padding: var(--space-24);
+    color: var(--blue-600);
+    font-weight: bold;
+}
+
+
+/* Error Icon */
+
+#not-found-icon-container {
+    position: relative;
+    height: 100px;
+    width: 100px;
+    display: flex;
+    margin: auto;
+}
+
+#not-found-icon-container img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+
+/* Error Message */
+
+/* Large 404 error code */
+.not-found__body-text .not-found-error-code {
+    font-size: 7rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -4px;
+    color: var(--blue-600);
+    margin: 0 auto;
+    width: auto;
+}
+
+/* Page not found heading */
+.not-found__body-text h1 {
+    font-size: 1.7rem;
+    font-weight: 400;
+    color: black;
+    line-height: 1.3;
+    text-transform: capitalize;
+
+}
+
+/* Error description */
+.not-found__body-text p:not(.not-found-error-code) {
+    letter-spacing: 0.85px;
+    word-spacing: 1px;
+    line-height: 1.8;
+    font-size: 0.85rem;
+    color: black;
+    font-weight: 400;
+    width: 90%;
+    margin: auto;
+
+}
+
+
+/* Navigation Buttons */
+
+.not-found__footer {
+    column-gap: var(--space-4);
+    width: 60%;
+    margin: auto;
+}
+
+/* Supports both links and buttons */
+.not-found__footer a,
+.not-found__footer button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 3px solid lavender;
+    padding: var(--space-8);
+    border-radius: 4px;
+
+    font-size: 0.9rem;
+    font-weight: 400;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    margin-top: var(--space-48);
+}
+
+
+
+/* Secondary button */
+#go-back-button {
+    background: white;
+    color: var(--blue-600);
+}
+
+/* Keyboard accessibility */
+#back-to-dashboard-button:focus-visible,
+#go-back-button:focus-visible {
+    outline: 3px solid #f59e0b;
+    outline-offset: 4px;
+}
+
+
+/* Spacing */
+
+/* Apply spacing only to direct container children */
+#not-found > .not-found__container {
+    margin-bottom: var(--space-48);
+}
+
+
+/* Responsive Layout*/
+
+@media (max-width: 768px) {
+
+    .not-found__container {
+        width: 90%;
+    }
+
+    .not-found__footer {
+        width: 100%;
+    }
+
+    #virtual-bank-not-found-logo {
+        column-gap: var(--space-16);
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    #virtual-bank-not-found-logo .icon {
+        width: 64px;
+        height: 64px;
+    }
+
+    #not-found-icon-container {
+        width: 80px;
+        height: 80px;
+    }
+
+    .not-found__body-text .not-found-error-code {
+        font-size: 4rem;
+    }
+
+    .not-found__body-text h1 {
+        font-size: 1.5rem;
+    }
+
+    .not-found__footer {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-8);
+    }
+
+    .not-found__footer a,
+    .not-found__footer button {
+        width: 100%;
+    }
+
+}
+
+
