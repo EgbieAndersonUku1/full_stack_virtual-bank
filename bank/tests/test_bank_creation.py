@@ -9,6 +9,8 @@ from unittest.mock import patch
 
 from bank.models import Bank, BankAccount
 from bank.services.bank_services import AccountService, BankProvisioningService
+from bank.management.commands.seed_banks import BANK_SEED_DATA
+
 from card.models import BankCard, CardDashboard
 from setup.services.service import AccountOnboardingService
 from notification.models import Notification
@@ -109,7 +111,7 @@ class TestBankOpeningService(TestCase):
 
         self.assertFalse(account.supports_overdraft, "Account should not support overdraft when the bank doesn't offers it.")
 
-    def test_default_bank_does_not_offer_loanst(self):
+    def test_default_bank_does_not_offer_loan(self):
 
         bank_data = self._get_bank_payload()
         bank = BankProvisioningService.create_bank(bank_data, Bank.Source.SEEDED)
@@ -140,6 +142,7 @@ class BankCreationTest(TestCase):
     def test_bank_attribrutes_are_correct(self):
         self.bank.refresh_from_db()
 
+        self.assertTrue(self.bank.id)
         self.assertEqual(self.bank_1["name"], self.bank.name)
         self.assertEqual(self.bank_1["country"], self.bank.country)
         self.assertEqual(self.bank_1["description"], self.bank.description)
@@ -221,6 +224,38 @@ class BankCreationMethodTest(TestCase):
 
         # compare with the actually address
         self.assertEqual(self.bank.full_address, full_address, "Address should match the expected address")
+
+    def test_get_by_bank_id_method(self):
+
+        bank_id = self.bank.id
+        bank    = Bank.get_by_id(bank_id)
+
+        self.assertIsNotNone(bank, "Bank instance should not be None")
+        self.assertIsInstance(bank, Bank, "bank instance should be an instance of Bank")
+
+    def test_get_by_bank_name_method(self):
+
+        name = self.bank.name
+        bank = Bank.get_by_bank_name(name)
+
+        self.assertIsNotNone(bank, "Bank instance should not be None")
+        self.assertIsInstance(bank, Bank, "bank instance should be an instance of Bank")
+
+    def test_get_all_banks_method(self):
+
+        EXPECTED_COUNT = 9
+
+        for bank_data in BANK_SEED_DATA:
+            try:
+                BankProvisioningService.create_bank(bank_data.copy(), source=Bank.Source.SEEDED)
+            except IntegrityError:
+                pass
+
+        banks = Bank.get_all_banks()
+        self.assertEqual(banks.count(), EXPECTED_COUNT)
+
+
+
 
 
 

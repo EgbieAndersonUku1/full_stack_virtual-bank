@@ -4240,6 +4240,7 @@ clicks the button
   }
 }
 
+#forgotten-password-spinner,
 #add-pin__spinner,
 #add-recipient__spinner {
     position: absolute;
@@ -4251,6 +4252,7 @@ clicks the button
 }
 
 
+#forgotten-password-spinner.show,
 #create-profile-spinner.show,
 #add-pin__spinner.show,
 #add-recipient__spinner.show {
@@ -4675,20 +4677,18 @@ clicks the button
 
 
 /* the spinner for the registration form */
+#forgotten-password-spinnee,
 #confirmation-code-spinner,
 #registration-spinner {
     position: absolute;
     top: 30%;
     left: 42%;
     z-index: 10000;
-
     width: 100px;
     height: 100px;
     border: 8px solid #e5e5e5;
     border-top: 8px solid #333;
     display: none;
-
-
 }
 
 
@@ -7049,3 +7049,12 @@ textarea::placeholder {
 }
 
 
+#forgotten-password {
+    margin-top: 100px;
+    margin-bottom: 100px;
+}
+
+
+.forgotten-password-spinner {
+;
+}
