@@ -61,7 +61,7 @@ def view_notification(request, notification_id: UUID) -> HttpResponse:
 
     current_account = BankAccountCacheService.get_current_account(user)
     saving_account  = BankAccountCacheService.get_saving_account(user)
-    updated_notification    = NotificationService.update_unread_notification_to_read(notification)
+    updated_notification  = NotificationService.update_unread_notification_to_read(notification)
 
     context = {
         "notification": updated_notification,
