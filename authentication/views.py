@@ -11,7 +11,7 @@ from human_seconds.converter import SecondsToTime
 from django.conf import settings
 
 
-from .forms import RegisterForm, LoginForm, EmailConfirmCodeForm
+from .forms import ForgottenPasswordForm, RegisterForm, LoginForm, EmailConfirmCodeForm
 from .models import User, Verification, VerificationStatus
 from .view_helper import handle_json_post_request, create_json_msg
 from utils.security.generator import generate_secure_code
@@ -277,3 +277,37 @@ def request_email_verification_code(request):
                                                 expiry_time=SecondsToTime(verification.get_expiry_seconds()).format_to_human_readable())
 
     return render(request, "authentication/bank/authentication/verify_code.html", context=context)
+
+
+
+def forgotten_password(request):
+
+    form  = ForgottenPasswordForm()
+
+    if request.method == "POST":
+    
+        form = ForgottenPasswordForm(request.POST)
+
+        if form.is_valid():
+            cleaned_email = form.cleaned_data["email"].lower()
+
+            user_exists = User.objects.filter(email=cleaned_email).exists()
+
+            if user_exists:
+                # TODO: Send password reset email
+                pass
+
+            messages.success(request,
+                "If an account exists with this email address, "
+                "we'll send you a password reset link."
+            )
+
+    context = {
+        "form": form,
+    }
+
+    return render(
+        request,
+        "authentication/bank/passwords/forgotten_password.html",
+        context=context
+    )
