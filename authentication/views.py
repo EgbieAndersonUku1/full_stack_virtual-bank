@@ -7,16 +7,19 @@ from django.contrib.auth import authenticate, login, logout
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from human_seconds.converter import SecondsToTime
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 
 
-from .forms import ForgottenPasswordForm, RegisterForm, LoginForm, EmailConfirmCodeForm
+
+from .forms import ForgottenPasswordForm, RegisterForm, LoginForm, EmailConfirmCodeForm, ResetPasswordForm
 from .models import User, Verification, VerificationStatus
 from .view_helper import handle_json_post_request, create_json_msg
 from utils.security.generator import generate_secure_code
-from utils.send_email import send_confirmation_email_with_async
+from utils.send_email import send_confirmation_email_with_async, send_forgotten_password_link_with_async
 from utils.decorators import go_to_staff_page
+
+
 
 # Create your views here.
 
@@ -285,17 +288,19 @@ def forgotten_password(request):
     form  = ForgottenPasswordForm()
 
     if request.method == "POST":
-    
+
         form = ForgottenPasswordForm(request.POST)
 
         if form.is_valid():
             cleaned_email = form.cleaned_data["email"].lower()
 
-            user_exists = User.objects.filter(email=cleaned_email).exists()
+            send_forgotten_password_link_with_async(
+                email=cleaned_email,
+                subject="Reset your password link",
+                domain=get_current_site(request).domain,
+                use_https=request.is_secure(),
 
-            if user_exists:
-                # TODO: Send password reset email
-                pass
+            )
 
             messages.success(request,
                 "If an account exists with this email address, "
@@ -311,3 +316,11 @@ def forgotten_password(request):
         "authentication/bank/passwords/forgotten_password.html",
         context=context
     )
+
+
+
+def reset_password(request, username: str, token: str):
+    context = {"form": ResetPasswordForm()}
+    return render(request,
+                  "authentication/bank/passwords/reset_password.html",
+                  context=context)

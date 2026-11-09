@@ -4,23 +4,10 @@ from .models import User
 from utils.security.password import PasswordStrengthChecker
 
 
-class RegisterForm(forms.ModelForm):
-
+class BasePasswordForm(forms.ModelForm):
     class Meta:
         model  = User
-        fields = ["email", "username", "password"]
-
-    wallet_registeration_code = forms.CharField(
-        label=_("Wallet registration code"),
-        max_length=34,
-        min_length=34,
-        required=False,
-        widget=forms.TextInput(attrs={
-            "aria-describedby": "wallet-code-help",
-            "spellcheck": False,
-            "id": "wallet-code",
-        })
-    )
+        fields = ["password"]
 
     password = forms.CharField(
         label=_("Password*"),
@@ -43,15 +30,6 @@ class RegisterForm(forms.ModelForm):
             "id": "confirm-password",
         })
     )
-
-    terms_and_condition = forms.CharField(
-        label=_("I agree to the terms and conditions"),
-        widget=forms.CheckboxInput(attrs={
-            "aria-required": True,
-            "id": "terms-of-condition-checkbox",
-        })
-    )
-
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
@@ -88,6 +66,35 @@ class RegisterForm(forms.ModelForm):
             user.save()
 
         return user
+
+class RegisterForm(BasePasswordForm):
+
+    class Meta:
+        model  = User
+        fields = ["email", "username", "password"]
+
+    wallet_registeration_code = forms.CharField(
+        label=_("Wallet registration code"),
+        max_length=34,
+        min_length=34,
+        required=False,
+        widget=forms.TextInput(attrs={
+            "aria-describedby": "wallet-code-help",
+            "spellcheck": False,
+            "id": "wallet-code",
+        })
+    )
+
+
+
+    terms_and_condition = forms.CharField(
+        label=_("I agree to the terms and conditions"),
+        widget=forms.CheckboxInput(attrs={
+            "aria-required": True,
+            "id": "terms-of-condition-checkbox",
+        })
+    )
+
 
 
 class LoginForm(forms.Form):
@@ -145,3 +152,10 @@ class ForgottenPasswordForm(forms.Form):
                                     "id": "email",
                                })
                                )
+
+
+
+
+
+class ResetPasswordForm(BasePasswordForm):
+   pass
