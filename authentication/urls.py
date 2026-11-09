@@ -8,6 +8,7 @@ urlpatterns = [
     path('logout/', view=views.logout_user, name="logout_user"),
     path('register/', view=views.register_user, name="authentication_register_user"),
     path("password/forgotten_password/", view=views.forgotten_password, name="forgotten_password"),
+    path("password/reset_password/<username>/<token>/", view=views.reset_password, name="reset_password"),
     path("username/exists/", view=views.does_username_exists, name="does_username_exists"),
     path("email/exists/", view=views.does_email_exists, name="does_email_exists"),
     path("terms-and-conditions/", view=views.terms_and_conditions, name="terms_and_conditions"),

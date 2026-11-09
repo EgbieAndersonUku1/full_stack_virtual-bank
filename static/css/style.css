@@ -4677,7 +4677,8 @@ clicks the button
 
 
 /* the spinner for the registration form */
-#forgotten-password-spinnee,
+#reset-password-spinner,
+#forgotten-password-spinner,
 #confirmation-code-spinner,
 #registration-spinner {
     position: absolute;
@@ -7048,13 +7049,10 @@ textarea::placeholder {
 
 }
 
-
+#reset-password,
 #forgotten-password {
     margin-top: 100px;
     margin-bottom: 100px;
 }
 
 
-.forgotten-password-spinner {
-;
-}
