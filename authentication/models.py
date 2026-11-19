@@ -180,7 +180,7 @@ class VerificationStatus(Enum):
     USED     = "used"
     LOCKED   = "locked"
     COOLDOWN = "cooldown"
-    RESENT   = "resent"
+    CAN_SEND   = "can send"
 
 
 class Verification(models.Model):
@@ -219,19 +219,118 @@ class Verification(models.Model):
             )
         ]
 
+    @classmethod
+    def _get_base_queryset(cls, for_update: bool = False):
+        """
+        Return the base queryset, optionally configured for row-level locking.
+
+        When for_update is True, select_for_update() is applied to the
+        queryset. The queryset must subsequently be evaluated inside an
+        active transaction.atomic() block to acquire the database row lock.
+
+        Args:
+            for_update (bool): Whether to configure the queryset to acquire
+                row-level locks. Defaults to False.
+
+        Returns:
+            QuerySet: The base queryset, optionally configured for row locking.
+
+        Example:
+            # Retrieve records normally.
+            queryset = Verification._get_base_queryset()
+
+            # Retrieve records with row-level locking.
+            with transaction.atomic():
+                queryset = Verification._get_base_queryset(for_update=True)
+                verification = queryset.get(pk=verification_id)
+        """
+        queryset = cls.objects
+
+        if for_update:
+            queryset = queryset.select_for_update()
+        return queryset
+
     def __str__(self):
         return f"Verification for {self.user}"
 
     @classmethod
-    def get_by_user_and_type(cls, user: User, verification_type: str) -> User | None:
-        """"""
-        return cls.objects.filter(user=user, verification_type=verification_type).first()
+    def get_by_user_and_type(
+        cls,
+        user: User,
+        verification_type: VerificationType,
+        for_update: bool = False,
+    ) -> Verification | None:
+        """
+        Retrieve the first verification record matching the supplied user and type.
+
+        When for_update is True, the query uses select_for_update() to acquire
+        a database row lock. The queryset must be evaluated within an active
+        transaction.atomic() block.
+
+        Args:
+            user (User): The user associated with the verification record.
+            verification_type (VerificationType): The type of verification
+                to retrieve.
+            for_update (bool): Whether to acquire a database row lock.
+                Defaults to False.
+
+        Returns:
+            Verification | None: The first matching verification record,
+            or None if no matching record exists.
+        """
+        return cls._get_base_queryset(for_update=for_update).filter(
+            user=user,
+            verification_type=verification_type,
+        ).first()
 
     @classmethod
-    def get_by_user_and_code(cls, user: User, verification_code: str) -> User | None:
-        """"""
+    def get_by_user_and_code(
+        cls,
+        user: User,
+        verification_code: str,
+        verification_type: VerificationType = VerificationType.EMAIL_VERIFICATION,
+        for_update: bool = False,
+    ) -> Verification | None:
+        """
+        Retrieve a verification record matching the supplied user, code and type.
+
+        When for_update is True, the record is retrieved using select_for_update()
+        to acquire a database row lock. This option must be used within an active
+        database transaction. Otherwise, Django raises TransactionManagementError.
+
+        Args:
+            user (User): The user associated with the verification record.
+            verification_code (str): The verification code to retrieve.
+            verification_type (VerificationType): The type of verification.
+                Defaults to EMAIL_VERIFICATION.
+            for_update (bool): Whether to acquire a database row lock.
+                Defaults to False.
+
+        Returns:
+            Verification | None: The matching verification record, or None
+            if no matching record exists.
+
+        Example:
+            # Retrieve a verification record normally.
+            verification = Verification.get_by_user_and_code(
+                user=user,
+                verification_code=code,
+            )
+
+            # Retrieve and lock a verification record.
+            with transaction.atomic():
+                verification = Verification.get_by_user_and_code(
+                    user=user,
+                    verification_code=code,
+                    for_update=True,
+                )
+        """
         try:
-           return cls.objects.get(user=user, verification_code=verification_code)
+            return cls._get_base_queryset(for_update=for_update).get(
+                user=user,
+                verification_code=verification_code,
+                verification_type=verification_type,
+            )
         except cls.DoesNotExist:
             return None
 
@@ -315,7 +414,7 @@ class Verification(models.Model):
              self.save(update_fields=fields_to_update)
              return self
 
-    def mark_as_used(self, commit: bool = True) -> Verification | None:
+    def mark_as_used(self, commit: bool = True) -> Verification:
 
         now              = timezone.now()
         self.is_used     = True
@@ -327,7 +426,7 @@ class Verification(models.Model):
 
         if commit:
             self.save()
-            return self
+
         return self
 
     def mark_as_expired(self, commit = True) -> Verification | None:
@@ -340,20 +439,20 @@ class Verification(models.Model):
             self.save()
             return self
 
-    def mark_as_blocked(self, commit = True) -> Verification | None:
+    def mark_as_blocked(self, commit = True) -> Verification:
         """"""
         self.status      = self.Status.BLOCKED
         self.description = "Verification has been blocked and can't be used any longer"
 
         if commit:
             self.save()
-            return self
+        return self
 
     @property
     def is_blocked(self) -> bool:
         return self.status == self.Status.BLOCKED
 
-    def get_status(self) -> str:
+    def get_status(self) -> VerificationStatus:
         if self.is_used:
             return VerificationStatus.USED
 
@@ -363,7 +462,7 @@ class Verification(models.Model):
         if not self.can_resend():
             return VerificationStatus.COOLDOWN
 
-        return VerificationStatus.RESENT
+        return VerificationStatus.CAN_SEND
 
     def save(self, *args, **kwargs):
         if not self.expiry_date:
@@ -439,6 +538,8 @@ class EmailLog(EmailBaseLog):
 
     def __str__(self):
         return f"To email: {self.to_email} from {self.from_email}"
+
+
 
 
 

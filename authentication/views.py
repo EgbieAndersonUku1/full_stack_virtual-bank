@@ -1,3 +1,6 @@
+import logging
+from django.views.decorators.http import require_http_methods
+
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
@@ -19,7 +22,7 @@ from utils.security.generator import generate_secure_code
 from utils.send_email import send_confirmation_email_with_async, send_forgotten_password_link_with_async
 from utils.decorators import go_to_staff_page
 
-
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -55,6 +58,7 @@ def login_user(request):
     return render(request, "authentication/bank/authentication/login.html", context=context)
 
 
+@require_http_methods(["GET", "POST"])
 def register_user(request):
 
     form = RegisterForm()
@@ -98,6 +102,7 @@ def logout_user(request):
 
 
 @csrf_protect
+@require_http_methods(["POST"])
 def does_username_exists(request):
     """
     Handle a POST request to check if a username already exists.
@@ -130,6 +135,7 @@ def does_username_exists(request):
 
 
 @csrf_protect
+@require_http_methods(["POST"])
 def does_email_exists(request):
     """
     Handle a POST request to check if an email already exists.
@@ -173,43 +179,51 @@ def verify_registration_code(request):
         messages.info(request, "You have already verified your verification code")
         return redirect("dashboard")
 
-    form             = EmailConfirmCodeForm()
-    restrict_account = False
+    form  = EmailConfirmCodeForm()
 
-    verification = Verification.get_by_user_and_type(request.user, Verification.VerificationType.EMAIL_VERIFICATION)
-
-    if verification:
-        restrict_account = verification.is_blocked
-
+    restrict_account = (
+            Verification.objects.filter(
+                user=request.user,
+                verification_type=Verification.VerificationType.EMAIL_VERIFICATION,
+            )
+            .values_list("status", flat=True)
+            .first()
+        ) == Verification.Status.BLOCKED
 
     if request.method == "POST":
 
-        form = EmailConfirmCodeForm(request.POST or None)
-        error_msg = _("The code entered is invalid!")
+        form                    = EmailConfirmCodeForm(request.POST or None)
+        error_msg               = _("The code entered is invalid!")
+        verification_successful = False
 
         if form.is_valid():
 
-            code         = form.cleaned_data.get("code")
-            verification = Verification.get_by_user_and_code(user=request.user, verification_code=code)
+            with transaction.atomic():
 
-            if verification:
+                cleaned_code = form.cleaned_data.get("code")
+                verification = Verification.get_by_user_and_code(user=request.user,
+                                                                 for_update=True,
+                                                                 verification_code=cleaned_code)
 
-                restrict_account = verification.is_blocked
+                if verification:
 
-                if verification.is_code_expired:
-                    error_msg    = _("Your verification code has expired. Please request a new one.")
-                    verification.mark_as_expired()
-                elif verification.is_used:
-                     error_msg = _("You have already used the code")
-                else:
-                    request.user.mark_email_as_verified()
-                    verification.mark_as_used()
+                    restrict_account = verification.is_blocked
 
-                    messages.success(request, _("You have successfully verified your code. Next we begin your onboarding"))
-                    return redirect("setup_welcome")
+                    if verification.is_code_expired:
+                        error_msg    = _("Your verification code has expired. Please request a new one.")
+                        verification.mark_as_expired()
+                    elif verification.is_used:
+                        error_msg = _("You have already used the code")
+                    else:
+                        request.user.mark_email_as_verified()
+                        verification.mark_as_used()
+                        verification_successful = True
+
+            if verification_successful:
+                messages.success(request, _("You have successfully verified your code. Next we begin your onboarding"))
+                return redirect("setup_welcome")
 
         messages.error(request, error_msg)
-
 
     context = {
         "form": form,
@@ -222,67 +236,115 @@ def verify_registration_code(request):
 
 
 @login_required
+@require_http_methods(["GET", "POST"])
 def request_email_verification_code(request):
 
-    user        = request.user
-    secure_code = generate_secure_code()
-    status      = None
+    user = request.user
+    email_scheduled = False
+    message_type = None
+    message = None
 
-    context  = {
+    context = {
         "form": EmailConfirmCodeForm(),
         "resend": True,
     }
 
-    with transaction.atomic():
+    if request.method == "POST":
 
-        # acquires a row-level lock to ensure safe concurrent updates which prevents race conditions
-        verification, created = Verification.objects.select_for_update().get_or_create(
-            user=user,
-            verification_type=Verification.VerificationType.EMAIL_VERIFICATION,
+        with transaction.atomic():
 
-        )
+            verification = Verification.get_by_user_and_type(user=request.user,
+                                                             verification_type=Verification.VerificationType.EMAIL_VERIFICATION
+                                                             )
 
-        if not created:
             status = verification.get_status()
 
-    if status is None:
-        messages.error(
-                request,
-                _("Something went wrong. Please request a new verification code.")
-            )
+            if status is None:
+                logger.error(
+                    "Verification.get_status() returned None unexpectedly. "
+                    "User ID: %s, Verification ID: %s",
+                    user.pk,
+                    verification.pk,
+                )
+                message_type = "error"
+                message = _("Something went wrong. Please request a new verification code.")
 
-    match status:
+            else:
 
-        case VerificationStatus.USED:
-            return redirect("dashboard")
+                match status:
 
-        case VerificationStatus.LOCKED:
-            context["restrict_account"] = True
+                    case VerificationStatus.USED:
+                        return redirect("dashboard")
 
-        case VerificationStatus.COOLDOWN:
-            wait_time = SecondsToTime(seconds=verification.cooldown_seconds_left).format_to_human_readable()
-            messages.info(request, _(f"You need to wait {wait_time} before request a new code"))
+                    case VerificationStatus.LOCKED:
+                        context["restrict_account"] = True
 
-        case VerificationStatus.RESENT:
-            messages.success( request,
-                             _("We've sent a new verification code to your email.")
+                    case VerificationStatus.COOLDOWN:
+                        wait_time = SecondsToTime(
+                            seconds=verification.cooldown_seconds_left
+                        ).format_to_human_readable()
+
+                        message_type = "info"
+                        message = _(f"You need to wait {wait_time} before requesting a new code.")
+
+                    case VerificationStatus.CAN_SEND:
+                        secure_code = generate_secure_code()
+
+                        verification.increment_resend(commit=False)
+                        verification.verification_code = secure_code
+                        verification.set_expiry(
+                            minutes=settings.DEFAULT_CODE_EXPIRY_IN_MINUTES
+                        )
+                        verification.save()
+
+                        expiry_time = SecondsToTime(
+                            verification.get_expiry_seconds()
+                        ).format_to_human_readable()
+
+                        transaction.on_commit(
+                            lambda: send_confirmation_email_with_async(
+                                username=user.username,
+                                email=user.email,
+                                subject="New Verification Code Request: Confirm Your Email Address",
+                                verification_code=secure_code,
+                                expiry_time=expiry_time,
+                            )
                         )
 
-            verification.increment_resend(commit=False)
-            verification.verification_code = secure_code
-            verification.set_expiry(minutes=settings.DEFAULT_CODE_EXPIRY_IN_MINUTES)
-            verification.save()
+                        email_scheduled = True
 
-            send_confirmation_email_with_async(username=user.username,
-                                                email=user.email,
-                                                subject="New Verification Code Request: Confirm Your Email Address",
-                                                verification_code=secure_code,
-                                                expiry_time=SecondsToTime(verification.get_expiry_seconds()).format_to_human_readable())
+                    case _:
+                        logger.error(
+                            "Unexpected verification status returned. "
+                            "User ID: %s, Verification ID: %s, Status: %s",
+                            user.pk,
+                            verification.pk,
+                            status,
+                        )
+                        message_type = "error"
+                        message = _("Something went wrong and the email wasn't sent.")
 
-    return render(request, "authentication/bank/authentication/verify_code.html", context=context)
+        # Display messages after the transaction has completed.
+        if email_scheduled:
+            messages.success(
+                request,
+                _("We've requested a new verification code for you. Please check your inbox shortly.")
+            )
+
+        elif message_type == "error":
+            messages.error(request, message)
+
+        elif message_type == "info":
+            messages.info(request, message)
+
+    return render(
+        request,
+        "authentication/bank/authentication/verify_code.html",
+        context=context,
+    )
 
 
-
+@require_http_methods(["GET", "POST"])
 def forgotten_password(request):
 
     form  = ForgottenPasswordForm()

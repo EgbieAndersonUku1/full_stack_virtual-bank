@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'card_request.apps.CardRequestConfig',
     'card.apps.CardConfig',
     'notification.apps.NotificationConfig',
+    'email_outbox.apps.EmailOutboxConfig',
 
 
 
@@ -183,14 +184,14 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = join(BASE_DIR, 'staticfiles')
 
-
-
 Q_CLUSTER = {
     'name': 'virtualBank',
     'workers': 4,
     'recycle': 500,
     'timeout': 300,
     'retry': 600,
+    'max_attempts': 5,
+    'ack_failures': False,
     'compress': True,
     'save_limit': 1000,
     'queue_limit': 1000,
