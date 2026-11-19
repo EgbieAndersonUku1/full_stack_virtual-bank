@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'card_request.apps.CardRequestConfig',
     'card.apps.CardConfig',
     'notification.apps.NotificationConfig',
+    'email_outbox.apps.EmailOutboxConfig',
 
 
 
