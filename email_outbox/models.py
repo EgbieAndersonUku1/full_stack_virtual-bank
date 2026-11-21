@@ -2,7 +2,6 @@ from django.db import models
 from uuid import uuid4
 
 # Create your models here.
-from django.db import models
 
 
 # Keep them outside because constraint is throwing an error because it can't find them even though
