@@ -86,3 +86,26 @@ class InvalidNotificationTypeError(TypeError):
 
 class SavingAccountNotOfferedError(ValueError):
     pass
+
+
+class MissingEmailOutboxFernetKey(ValueError):
+    pass
+
+
+class InvalidEmailOutboxFernetKey(ValueError, TypeError):
+    pass
+
+
+class EmailOutBoxPayloadIsNotADictionary(TypeError):
+    pass
+
+
+class InvalidEmailOutBoxPayload(TypeError, ValueError):
+    pass
+
+class UnsupportedSecurityEvent(ValueError):
+    pass
+
+
+class InvalidSchemaVersion(ValueError):
+    pass

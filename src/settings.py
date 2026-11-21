@@ -39,6 +39,10 @@ TEMPLATES_DIRS = BASE_DIR / "templates"
 DEBUG = True
 
 ALLOWED_HOSTS = []
+EMAIL_OUTBOX_ALLOWED_URL_HOSTS = frozenset({
+    "localhost",
+    "127.0.0.1",
+})
 
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -453,3 +457,7 @@ DJANGO_AUTH_RECOVERY_CODE_EMAIL_SUCCESS_MSG = "Your recovery codes email has bee
 
 from django_auth_recovery_codes.loggers.logger_config import DJANGO_AUTH_RECOVERY_CODES_LOGGING
 LOGGING = DJANGO_AUTH_RECOVERY_CODES_LOGGING
+
+
+# EMAIL OUTBOX FERNET KEY
+EMAIL_OUTBOX_FERNET_KEY = getenv("EMAIL_OUTBOX_FERNET_KEY")

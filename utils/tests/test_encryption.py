@@ -74,7 +74,7 @@ class EncryptionTest(TestCase):
         # THEN: A TypeError is raised with the expected message.
         with self.assertRaisesRegex(
             TypeError,
-            "Expected the value to be a string. Got type int"
+            "Expected the value to be a string or dict. Got type int"
         ):
             self.encryption.encrypt(invalid_plaintext)
 
@@ -87,7 +87,7 @@ class EncryptionTest(TestCase):
         # THEN: A TypeError should be raised with the expected message.
         with self.assertRaisesRegex(
             TypeError,
-            "Expected the value to be a string. Got type int"
+            "Expected the value to be a string or dict. Got type int"
         ):
             self.encryption.decrypt(invalid_ciphertext)
 
@@ -140,6 +140,28 @@ class EncryptionTest(TestCase):
         ):
             Encryption(invalid_encryption_key)
 
+    def test_encryption_encrypts_dict(self):
+
+        # GIVEN: A dictionary is pass in as a payload to the Encryption
+        payload = {
+            "from": "test_example.com",
+            "to": "from@example.com",
+            "subject": "test subject"
+        }
+
+         # WHEN: The encrypt method called
+         # THEN: The result would be a ciphertext and a string.
+        encrypted_payload = self.encryption.encrypt(payload)
+
+        self.assertIsInstance(encrypted_payload, str)
+        self.assertNotEqual(encrypted_payload, payload)
+
+        # decrypt encrypted payload to see if matches payload
+        decrypted_payload = self.encryption.decrypt(encrypted_payload, to_json=True)
+
+        self.assertEqual(decrypted_payload,
+                         payload,
+                         "Decrypted payload should match plaintext payload")
 
 
 
