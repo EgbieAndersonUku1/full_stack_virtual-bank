@@ -39,6 +39,10 @@ TEMPLATES_DIRS = BASE_DIR / "templates"
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+# Previous encryption keys retained for decrypting older email payloads.
+EMAIL_OUTBOX_OLD_FERNET_KEYS = []
+
 EMAIL_OUTBOX_ALLOWED_URL_HOSTS = frozenset({
     "localhost",
     "127.0.0.1",

@@ -1,6 +1,6 @@
 import json
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, MultiFernet
 
 
 
@@ -31,6 +31,17 @@ class Encryption:
                 raise TypeError(
                     f"Expected the value to be a string or dict. Got type {type(value).__name__}"
                 )
+
+    @staticmethod
+    def build_multi_fernet(primary_key: str, old_keys: list) -> MultiFernet:
+
+        if not isinstance(primary_key, str):
+            raise ValueError(f"The primary_key is not a string. Expected a string got type {type(primary_key).__name__}")
+        if not isinstance(old_keys, list):
+            raise TypeError(f"The old keys must me a list. Expected a list got type {type(old_keys).__name__}")
+
+        fernets = [Fernet(primary_key), *(Fernet(key) for key in old_keys)]
+        return MultiFernet(fernets)
 
     @staticmethod
     def generate_key():
@@ -82,7 +93,7 @@ class Encryption:
 
         return self._fernet.encrypt(serialized_plaintext.encode()).decode()
 
-    def decrypt(self, encrypted_text: str, to_json: bool = False) -> str | dict:
+    def decrypt(self, encrypted_text: str | bytes, to_json: bool = False) -> str | dict:
         """Decrypts an encrypted string back into its original string or dictionary.
 
         Because the Encryption class accepts both strings and dictionaries,
@@ -92,7 +103,7 @@ class Encryption:
         to reconstruct and return the original dictionary.
 
         Args:
-            encrypted_text (str): The encrypted string to be decrypted.
+            encrypted_text (str | bytes): The encrypted string or bytes to be decrypted.
             to_json (bool, optional): If True, parses the decrypted string as
                 JSON and returns a dictionary. Defaults to False.
 
@@ -117,12 +128,20 @@ class Encryption:
             >>> cipher.decrypt(token, to_json=True)
             {'user_id': 42, 'role': 'admin'}
         """
-        self._validate(encrypted_text)
+        if not isinstance(encrypted_text, (str, bytes)):
+            raise TypeError(
+                f"encrypted_text must be a str or bytes. Got type {type(encrypted_text).__name__}"
+            )
 
         if not isinstance(to_json, bool):
             raise TypeError(f"to_json must be a bool. Got type {type(to_json).__name__}")
 
-        decrypted_str = self._fernet.decrypt(encrypted_text.encode()).decode()
+        if isinstance(encrypted_text, str):
+            token_bytes = encrypted_text.encode("utf-8")
+        else:
+            token_bytes = encrypted_text
+
+        decrypted_str = self._fernet.decrypt(token_bytes).decode()
 
         if to_json:
             return json.loads(decrypted_str)

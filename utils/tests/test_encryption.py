@@ -87,7 +87,7 @@ class EncryptionTest(TestCase):
         # THEN: A TypeError should be raised with the expected message.
         with self.assertRaisesRegex(
             TypeError,
-            "Expected the value to be a string or dict. Got type int"
+            "encrypted_text must be a str or bytes. Got type int"
         ):
             self.encryption.decrypt(invalid_ciphertext)
 
