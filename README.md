@@ -4,7 +4,7 @@ This project is currently under active development and is continuously evolving.
 
 Features, architecture, database structure, admin workflows, and internal banking logic may change as the system grows.
 
-The project is active development with the goal of simulatating a real-world banking platform, with a strong focus on:
+The project is under active development with the goal of simulating a real-world banking platform, with a strong focus on:
 
 - secure financial workflows
 - deterministic account provisioning
@@ -40,6 +40,12 @@ The system is designed to simulate banking-style infrastructure and operational 
 - [Database Setup](#database-setup-postgresql--pgadmin)
 - [Environment Variables](#environment-variables)
 - [Generate the Email Outbox Encryption Key](#generate-the-email-outbox-encryption-key)
+- [Email Outbox Fernet Key Rotation (Phase 4)](#email-outbox-fernet-key-rotation-phase-4)
+  - [Batch Rotation and Transaction Safety](#batch-rotation-and-transaction-safety)
+  - [Primary-Key Detection and Safe Retries](#primary-key-detection-and-safe-retries)
+  - [Dry-Run Behaviour](#dry-run-behaviour)
+  - [Key Rotation Testing](#key-rotation-testing)
+  - [Current Key Rotation Limitations](#current-key-rotation-limitations)
 - [Run Migrations](#run-migrations)
 - [Seed Demo Banking Data](#-seed-demo-banking-data)
 - [Seed Banks](#seed-banks)
@@ -231,20 +237,166 @@ Make sure your existing `.env` loading configuration is active, then restart Dja
 For local development, the payload URL allowlist in `src/settings.py` currently permits `localhost` and `127.0.0.1`. Configure your trusted application domain before using the outbox in a production environment.
 
 ---
+## Phase 4:  Secure Email Outbox: Fernet Key Rotation (Continued)
+
+**Status:** In Progress
+
+### Overview
+
+The Fernet key rotation management command has been extended to support database-wide payload rotation through bounded batch processing.
+
+The implementation focuses on preserving encrypted payload integrity, avoiding unnecessary database writes, and supporting recovery from interrupted rotation operations.
+
+### CLI Usage & Options
+
+Run the management command with optional flags to control batch sizing, failure handling, and dry-run previews:
+
+```bash
+# Preview eligible record count without modifying the database
+python manage.py rotate_email_outbox_keys --dry-run
+
+# Rotate in batches of 500, skipping bad tokens and reporting them at the end (default)
+python manage.py rotate_email_outbox_keys --batch-size 500
+
+# Abort immediately on the first decryption failure
+python manage.py rotate_email_outbox_keys --batch-size 500 --fail-fast
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--batch-size <int>` | `100` | Maximum number of record identifiers fetched per keyset pagination query. |
+| `--dry-run` | `False` | Counts eligible non-empty records without writing to the database. |
+| `--fail-fast` | `False` | Stops execution immediately on the first `InvalidToken` instead of skipping failed records. |
+
+### Batch Key Rotation
+
+The management command retrieves eligible email outbox records using UUID-based keyset pagination.
+
+Each record is processed independently using a database transaction and row-level locking.
+
+This approach:
+
+- Limits the number of record identifiers retrieved per batch.
+- Avoids loading the entire email outbox into memory.
+- Prevents repeated selection of the same record within a rotation run.
+- Avoids holding database locks across the entire rotation operation.
+- Preserves successful progress when a subsequent record fails.
+
+### Primary-Key Detection
+
+Before rotating an encrypted payload, the command attempts authenticated decryption using the configured primary Fernet key.
+
+If decryption succeeds, the payload is already encrypted with the required key and does not require rotation.
+
+The original encrypted token remains unchanged, and no database update is performed.
+
+If primary-key decryption fails, the command attempts rotation using the configured MultiFernet key chain.
+
+| Payload Condition | Behaviour |
+|---|---|
+| Empty payload | Skip |
+| Encrypted with the primary key | Skip |
+| Encrypted with a configured previous key | Rotate |
+| Cannot be decrypted with any configured key (default) | Log error, skip record, continue run, and raise `CommandError` at completion |
+| Cannot be decrypted with any configured key (`--fail-fast`) | Abort immediately and raise `CommandError` |
+
+### Rotation Counting
+
+The `rotate_record()` method communicates whether a database rotation was performed through its return value.
+
+- `True`: The encrypted payload was successfully rotated and updated.
+- `False`: No rotation or database update was required.
+- Exception (`InvalidToken`): The record could not be safely rotated.
+
+Only successfully rotated records contribute to the command's rotation count.
+
+### Transaction Management and Partial Failures
+
+Each record is processed within its own atomic database transaction.
+
+The rotation command does not use a single transaction covering the entire operation.
+
+If a record fails decryption (`InvalidToken`):
+
+- Earlier successful rotations remain committed under normal autocommit execution.
+- The failing record retains its original encrypted payload.
+- **Default mode (`--fail-fast` omitted):** The error is logged to `stderr` (capped at 20 individual log entries to prevent log flooding), remaining records continue processing, and a summary `CommandError` listing up to 20 failed record IDs is raised at the end of the run.
+- **Fail-fast mode (`--fail-fast` enabled):** Execution halts immediately and raises a `CommandError` identifying the failing record, leaving subsequent records unprocessed.
+
+The current automated tests verify this behaviour within Django's test transaction. Further transaction-level testing is required to independently verify committed progress across database connections.
+
+### Dry-Run Behaviour
+
+The management command supports a dry-run option that counts records containing nonempty encrypted payloads without modifying the database.
+
+The dry-run count represents candidate records, not necessarily records requiring rotation.
+
+Dry-run execution does not currently authenticate encrypted payloads or determine which encryption key was used.
+
+### Security Considerations
+
+- Previous encryption keys must remain available throughout the rotation process.
+- Previous keys must not be removed until all relevant encrypted payloads have been successfully rotated and verified.
+- Payloads that cannot be decrypted must be investigated rather than overwritten.
+- Records already encrypted with the primary key should remain unchanged.
+- Encryption keys and decrypted payloads must never be exposed through command output or application logs.
+- Error reporting truncates individual failure output after 20 records to prevent log bloat during mass key-mismatch events.
+- Rotation must not unnecessarily modify email outbox lifecycle metadata.
+
+### Testing
+
+The key rotation management command currently has 12 passing automated tests.
+
+Test coverage includes:
+
+- Individual encrypted payload rotation.
+- Empty payload protection.
+- Failed decryption protection.
+- Batch pagination without duplicate or missing records.
+- Exclusion of cleared payloads.
+- Invalid batch-size validation.
+- Dry-run database protection.
+- Rotation across multiple batches.
+- Command-level failure protection (`--fail-fast` and default skip-and-report modes).
+- Error log truncation when failures exceed the display threshold.
+- Individual primary-key detection.
+- Command-level skipping of already-rotated records.
+- Partial rotation failure behaviour.
+
+Run the management command test suite:
+
+`python manage.py test email_outbox.tests.test_rotate_email_outbox_keys`
+
+**Current Result: 13 tests passing.**
+
+### Current Limitations
+
+- Interrupted rotation recovery requires additional integration testing.
+- Full command idempotency requires verification.
+- Environment-based previous-key configuration remains outstanding.
+- Configuration validation and operational failure reporting require further refinement.
+- Production transaction and concurrency safeguards require additional verification.
+- A documented operational key rotation procedure remains outstanding.
+
+### Production Readiness
+
+The key rotation implementation remains under development.
+
+Phase 4 remains in progress.
+
+---
 
 ## PostgreSQL Must Be Running
 
 If the Django development server hangs after:
 
 ```
-
 System check identified no issues (0 silenced).
 ```
 
 and does not continue to:
 
 ```
-
 Starting development server at http://127.0.0.1:8000/
 ```
 
@@ -261,7 +413,6 @@ Django attempts to connect to the database during startup, and if the database i
 2. Type:
 
 ```
-
 services.msc
 ```
 
@@ -275,7 +426,6 @@ services.msc
 5. (Recommended) Set Startup Type to:
 
 ```
-
 Automatic
 ```
 
@@ -763,7 +913,7 @@ Without this, the user will authenticate successfully but will not be authorised
 Example:
 
 ```text
-You are authenticated as \\<email>, but are not authorised to access this page.
+You are authenticated as \\\\<email>, but are not authorised to access this page.
 ```
 
 ---

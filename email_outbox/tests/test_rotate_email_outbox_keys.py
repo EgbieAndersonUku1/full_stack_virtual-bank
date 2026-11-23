@@ -1,13 +1,16 @@
+import uuid
+
 from django.test import TestCase
 from cryptography.fernet import InvalidToken
 from django.test import override_settings
 from django.utils import timezone
-from email_outbox.management.commands.rotate_email_outbox_keys import Command
+from django.core.management import call_command
+from django.core.management.base import CommandError
 
-from utils.security.encryption import Encryption
+from email_outbox.management.commands.rotate_email_outbox_keys import Command
 from email_outbox.models import EmailOutboxSupersededReason, EmailOutboxType, Status
 from email_outbox.models import EmailOutbox
-
+from utils.security.encryption import Encryption
 
 
 class EmailOutboxKeyRotationCommandTests(TestCase):
@@ -186,3 +189,278 @@ class EmailOutboxKeyRotationCommandTests(TestCase):
         batches = list(Command().get_record_batches(batch_size=2))
 
         self.assertEqual(batches, [[eligible_email.pk]])
+
+    def test_command_rejects_invalid_batch_size(self):
+        with self.assertRaisesMessage(
+            CommandError,
+            "--batch-size must be a positive integer.",
+        ):
+            call_command(
+                "rotate_email_outbox_keys",
+                batch_size=0,
+
+                dry_run=True,
+            )
+
+    def test_dry_run_does_not_modify_encrypted_payloads(self):
+        old_key     = Encryption.generate_key()
+        primary_key = Encryption.generate_key()
+
+        original_payload = {
+            "recipient": "test@example.com",
+            "subject": "Test notification",
+        }
+
+        encrypted_payload = Encryption(old_key).encrypt(original_payload)
+
+        email = EmailOutbox.objects.create(
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=encrypted_payload,
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[old_key],
+        ):
+            call_command(
+                "rotate_email_outbox_keys",
+                dry_run=True,
+
+                batch_size=1,
+            )
+
+        email.refresh_from_db()
+
+        self.assertEqual(email.payload, encrypted_payload)
+        self.assertEqual(email.status, Status.PENDING)
+
+    def test_command_rotates_records_across_multiple_batches(self):
+
+        old_key     = Encryption.generate_key()
+        primary_key = Encryption.generate_key()
+
+        original_payload = {
+            "recipient": "test@example.com",
+            "subject": "Test notification",
+        }
+
+        records = []
+
+        for _ in range(3):
+            encrypted_payload = Encryption(old_key).encrypt(original_payload)
+            record = EmailOutbox.objects.create(
+                email_type=EmailOutboxType.NOTIFICATION,
+                payload=encrypted_payload,
+                status=Status.PENDING,
+                scheduled_at=timezone.now(),
+            )
+            records.append(record)
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[old_key],
+        ):
+            call_command(
+                "rotate_email_outbox_keys",
+
+                batch_size=2,
+            )
+
+            for record in records:
+                record.refresh_from_db()
+
+                decrypted_payload = Encryption(primary_key).decrypt(record.payload, to_json=True)
+
+                self.assertEqual(
+                    decrypted_payload,
+                    original_payload,
+                )
+
+    def test_command_preserves_payload_when_rotation_fails(self):
+
+        primary_key = Encryption.generate_key()
+        unknown_key = Encryption.generate_key()
+
+        encrypted_payload = Encryption(unknown_key).encrypt(
+            {"recipient": "test@example.com"}
+        )
+
+        record = EmailOutbox.objects.create(
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=encrypted_payload,
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+        ):
+            with self.assertRaises(CommandError):
+                call_command(
+                    "rotate_email_outbox_keys",
+                    batch_size=1,
+                )
+
+        record.refresh_from_db()
+
+        self.assertEqual(record.payload, encrypted_payload)
+        self.assertEqual(record.status, Status.PENDING)
+
+    def test_rotate_record_skips_payload_already_using_primary_key(self):
+        primary_key = Encryption.generate_key()
+
+        original_payload = {
+            "recipient": "test@example.com",
+            "subject": "Already encrypted with primary key",
+        }
+
+        encrypted_payload = Encryption(primary_key).encrypt(original_payload)
+
+        record  = EmailOutbox.objects.create(
+                email_type=EmailOutboxType.NOTIFICATION,
+                payload=encrypted_payload,
+                status=Status.PENDING,
+                scheduled_at=timezone.now(),
+                )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+            ):
+
+            result = Command().rotate_record(record.pk)
+
+        record.refresh_from_db()
+
+        self.assertFalse(result)
+        self.assertEqual(record.payload, encrypted_payload)
+
+    def test_command_skips_records_already_using_primary_key(self):
+        primary_key = Encryption.generate_key()
+
+        original_payload = {
+            "recipient": "test@example.com",
+            "subject": "Already using primary key",
+        }
+
+        encrypted_payload = Encryption(primary_key).encrypt(original_payload)
+
+        record = EmailOutbox.objects.create(
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=encrypted_payload,
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+        ):
+            call_command(
+                "rotate_email_outbox_keys",
+                batch_size=1,
+            )
+
+        record.refresh_from_db()
+
+        self.assertEqual(record.payload, encrypted_payload)
+        self.assertEqual(record.status, Status.PENDING)
+
+    def test_command_skips_invalid_token_by_default_and_raises_at_end(self):
+        primary_key = Encryption.generate_key()
+        old_key     = Encryption.generate_key()
+        unknown_key = Encryption.generate_key()
+        payload     = {"test": "temporary payload"}
+
+        record_before = EmailOutbox.objects.create(
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=Encryption(old_key).encrypt(payload),
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+        unknown_record = EmailOutbox.objects.create(
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=Encryption(unknown_key).encrypt({"test": "unknown key"}),
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+        record_after = EmailOutbox.objects.create(
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=Encryption(old_key).encrypt(payload),
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[primary_key, old_key],
+        ):
+            with self.assertRaises(CommandError):
+                call_command("rotate_email_outbox_keys", batch_size=2)
+
+        record_before.refresh_from_db()
+        unknown_record.refresh_from_db()
+        record_after.refresh_from_db()
+
+        # Both valid records before and after the bad record should be rotated
+        self.assertEqual(Encryption(primary_key).decrypt(record_before.payload, to_json=True), payload)
+        self.assertEqual(Encryption(primary_key).decrypt(record_after.payload, to_json=True), payload)
+
+        # Bad record remains untouched with its original key
+        self.assertEqual(
+            Encryption(unknown_key).decrypt(unknown_record.payload, to_json=True),
+            {"test": "unknown key"},
+        )
+
+    def test_command_fail_fast_stops_immediately_on_invalid_token(self):
+
+        primary_key = Encryption.generate_key()
+        old_key = Encryption.generate_key()
+        unknown_key = Encryption.generate_key()
+        payload = {"test": "temporary payload"}
+
+        record_before = EmailOutbox.objects.create(
+            pk=uuid.UUID("00000000-0000-0000-0000-000000000001"),
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=Encryption(old_key).encrypt(payload),
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+        unknown_record = EmailOutbox.objects.create(
+            pk=uuid.UUID("00000000-0000-0000-0000-000000000002"),
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=Encryption(unknown_key).encrypt({"test": "unknown key"}),
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+        record_after = EmailOutbox.objects.create(
+            pk=uuid.UUID("00000000-0000-0000-0000-000000000003"),
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=Encryption(old_key).encrypt(payload),
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[primary_key, old_key],
+        ):
+            with self.assertRaises(CommandError):
+                call_command("rotate_email_outbox_keys", batch_size=2, fail_fast=True)
+
+        record_before.refresh_from_db()
+        unknown_record.refresh_from_db()
+        record_after.refresh_from_db()
+
+        # Record before failure was committed
+        self.assertEqual(Encryption(primary_key).decrypt(record_before.payload, to_json=True), payload)
+
+        # Bad record and subsequent record were NOT rotated
+        self.assertEqual(
+            Encryption(unknown_key).decrypt(unknown_record.payload, to_json=True),
+            {"test": "unknown key"},
+        )
+        self.assertEqual(Encryption(old_key).decrypt(record_after.payload, to_json=True), payload)

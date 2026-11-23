@@ -12,6 +12,7 @@ db.sqlite3-journal
 media
 logs/
 
+t_work.py
 
 !static/
 
