@@ -4,6 +4,7 @@ from django.test import TestCase
 from cryptography.fernet import InvalidToken
 from django.test import override_settings
 from django.utils import timezone
+from io import StringIO
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
@@ -464,3 +465,138 @@ class EmailOutboxKeyRotationCommandTests(TestCase):
             {"test": "unknown key"},
         )
         self.assertEqual(Encryption(old_key).decrypt(record_after.payload, to_json=True), payload)
+
+    def test_command_recovers_from_interrupted_rotation(self):
+        """
+        Verify that an interrupted email outbox key rotation can be
+        safely resumed without modifying previously rotated payloads.
+
+        This test covers three consecutive command executions:
+
+        1. Initial rotation:
+
+        - Successfully rotates the first record to the primary key.
+        - Fails when the second record's encryption key is unavailable.
+        - Preserves the successful rotation and the unrotated payload.
+
+        2. Recovery:
+
+        - Restores the missing key to the configured old keys.
+        - Skips the previously rotated record.
+        - Successfully rotates the remaining record.
+        - Preserves the original plaintext.
+        - Reports exactly one successful rotation.
+
+        3. Idempotency:
+
+        - Skips both records because they already use the primary key.
+        - Preserves both encrypted tokens without modification.
+        - Reports zero successful rotations.
+
+        This will ensure that any interrupted key rotation operations are
+        recoverable and repeatable without unnecessary re-encryption
+        or loss of previously completed work.
+        """
+        primary_key = Encryption.generate_key()
+        old_key     = Encryption.generate_key()
+        unknown_key = Encryption.generate_key()
+
+        original_payload = {"recipient": "test@example.com"}
+        valid_payload   = Encryption(old_key).encrypt(original_payload)
+        invalid_payload = Encryption(unknown_key).encrypt(original_payload)
+
+        first_record = EmailOutbox.objects.create(
+            pk=uuid.UUID("00000000-0000-0000-0000-000000000001"),
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=valid_payload,
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+
+        second_record = EmailOutbox.objects.create(
+            pk=uuid.UUID("00000000-0000-0000-0000-000000000002"),
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=invalid_payload,
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+
+        # Simulate our first error, we delibrately remove the invalid key from the chain
+        # so, MultiFernet can't find it, so throws an error when trying to re-encrypting
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[old_key]
+            ):
+            with self.assertRaises(CommandError):
+                call_command(
+                    "rotate_email_outbox_keys",
+                    batch_size=1,
+                )
+
+        first_record.refresh_from_db()
+
+        first_rotated_token  = first_record.payload
+
+        self.assertNotEqual(first_rotated_token, valid_payload)
+        self.assertEqual(Encryption(primary_key).decrypt(first_rotated_token, to_json=True), original_payload)
+        self.assertEqual(second_record.payload, invalid_payload)
+
+        output = StringIO()
+
+        # We simulate recovering attempt by adding the unknown_key to chain so that MultiFernet can use it
+        # It will decrypt it with the unknown key and encrypt with the primary_key
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[old_key, unknown_key],
+            ):
+
+            call_command(
+                "rotate_email_outbox_keys",
+                batch_size=1,
+                stdout=output,
+            )
+
+        first_record.refresh_from_db()
+        second_record.refresh_from_db()
+
+        self.assertEqual(first_record.payload, first_rotated_token)
+        self.assertNotEqual(second_record.payload, invalid_payload,)
+
+        self.assertEqual(
+            Encryption(primary_key).decrypt(second_record.payload, to_json=True),
+            original_payload,
+        )
+
+        self.assertIn(
+            "Successfully rotated 1 email outbox payload(s).",
+            output.getvalue(),
+        )
+        second_rotated_token = second_record.payload
+
+        output = StringIO()
+
+        # rotate again but they should be no rotation
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[old_key, unknown_key],
+        ):
+            call_command(
+                "rotate_email_outbox_keys",
+                batch_size=1,
+                stdout=output,
+            )
+
+        first_record.refresh_from_db()
+        second_record.refresh_from_db()
+
+        self.assertEqual(
+            first_record.payload,
+            first_rotated_token,
+        )
+
+        self.assertEqual(second_record.payload, second_rotated_token)
+
+        self.assertIn(
+            "Successfully rotated 0 email outbox payload(s).",
+            output.getvalue(),
+        )

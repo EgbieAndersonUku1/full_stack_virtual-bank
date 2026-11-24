@@ -20,17 +20,17 @@ logger = logging.getLogger(__name__)
 def _get_fernet() -> MultiFernet:
 
     try:
-        key = settings.EMAIL_OUTBOX_FERNET_KEY
+        primary_key = settings.EMAIL_OUTBOX_FERNET_KEY
     except AttributeError as e:
         error_msg = str(e)
         logger.info(error_msg)
         raise AttributeError(error_msg)
 
-    if key is None:
+    if primary_key is None:
         raise MissingEmailOutboxFernetKey("EMAIL_OUTBOX_FERNET_KEY is not configured.")
 
     try:
-        return Encryption.build_multi_fernet(key,settings.EMAIL_OUTBOX_OLD_FERNET_KEYS)
+        return Encryption.build_multi_fernet(primary_key, settings.EMAIL_OUTBOX_OLD_FERNET_KEYS)
     except (ValueError, TypeError, AssertionError) as exc:
         logger.critical("The email outbox key is invalid")
         raise InvalidEmailOutboxFernetKey(
