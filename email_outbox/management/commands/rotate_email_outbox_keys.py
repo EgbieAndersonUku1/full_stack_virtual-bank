@@ -2,15 +2,10 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from cryptography.fernet import InvalidToken
 
-from django.conf import settings
-
-from email_outbox.payload_codec import rotate_payload
-
-
-
+from email_outbox.payload_codec import _get_fernet, is_encrypted_with_primary_key, rotate_payload
 
 from email_outbox.models import EmailOutbox
-from utils.security.encryption import Encryption
+
 
 
 class Command(BaseCommand):
@@ -111,8 +106,13 @@ class Command(BaseCommand):
                 f"Failed to rotate {len(failed_ids)} record(s) due to InvalidToken{suffix}: {sample_ids}"
             )
 
-    def rotate_record(self, record_id):
+    def validate_fernet_configuration(self) -> None:
+        """Validate the primary and old Fernet keys configured in Django settings."""
+        _get_fernet()
 
+
+    def rotate_record(self, record_id):
+        self.validate_fernet_configuration()
         with transaction.atomic():
             record = (
                 EmailOutbox.objects
@@ -123,17 +123,7 @@ class Command(BaseCommand):
             if not record.payload:
                 return False
 
-            primary_fernet = Encryption(settings.EMAIL_OUTBOX_FERNET_KEY)
-
-            try:
-                primary_fernet.decrypt(record.payload)
-            except InvalidToken:
-                # The primary key cannot decrypt this token.
-                # Attempt rotation using the configured old keys.
-                pass
-            else:
-                # Already encrypted with the primary key.
-                # No database update is necessary.
+            if is_encrypted_with_primary_key(record.payload):
                 return False
 
             rotated_payload = rotate_payload(record.payload)

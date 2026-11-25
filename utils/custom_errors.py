@@ -88,7 +88,7 @@ class SavingAccountNotOfferedError(ValueError):
     pass
 
 
-class MissingEmailOutboxFernetKey(ValueError):
+class MissingEmailOutboxFernetKey(ValueError, TypeError):
     pass
 
 

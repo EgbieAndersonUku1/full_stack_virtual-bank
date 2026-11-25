@@ -1,7 +1,7 @@
 import uuid
 
 from django.test import TestCase
-from cryptography.fernet import InvalidToken
+from cryptography.fernet import Fernet, InvalidToken
 from django.test import override_settings
 from django.utils import timezone
 from io import StringIO
@@ -11,6 +11,7 @@ from django.core.management.base import CommandError
 from email_outbox.management.commands.rotate_email_outbox_keys import Command
 from email_outbox.models import EmailOutboxSupersededReason, EmailOutboxType, Status
 from email_outbox.models import EmailOutbox
+from utils.custom_errors import InvalidEmailOutboxFernetKey
 from utils.security.encryption import Encryption
 
 
@@ -600,3 +601,35 @@ class EmailOutboxKeyRotationCommandTests(TestCase):
             "Successfully rotated 0 email outbox payload(s).",
             output.getvalue(),
         )
+
+    def test_rotate_record_rejects_invalid_old_key(self):
+        """
+        Ensure `rotate_record` validates old Fernet keys before short-circuiting
+        on records already encrypted with the primary key, leaving the record's
+        payload and status untouched if any configured key is invalid.
+        """
+        primary_key = Encryption.generate_key()
+
+        encrypted_payload = Encryption(primary_key).encrypt(
+           {"recipient": "test@example.com"}
+        )
+
+        record = EmailOutbox.objects.create(
+            email_type=EmailOutboxType.NOTIFICATION,
+            payload=encrypted_payload,
+            status=Status.PENDING,
+            scheduled_at=timezone.now(),
+        )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=["invalid-old-key"]
+        ):
+            with self.assertRaises(InvalidEmailOutboxFernetKey):
+                Command().rotate_record(record.pk)
+
+
+        record.refresh_from_db()
+
+        self.assertEqual(record.payload, encrypted_payload)
+        self.assertEqual(record.status, Status.PENDING)
