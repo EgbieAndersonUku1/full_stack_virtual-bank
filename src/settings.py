@@ -19,6 +19,8 @@ from dotenv import load_dotenv
 from os import getenv
 from os import makedirs
 
+from utils.configuration import parse_old_fernet_keys
+
 
 load_dotenv()
 
@@ -41,8 +43,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Previous encryption keys retained for decrypting older email payloads.
-EMAIL_OUTBOX_OLD_FERNET_KEYS = []
-
 EMAIL_OUTBOX_ALLOWED_URL_HOSTS = frozenset({
     "localhost",
     "127.0.0.1",
@@ -465,3 +465,13 @@ LOGGING = DJANGO_AUTH_RECOVERY_CODES_LOGGING
 
 # EMAIL OUTBOX FERNET KEY
 EMAIL_OUTBOX_FERNET_KEY = getenv("EMAIL_OUTBOX_FERNET_KEY")
+old_keys = getenv("EMAIL_OUTBOX_OLD_FERNET_KEYS", [])
+
+
+
+EMAIL_OUTBOX_FERNET_KEY = getenv("EMAIL_OUTBOX_FERNET_KEY")
+
+old_keys = getenv("EMAIL_OUTBOX_OLD_FERNET_KEYS", "")
+EMAIL_OUTBOX_OLD_FERNET_KEYS = parse_old_fernet_keys(
+    getenv("EMAIL_OUTBOX_OLD_FERNET_KEYS", "")
+)

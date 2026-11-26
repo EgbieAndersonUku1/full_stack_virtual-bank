@@ -41,13 +41,15 @@ The system is designed to simulate banking-style infrastructure and operational 
 - [Environment Variables](#environment-variables)
 - [Generate the Email Outbox Encryption Key](#generate-the-email-outbox-encryption-key)
 - [Email Outbox Fernet Key Rotation (Phase 4)](#email-outbox-fernet-key-rotation-phase-4)
-  - [Batch Rotation and Transaction Safety](#batch-rotation-and-transaction-safety)
-  - [Primary-Key Detection and Safe Retries](#primary-key-detection-and-safe-retries)
+  - [Batch Rotation and Transaction Safety](#batch-key-rotation)
+  - [Primary-Key Detection and Safe Retries](#primary-key-detection)
+  - [Environment-Based Previous-Key Configuration](#environment-based-previous-key-configuration)
+  - [Interrupted Rotation Recovery and Idempotency](#interrupted-rotation-recovery-and-idempotency)
   - [Dry-Run Behaviour](#dry-run-behaviour)
-  - [Key Rotation Testing](#key-rotation-testing)
-  - [Current Key Rotation Limitations](#current-key-rotation-limitations)
+  - [Key Rotation Testing](#testing)
+  - [Current Key Rotation Limitations](#current-limitations)
 - [Run Migrations](#run-migrations)
-- [Seed Demo Banking Data](#-seed-demo-banking-data)
+- [Seed Demo Banking Data](#seed-demo-banking-data)
 - [Seed Banks](#seed-banks)
 - [Reset Simulation Data](#reset-simulation-data)
 - [Reseeding Workflow](#reseeding-workflow)
@@ -81,12 +83,14 @@ This project is tested and recommended with:
 
 See the official Python downloads page:
 
-https://www.python.org/downloads/
+https\://www.python.org/downloads/
 
 ### Recommended Check Before Setup
 
 ```bash
+
 python --version
+
 ```
 
 ---
@@ -96,7 +100,9 @@ python --version
 ## 1. Clone the Repository
 
 ```bash
-git clone https://github.com/EgbieAndersonUku1/full_stack_virtual-bank .
+
+git clone https\://github.com/EgbieAndersonUku1/full_stack_virtual-bank .
+
 ```
 
 ---
@@ -106,13 +112,17 @@ git clone https://github.com/EgbieAndersonUku1/full_stack_virtual-bank .
 ### Recommended (ensures correct Python version)
 
 ```bash
+
 py -3.13 -m venv venv
+
 ```
 
 If Python 3.13 is not installed:
 
 ```bash
+
 py -3.12 -m venv venv
+
 ```
 
 ---
@@ -122,19 +132,25 @@ py -3.12 -m venv venv
 ## Windows (PowerShell)
 
 ```bash
+
 .\venv\Scripts\Activate.ps1
+
 ```
 
 ## Windows (CMD)
 
 ```bash
+
 venv\Scripts\activate
+
 ```
 
 ## macOS / Linux
 
 ```bash
+
 source venv/bin/activate
+
 ```
 
 ---
@@ -142,7 +158,9 @@ source venv/bin/activate
 ## 3. Upgrade pip (Recommended)
 
 ```bash
+
 python -m pip install --upgrade pip
+
 ```
 
 ---
@@ -150,7 +168,9 @@ python -m pip install --upgrade pip
 ## 4. Install Dependencies
 
 ```bash
+
 pip install -r requirements.txt
+
 ```
 
 ---
@@ -170,11 +190,11 @@ pip install -r requirements.txt
 
 1. Download pgAdmin:
 
-   https://www.pgadmin.org/download/
+   https\://www.pgadmin.org/download/
 
 2. Download PostgreSQL:
 
-   https://www.postgresql.org/download/
+   https\://www.postgresql.org/download/
 
 3. Set the `postgres` password during installation
 
@@ -199,11 +219,15 @@ Inside pgAdmin:
 Create a `.env` file:
 
 ```env
+
 NAME=
 USER=postgres
 PASSWORD=
 HOST=localhost
 PORT=5432
+EMAIL_OUTBOX_FERNET_KEY =
+EMAIL_OUTBOX_OLD_FERNET_KEYS=
+
 ```
 
 ⚠️ Never commit `.env` files to GitHub.
@@ -213,13 +237,17 @@ PORT=5432
 The email outbox encrypts its stored payloads using Fernet. Before using the email outbox, generate a unique key for your local environment. Run this command from the project root (the directory containing `manage.py`) after installing dependencies:
 
 ```powershell
+
 python create_email_outbox_key.py
+
 ```
 
 The script prints a generated Fernet key. Copy **only the key value** and add it to your local `.env` file:
 
 ```dotenv
+
 EMAIL_OUTBOX_FERNET_KEY=<paste-your-generated-key-here>
+
 ```
 
 The `.env.example` file includes an empty `EMAIL_OUTBOX_FERNET_KEY` entry as a configuration reference. **Do not put the generated key in `.env.example`, the README, or Git.** Never share the key or commit your local `.env` file.
@@ -227,7 +255,9 @@ The `.env.example` file includes an empty `EMAIL_OUTBOX_FERNET_KEY` entry as a c
 Django reads the key in `src/settings.py` using:
 
 ```python
+
 EMAIL_OUTBOX_FERNET_KEY = getenv("EMAIL_OUTBOX_FERNET_KEY")
+
 ```
 
 Make sure your existing `.env` loading configuration is active, then restart Django or any background processes after adding the value so they load the new setting. The email outbox requires this key to encrypt and decrypt payloads.
@@ -237,7 +267,8 @@ Make sure your existing `.env` loading configuration is active, then restart Dja
 For local development, the payload URL allowlist in `src/settings.py` currently permits `localhost` and `127.0.0.1`. Configure your trusted application domain before using the outbox in a production environment.
 
 ---
-## Phase 4:  Secure Email Outbox: Fernet Key Rotation (Continued)
+
+## Email Outbox Fernet Key Rotation (Phase 4)
 
 **Status:** In Progress
 
@@ -252,14 +283,14 @@ The implementation focuses on preserving encrypted payload integrity, avoiding u
 Run the management command with optional flags to control batch sizing, failure handling, and dry-run previews:
 
 ```bash
+
 # Preview eligible record count without modifying the database
 python manage.py rotate_email_outbox_keys --dry-run
-
 # Rotate in batches of 500, skipping bad tokens and reporting them at the end (default)
 python manage.py rotate_email_outbox_keys --batch-size 500
-
 # Abort immediately on the first decryption failure
 python manage.py rotate_email_outbox_keys --batch-size 500 --fail-fast
+
 ```
 
 | Flag | Default | Description |
@@ -300,6 +331,34 @@ If primary-key decryption fails, the command attempts rotation using the configu
 | Cannot be decrypted with any configured key (default) | Log error, skip record, continue run, and raise `CommandError` at completion |
 | Cannot be decrypted with any configured key (`--fail-fast`) | Abort immediately and raise `CommandError` |
 
+### Environment-Based Previous-Key Configuration
+
+The `.env.example` template documents both the primary key and previous keys:
+
+```dotenv
+EMAIL_OUTBOX_FERNET_KEY=
+EMAIL_OUTBOX_OLD_FERNET_KEYS=
+```
+
+Previous keys can be supplied as a comma-separated string, for example `EMAIL_OUTBOX_OLD_FERNET_KEYS=<previous-key-1>,<previous-key-2>`. These are illustrative placeholders, not valid keys. Leave the setting empty when no previous keys are required.
+
+Django retrieves the environment variables in `src/settings.py` using the independently tested utility imported from `utils.configuration`:
+
+```python
+from utils.configuration import parse_old_fernet_keys
+
+EMAIL_OUTBOX_FERNET_KEY = getenv("EMAIL_OUTBOX_FERNET_KEY")
+EMAIL_OUTBOX_OLD_FERNET_KEYS = parse_old_fernet_keys(
+    getenv("EMAIL_OUTBOX_OLD_FERNET_KEYS", "")
+)
+```
+
+The parser is a pure function: it returns an empty list for an empty string, preserves key order, strips surrounding whitespace from each entry and deliberately preserves malformed empty entries. Whitespace-only input therefore produces a list containing an empty string rather than an empty list.
+
+This separates environment retrieval, deterministic parsing and cryptographic validation. Malformed entries are not silently discarded; the payload codec validates configured keys when constructing Fernet instances.
+
+The codec centralises key-chain validation and encrypted payload validation. `is_encrypted_with_primary_key()` authenticates the token using only the primary key, while validating the entire configured key chain before checking the token. MultiFernet uses the primary key for new encryption and supports decryption with configured previous keys. Invalid key configuration must not be mistaken for a token encrypted with a previous key.
+
 ### Rotation Counting
 
 The `rotate_record()` method communicates whether a database rotation was performed through its return value.
@@ -320,10 +379,16 @@ If a record fails decryption (`InvalidToken`):
 
 - Earlier successful rotations remain committed under normal autocommit execution.
 - The failing record retains its original encrypted payload.
-- **Default mode (`--fail-fast` omitted):** The error is logged to `stderr` (capped at 20 individual log entries to prevent log flooding), remaining records continue processing, and a summary `CommandError` listing up to 20 failed record IDs is raised at the end of the run.
+- **Default mode (`--fail-fast` omitted):** The error is logged to `stderr`, remaining records continue processing, and a summary `CommandError` is raised at the end of the run.
 - **Fail-fast mode (`--fail-fast` enabled):** Execution halts immediately and raises a `CommandError` identifying the failing record, leaving subsequent records unprocessed.
 
 The current automated tests verify this behaviour within Django's test transaction. Further transaction-level testing is required to independently verify committed progress across database connections.
+
+### Interrupted Rotation Recovery and Idempotency
+
+Automated regression tests verify recovery from an interrupted rotation. After a failed record is made decryptable by restoring the required key configuration, a subsequent execution rotates the remaining payload while preserving the exact token of an already-rotated record. A further execution reports zero rotations and leaves both tokens unchanged.
+
+This demonstrates command idempotency under the tested conditions. It does not establish production transaction durability or safety under concurrent writers.
 
 ### Dry-Run Behaviour
 
@@ -340,12 +405,12 @@ Dry-run execution does not currently authenticate encrypted payloads or determin
 - Payloads that cannot be decrypted must be investigated rather than overwritten.
 - Records already encrypted with the primary key should remain unchanged.
 - Encryption keys and decrypted payloads must never be exposed through command output or application logs.
-- Error reporting truncates individual failure output after 20 records to prevent log bloat during mass key-mismatch events.
+- The previously documented 20-record failure-reporting cap requires re-verification against the current implementation.
 - Rotation must not unnecessarily modify email outbox lifecycle metadata.
 
 ### Testing
 
-The key rotation management command currently has 12 passing automated tests.
+The key rotation management command currently has 15 passing automated tests.
 
 Test coverage includes:
 
@@ -358,7 +423,8 @@ Test coverage includes:
 - Dry-run database protection.
 - Rotation across multiple batches.
 - Command-level failure protection (`--fail-fast` and default skip-and-report modes).
-- Error log truncation when failures exceed the display threshold.
+- Invalid previous-key rejection, even when the payload uses the primary key.
+- Interrupted rotation recovery and repeated execution idempotency.
 - Individual primary-key detection.
 - Command-level skipping of already-rotated records.
 - Partial rotation failure behaviour.
@@ -367,20 +433,36 @@ Run the management command test suite:
 
 `python manage.py test email_outbox.tests.test_rotate_email_outbox_keys`
 
-**Current Result: 13 tests passing.**
+**Current Result: 15 tests passing.**
+
+#### Configuration Parsing Tests
+
+Seven independent unit tests cover empty configuration, single and multiple keys, whitespace normalisation, malformed empty entries, trailing commas and whitespace-only input. Five manual configuration smoke tests also verified environment-based settings before the parser extraction.
+
+```powershell
+python -m unittest utils.tests.test_configuration -v
+python manage.py test email_outbox utils.tests.test_configuration
+```
+
+| Test Suite | Passing Tests |
+|---|---:|
+| Key rotation management command (subset) | 15 |
+| Other email outbox tests | 94 |
+| Email outbox subtotal | 107 |
+| Configuration parser | 7 |
+| **Combined total** | **114** |
 
 ### Current Limitations
 
-- Interrupted rotation recovery requires additional integration testing.
-- Full command idempotency requires verification.
-- Environment-based previous-key configuration remains outstanding.
 - Configuration validation and operational failure reporting require further refinement.
-- Production transaction and concurrency safeguards require additional verification.
+- Production transaction and concurrency safeguards require additional verification, including independent transaction durability testing.
+- All writers must use the new primary key before the rotation sweep; keyset pagination is not a snapshot.
+- Verify that no relevant payload requires a previous key before retiring it.
 - A documented operational key rotation procedure remains outstanding.
 
 ### Production Readiness
 
-The key rotation implementation remains under development.
+The key rotation implementation remains under development. The command examples above document the interface, not an approved production rotation procedure. Do not perform an actual key rotation until operational safeguards and verification procedures are complete.
 
 Phase 4 remains in progress.
 
@@ -391,13 +473,17 @@ Phase 4 remains in progress.
 If the Django development server hangs after:
 
 ```
+
 System check identified no issues (0 silenced).
+
 ```
 
 and does not continue to:
 
 ```
-Starting development server at http://127.0.0.1:8000/
+
+Starting development server at http\://127.0.0.1:8000/
+
 ```
 
 then the most likely cause is that the PostgreSQL service is not running.
@@ -413,7 +499,9 @@ Django attempts to connect to the database during startup, and if the database i
 2. Type:
 
 ```
+
 services.msc
+
 ```
 
 3. Locate **PostgreSQL**
@@ -421,12 +509,15 @@ services.msc
 4. Ensure the service is **Running**
 
    - If not, click **Start**
+
    - Or right-click → **Restart**
 
 5. (Recommended) Set Startup Type to:
 
 ```
+
 Automatic
+
 ```
 
 ---
@@ -434,7 +525,9 @@ Automatic
 ### Quick Port Check
 
 ```bash
+
 netstat -ano | findstr :5432
+
 ```
 
 ---
@@ -456,6 +549,7 @@ If the database is not running:
 Configure `settings.py`:
 
 ```python
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -466,6 +560,7 @@ DATABASES = {
         'PORT': getenv("PORT"),
     }
 }
+
 ```
 
 ---
@@ -473,8 +568,10 @@ DATABASES = {
 # Run Migrations
 
 ```bash
+
 python manage.py makemigrations
 python manage.py migrate
+
 ```
 
 ---
@@ -501,7 +598,9 @@ This includes:
 Run the following command:
 
 ```bash
+
 python manage.py seed_banks
+
 ```
 
 This will create the predefined demo banks included with the project.
@@ -516,7 +615,9 @@ Example seeded data includes:
 The command uses the internal:
 
 ```python
+
 BankProvisioningService
+
 ```
 
 to ensure all required allocation and provisioning workflows are executed correctly.
@@ -528,7 +629,9 @@ to ensure all required allocation and provisioning workflows are executed correc
 To clear simulation banking data during development:
 
 ```bash
+
 python manage.py reset_simulations
+
 ```
 
 This command removes simulation allocation records and seeded banking data so the environment can be reseeded cleanly.
@@ -549,8 +652,10 @@ Example cleanup includes:
 Typical development workflow:
 
 ```bash
+
 python manage.py reset_simulations
 python manage.py seed_banks
+
 ```
 
 This allows the banking simulation environment to be rebuilt from a clean state.
@@ -564,13 +669,17 @@ Bank logos are stored as static assets.
 Expected location:
 
 ```text
+
 static/banks/logo/
+
 ```
 
 Example:
 
 ```text
+
 static/banks/logo/atlas-bank.png
+
 ```
 
 The seed data references these static image paths directly.
@@ -595,7 +704,9 @@ This approach is intended for simulation and development workflows.
 # 👤 Create Superuser
 
 ```bash
+
 python manage.py createsuperuser
+
 ```
 
 ---
@@ -605,7 +716,9 @@ python manage.py createsuperuser
 ## Terminal One — Run Django Server
 
 ```bash
+
 python manage.py runserver
+
 ```
 
 ---
@@ -619,17 +732,21 @@ This allows registration emails and other notifications generated by the applica
 After performing actions such as user registration or account-related workflows, generated emails can be found inside:
 
 ```text
+
 send_emails/dev/
+
 ```
 
 Example:
 
 ```text
+
 send_emails/
 └── dev/
     ├── welcome_email.log
     ├── verification_email.log
     └── account_notification.log
+
 ```
 
 This approach keeps the development setup simple by:
@@ -651,7 +768,9 @@ In a production environment, emails would typically be delivered through a confi
 This allows background tasks such as email processing.
 
 ```bash
+
 python manage.py qcluster
+
 ```
 
 ---
@@ -747,19 +866,19 @@ These features will be implemented in subsequent development stages.
 
 - App:
 
-  http://127.0.0.1:8000/
+  http\://127.0.0.1:8000/
 
 - Dashboard:
 
-  http://127.0.0.1:8000/dashboard
+  http\://127.0.0.1:8000/dashboard
 
 - Terms:
 
-  http://127.0.0.1:8000/terms-and-conditions
+  http\://127.0.0.1:8000/terms-and-conditions
 
 - Admin:
 
-  http://127.0.0.1:8000/admin/
+  http\://127.0.0.1:8000/admin/
 
 ---
 
@@ -782,7 +901,9 @@ These features will be implemented in subsequent development stages.
 ## ❌ Migration Issues
 
 ```bash
+
 python manage.py migrate --run-syncdb
+
 ```
 
 ---
@@ -820,7 +941,9 @@ with:
 As a superuser navigate to:
 
 ```text
+
 Authentication and Authorisation → Groups
+
 ```
 
 Then:
@@ -830,8 +953,11 @@ Then:
 2. Enter a role name such as:
 
    - Admin
+
    - Teller
+
    - Support
+
    - Customer
 
 3. Assign permissions to the role
@@ -871,7 +997,9 @@ Django permissions include:
 Navigate to:
 
 ```text
+
 Groups → Users tab
+
 ```
 
 Then:
@@ -895,7 +1023,9 @@ Without saving the user into the group first, the role permissions may not yet b
 For a user to access Django admin:
 
 ```python
+
 is_staff = True
+
 ```
 
 must be enabled.
@@ -913,7 +1043,9 @@ Without this, the user will authenticate successfully but will not be authorised
 Example:
 
 ```text
-You are authenticated as \\\\<email>, but are not authorised to access this page.
+
+You are authenticated as \\\\\\\\<email>, but are not authorised to access this page.
+
 ```
 
 ---
@@ -992,6 +1124,7 @@ All generated identifiers are issued sequentially within the assigned range.
 Example:
 
 ```text
+
 Bank A allocation block:
 0 → 200000
 Generated identifiers:
@@ -1000,16 +1133,19 @@ Account No:    00000001
 Next:
 Sort Code:     000002
 Account No:    00000002
+
 ```
 
 Another bank receives a different allocation range:
 
 ```text
+
 Bank B allocation block:
 200001 → 400000
 Generated identifiers:
 Sort Code:     200001
 Account No:    00000001
+
 ```
 
 This guarantees that identifier spaces never overlap between banks.
@@ -1028,7 +1164,9 @@ The system intentionally avoids random generation because banking systems requir
 Example of avoided approach:
 
 ```python
+
 random.randint(0, 9999999)
+
 ```
 
 Random generation introduces risks such as:
