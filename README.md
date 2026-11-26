@@ -102,7 +102,7 @@ python --version
 
 ```bash
 
-git clone https\://github.com/EgbieAndersonUku1/full_stack_virtual-bank .
+git clone https://github.com/EgbieAndersonUku1/full_stack_virtual-bank .
 
 ```
 
