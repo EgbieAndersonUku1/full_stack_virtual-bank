@@ -45,6 +45,7 @@ The system is designed to simulate banking-style infrastructure and operational 
   - [Primary-Key Detection and Safe Retries](#primary-key-detection)
   - [Environment-Based Previous-Key Configuration](#environment-based-previous-key-configuration)
   - [Interrupted Rotation Recovery and Idempotency](#interrupted-rotation-recovery-and-idempotency)
+  - [Bounded Failure Reporting](#bounded-failure-reporting)
   - [Dry-Run Behaviour](#dry-run-behaviour)
   - [Key Rotation Testing](#testing)
   - [Current Key Rotation Limitations](#current-limitations)
@@ -390,6 +391,19 @@ Automated regression tests verify recovery from an interrupted rotation. After a
 
 This demonstrates command idempotency under the tested conditions. It does not establish production transaction durability or safety under concurrent writers.
 
+### Bounded Failure Reporting
+
+In default skip-and-report mode, the command tracks the total number of `InvalidToken` failures independently of the retained failed record IDs.
+
+- `failed_count` counts every failed record.
+- `failed_ids` retains only the first `MAX_DISPLAYED_ERRORS` (20) record IDs in processing order.
+- Individual errors are written to `stderr` for the first 20 failures.
+- The 21st failure emits one suppression warning; subsequent failures do not emit individual error messages or additional suppression warnings.
+- The final `CommandError` reports the full failure count and the retained IDs, adding `(showing first 20)` only when the total exceeds 20.
+- Fail-fast mode continues to abort immediately on the first `InvalidToken`.
+
+This reduces auxiliary failed-ID storage from O(n) to O(1) for a fixed display limit, where n is the number of failures. This is a code-level storage bound, not a measured reduction in total process memory.
+
 ### Dry-Run Behaviour
 
 The management command supports a dry-run option that counts records containing nonempty encrypted payloads without modifying the database.
@@ -405,12 +419,12 @@ Dry-run execution does not currently authenticate encrypted payloads or determin
 - Payloads that cannot be decrypted must be investigated rather than overwritten.
 - Records already encrypted with the primary key should remain unchanged.
 - Encryption keys and decrypted payloads must never be exposed through command output or application logs.
-- The previously documented 20-record failure-reporting cap requires re-verification against the current implementation.
+- Failure reporting retains at most 20 failed record IDs and suppresses further individual error logs after a single warning, while preserving the full failure count.
 - Rotation must not unnecessarily modify email outbox lifecycle metadata.
 
 ### Testing
 
-The key rotation management command currently has 15 passing automated tests.
+The key rotation management command currently has 18 passing automated tests.
 
 Test coverage includes:
 
@@ -428,12 +442,21 @@ Test coverage includes:
 - Individual primary-key detection.
 - Command-level skipping of already-rotated records.
 - Partial rotation failure behaviour.
+- Boundary regression tests for 20, 21 and 25 failed records, including accurate totals, retained and excluded IDs, truncation notices and suppression warning counts.
+
+| Failed records | Individual error logs | Retained IDs | Suppression warnings | Truncation notice |
+|---:|---:|---:|---:|---|
+| 20 | 20 | 20 | 0 | No |
+| 21 | 20 | 20 | 1 | Yes |
+| 25 | 20 | 20 | 1 | Yes |
+
+These tests verify observable reporting behaviour; the bounded storage property is established by inspection of the implementation.
 
 Run the management command test suite:
 
 `python manage.py test email_outbox.tests.test_rotate_email_outbox_keys`
 
-**Current Result: 15 tests passing.**
+**Current Result: 18 tests passing.**
 
 #### Configuration Parsing Tests
 
@@ -446,15 +469,15 @@ python manage.py test email_outbox utils.tests.test_configuration
 
 | Test Suite | Passing Tests |
 |---|---:|
-| Key rotation management command (subset) | 15 |
+| Key rotation management command (subset) | 18 |
 | Other email outbox tests | 94 |
-| Email outbox subtotal | 107 |
+| Email outbox subtotal | 112 |
 | Configuration parser | 7 |
-| **Combined total** | **114** |
+| **Combined total** | **119** |
 
 ### Current Limitations
 
-- Configuration validation and operational failure reporting require further refinement.
+- Configuration validation and broader operational failure handling require further refinement; bounded `InvalidToken` failure reporting is implemented and regression-tested.
 - Production transaction and concurrency safeguards require additional verification, including independent transaction durability testing.
 - All writers must use the new primary key before the rotation sweep; keyset pagination is not a snapshot.
 - Verify that no relevant payload requires a previous key before retiring it.

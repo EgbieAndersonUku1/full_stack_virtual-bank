@@ -63,6 +63,7 @@ class Command(BaseCommand):
 
         rotated_count = 0
         failed_ids = []
+        failed_count = 0
 
         for record_ids in self.get_record_batches(batch_size):
             for record_id in record_ids:
@@ -70,19 +71,20 @@ class Command(BaseCommand):
                     if self.rotate_record(record_id):
                         rotated_count += 1
                 except InvalidToken as exc:
+                    failed_count += 1
                     if fail_fast:
                         raise CommandError(
                             f"Aborted: Failed to rotate EmailOutbox pk={record_id} due to InvalidToken."
                         ) from exc
 
-                    failed_ids.append(record_id)
-                    if len(failed_ids) <= self.MAX_DISPLAYED_ERRORS:
+                    if len(failed_ids) < self.MAX_DISPLAYED_ERRORS:
+                        failed_ids.append(record_id)
                         self.stderr.write(
                             self.style.ERROR(
                                 f"Failed to rotate EmailOutbox pk={record_id}: InvalidToken"
                             )
                         )
-                    elif len(failed_ids) == self.MAX_DISPLAYED_ERRORS + 1:
+                    elif failed_count == self.MAX_DISPLAYED_ERRORS + 1:
                         self.stderr.write(
                             self.style.WARNING(
                                 f"More than {self.MAX_DISPLAYED_ERRORS} InvalidToken errors encountered; suppressing further individual error logs."
@@ -95,15 +97,14 @@ class Command(BaseCommand):
             )
         )
 
-        if failed_ids:
-            sample_ids = failed_ids[: self.MAX_DISPLAYED_ERRORS]
+        if failed_count:
             suffix = (
                 f" (showing first {self.MAX_DISPLAYED_ERRORS})"
-                if len(failed_ids) > self.MAX_DISPLAYED_ERRORS
+                if failed_count > self.MAX_DISPLAYED_ERRORS
                 else ""
             )
             raise CommandError(
-                f"Failed to rotate {len(failed_ids)} record(s) due to InvalidToken{suffix}: {sample_ids}"
+                f"Failed to rotate {failed_count} record(s) due to InvalidToken{suffix}: {failed_ids}"
             )
 
     def validate_fernet_configuration(self) -> None:

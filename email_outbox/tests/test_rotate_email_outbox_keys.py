@@ -417,6 +417,68 @@ class EmailOutboxKeyRotationCommandTests(TestCase):
             {"test": "unknown key"},
         )
 
+    def test_command_reports_all_errors_at_display_limit(self):
+        primary_key = Encryption.generate_key()
+        unknown_key = Encryption.generate_key()
+
+        stderr = StringIO()
+        stdout = StringIO()
+
+        encrypted_payload = Encryption(unknown_key).encrypt(
+            {"test": "unknown key"}
+        )
+
+        for index in range(1, 21):
+            EmailOutbox.objects.create(
+                id=uuid.UUID(int=index),
+                email_type=EmailOutboxType.NOTIFICATION,
+                payload=encrypted_payload,
+                status=Status.PENDING,
+                scheduled_at=timezone.now(),
+            )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+        ):
+            with self.assertRaises(CommandError) as context:
+                call_command(
+                    "rotate_email_outbox_keys",
+                    batch_size=5,
+                    stdout=stdout,
+                    stderr=stderr,
+                )
+
+        error_output = stderr.getvalue()
+
+        self.assertEqual(
+            error_output.count("Failed to rotate EmailOutbox pk="),
+            20,
+        )
+
+        self.assertNotIn(
+            "suppressing further individual error logs.",
+            error_output,
+        )
+
+        exception_message = str(context.exception)
+
+        self.assertIn(
+            "Failed to rotate 20 record(s) due to InvalidToken",
+            exception_message,
+        )
+
+        for index in range(1, 21):
+            self.assertIn(
+                str(uuid.UUID(int=index)),
+                exception_message,
+            )
+
+        self.assertNotIn(
+            "(showing first 20)",
+            exception_message,
+        )
+
     def test_command_fail_fast_stops_immediately_on_invalid_token(self):
 
         primary_key = Encryption.generate_key()
@@ -633,3 +695,139 @@ class EmailOutboxKeyRotationCommandTests(TestCase):
 
         self.assertEqual(record.payload, encrypted_payload)
         self.assertEqual(record.status, Status.PENDING)
+
+    def test_command_suppression_warning_is_emitted_only_once(self):
+
+        primary_key = Encryption.generate_key()
+        unknown_key = Encryption.generate_key()
+
+        stderr = StringIO()
+        stdout = StringIO()
+
+        encrypted_payload = Encryption(unknown_key).encrypt(
+            {"test": "unknown key"}
+        )
+
+        for index in range(1, 26):
+            EmailOutbox.objects.create(
+                id=uuid.UUID(int=index),
+                email_type=EmailOutboxType.NOTIFICATION,
+                payload=encrypted_payload,
+                status=Status.PENDING,
+                scheduled_at=timezone.now(),
+            )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+        ):
+            with self.assertRaises(CommandError) as context:
+                call_command(
+                    "rotate_email_outbox_keys",
+                    batch_size=5,
+                    stdout=stdout,
+                    stderr=stderr,
+                )
+
+        error_output = stderr.getvalue()
+
+        self.assertEqual(
+            error_output.count("Failed to rotate EmailOutbox pk="),
+            20,
+        )
+
+        self.assertEqual(
+            error_output.count("suppressing further individual error logs."),
+            1,
+        )
+
+        exception_message = str(context.exception)
+
+        self.assertIn(
+            "Failed to rotate 25 record(s) due to InvalidToken",
+            exception_message,
+        )
+
+        self.assertIn(
+            "(showing first 20)",
+            exception_message,
+        )
+
+        for index in range(1, 21):
+            self.assertIn(
+                str(uuid.UUID(int=index)),
+                exception_message,
+            )
+
+        for index in range(21, 26):
+            self.assertNotIn(
+                str(uuid.UUID(int=index)),
+                exception_message,
+            )
+
+    def test_command_truncates_errors_above_display_limit(self):
+        primary_key = Encryption.generate_key()
+        unknown_key = Encryption.generate_key()
+
+        stderr = StringIO()
+        stdout = StringIO()
+
+        encrypted_payload = Encryption(unknown_key).encrypt(
+            {"test": "unknown key"}
+        )
+
+        for index in range(1, 22):
+            EmailOutbox.objects.create(
+                id=uuid.UUID(int=index),
+                email_type=EmailOutboxType.NOTIFICATION,
+                payload=encrypted_payload,
+                status=Status.PENDING,
+                scheduled_at=timezone.now(),
+            )
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+        ):
+            with self.assertRaises(CommandError) as context:
+                call_command(
+                    "rotate_email_outbox_keys",
+                    batch_size=5,
+                    stdout=stdout,
+                    stderr=stderr,
+                )
+
+        error_output = stderr.getvalue()
+
+        self.assertEqual(
+            error_output.count("Failed to rotate EmailOutbox pk="),
+            20,
+        )
+
+        self.assertEqual(
+            error_output.count("suppressing further individual error logs."),
+            1,
+        )
+
+        exception_message = str(context.exception)
+
+        self.assertIn(
+            "Failed to rotate 21 record(s) due to InvalidToken",
+            exception_message,
+        )
+
+        self.assertIn(
+            "(showing first 20)",
+            exception_message,
+        )
+
+        for index in range(1, 21):
+            self.assertIn(
+                str(uuid.UUID(int=index)),
+                exception_message,
+            )
+
+        self.assertNotIn(
+            str(uuid.UUID(int=21)),
+            exception_message,
+        )
