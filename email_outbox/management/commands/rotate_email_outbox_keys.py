@@ -5,6 +5,7 @@ from cryptography.fernet import InvalidToken
 from email_outbox.payload_codec import _get_fernet, is_encrypted_with_primary_key, rotate_payload
 
 from email_outbox.models import EmailOutbox
+from utils.custom_errors import InvalidEmailOutboxFernetKey, MissingEmailOutboxFernetKey
 
 
 
@@ -40,6 +41,17 @@ class Command(BaseCommand):
             raise CommandError(
                 "--batch-size must be a positive integer."
             )
+
+        try:
+            self.validate_fernet_configuration()
+        except InvalidEmailOutboxFernetKey:
+            raise CommandError(
+                "Invalid email outbox Fernet key configuration."
+            ) from None
+        except MissingEmailOutboxFernetKey:
+            raise CommandError(
+                "Email outbox primary Fernet key is not configured."
+            ) from None
 
         eligible_count = (
             EmailOutbox.objects

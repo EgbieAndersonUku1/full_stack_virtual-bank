@@ -1,5 +1,6 @@
 import uuid
-
+import traceback
+from unittest.mock import patch
 from django.test import TestCase
 from cryptography.fernet import Fernet, InvalidToken
 from django.test import override_settings
@@ -11,7 +12,7 @@ from django.core.management.base import CommandError
 from email_outbox.management.commands.rotate_email_outbox_keys import Command
 from email_outbox.models import EmailOutboxSupersededReason, EmailOutboxType, Status
 from email_outbox.models import EmailOutbox
-from utils.custom_errors import InvalidEmailOutboxFernetKey
+from utils.custom_errors import InvalidEmailOutboxFernetKey, MissingEmailOutboxFernetKey
 from utils.security.encryption import Encryption
 
 
@@ -831,3 +832,188 @@ class EmailOutboxKeyRotationCommandTests(TestCase):
             str(uuid.UUID(int=21)),
             exception_message,
         )
+
+    def test_command_rejects_invalid_old_key_when_no_records_exist(self):
+        """
+        Ensure the command rejects invalid Fernet configuration
+        even when no eligible email outbox records exist.
+        """
+        primary_key = Fernet.generate_key()
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=["invalid-old-key"],
+        ):
+            with self.assertRaisesMessage(
+                CommandError,
+                "Invalid email outbox Fernet key configuration.",
+            ):
+                call_command("rotate_email_outbox_keys")
+
+    def test_command_rejects_invalid_old_key_during_dry_run(self):
+        """
+        Ensure dry-run execution rejects invalid Fernet configuration
+        even when no eligible email outbox records exist.
+        """
+        primary_key = Fernet.generate_key()
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=["invalid-old-key"],
+        ):
+            with self.assertRaisesMessage(
+                CommandError,
+                "Invalid email outbox Fernet key configuration.",
+            ):
+                call_command(
+                    "rotate_email_outbox_keys",
+                    dry_run=True,
+                )
+
+    def test_command_rejects_missing_primary_key(self):
+        """
+        Ensure command-level preflight validation translates
+        a missing primary Fernet key into a safe CommandError.
+        """
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=None,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+        ):
+            with self.assertRaisesMessage(
+                CommandError,
+                "Email outbox primary Fernet key is not configured.",
+            ):
+                call_command("rotate_email_outbox_keys")
+
+    def test_invalid_batch_size_takes_precedence_over_invalid_fernet_configuration(self):
+        """
+        Ensure invalid command arguments are rejected before
+        Fernet configuration validation is performed.
+        """
+        primary_key = Fernet.generate_key()
+
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=primary_key,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=["invalid-old-key"],
+        ):
+            with self.assertRaisesMessage(
+                CommandError,
+                "--batch-size must be a positive integer.",
+            ):
+                call_command(
+                    "rotate_email_outbox_keys",
+                    batch_size=0,
+                )
+
+    def test_command_suppresses_invalid_configuration_exception_chain(self):
+        """
+        Ensure command-level exception translation suppresses
+        the underlying Fernet configuration exception chain.
+        """
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY="invalid-primary-key",
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+        ):
+            with self.assertRaises(CommandError) as context:
+                call_command("rotate_email_outbox_keys")
+
+        self.assertIsNone(context.exception.__cause__)
+        self.assertTrue(context.exception.__suppress_context__)
+
+    def test_command_suppresses_missing_key_exception_chain(self):
+        """
+        Ensure command-level exception translation suppresses
+        the underlying missing Fernet key exception chain.
+        """
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY=None,
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+        ):
+            with self.assertRaises(CommandError) as context:
+                call_command("rotate_email_outbox_keys")
+
+        self.assertIsNone(context.exception.__cause__)
+        self.assertTrue(context.exception.__suppress_context__)
+
+    def test_command_does_not_expose_sensitive_configuration_in_traceback(self):
+        """
+        Ensure command-level exception translation prevents
+        simulated sensitive information from appearing in
+        the formatted traceback.
+        """
+        sensitive_value = "TEST_SECRET_DO_NOT_EXPOSE"
+
+        with patch.object(
+            Command,
+            "validate_fernet_configuration",
+            side_effect=InvalidEmailOutboxFernetKey(
+                f"Sensitive configuration: {sensitive_value}"
+            ),
+        ):
+            try:
+                call_command("rotate_email_outbox_keys")
+            except CommandError as exc:
+                formatted_traceback = "".join(
+                    traceback.format_exception(exc)
+                )
+            else:
+                self.fail("Expected CommandError was not raised.")
+
+        self.assertIn(
+            "Invalid email outbox Fernet key configuration.",
+            formatted_traceback,
+        )
+        self.assertNotIn(sensitive_value, formatted_traceback)
+        self.assertNotIn(
+            "InvalidEmailOutboxFernetKey",
+            formatted_traceback,
+        )
+
+    def test_command_does_not_expose_sensitive_missing_key_details_in_traceback(self):
+        """
+        Ensure missing key exception translation prevents
+        simulated sensitive information from appearing in
+        the formatted traceback.
+        """
+        sensitive_value = "TEST_SECRET_DO_NOT_EXPOSE"
+
+        with patch.object(
+            Command,
+            "validate_fernet_configuration",
+            side_effect=MissingEmailOutboxFernetKey(
+                f"Sensitive configuration: {sensitive_value}"
+            ),
+        ):
+            try:
+                call_command("rotate_email_outbox_keys")
+            except CommandError as exc:
+                formatted_traceback = "".join(
+                    traceback.format_exception(exc)
+                )
+            else:
+                self.fail("Expected CommandError was not raised.")
+
+        self.assertIn(
+            "Email outbox primary Fernet key is not configured.",
+            formatted_traceback,
+        )
+        self.assertNotIn(sensitive_value, formatted_traceback)
+        self.assertNotIn(
+            "MissingEmailOutboxFernetKey",
+            formatted_traceback,
+        )
+
+    def test_command_rejects_invalid_primary_key(self):
+        """
+        Ensure command-level preflight validation translates
+        a malformed primary Fernet key into a safe CommandError.
+        """
+        with override_settings(
+            EMAIL_OUTBOX_FERNET_KEY="invalid-primary-key",
+            EMAIL_OUTBOX_OLD_FERNET_KEYS=[],
+        ):
+            with self.assertRaisesMessage(
+                CommandError,
+                "Invalid email outbox Fernet key configuration.",
+            ):
+                call_command("rotate_email_outbox_keys")

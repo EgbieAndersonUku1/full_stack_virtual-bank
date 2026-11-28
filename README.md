@@ -46,6 +46,7 @@ The system is designed to simulate banking-style infrastructure and operational 
   - [Environment-Based Previous-Key Configuration](#environment-based-previous-key-configuration)
   - [Interrupted Rotation Recovery and Idempotency](#interrupted-rotation-recovery-and-idempotency)
   - [Bounded Failure Reporting](#bounded-failure-reporting)
+  - [Fernet Configuration Preflight Validation](#fernet-configuration-preflight-validation)
   - [Dry-Run Behaviour](#dry-run-behaviour)
   - [Key Rotation Testing](#testing)
   - [Current Key Rotation Limitations](#current-limitations)
@@ -285,7 +286,7 @@ Run the management command with optional flags to control batch sizing, failure 
 
 ```bash
 
-# Preview eligible record count without modifying the database
+# Validate Fernet configuration and preview eligible record count without modifying the database
 python manage.py rotate_email_outbox_keys --dry-run
 # Rotate in batches of 500, skipping bad tokens and reporting them at the end (default)
 python manage.py rotate_email_outbox_keys --batch-size 500
@@ -297,7 +298,7 @@ python manage.py rotate_email_outbox_keys --batch-size 500 --fail-fast
 | Flag | Default | Description |
 |---|---|---|
 | `--batch-size <int>` | `100` | Maximum number of record identifiers fetched per keyset pagination query. |
-| `--dry-run` | `False` | Counts eligible non-empty records without writing to the database. |
+| `--dry-run` | `False` | Validates Fernet configuration and counts eligible non-empty records without writing to the database. |
 | `--fail-fast` | `False` | Stops execution immediately on the first `InvalidToken` instead of skipping failed records. |
 
 ### Batch Key Rotation
@@ -404,13 +405,53 @@ In default skip-and-report mode, the command tracks the total number of `Invalid
 
 This reduces auxiliary failed-ID storage from O(n) to O(1) for a fixed display limit, where n is the number of failures. This is a code-level storage bound, not a measured reduction in total process memory.
 
+### Fernet Configuration Preflight Validation
+
+The management command validates the configured primary and previous Fernet keys before querying eligible email outbox records.
+
+Validation follows a deliberate execution order:
+
+1. Validate the batch-size argument.
+2. Validate the complete Fernet key configuration.
+3. Count eligible email outbox records.
+4. Execute the requested dry-run or rotation operation (or return if no eligible records exist).
+
+Invalid batch-size arguments take precedence over invalid Fernet configuration.
+
+Configuration validation is performed even when no eligible records exist or when the command is executed in dry-run mode.
+
+#### Safe Exception Translation
+
+The management command translates domain-specific configuration exceptions raised during preflight into controlled, operator-facing `CommandError` messages.
+
+| Configuration failure | Command error message |
+|---|---|
+| Invalid primary or previous Fernet key | Invalid email outbox Fernet key configuration. |
+| Missing primary Fernet key | Email outbox primary Fernet key is not configured. |
+
+Both exception handlers use `raise ... from None` to suppress the underlying exception chain in standard traceback output.
+
+This reduces the risk of sensitive configuration details appearing in formatted tracebacks. It does not remove the underlying exception context from memory or guarantee confidentiality across all logging, debugging and monitoring mechanisms.
+
+#### Defensive Validation and Architectural Decision
+
+Configuration validation is deliberately retained within both `handle()` and `rotate_record()`, alongside the existing cryptographic helper validation.
+
+Command-level preflight validation detects configuration failures before record processing begins, while record-level validation protects independent invocations of `rotate_record()`.
+
+Although this introduces repeated configuration validation, no performance bottleneck has been established through measurement.
+
+The current implementation prioritises correctness, defensive validation and architectural simplicity. Optimisation is deferred until performance profiling provides evidence that additional complexity is justified.
+
 ### Dry-Run Behaviour
 
-The management command supports a dry-run option that counts records containing nonempty encrypted payloads without modifying the database.
+The management command supports a dry-run option that validates the configured primary and previous Fernet keys and counts records containing nonempty encrypted payloads without modifying the database.
+
+If the Fernet configuration is invalid or the primary key is missing, the command raises a controlled `CommandError` before counting eligible records, even when no eligible records exist.
 
 The dry-run count represents candidate records, not necessarily records requiring rotation.
 
-Dry-run execution does not currently authenticate encrypted payloads or determine which encryption key was used.
+Successful dry-run execution confirms that the configured Fernet keys pass configuration validation. It does not authenticate individual encrypted payloads, determine which encryption key was used, or guarantee that all eligible payloads can be decrypted with the configured keys.
 
 ### Security Considerations
 
@@ -419,12 +460,15 @@ Dry-run execution does not currently authenticate encrypted payloads or determin
 - Payloads that cannot be decrypted must be investigated rather than overwritten.
 - Records already encrypted with the primary key should remain unchanged.
 - Encryption keys and decrypted payloads must never be exposed through command output or application logs.
+- Fernet configuration is validated before eligible record counting and rotation, including during dry-run execution.
+- Missing and invalid Fernet configuration exceptions raised during preflight are translated into controlled `CommandError` messages without including configured key values.
+- Configuration exception chains are suppressed at the preflight boundary using `raise ... from None` to reduce sensitive information disclosure through standard formatted tracebacks.
 - Failure reporting retains at most 20 failed record IDs and suppresses further individual error logs after a single warning, while preserving the full failure count.
 - Rotation must not unnecessarily modify email outbox lifecycle metadata.
 
 ### Testing
 
-The key rotation management command currently has 18 passing automated tests.
+The key rotation management command currently has 27 passing automated tests.
 
 Test coverage includes:
 
@@ -443,6 +487,15 @@ Test coverage includes:
 - Command-level skipping of already-rotated records.
 - Partial rotation failure behaviour.
 - Boundary regression tests for 20, 21 and 25 failed records, including accurate totals, retained and excluded IDs, truncation notices and suppression warning counts.
+- Invalid previous-key configuration rejection when no eligible records exist.
+- Invalid previous-key configuration rejection during dry-run execution.
+- Invalid primary-key configuration rejection.
+- Missing primary-key configuration rejection.
+- Invalid batch-size argument precedence over invalid Fernet configuration.
+- Structural verification of invalid configuration exception chain suppression.
+- Structural verification of missing key exception chain suppression.
+- Behavioural verification that simulated sensitive invalid configuration details are excluded from standard formatted tracebacks.
+- Behavioural verification that simulated sensitive missing key details are excluded from standard formatted tracebacks.
 
 | Failed records | Individual error logs | Retained IDs | Suppression warnings | Truncation notice |
 |---:|---:|---:|---:|---|
@@ -456,7 +509,7 @@ Run the management command test suite:
 
 `python manage.py test email_outbox.tests.test_rotate_email_outbox_keys`
 
-**Current Result: 18 tests passing.**
+**Current Result: 27 tests passing.**
 
 #### Configuration Parsing Tests
 
@@ -469,15 +522,18 @@ python manage.py test email_outbox utils.tests.test_configuration
 
 | Test Suite | Passing Tests |
 |---|---:|
-| Key rotation management command (subset) | 18 |
+| Key rotation management command (subset) | 27 |
 | Other email outbox tests | 94 |
-| Email outbox subtotal | 112 |
+| Email outbox subtotal | 121 |
 | Configuration parser | 7 |
-| **Combined total** | **119** |
+| **Combined total** | **128** |
 
 ### Current Limitations
 
-- Configuration validation and broader operational failure handling require further refinement; bounded `InvalidToken` failure reporting is implemented and regression-tested.
+- Configuration preflight validation, safe exception translation and bounded `InvalidToken` failure reporting are implemented and regression-tested. Broader operational failure handling remains outstanding.
+- Preflight assumes stable Fernet configuration throughout execution. Configuration failures raised during subsequent record-level validation are not covered by the preflight exception translation boundary.
+- Traceback confidentiality tests cover standard formatted tracebacks with simulated sensitive details, not all logging, debugging or monitoring mechanisms.
+- Repeated configuration validation is retained deliberately; its performance cost has not been profiled.
 - Production transaction and concurrency safeguards require additional verification, including independent transaction durability testing.
 - All writers must use the new primary key before the rotation sweep; keyset pagination is not a snapshot.
 - Verify that no relevant payload requires a previous key before retiring it.
